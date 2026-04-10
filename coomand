@@ -1,0 +1,5 @@
+cd c:\Users\impos\Desktop\Projects\MSZ\flutter
+REM Run on connected USB phone (authorize USB debugging on phone first):
+flutter run -d android --dart-define=API_BASE_URL=http://62.84.188.239
+REM Or run on Chrome:
+REM flutter run -d chrome
