@@ -5,114 +5,102 @@ namespace Database\Seeders;
 use App\Models\Category;
 use App\Models\Subcategory;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class CategorySubcategorySeeder extends Seeder
 {
     /**
-     * @var array<string, array{commission: float, subcategories: list<string>}>
+     * Font Awesome 6 classes (requires CDN in layouts — see layouts.app).
+     *
+     * @var array<string, array{commission: float, icon_class: string, subcategories: list<array{name: string, icon_class: string}>}>
      */
     protected array $catalog = [
-        'Electronics' => [
+        'المنتجات البيطرية والحيوانية' => [
+            'commission' => 11.00,
+            'icon_class' => 'fa-solid fa-heart-pulse',
+            'subcategories' => [
+                ['name' => 'اللقاحات والأدوية البيطرية', 'icon_class' => 'fa-solid fa-syringe'],
+                ['name' => 'الأعلاف والمكملات الغذائية', 'icon_class' => 'fa-solid fa-bone'],
+                ['name' => 'العناية والجروح والنظافة', 'icon_class' => 'fa-solid fa-pump-soap'],
+                ['name' => 'مستلزمات الأسنان والجراحة', 'icon_class' => 'fa-solid fa-tooth'],
+            ],
+        ],
+        'المنتجات الزراعية' => [
+            'commission' => 9.00,
+            'icon_class' => 'fa-solid fa-seedling',
+            'subcategories' => [
+                ['name' => 'البذور والشتلات', 'icon_class' => 'fa-solid fa-leaf'],
+                ['name' => 'الأسمدة ومحسنات التربة', 'icon_class' => 'fa-solid fa-flask'],
+                ['name' => 'وقاية المحاصيل والمبيدات', 'icon_class' => 'fa-solid fa-bug-slash'],
+                ['name' => 'مستلزمات الحصاد وما بعد الحصاد', 'icon_class' => 'fa-solid fa-wheat-awn'],
+            ],
+        ],
+        'المعدات الزراعية' => [
             'commission' => 8.00,
-            'subcategories' => ['Smartphones', 'Laptops', 'Headphones', 'Accessories'],
+            'icon_class' => 'fa-solid fa-tractor',
+            'subcategories' => [
+                ['name' => 'الجرارات وآلات الحراثة', 'icon_class' => 'fa-solid fa-tractor'],
+                ['name' => 'الري والمضخات', 'icon_class' => 'fa-solid fa-faucet-drip'],
+                ['name' => 'الحصاد والمعالجة', 'icon_class' => 'fa-solid fa-gears'],
+                ['name' => 'التخزين والمناولة', 'icon_class' => 'fa-solid fa-warehouse'],
+            ],
         ],
-        'Fashion' => [
-            'commission' => 12.00,
-            'subcategories' => ['Men Clothing', 'Women Clothing', 'Shoes', 'Bags'],
-        ],
-        'Home & Kitchen' => [
+        'معدات تربية الحيوانات' => [
             'commission' => 10.00,
-            'subcategories' => ['Kitchen Tools', 'Furniture', 'Decor', 'Storage'],
+            'icon_class' => 'fa-solid fa-cow',
+            'subcategories' => [
+                ['name' => 'الحظائر والأسوار', 'icon_class' => 'fa-solid fa-border-all'],
+                ['name' => 'المعالف والمشارب', 'icon_class' => 'fa-solid fa-droplet'],
+                ['name' => 'معدات الحلب والألبان', 'icon_class' => 'fa-solid fa-bottle-droplet'],
+                ['name' => 'النقل والعناية والتعامل', 'icon_class' => 'fa-solid fa-truck-pickup'],
+            ],
         ],
-        'Beauty' => [
-            'commission' => 15.00,
-            'subcategories' => ['Skincare', 'Hair Care', 'Makeup', 'Perfume'],
-        ],
-        'Sports' => [
-            'commission' => 9.50,
-            'subcategories' => ['Fitness', 'Outdoor', 'Cycling', 'Team Sports'],
-        ],
-    ];
-
-    /**
-     * @var list<string>
-     */
-    protected array $imageUrls = [
-        'https://png.pngtree.com/png-vector/20210602/ourmid/pngtree-3d-beauty-cosmetics-product-design-png-image_3350323.jpg',
-        'https://cdn.prod.website-files.com/68943e66eaa53340cd489406/68be85d9f1c5d4f164d720b0_6735ebbc0a7dec8625bf45ff_8_Creative_Product_Photography_Ideas_You_Need_to_Try.webp',
     ];
 
     public function run(): void
     {
-        Storage::disk('public')->makeDirectory('categories');
-        Storage::disk('public')->makeDirectory('subcategories');
+        $allowedNames = array_keys($this->catalog);
 
-        $downloadedImages = $this->downloadImages();
-
-        $index = 0;
-        foreach ($this->catalog as $categoryName => $config) {
-            $logoPath = count($downloadedImages) > 0
-                ? $downloadedImages[$index % count($downloadedImages)]
-                : null;
-            $categoryLogoPath = null;
-
-            if ($logoPath && Storage::disk('public')->exists($logoPath)) {
-                $ext = pathinfo($logoPath, PATHINFO_EXTENSION);
-                $categoryLogoPath = 'categories/'.str()->slug($categoryName).'.'.$ext;
-                Storage::disk('public')->copy($logoPath, $categoryLogoPath);
+        $stale = Category::query()->whereNotIn('name', $allowedNames)->get();
+        foreach ($stale as $category) {
+            if ($category->logo) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($category->logo);
             }
+            if ($category->icon) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($category->icon);
+            }
+            $category->delete();
+        }
 
+        foreach ($this->catalog as $categoryName => $config) {
             $category = Category::query()->updateOrCreate(
                 ['name' => $categoryName],
                 [
-                    'logo' => $categoryLogoPath,
+                    'logo' => null,
+                    'icon' => null,
+                    'icon_class' => $config['icon_class'],
                     'commission' => $config['commission'],
                 ],
             );
 
-            foreach ($config['subcategories'] as $subcategoryName) {
-                $subImagePath = null;
-                if ($logoPath && Storage::disk('public')->exists($logoPath)) {
-                    $ext = pathinfo($logoPath, PATHINFO_EXTENSION);
-                    $subImagePath = 'subcategories/'.str()->slug($subcategoryName).'.'.$ext;
-                    Storage::disk('public')->copy($logoPath, $subImagePath);
-                }
-
+            foreach ($config['subcategories'] as $sub) {
                 Subcategory::query()->updateOrCreate(
                     [
                         'category_id' => $category->id,
-                        'name' => $subcategoryName,
+                        'name' => $sub['name'],
                     ],
-                    ['image' => $subImagePath],
+                    [
+                        'image' => null,
+                        'icon_class' => $sub['icon_class'],
+                    ],
                 );
             }
-
-            $index++;
-        }
-    }
-
-    /**
-     * @return list<string>
-     */
-    protected function downloadImages(): array
-    {
-        $paths = [];
-        foreach ($this->imageUrls as $i => $url) {
-            try {
-                $response = Http::withoutVerifying()->timeout(15)->get($url);
-                if ($response->successful()) {
-                    $ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
-                    $filename = "seed/seed-image-{$i}.{$ext}";
-                    Storage::disk('public')->put($filename, $response->body());
-                    $paths[] = $filename;
-                }
-            } catch (\Throwable $e) {
-                $this->command?->warn("Could not download image {$i}: {$e->getMessage()}");
-            }
         }
 
-        return $paths;
+        try {
+            Cache::tags(['categories'])->flush();
+        } catch (\Throwable) {
+            // Cache store may not support tags.
+        }
     }
 }

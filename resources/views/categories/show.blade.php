@@ -49,6 +49,26 @@ document.addEventListener('DOMContentLoaded', async function() {
     const catId = {{ $categoryId }};
     const $ = id => document.getElementById(id);
     let page = 1;
+    function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+    function categoryHeroInner(cat) {
+        if (cat.icon_class) {
+            return `<i class="${esc(cat.icon_class)} text-3xl leading-none text-brand-500 dark:text-brand-400" aria-hidden="true"></i>`;
+        }
+        const catHero = cat.logo || cat.icon;
+        if (catHero) {
+            return `<img src="/storage/${esc(catHero)}" class="h-full w-full rounded-2xl object-cover" alt="">`;
+        }
+        return `<svg class="h-7 w-7 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581"/></svg>`;
+    }
+    function subGridThumbInner(s) {
+        if (s.icon_class) {
+            return `<i class="${esc(s.icon_class)} text-xl leading-none text-brand-500 dark:text-gray-400" aria-hidden="true"></i>`;
+        }
+        if (s.image) {
+            return `<img src="/storage/${esc(s.image)}" class="h-full w-full object-cover" alt="">`;
+        }
+        return `<svg class="h-6 w-6 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg>`;
+    }
 
     try {
         const res = await axios.get('/api/categories/' + catId);
@@ -57,13 +77,13 @@ document.addEventListener('DOMContentLoaded', async function() {
         $('bc-name').textContent = cat.name;
         $('cat-name').textContent = cat.name;
         $('cat-meta').textContent = (cat.subcategories||[]).length + ' subcategories · ' + cat.commission + '% commission';
-        $('cat-logo').innerHTML = cat.logo ? `<img src="/storage/${cat.logo}" class="h-full w-full rounded-2xl object-cover" alt="">` : `<svg class="h-7 w-7 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581"/></svg>`;
+        $('cat-logo').innerHTML = categoryHeroInner(cat);
 
         const subs = cat.subcategories || [];
         $('subs-grid').innerHTML = subs.map(s => `
             <a href="/subcategories/${s.id}" class="group flex items-center gap-3 rounded-2xl border border-gray-200/80 bg-white p-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900">
                 <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800">
-                    ${s.image ? `<img src="/storage/${esc(s.image)}" class="h-full w-full object-cover" alt="">` : `<svg class="h-6 w-6 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg>`}
+                    ${subGridThumbInner(s)}
                 </div>
                 <span class="text-sm font-bold text-gray-700 group-hover:text-brand-600 dark:text-gray-300 dark:group-hover:text-brand-400">${esc(s.name)}</span>
             </a>
@@ -105,7 +125,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     function getR(c,l){if(l<=7)return Array.from({length:l},(_,i)=>i+1);const p=[1];if(c>3)p.push('...');for(let i=Math.max(2,c-1);i<=Math.min(l-1,c+1);i++)p.push(i);if(c<l-2)p.push('...');p.push(l);return p;}
     window._goP = function(p) { page=p; loadProducts(); window.scrollTo({top:0,behavior:'smooth'}); };
-    function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 });
 </script>
 @endpush

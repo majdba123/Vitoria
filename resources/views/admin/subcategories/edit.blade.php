@@ -34,6 +34,12 @@
                             <p class="mt-1 text-xs text-gray-500">Accepted formats: JPEG, PNG, GIF, WebP. Max size: 2MB</p>
                         </div>
 
+                        <div>
+                            <label for="icon_class" class="form-label">Font Awesome icon classes</label>
+                            <input type="text" id="icon_class" name="icon_class" class="form-input" placeholder="e.g. fa-solid fa-leaf" maxlength="191">
+                            <p class="mt-1 text-xs text-gray-500">Optional. Storefront menus prefer this over the image when set.</p>
+                        </div>
+
                         <div class="flex gap-2 pt-4">
                             <a href="{{ route('admin.subcategories.index') }}" class="btn-secondary btn-sm flex-1">Cancel</a>
                             <button type="submit" class="btn-primary btn-sm flex-1">Update Subcategory</button>
@@ -79,9 +85,17 @@ document.addEventListener('DOMContentLoaded', function () {
             const subcategory = res.data.data;
 
             document.getElementById('name').value = subcategory.name || '';
+            document.getElementById('icon_class').value = subcategory.icon_class || '';
             categorySelect.value = subcategory.category_id || '';
+            currentImage.innerHTML = '';
             if (subcategory.image) {
                 currentImage.innerHTML = `<img src="/storage/${subcategory.image}" alt="${subcategory.name}" class="h-20 w-20 rounded-lg object-cover">`;
+            }
+            if (subcategory.icon_class) {
+                const wrap = document.createElement('div');
+                wrap.className = 'mt-2 flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 ring-1 ring-gray-100';
+                wrap.innerHTML = '<span class="text-xs font-medium text-gray-500">Preview</span><i class="' + subcategory.icon_class + '" aria-hidden="true"></i>';
+                currentImage.appendChild(wrap);
             }
 
             loading.classList.add('hidden');

@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Admin',
                 'national_id' => '0000000001',
+                'age' => 30,
+                'membership_number' => 'MEM-ADMIN-001',
                 'type' => User::TYPE_ADMIN,
                 'email' => 'admin@msz-demo.test',
                 'password' => 'password',
@@ -29,8 +31,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CitySeeder::class,
             CategorySubcategorySeeder::class,
-            MarketplaceDemoSeeder::class,
-            CouponSeeder::class,
         ]);
     }
 }

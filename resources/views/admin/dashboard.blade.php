@@ -106,6 +106,27 @@
         </div>
     </div>
 
+    {{-- Vendors by Category --}}
+    <div class="card">
+        <div class="card-body border-b border-gray-100">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h3 class="text-base font-semibold text-gray-900">Vendors by Category</h3>
+                    <p class="mt-0.5 text-sm text-gray-500">Merchant distribution based on assigned categories</p>
+                </div>
+                <a href="{{ route('admin.vendors.index') }}" class="btn-secondary btn-xs">View Vendors</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="vendor-category-stats" class="space-y-3">
+                <div class="py-8 text-center">
+                    <div class="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-brand-500"></div>
+                    <p class="mt-2 text-sm text-gray-500">Loading category statistics...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Recent Products --}}
     <div class="card">
         <div class="card-body border-b border-gray-100">
@@ -169,10 +190,11 @@
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
     try {
-        const [usersRes, vendorsRes, productsRes] = await Promise.all([
+        const [usersRes, vendorsRes, productsRes, categoryStatsRes] = await Promise.all([
             window.axios.get('/api/admin/users?page=1'),
             window.axios.get('/api/admin/vendors?page=1'),
             window.axios.get('/api/admin/products?page=1&per_page=5'),
+            window.axios.get('/api/admin/dashboard/vendor-category-stats'),
         ]);
 
         document.getElementById('stat-users').textContent = usersRes.data.meta?.total ?? '0';
@@ -194,6 +216,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         let activeProducts = 0;
         products.forEach(p => { if (p.is_active) activeProducts++; });
         document.getElementById('stat-active-products').textContent = activeProducts;
+
+        renderVendorCategoryStats(categoryStatsRes.data.data || []);
 
         // Render recent products
         const productsContainer = document.getElementById('recent-products');
@@ -217,7 +241,50 @@ document.addEventListener('DOMContentLoaded', async function () {
             `).join('');
         }
     } catch (e) {
-        // Stats unavailable
+        document.getElementById('vendor-category-stats').innerHTML = '<p class="py-8 text-center text-sm text-red-500">Failed to load dashboard statistics.</p>';
+    }
+
+    function renderVendorCategoryStats(rows) {
+        const container = document.getElementById('vendor-category-stats');
+
+        if (!rows.length) {
+            container.innerHTML = '<p class="py-8 text-center text-sm text-gray-400">No vendor categories yet.</p>';
+            return;
+        }
+
+        container.innerHTML = rows.map(row => {
+            const total = Number(row.total_vendors || 0);
+            const active = Number(row.active_vendors || 0);
+            const pending = Number(row.pending_vendors || 0);
+            const inactive = Number(row.inactive_vendors || 0);
+            const activeWidth = total > 0 ? Math.round((active / total) * 100) : 0;
+            const pendingWidth = total > 0 ? Math.round((pending / total) * 100) : 0;
+            const inactiveWidth = Math.max(0, 100 - activeWidth - pendingWidth);
+            const url = row.id ? `/admin/vendors?category_id=${encodeURIComponent(row.id)}` : '/admin/vendors';
+
+            return `
+                <a href="${url}" class="block rounded-lg border border-gray-200 p-4 transition-colors hover:border-brand-300 hover:bg-brand-50/40">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="min-w-0">
+                            <p class="truncate text-sm font-semibold text-gray-900">${esc(row.name)}</p>
+                            <p class="mt-1 text-xs text-gray-500">${total} vendor${total === 1 ? '' : 's'} total</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="badge badge-success">${active} active</span>
+                            <span class="badge badge-warning">${pending} pending</span>
+                            <span class="badge badge-danger">${inactive} inactive</span>
+                        </div>
+                    </div>
+                    <div class="mt-3 h-2 overflow-hidden rounded-full bg-gray-100">
+                        <div class="flex h-full w-full">
+                            <div class="bg-emerald-500" style="width: ${activeWidth}%"></div>
+                            <div class="bg-amber-500" style="width: ${pendingWidth}%"></div>
+                            <div class="bg-red-500" style="width: ${inactiveWidth}%"></div>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }).join('');
     }
 
     function esc(t) {

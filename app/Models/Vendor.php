@@ -13,6 +13,16 @@ class Vendor extends Model
     /** @use HasFactory<\Database\Factories\VendorFactory> */
     use HasFactory;
 
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_ACTIVE = 'active';
+
+    public const STATUS_INACTIVE = 'inactive';
+
+    public const REGISTRATION_SOURCE_ADMIN = 'admin';
+
+    public const REGISTRATION_SOURCE_SELF = 'self';
+
     /**
      * @var list<string>
      */
@@ -26,6 +36,9 @@ class Vendor extends Model
         'longitude',
         'logo',
         'is_active',
+        'status',
+        'registration_source',
+        'commercial_register_file',
         'paid_amount',
     ];
 
@@ -80,5 +93,13 @@ class Vendor extends Model
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class)->withTimestamps();
+    }
+
+    /**
+     * Determine if the vendor is awaiting admin approval.
+     */
+    public function isPending(): bool
+    {
+        return $this->status === self::STATUS_PENDING;
     }
 }

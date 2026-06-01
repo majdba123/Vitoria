@@ -49,7 +49,7 @@ Route::middleware('cache.response:120')->group(function () {
             $subs = \Illuminate\Support\Facades\Cache::tags(['categories'])->remember(
                 "cat:{$category->id}:subs",
                 1800,
-                fn () => $category->subcategories()->select('id', 'name', 'image', 'category_id')->get()
+                fn () => $category->subcategories()->select('id', 'name', 'image', 'category_id', 'icon_class')->get()
             );
 
             return response()->json(['data' => $subs]);

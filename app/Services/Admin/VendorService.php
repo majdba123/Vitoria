@@ -37,6 +37,9 @@ class VendorService
                 'latitude' => $data['latitude'],
                 'longitude' => $data['longitude'],
                 'logo' => $data['logo'] ?? null,
+                'is_active' => true,
+                'status' => Vendor::STATUS_ACTIVE,
+                'registration_source' => Vendor::REGISTRATION_SOURCE_ADMIN,
             ]);
 
             if (isset($data['category_ids'])) {
@@ -104,12 +107,33 @@ class VendorService
      */
     public function toggleActive(Vendor $vendor): Vendor
     {
-        $vendor->update(['is_active' => ! $vendor->is_active]);
+        $isActive = ! $vendor->is_active;
+
+        $vendor->update([
+            'is_active' => $isActive,
+            'status' => $isActive ? Vendor::STATUS_ACTIVE : Vendor::STATUS_INACTIVE,
+        ]);
 
         $this->flushVendorCache();
         $this->flushProductCache();
 
         return $vendor->fresh('user');
+    }
+
+    /**
+     * Approve a pending self-registered vendor.
+     */
+    public function approve(Vendor $vendor): Vendor
+    {
+        $vendor->update([
+            'is_active' => true,
+            'status' => Vendor::STATUS_ACTIVE,
+        ]);
+
+        $this->flushVendorCache();
+        $this->flushProductCache();
+
+        return $vendor->fresh(['user', 'categories']);
     }
 
     /**

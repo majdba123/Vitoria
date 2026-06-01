@@ -20,6 +20,39 @@
     <x-alert type="error" id="vendors-alert" />
     <x-alert type="success" id="vendors-success" />
 
+    {{-- Filters --}}
+    <div class="card">
+        <div class="grid gap-3 p-4 sm:grid-cols-5">
+            <div>
+                <label for="filter-status" class="form-label">Status</label>
+                <select id="filter-status" class="form-input">
+                    <option value="">All statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+            <div>
+                <label for="filter-category" class="form-label">Category</label>
+                <select id="filter-category" class="form-input">
+                    <option value="">All categories</option>
+                </select>
+            </div>
+            <div>
+                <label for="filter-name" class="form-label">Name</label>
+                <input id="filter-name" type="search" class="form-input" placeholder="Store or owner name">
+            </div>
+            <div>
+                <label for="filter-email" class="form-label">Email</label>
+                <input id="filter-email" type="search" class="form-input" placeholder="owner@example.com">
+            </div>
+            <div class="flex items-end gap-2">
+                <button id="apply-filters" class="btn-primary btn-sm flex-1">Filter</button>
+                <button id="reset-filters" class="btn-secondary btn-sm">Reset</button>
+            </div>
+        </div>
+    </div>
+
     {{-- Loading --}}
     <div id="vendors-loading" class="py-16 text-center">
         <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500"></div>
@@ -48,6 +81,8 @@
                             <th class="w-12">#</th>
                             <th>Store</th>
                             <th class="hidden md:table-cell">Owner</th>
+                            <th class="hidden xl:table-cell">Source</th>
+                            <th class="hidden xl:table-cell">Category</th>
                             <th class="hidden lg:table-cell">National ID</th>
                             <th>Status</th>
                             <th class="text-right">Actions</th>
@@ -100,23 +135,45 @@
 document.addEventListener('DOMContentLoaded', function () {
     let currentPage = 1;
     let deleteVendorId = null;
+    const initialParams = new URLSearchParams(window.location.search);
+    let filters = {
+        status: initialParams.get('status') || '',
+        category_id: initialParams.get('category_id') || '',
+        name: initialParams.get('name') || '',
+        email: initialParams.get('email') || '',
+    };
 
+    document.getElementById('filter-status').value = filters.status;
+    document.getElementById('filter-name').value = filters.name;
+    document.getElementById('filter-email').value = filters.email;
+    loadCategoryFilter();
     loadVendors();
 
     document.getElementById('prev-page').addEventListener('click', () => { currentPage--; loadVendors(); });
     document.getElementById('next-page').addEventListener('click', () => { currentPage++; loadVendors(); });
     document.getElementById('delete-cancel').addEventListener('click', closeDeleteModal);
     document.getElementById('delete-confirm').addEventListener('click', confirmDelete);
+    document.getElementById('apply-filters').addEventListener('click', applyFilters);
+    document.getElementById('reset-filters').addEventListener('click', resetFilters);
+    ['filter-name', 'filter-email'].forEach(id => {
+        document.getElementById(id).addEventListener('keydown', event => {
+            if (event.key === 'Enter') applyFilters();
+        });
+    });
 
     async function loadVendors() {
         showLoading(true);
         try {
-            const response = await window.axios.get('/api/admin/vendors?page=' + currentPage);
+            const params = new URLSearchParams({ page: currentPage });
+            Object.entries(filters).forEach(([key, value]) => {
+                if (value) params.append(key, value);
+            });
+            const response = await window.axios.get('/api/admin/vendors?' + params.toString());
             const { data, meta } = response.data;
             renderVendors(data);
             renderPagination(meta);
         } catch (error) {
-            showAlert('vendors-alert', error.response?.data?.message || 'Failed to load vendors.');
+            showAlert('vendors-alert', parseBackendError(error, 'Failed to load vendors.'));
         } finally {
             showLoading(false);
         }
@@ -154,17 +211,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     <p class="text-sm text-gray-900">${escapeHtml(vendor.user?.name || '—')}</p>
                     <p class="text-xs text-gray-500">${escapeHtml(vendor.user?.phone_number || '')}</p>
                 </td>
+                <td class="hidden xl:table-cell">
+                    <span class="badge ${vendor.registration_source === 'self' ? 'badge-warning' : 'badge-info'}">${vendor.registration_source === 'self' ? 'Self registration' : 'Admin'}</span>
+                </td>
+                <td class="hidden xl:table-cell">
+                    ${renderCategoryBadges(vendor)}
+                </td>
                 <td class="hidden lg:table-cell">
                     <span class="font-mono text-xs text-gray-500">${escapeHtml(vendor.user?.national_id || '—')}</span>
                 </td>
                 <td>
-                    <button onclick="toggleVendorStatus(${vendor.id})" class="badge cursor-pointer transition-opacity hover:opacity-80 ${vendor.is_active ? 'badge-success' : 'badge-danger'}" title="Click to toggle">
-                        <span class="mr-1 inline-block h-1.5 w-1.5 rounded-full ${vendor.is_active ? 'bg-emerald-500' : 'bg-red-500'}"></span>
-                        ${vendor.is_active ? 'Active' : 'Inactive'}
-                    </button>
+                    ${renderStatus(vendor)}
                 </td>
                 <td class="text-right">
                     <div class="flex items-center justify-end gap-1">
+                        ${vendor.status === 'pending' ? `
+                            <button onclick="approveVendor(${vendor.id}, this)" class="btn-ghost btn-xs text-emerald-600" title="Approve Vendor">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                            </button>
+                        ` : ''}
                         <a href="/admin/vendors/${vendor.id}" class="btn-ghost btn-xs text-brand-600" title="View Profile">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
                         </a>
@@ -192,6 +257,80 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('next-page').disabled = meta.current_page >= meta.last_page;
     }
 
+    function renderStatus(vendor) {
+        if (vendor.status === 'pending') {
+            return '<span class="badge badge-warning"><span class="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-amber-500"></span>Pending</span>';
+        }
+
+        const isActive = vendor.status === 'active' || vendor.is_active;
+
+        return `
+            <button onclick="toggleVendorStatus(${vendor.id})" class="badge cursor-pointer transition-opacity hover:opacity-80 ${isActive ? 'badge-success' : 'badge-danger'}" title="Click to toggle">
+                <span class="mr-1 inline-block h-1.5 w-1.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-red-500'}"></span>
+                ${isActive ? 'Active' : 'Inactive'}
+            </button>
+        `;
+    }
+
+    function applyFilters() {
+        filters = {
+            status: document.getElementById('filter-status').value,
+            category_id: document.getElementById('filter-category').value,
+            name: document.getElementById('filter-name').value.trim(),
+            email: document.getElementById('filter-email').value.trim(),
+        };
+        currentPage = 1;
+        updateFilterUrl();
+        loadVendors();
+    }
+
+    function resetFilters() {
+        document.getElementById('filter-status').value = '';
+        document.getElementById('filter-category').value = '';
+        document.getElementById('filter-name').value = '';
+        document.getElementById('filter-email').value = '';
+        filters = { status: '', category_id: '', name: '', email: '' };
+        currentPage = 1;
+        updateFilterUrl();
+        loadVendors();
+    }
+
+    async function loadCategoryFilter() {
+        try {
+            const response = await window.axios.get('/api/admin/categories');
+            const categories = response.data.data || [];
+            const select = document.getElementById('filter-category');
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                select.appendChild(option);
+            });
+            select.value = filters.category_id;
+        } catch (error) {
+            showAlert('vendors-alert', parseBackendError(error, 'Failed to load categories.'));
+        }
+    }
+
+    function updateFilterUrl() {
+        const params = new URLSearchParams();
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value) params.set(key, value);
+        });
+        const query = params.toString();
+        window.history.replaceState({}, '', query ? `${window.location.pathname}?${query}` : window.location.pathname);
+    }
+
+    function renderCategoryBadges(vendor) {
+        if (!vendor.categories || !vendor.categories.length) {
+            return '<span class="text-xs text-gray-400">Not assigned</span>';
+        }
+
+        return vendor.categories.map(category =>
+            `<span class="badge badge-info">${escapeHtml(category.name)}</span>`
+        ).join(' ');
+    }
+
     // Toggle active status
     window.toggleVendorStatus = async function (id) {
         try {
@@ -199,7 +338,19 @@ document.addEventListener('DOMContentLoaded', function () {
             showAlert('vendors-success', response.data.message);
             loadVendors();
         } catch (error) {
-            showAlert('vendors-alert', error.response?.data?.message || 'Failed to toggle status.');
+            showAlert('vendors-alert', parseBackendError(error, 'Failed to toggle status.'));
+        }
+    };
+
+    window.approveVendor = async function (id, button) {
+        if (button) button.disabled = true;
+        try {
+            const response = await window.axios.patch('/api/admin/vendors/' + id + '/approve');
+            showAlert('vendors-success', response.data.message);
+            loadVendors();
+        } catch (error) {
+            showAlert('vendors-alert', parseBackendError(error, 'Failed to approve vendor.'));
+            if (button) button.disabled = false;
         }
     };
 
@@ -226,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function () {
             loadVendors();
         } catch (error) {
             closeDeleteModal();
-            showAlert('vendors-alert', error.response?.data?.message || 'Failed to delete vendor.');
+            showAlert('vendors-alert', parseBackendError(error, 'Failed to delete vendor.'));
         }
     }
 
@@ -244,6 +395,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const d = document.createElement('div');
         d.textContent = text;
         return d.innerHTML;
+    }
+
+    function parseBackendError(error, fallback) {
+        if (window.ApiErrors?.parse) {
+            return window.ApiErrors.parse(error).generalMessage || fallback;
+        }
+
+        return error.response?.data?.message || fallback;
     }
 });
 </script>

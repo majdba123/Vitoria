@@ -50,14 +50,23 @@ class ProductResource extends JsonResource
             'quantity' => $this->quantity,
             'is_active' => $this->is_active,
             'status' => $this->status,
-            'category' => $this->whenLoaded('subcategory', function (): ?array {
+            'category' => $this->whenLoaded('subcategory', function () use ($request): ?array {
                 $category = $this->subcategory?->category;
 
-                return $category ? [
+                if (! $category) {
+                    return null;
+                }
+
+                $data = [
                     'id' => $category->id,
                     'name' => $category->name,
-                    'commission' => $category->commission,
-                ] : null;
+                ];
+
+                if ($this->shouldExposeVendor($request)) {
+                    $data['commission'] = $category->commission;
+                }
+
+                return $data;
             }),
             'subcategory' => $this->whenLoaded('subcategory', function (): ?array {
                 $subcategory = $this->subcategory;

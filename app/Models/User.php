@@ -34,6 +34,8 @@ class User extends Authenticatable
         'name',
         'phone_number',
         'national_id',
+        'age',
+        'membership_number',
         'city_id',
         'latitude',
         'longitude',
@@ -64,6 +66,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'type' => 'integer',
+            'age' => 'integer',
         ];
     }
 

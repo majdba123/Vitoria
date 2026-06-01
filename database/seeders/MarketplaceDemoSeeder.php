@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class MarketplaceDemoSeeder extends Seeder
@@ -27,38 +28,44 @@ class MarketplaceDemoSeeder extends Seeder
         }
 
         $allCategories = Category::query()->get();
+        Storage::disk('public')->makeDirectory('products');
+        Storage::disk('public')->makeDirectory('seed');
         $this->seedImagePaths = $this->collectSeedImages();
 
-        Storage::disk('public')->makeDirectory('products');
-
-        /** @var array<int, array{name: string, phone_number: string, national_id: string, store_name: string, description: string, address: string, categories: list<string>}> $vendors */
+        /** @var array<int, array{name: string, phone_number: string, national_id: string, age: int, membership_number: string, store_name: string, description: string, address: string, categories: list<string>}> $vendors */
         $vendors = [
             [
-                'name' => 'Tech Hub Vendor',
+                'name' => 'Green Fields Vendor',
                 'phone_number' => '0944615776',
                 'national_id' => '1000000001',
-                'store_name' => 'Tech Hub',
-                'description' => 'Electronics and gadgets for daily use.',
+                'age' => 35,
+                'membership_number' => 'MEM-VENDOR-1000000001',
+                'store_name' => 'Green Fields Supply',
+                'description' => 'Crop inputs, seeds, and field essentials.',
                 'address' => 'Damascus - Mazzeh',
-                'categories' => ['Electronics', 'Home & Kitchen'],
+                'categories' => ['Agricultural products', 'Veterinary animal products'],
             ],
             [
-                'name' => 'Style Corner Vendor',
+                'name' => 'FarmEquip Vendor',
                 'phone_number' => '5129914',
                 'national_id' => '1000000002',
-                'store_name' => 'Style Corner',
-                'description' => 'Modern fashion products and accessories.',
+                'age' => 42,
+                'membership_number' => 'MEM-VENDOR-1000000002',
+                'store_name' => 'FarmEquip Pro',
+                'description' => 'Tractors, tools, and barn hardware.',
                 'address' => 'Aleppo - New Aleppo',
-                'categories' => ['Fashion', 'Beauty'],
+                'categories' => ['Agricultural equipment', 'Animal equipment'],
             ],
             [
-                'name' => 'Home Smart Vendor',
+                'name' => 'AgriVet Vendor',
                 'phone_number' => '0911000003',
                 'national_id' => '1000000003',
-                'store_name' => 'Home Smart',
-                'description' => 'Useful products for home and kitchen.',
+                'age' => 28,
+                'membership_number' => 'MEM-VENDOR-1000000003',
+                'store_name' => 'AgriVet Market',
+                'description' => 'Mixed agricultural and animal-care products.',
                 'address' => 'Homs - City Center',
-                'categories' => ['Home & Kitchen', 'Sports', 'Electronics'],
+                'categories' => ['Agricultural products', 'Agricultural equipment', 'Animal equipment'],
             ],
         ];
 
@@ -68,6 +75,8 @@ class MarketplaceDemoSeeder extends Seeder
                 [
                     'name' => $vendorData['name'],
                     'national_id' => $vendorData['national_id'],
+                    'age' => $vendorData['age'],
+                    'membership_number' => $vendorData['membership_number'],
                     'type' => User::TYPE_VENDOR,
                     'email' => str_replace('0', '', $vendorData['phone_number']).'@msz-demo.test',
                     'password' => 'password',
@@ -164,10 +173,26 @@ class MarketplaceDemoSeeder extends Seeder
     /**
      * @return list<string>
      */
+    /**
+     * @return list<string> Storage paths on the public disk (under seed/) used as sources for product photos.
+     */
     protected function collectSeedImages(): array
     {
+        $fixture = base_path('database/seeders/fixtures/default-product.png');
+        if (File::isFile($fixture)) {
+            $dest = 'seed/default-product.png';
+            File::copy($fixture, Storage::disk('public')->path($dest));
+
+            return [$dest];
+        }
+
+        $this->command?->warn('Missing database/seeders/fixtures/default-product.png — demo products will have no photos.');
+
         $files = Storage::disk('public')->files('seed');
 
-        return array_values(array_filter($files, fn (string $f) => str_starts_with(basename($f), 'seed-image-')));
+        return array_values(array_filter(
+            $files,
+            fn (string $f) => (bool) preg_match('/\.(jpe?g|png|gif|webp)$/i', $f),
+        ));
     }
 }

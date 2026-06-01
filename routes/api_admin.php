@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Admin\VendorCommissionController;
 use App\Http\Controllers\Api\Admin\VendorController;
@@ -18,9 +19,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('dashboard/vendor-category-stats', [DashboardController::class, 'vendorCategoryStats'])->name('dashboard.vendor-category-stats');
 Route::apiResource('vendors', VendorController::class);
 Route::get('vendors/{vendor}/commission-stats', [VendorCommissionController::class, 'show'])->name('vendors.commission-stats');
 Route::post('vendors/{vendor}/commission-paid', [VendorCommissionController::class, 'updatePaidAmount'])->name('vendors.commission-paid');
+Route::get('vendors/{vendor}/commercial-register', [VendorController::class, 'downloadCommercialRegister'])->name('vendors.commercial-register');
+Route::patch('vendors/{vendor}/approve', [VendorController::class, 'approve'])->name('vendors.approve');
 Route::patch('vendors/{vendor}/toggle-active', [VendorController::class, 'toggleActive'])->name('vendors.toggle-active');
 Route::apiResource('users', UserController::class);
 Route::get('users/{user}/favourites', [UserController::class, 'favourites'])->name('users.favourites');

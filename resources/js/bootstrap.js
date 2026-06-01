@@ -9,6 +9,108 @@ window.axios.defaults.withCredentials = true;
 window.axios.defaults.withXSRFToken = true;
 
 /**
+ * Backend error parsing utilities.
+ */
+window.ApiErrors = {
+    fallbackMessage: 'Something went wrong. Please try again.',
+
+    parse(error) {
+        const responseData = error?.response?.data ?? error?.data ?? error;
+        const fieldErrors = {};
+        let generalMessage = '';
+
+        const collectFieldErrors = (errors) => {
+            if (!errors || typeof errors !== 'object' || Array.isArray(errors)) {
+                return;
+            }
+
+            Object.entries(errors).forEach(([field, messages]) => {
+                const message = this.firstMessage(messages);
+                if (message) {
+                    fieldErrors[field] = message;
+                }
+            });
+        };
+
+        collectFieldErrors(responseData?.errors);
+        collectFieldErrors(responseData?.validationErrors);
+
+        if (!Object.keys(fieldErrors).length && responseData && typeof responseData === 'object') {
+            Object.entries(responseData).forEach(([field, value]) => {
+                if (['message', 'error', 'exception', 'trace', 'file', 'line'].includes(field)) {
+                    return;
+                }
+
+                if (Array.isArray(value)) {
+                    const message = this.firstMessage(value);
+                    if (message) {
+                        fieldErrors[field] = message;
+                    }
+                }
+            });
+        }
+
+        generalMessage =
+            this.cleanMessage(responseData?.message) ||
+            this.cleanMessage(responseData?.error) ||
+            this.cleanMessage(error?.message) ||
+            '';
+
+        if (generalMessage && /^(request failed with status code|network error)$/i.test(generalMessage)) {
+            generalMessage = '';
+        }
+
+        if (!generalMessage && Object.keys(fieldErrors).length) {
+            generalMessage = Object.values(fieldErrors)[0];
+        }
+
+        return {
+            generalMessage: generalMessage || this.fallbackMessage,
+            fieldErrors,
+        };
+    },
+
+    firstMessage(value) {
+        if (Array.isArray(value)) {
+            return this.cleanMessage(value[0]);
+        }
+
+        if (typeof value === 'object' && value !== null) {
+            return this.cleanMessage(Object.values(value).flat()[0]);
+        }
+
+        return this.cleanMessage(value);
+    },
+
+    cleanMessage(value) {
+        if (typeof value !== 'string') {
+            return '';
+        }
+
+        const message = value.trim();
+        if (!message || message.includes('\n#') || message.includes('Stack trace') || /<[^>]+>/.test(message)) {
+            return '';
+        }
+
+        return message;
+    },
+
+    showFieldErrors(fieldErrors, aliases = {}) {
+        Object.entries(fieldErrors || {}).forEach(([field, message]) => {
+            const candidateFields = [field, field.replace(/\./g, '_'), ...(aliases[field] || [])];
+            const errorElement = candidateFields
+                .map((name) => document.getElementById(name + '-error'))
+                .find(Boolean);
+
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+            }
+        });
+    },
+};
+
+/**
  * Token management utilities.
  */
 window.Auth = {
@@ -53,10 +155,57 @@ window.Auth = {
         localStorage.removeItem('auth_user');
         sessionStorage.clear();
     },
+
+    /**
+     * Bearer token rejected by API (expired or revoked). Clears client state and redirects shoppers to login.
+     */
+    handleSessionExpired() {
+        if (!localStorage.getItem('auth_token')) {
+            return;
+        }
+        this.clearAll();
+        window.dispatchEvent(new CustomEvent('sz:auth:expired'));
+        const path = window.location.pathname || '';
+        if (!/^\/(login|register)(\/)?$/i.test(path)) {
+            window.location.href = '/login';
+        }
+    },
 };
 
 // Apply token on page load if it exists
 window.Auth.applyToken();
+
+window.axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const status = error.response?.status;
+        const url = String(error.config?.url || '');
+
+        if (status !== 401) {
+            return Promise.reject(error);
+        }
+
+        const isAuthAttempt =
+            url.includes('/api/auth/login') ||
+            url.includes('/api/auth/register');
+
+        if (isAuthAttempt) {
+            return Promise.reject(error);
+        }
+
+        if (window.Auth?.getToken?.()) {
+            window.Auth.handleSessionExpired();
+        }
+
+        return Promise.reject(error);
+    },
+);
+
+window.addEventListener('sz:auth:expired', () => {
+    if (typeof window.updateNavbar === 'function') {
+        window.updateNavbar();
+    }
+});
 
 /**
  * Echo / Reverb: only load when explicitly enabled so no WebSocket runs with just "php artisan serve".

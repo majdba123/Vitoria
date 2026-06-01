@@ -27,7 +27,9 @@ class StoreUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'phone_number' => ['required', 'string', 'max:20', 'unique:users,phone_number'],
             'national_id' => ['required', 'string', 'max:50', 'unique:users,national_id'],
-            'email' => ['nullable', 'string', 'email', 'max:255', 'unique:users,email'],
+            'age' => ['required', 'integer', 'min:1', 'max:120'],
+            'membership_number' => ['required', 'string', 'max:100', 'unique:users,membership_number'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6'],
             'type' => ['sometimes', 'integer', Rule::in([User::TYPE_USER, User::TYPE_ADMIN, User::TYPE_VENDOR])],
         ];
@@ -43,6 +45,7 @@ class StoreUserRequest extends FormRequest
         return [
             'phone_number.unique' => 'This phone number is already registered.',
             'national_id.unique' => 'This national ID is already registered.',
+            'membership_number.unique' => 'This membership number is already registered.',
             'email.unique' => 'This email is already registered.',
         ];
     }

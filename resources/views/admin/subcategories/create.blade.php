@@ -27,6 +27,12 @@
                         <p class="mt-1 text-xs text-gray-500">Accepted formats: JPEG, PNG, GIF, WebP. Max size: 2MB</p>
                     </div>
 
+                    <div>
+                        <label for="icon_class" class="form-label">Font Awesome icon classes</label>
+                        <input type="text" id="icon_class" name="icon_class" class="form-input" placeholder="e.g. fa-solid fa-leaf" maxlength="191">
+                        <p class="mt-1 text-xs text-gray-500">Optional. Menus use this when set instead of the uploaded image.</p>
+                    </div>
+
                     <div class="flex gap-2 pt-4">
                         <a href="{{ route('admin.subcategories.index') }}" class="btn-secondary btn-sm flex-1">Cancel</a>
                         <button type="submit" class="btn-primary btn-sm flex-1">Create Subcategory</button>

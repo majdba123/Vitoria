@@ -152,20 +152,27 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initial load
     loadCategories();
 
+    function categoryListThumb(category) {
+        if (category.icon_class) {
+            return `<div class="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-50 ring-1 ring-gray-200"><i class="${esc(category.icon_class)} text-2xl text-brand-600" aria-hidden="true"></i></div>`;
+        }
+        if (category.icon || category.logo) {
+            return `<img src="/storage/${esc(category.icon || category.logo)}" alt="${esc(category.name)}" class="h-16 w-16 rounded-lg object-cover">`;
+        }
+        return `
+                            <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-100">
+                                <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                            </div>`;
+    }
+
     function renderCategories(categories) {
         grid.innerHTML = categories.map(category => `
             <div class="card">
                 <div class="card-body">
                     <div class="flex items-start gap-4">
-                        ${category.logo ? `
-                            <img src="/storage/${category.logo}" alt="${esc(category.name)}" class="h-16 w-16 rounded-lg object-cover">
-                        ` : `
-                            <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-100">
-                                <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                            </div>
-                        `}
+                        ${categoryListThumb(category)}
                         <div class="flex-1">
                             <h3 class="text-base font-semibold text-gray-900">${esc(category.name)}</h3>
                             <p class="mt-1 text-sm text-gray-500">${category.subcategories?.length || 0} subcategories</p>

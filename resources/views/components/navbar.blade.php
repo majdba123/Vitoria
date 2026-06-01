@@ -42,20 +42,20 @@
                 {{-- Language Switcher --}}
                 <x-language-switcher />
                 {{-- Dark Mode Toggle --}}
-                <button id="theme-toggle" class="relative flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200" title="Toggle theme">
+                <button id="theme-toggle" class="relative flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200" title="{{ __('nav.toggle_theme_aria') }}">
                     <svg id="icon-sun" class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
                     <svg id="icon-moon" class="h-5 w-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
                 </button>
 
                 {{-- Cart --}}
-                <button id="nav-cart" class="relative flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200" onclick="window.showCart && window.showCart()" title="Cart">
+                <button id="nav-cart" class="relative flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200" onclick="window.showCart && window.showCart()" title="{{ __('nav.cart') }}">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
                     <span id="cart-badge" class="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold leading-none text-white shadow hidden"></span>
                 </button>
 
                 {{-- Notifications (authenticated only). data-context: customer | vendor | admin for notification links. --}}
                 <div id="nav-notifications-wrap" class="relative hidden" data-context="customer">
-                    <button id="nav-notifications-btn" type="button" class="relative flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200" title="Notifications">
+                    <button id="nav-notifications-btn" type="button" class="relative flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200" title="{{ __('nav.notifications_aria') }}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
                         <span id="notification-badge" class="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold leading-none text-white shadow hidden">0</span>
                     </button>
@@ -196,6 +196,32 @@
 </header>
 
 <script>
+function _esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+function categoryThumbHtml(c, mobile) {
+    if (c.icon_class) {
+        const sz = mobile ? 'text-sm' : 'text-[15px]';
+        return '<i class="' + _esc(c.icon_class) + ' ' + sz + ' leading-none text-brand-600 dark:text-brand-400" aria-hidden="true"></i>';
+    }
+    if (c.icon || c.logo) {
+        const imgCls = mobile ? 'h-full w-full rounded-lg object-cover' : 'h-full w-full object-cover';
+        return '<img src="/storage/' + _esc(c.icon || c.logo) + '" class="' + imgCls + '" alt="">';
+    }
+    if (mobile) {
+        return '<svg class="h-3.5 w-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581"/></svg>';
+    }
+    return '<svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/></svg>';
+}
+function subThumbHtml(s) {
+    if (s.icon_class) {
+        return '<i class="' + _esc(s.icon_class) + ' text-lg leading-none text-brand-600 dark:text-brand-400" aria-hidden="true"></i>';
+    }
+    if (s.image) {
+        return '<img src="/storage/' + _esc(s.image) + '" class="h-full w-full object-cover" alt="">';
+    }
+    return '<svg class="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a2.25 2.25 0 002.25-2.25V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"/></svg>';
+}
+window.szCategoryThumbHtml = categoryThumbHtml;
+window.szSubThumbHtml = subThumbHtml;
 @php
     $navStrings = [
         'loading' => __('common.loading'),
@@ -203,6 +229,12 @@
         'no_subcategories' => __('common.no_subcategories'),
         'view_all' => __('common.view_all'),
         'failed_notifications' => __('common.failed_notifications'),
+        'page' => __('nav.page'),
+        'of' => __('nav.of'),
+        'mark_notification_read' => __('nav.mark_notification_read'),
+        'sign_in_again' => __('common.please_sign_in_again'),
+        'failed_show_notifications' => __('nav.failed_show_notifications'),
+        'user_fallback' => __('common.user_fallback'),
     ];
     $navRoleLabels = [
         0 => __('nav.customer'),
@@ -216,6 +248,7 @@ const NAV_ROLE_MAP = @json($navRoleLabels);
 const NAV_ROLE_DEFAULT = @json($navDefaultRole);
 document.addEventListener('DOMContentLoaded', function () {
     updateNavbar();
+    refreshSessionUserFromApi();
     loadNavCategories();
     initMegaMenu();
     initThemeToggle();
@@ -274,7 +307,7 @@ function updateNavbar() {
         el('mobile-auth-footer')?.classList.remove('hidden');
         el('mobile-profile')?.classList.remove('hidden');
 
-        const name = user.name || 'User';
+        const name = user.name || (window.__navStrings && window.__navStrings.user_fallback ? window.__navStrings.user_fallback : '');
         const email = user.email || '';
         const initial = name.charAt(0).toUpperCase();
         const avatarUrl = user.avatar_url || null;
@@ -338,6 +371,8 @@ function updateNavbar() {
     }
     updateCartBadge();
 }
+
+window.updateNavbar = updateNavbar;
 
 function updateNotificationBadge() {
     if (!window.Auth?.isAuthenticated()) return;
@@ -428,7 +463,7 @@ function loadNotificationDropdown(page) {
                     '<div class="min-w-0 flex-1 py-3.5 px-4 ' + (isUnread ? 'pl-3.5' : 'pl-4') + '">' +
                     '<p class="text-[14px] leading-relaxed text-gray-800 dark:text-gray-100">' + body + '</p>' +
                     '<p class="mt-1.5 text-[11px] text-gray-400 dark:text-gray-500">' + time + (sender ? ' · ' + sender : '') + '</p>' +
-                    (isUnread ? '<button type="button" class="notification-mark-one mt-2 text-[11px] font-medium text-brand-600 hover:underline dark:text-brand-400" data-id="' + id + '">تحديد كمقروء</button>' : '') +
+                    (isUnread ? '<button type="button" class="notification-mark-one mt-2 text-[11px] font-medium text-brand-600 hover:underline dark:text-brand-400" data-id="' + id + '">' + esc((window.__navStrings && window.__navStrings.mark_notification_read) ? window.__navStrings.mark_notification_read : '') + '</button>' : '') +
                     '</div></div>';
             }).join('');
             listEl.querySelectorAll('[data-notification-id][data-href]').forEach(function (row) {
@@ -442,7 +477,9 @@ function loadNotificationDropdown(page) {
                 });
             });
             if (lastPage > 1 && paginationEl && pageInfoEl && prevBtn && nextBtn) {
-                pageInfoEl.textContent = 'Page ' + currentPage + ' of ' + lastPage + (total ? ' (' + total + ')' : '');
+                const P = (window.__navStrings && window.__navStrings.page) ? window.__navStrings.page : '';
+                const O = (window.__navStrings && window.__navStrings.of) ? window.__navStrings.of : '';
+                pageInfoEl.textContent = P + ' ' + currentPage + ' ' + O + ' ' + lastPage + (total ? ' (' + total + ')' : '');
                 prevBtn.disabled = currentPage <= 1;
                 nextBtn.disabled = currentPage >= lastPage;
                 prevBtn.onclick = function () { if (currentPage > 1) loadNotificationDropdown(currentPage - 1); };
@@ -474,10 +511,12 @@ function loadNotificationDropdown(page) {
                 });
             });
         } catch (e) {
-            listEl.innerHTML = '<p class="px-4 py-6 text-center text-sm text-red-500">Failed to show notifications.</p>';
+            const fsn = (window.__navStrings && window.__navStrings.failed_show_notifications) ? window.__navStrings.failed_show_notifications : '';
+            listEl.innerHTML = '<p class="px-4 py-6 text-center text-sm text-red-500">' + (typeof _esc !== 'undefined' ? _esc(fsn) : fsn) + '</p>';
         }
     }).catch(function (err) {
-        const msg = err.response?.status === 401 ? 'Please sign in again.' : (err.response?.data?.message || (window.__navStrings && window.__navStrings.failed_notifications ? window.__navStrings.failed_notifications : 'Failed to load notifications.'));
+        const msg = err.response?.status === 401            ? ((window.__navStrings && window.__navStrings.sign_in_again) ? window.__navStrings.sign_in_again : '')
+            : (err.response?.data?.message || (window.__navStrings && window.__navStrings.failed_notifications ? window.__navStrings.failed_notifications : ''));
         listEl.innerHTML = '<p class="px-4 py-6 text-center text-sm text-red-500">' + (typeof _esc !== 'undefined' ? _esc(msg) : msg) + '</p>';
     });
 }
@@ -520,6 +559,22 @@ function initNotificationDropdown() {
     });
 }
 
+async function refreshSessionUserFromApi() {
+    if (!window.Auth || !window.Auth.getToken()) {
+        return;
+    }
+    try {
+        const res = await window.axios.get('/api/user');
+        const user = res.data.data || res.data;
+        if (user && typeof user === 'object') {
+            window.Auth.setUser(user);
+            updateNavbar();
+        }
+    } catch (e) {
+        // 401/403: axios interceptor clears session and may redirect
+    }
+}
+
 async function fetchAndSetUser() {
     try {
         const res = await window.axios.get('/api/user');
@@ -527,7 +582,7 @@ async function fetchAndSetUser() {
         window.Auth.setUser(user);
         updateNavbar();
     } catch (e) {
-        window.Auth.removeToken();
+        // 401: axios interceptor clears session and redirects when a token was sent
         updateNavbar();
     }
 }
@@ -541,13 +596,17 @@ async function loadNavCategories() {
         const list = document.getElementById('mega-cats');
         const mobileCats = document.getElementById('mobile-cats');
 
-        if (cats.length === 0) { list.innerHTML = '<p class="px-5 py-8 text-center text-xs text-gray-400">No categories</p>'; return; }
+        if (cats.length === 0) {
+            const nc = (window.__navStrings && window.__navStrings.no_categories) ? window.__navStrings.no_categories : '';
+            list.innerHTML = '<p class="px-5 py-8 text-center text-xs text-gray-400">' + _esc(nc) + '</p>';
+            return;
+        }
 
         list.innerHTML = cats.map(c => `
             <a href="/categories/${c.id}" data-cat-id="${c.id}" class="mega-cat-btn group flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-all hover:bg-white dark:hover:bg-gray-800"
                     onmouseenter="showNavSubs(${c.id}, this)">
                 <div class="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 ring-1 ring-gray-200/50 dark:bg-gray-800 dark:ring-gray-700">
-                    ${c.logo ? `<img src="/storage/${_esc(c.logo)}" class="h-full w-full object-cover" alt="">` : `<svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/></svg>`}
+                    ${categoryThumbHtml(c, false)}
                 </div>
                 <span class="flex-1 truncate font-medium text-gray-700 group-hover:text-brand-600 dark:text-gray-300 dark:group-hover:text-brand-400">${_esc(c.name)}</span>
                 <span class="text-[10px] font-medium text-gray-400">${c.subcategories ? c.subcategories.length : 0}</span>
@@ -561,7 +620,7 @@ async function loadNavCategories() {
             <div>
                 <button onclick="this.nextElementSibling.classList.toggle('hidden');this.querySelector('.mob-chev').classList.toggle('rotate-90')" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
                     <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
-                        ${c.logo ? `<img src="/storage/${_esc(c.logo)}" class="h-full w-full rounded-lg object-cover" alt="">` : `<svg class="h-3.5 w-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581"/></svg>`}
+                        ${categoryThumbHtml(c, true)}
                     </div>
                     <span class="flex-1">${_esc(c.name)}</span>
                     <svg class="mob-chev h-3.5 w-3.5 text-gray-400 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
@@ -582,7 +641,8 @@ window.showNavSubs = function(catId, btn) {
     const cat = (window._navCats || []).find(c => c.id === catId);
     const panel = document.getElementById('mega-subs');
     if (!cat || !cat.subcategories || cat.subcategories.length === 0) {
-        panel.innerHTML = '<div class="flex h-full items-center justify-center"><p class="text-sm text-gray-400">No subcategories</p></div>';
+        const ns = (window.__navStrings && window.__navStrings.no_subcategories) ? window.__navStrings.no_subcategories : '';
+        panel.innerHTML = '<div class="flex h-full items-center justify-center"><p class="text-sm text-gray-400">' + _esc(ns) + '</p></div>';
         return;
     }
     panel.innerHTML = `
@@ -594,15 +654,13 @@ window.showNavSubs = function(catId, btn) {
             ${cat.subcategories.map(s => `
                 <a href="/subcategories/${s.id}" class="group flex items-center gap-3 rounded-xl border border-transparent p-3 transition-all hover:border-gray-200 hover:bg-gray-50 dark:hover:border-gray-700 dark:hover:bg-gray-800">
                     <div class="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 ring-1 ring-gray-200/50 dark:bg-gray-800 dark:ring-gray-700">
-                        ${s.image ? `<img src="/storage/${_esc(s.image)}" class="h-full w-full object-cover" alt="">` : `<svg class="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a2.25 2.25 0 002.25-2.25V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"/></svg>`}
+                        ${subThumbHtml(s)}
                     </div>
                     <span class="text-sm font-medium text-gray-600 group-hover:text-brand-600 dark:text-gray-400 dark:group-hover:text-brand-400">${_esc(s.name)}</span>
                 </a>
             `).join('')}
         </div>`;
 };
-
-function _esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
 
 function updateCartBadge(animate) {
     try {

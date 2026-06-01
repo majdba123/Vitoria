@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('auth.sign_in') . ' — SyriaZone')
+@section('title', __('auth.sign_in') . ' ' . __('site.meta_title_separator') . ' ' . __('site.meta_title_suffix'))
 
 @section('content')
 <div class="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
@@ -23,7 +23,7 @@
                     name="phone_number"
                     label="{{ __('auth.phone_number') }}"
                     type="tel"
-                    placeholder="09XXXXXXXX"
+                    placeholder="{{ __('auth.placeholder_phone') }}"
                     :required="true"
                     autocomplete="tel"
                 />
@@ -32,7 +32,7 @@
                     name="password"
                     label="{{ __('auth.password') }}"
                     type="password"
-                    placeholder="Enter your password"
+                    placeholder="{{ __('auth.placeholder_password') }}"
                     :required="true"
                     autocomplete="current-password"
                 />
@@ -58,21 +58,27 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Clear any remaining auth data when landing on login page
-    try {
-        if (window.Auth) {
-            if (window.Auth.clearAll) {
-                window.Auth.clearAll();
-            } else if (window.Auth.removeToken) {
-                window.Auth.removeToken();
+document.addEventListener('DOMContentLoaded', async function () {
+    if (window.Auth && window.Auth.getToken && window.Auth.getToken()) {
+        try {
+            const res = await window.axios.get('/api/user');
+            const user = res.data.data || res.data;
+            if (user && typeof user === 'object') {
+                window.Auth.setUser(user);
+                const t = user.type;
+                if (t === 1) {
+                    window.location.href = '{{ url("/admin/dashboard") }}';
+                } else if (t === 2) {
+                    window.location.href = '{{ route("vendor.dashboard") }}';
+                } else {
+                    window.location.href = '{{ url("/") }}';
+                }
+
+                return;
             }
+        } catch (e) {
+            // Invalid or expired token: stay on login (interceptor clears client session)
         }
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('auth_user');
-        delete window.axios.defaults.headers.common['Authorization'];
-    } catch (e) {
-        console.error('Error clearing auth data:', e);
     }
 
     const form = document.getElementById('login-form');
@@ -102,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const userType = response.data.data.user?.type;
 
-            showAlert('login-success', 'Signed in successfully! Redirecting...');
+            showAlert('login-success', @json(__('auth.signed_in_success')));
 
             setTimeout(() => {
                 if (userType === 1) {
@@ -149,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         } else {
-            showAlert('login-alert', error.response?.data?.message || 'An unexpected error occurred.');
+            showAlert('login-alert', error.response?.data?.message || @json(__('auth.js_unexpected_error')));
         }
     }
 });

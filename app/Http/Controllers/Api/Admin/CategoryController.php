@@ -25,16 +25,16 @@ class CategoryController extends Controller
             try {
                 $categories = Cache::tags(['categories'])->remember($cacheKey, 1800, function () {
                     return Category::query()
-                        ->with('subcategories:id,name,image,category_id')
+                        ->with('subcategories:id,name,image,category_id,icon_class')
                         ->latest()
                         ->get();
                 });
             } catch (\Exception $e) {
-                $categories = Category::query()->with('subcategories:id,name,image,category_id')->latest()->get();
+                $categories = Category::query()->with('subcategories:id,name,image,category_id,icon_class')->latest()->get();
             }
         } else {
             $categories = Category::query()
-                ->with('subcategories:id,name,image,category_id')
+                ->with('subcategories:id,name,image,category_id,icon_class')
                 ->where('name', 'like', '%'.$search.'%')
                 ->latest()
                 ->get();
@@ -55,12 +55,12 @@ class CategoryController extends Controller
 
         try {
             $data = Cache::tags(['categories'])->remember($cacheKey, 1800, function () use ($category) {
-                $category->load('subcategories:id,name,image,category_id');
+                $category->load('subcategories:id,name,image,category_id,icon_class');
 
                 return $category;
             });
         } catch (\Exception $e) {
-            $category->load('subcategories:id,name,image,category_id');
+            $category->load('subcategories:id,name,image,category_id,icon_class');
             $data = $category;
         }
 
@@ -76,6 +76,10 @@ class CategoryController extends Controller
 
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('categories', 'public');
+        }
+
+        if ($request->hasFile('icon')) {
+            $data['icon'] = $request->file('icon')->store('categories', 'public');
         }
 
         $category = Category::create($data);
@@ -101,6 +105,15 @@ class CategoryController extends Controller
             unset($data['logo']);
         }
 
+        if ($request->hasFile('icon')) {
+            if ($category->icon) {
+                Storage::disk('public')->delete($category->icon);
+            }
+            $data['icon'] = $request->file('icon')->store('categories', 'public');
+        } else {
+            unset($data['icon']);
+        }
+
         $category->update($data);
         $category->load('subcategories');
         $this->flushCategoryCache();
@@ -115,6 +128,10 @@ class CategoryController extends Controller
     {
         if ($category->logo) {
             Storage::disk('public')->delete($category->logo);
+        }
+
+        if ($category->icon) {
+            Storage::disk('public')->delete($category->icon);
         }
 
         $category->delete();

@@ -11,6 +11,9 @@
         <span class="text-gray-900">Details</span>
     </nav>
 
+    <x-alert type="error" id="vendor-show-alert" />
+    <x-alert type="success" id="vendor-show-success" />
+
     <div id="show-loading" class="py-16 text-center">
         <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500"></div>
         <p class="mt-3 text-sm text-gray-500">Loading vendor...</p>
@@ -42,10 +45,16 @@
                         <div class="mt-2" id="vendor-status-badge"></div>
                     </div>
                     {{-- Actions --}}
-                    <a id="edit-link" href="#" class="inline-flex items-center gap-1.5 rounded-lg bg-white/15 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/25">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
-                        Edit
-                    </a>
+                    <div class="flex flex-col gap-2 sm:flex-row">
+                        <button id="approve-btn" type="button" class="hidden inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-600">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                            Approve
+                        </button>
+                        <a id="edit-link" href="#" class="inline-flex items-center gap-1.5 rounded-lg bg-white/15 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/25">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+                            Edit
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -78,6 +87,10 @@
                         <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Joined</p>
                         <p class="mt-1 text-sm font-medium text-gray-900" id="vendor-created">—</p>
                     </div>
+                    <div>
+                        <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Registration Source</p>
+                        <p class="mt-1 text-sm font-medium text-gray-900" id="vendor-source">—</p>
+                    </div>
                 </div>
             </div>
 
@@ -92,8 +105,20 @@
                         <p class="mt-1 text-sm font-semibold text-gray-900" id="vendor-store">—</p>
                     </div>
                     <div>
+                        <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Selected Category</p>
+                        <div class="mt-1" id="vendor-primary-category">—</div>
+                    </div>
+                    <div>
                         <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Address</p>
                         <p class="mt-1 text-sm text-gray-700" id="vendor-address">—</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium uppercase tracking-wider text-gray-400">City</p>
+                        <p class="mt-1 text-sm text-gray-700" id="vendor-city">—</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Map Location</p>
+                        <div class="mt-1 text-sm text-gray-700" id="vendor-location">—</div>
                     </div>
                     <div>
                         <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Description</p>
@@ -114,6 +139,16 @@
                 </div>
             </div>
         </div>
+
+        {{-- Commercial Register --}}
+        <div class="card">
+            <div class="card-body border-b border-gray-100">
+                <h3 class="text-base font-bold text-gray-900">Commercial Registration</h3>
+            </div>
+            <div class="card-body">
+                <div id="commercial-register-content" class="text-sm text-gray-500">No document uploaded.</div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
@@ -129,9 +164,13 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         document.getElementById('vendor-store-name').textContent = v.store_name || '—';
         document.getElementById('vendor-store').textContent = v.store_name || '—';
+        document.getElementById('vendor-primary-category').innerHTML = renderCategoryBadges(v);
         document.getElementById('vendor-address').textContent = v.address || 'No address provided.';
+        document.getElementById('vendor-city').textContent = v.city?.name || 'No city provided.';
+        document.getElementById('vendor-location').innerHTML = renderLocation(v);
         document.getElementById('vendor-description').textContent = v.description || 'No description provided.';
         document.getElementById('vendor-created').textContent = v.created_at ? new Date(v.created_at).toLocaleDateString() : '—';
+        document.getElementById('vendor-source').textContent = v.registration_source === 'self' ? 'Self registration' : 'Admin';
 
         const ownerName = v.user?.name || '—';
         document.getElementById('vendor-owner').textContent = ownerName;
@@ -152,12 +191,21 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
 
         // Status
-        const statusBadge = v.is_active
-            ? '<span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-300"><span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>Active</span>'
-            : '<span class="inline-flex items-center gap-1.5 rounded-full bg-red-400/20 px-3 py-1 text-xs font-semibold text-red-300"><span class="h-1.5 w-1.5 rounded-full bg-red-400"></span>Inactive</span>';
-        document.getElementById('vendor-status-badge').innerHTML = statusBadge;
+        document.getElementById('vendor-status-badge').innerHTML = statusBadge(v);
 
         document.getElementById('edit-link').href = '/admin/vendors/' + vendorId + '/edit';
+        if (v.status === 'pending') {
+            document.getElementById('approve-btn').classList.remove('hidden');
+        }
+
+        if (v.commercial_register_url) {
+            document.getElementById('commercial-register-content').innerHTML = `
+                <a href="${v.commercial_register_url}" target="_blank" rel="noopener" class="btn-secondary btn-sm inline-flex">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5A3.375 3.375 0 0010.125 2.25H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-6.75 9h13.5A2.25 2.25 0 0021 18V9.75a2.25 2.25 0 00-.659-1.591l-5.5-5.5A2.25 2.25 0 0013.25 2H5.25A2.25 2.25 0 003 4.25v13.5A2.25 2.25 0 005.25 20.25z"/></svg>
+                    View / Download document
+                </a>
+            `;
+        }
 
         // Categories
         const catContainer = document.getElementById('vendor-categories');
@@ -172,7 +220,74 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('show-loading').classList.add('hidden');
         document.getElementById('show-content').classList.remove('hidden');
     } catch (e) {
-        document.getElementById('show-loading').innerHTML = '<p class="text-red-500">Failed to load vendor.</p>';
+        document.getElementById('show-loading').innerHTML = `<p class="text-red-500">${esc(parseBackendError(e, 'Failed to load vendor.'))}</p>`;
+    }
+
+    document.getElementById('approve-btn').addEventListener('click', async function () {
+        const button = this;
+        button.disabled = true;
+        try {
+            const response = await window.axios.patch('/api/admin/vendors/' + vendorId + '/approve');
+            const vendor = response.data.data;
+            document.getElementById('vendor-status-badge').innerHTML = statusBadge(vendor);
+            button.classList.add('hidden');
+            showAlert('vendor-show-success', response.data.message || 'Vendor approved successfully.');
+        } catch (e) {
+            button.disabled = false;
+            showAlert('vendor-show-alert', parseBackendError(e, 'Failed to approve vendor.'));
+        }
+    });
+
+    function renderLocation(v) {
+        if (!v.latitude || !v.longitude) {
+            return 'No map location provided.';
+        }
+
+        const lat = Number(v.latitude);
+        const lng = Number(v.longitude);
+        const label = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+
+        return `<a href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}" target="_blank" rel="noopener" class="font-medium text-brand-600 hover:text-brand-500">${label}</a>`;
+    }
+
+    function renderCategoryBadges(v) {
+        if (!v.categories || !v.categories.length) {
+            return '<span class="text-sm text-gray-400">Not assigned</span>';
+        }
+
+        return v.categories.map(category =>
+            `<span class="badge badge-info">${esc(category.name)}</span>`
+        ).join(' ');
+    }
+
+    function showAlert(id, message) {
+        const box = document.getElementById(id);
+        const messageElement = document.getElementById(id + '-message');
+        if (!box || !messageElement) {
+            return;
+        }
+
+        messageElement.textContent = message;
+        box.classList.remove('hidden');
+        setTimeout(() => box.classList.add('hidden'), 4000);
+    }
+
+    function parseBackendError(error, fallback) {
+        if (window.ApiErrors?.parse) {
+            return window.ApiErrors.parse(error).generalMessage || fallback;
+        }
+
+        return error.response?.data?.message || fallback;
+    }
+
+    function statusBadge(v) {
+        if (v.status === 'pending') {
+            return '<span class="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-200"><span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>Pending</span>';
+        }
+
+        return v.is_active
+            ? '<span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-300"><span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>Active</span>'
+            : '<span class="inline-flex items-center gap-1.5 rounded-full bg-red-400/20 px-3 py-1 text-xs font-semibold text-red-300"><span class="h-1.5 w-1.5 rounded-full bg-red-400"></span>Inactive</span>';
     }
 
     function esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }

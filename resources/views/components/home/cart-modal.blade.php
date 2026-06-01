@@ -28,17 +28,17 @@
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
                         <div class="min-w-0 flex-1">
-                            <h4 class="text-sm font-black text-emerald-800 dark:text-emerald-300">Order Placed Successfully</h4>
-                            <p id="cart-order-success-message" class="mt-1 text-xs font-medium leading-relaxed text-emerald-700 dark:text-emerald-300">Your order has been created.</p>
-                            <p id="cart-order-success-note" class="mt-1 text-[11px] text-emerald-700/80 dark:text-emerald-300/80">You can review full details from your profile order history.</p>
+                            <h4 class="text-sm font-black text-emerald-800 dark:text-emerald-300">{{ __('cart.order_success_title') }}</h4>
+                            <p id="cart-order-success-message" class="mt-1 text-xs font-medium leading-relaxed text-emerald-700 dark:text-emerald-300">{{ __('cart.order_success_message') }}</p>
+                            <p id="cart-order-success-note" class="mt-1 text-[11px] text-emerald-700/80 dark:text-emerald-300/80">{{ __('cart.order_success_note') }}</p>
                         </div>
                     </div>
                     <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
                         <button type="button" id="cart-order-success-close" class="rounded-xl border border-emerald-300 bg-white px-3 py-2 text-xs font-bold text-emerald-700 transition-colors hover:bg-emerald-50 dark:border-emerald-500/30 dark:bg-gray-900 dark:text-emerald-300 dark:hover:bg-emerald-500/10">
-                            Continue Shopping
+                            {{ __('cart.continue_shopping') }}
                         </button>
                         <a href="/profile" class="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-emerald-700">
-                            View Orders
+                            {{ __('cart.view_orders') }}
                         </a>
                     </div>
                 </div>
@@ -53,10 +53,10 @@
                     class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 outline-none transition-colors focus:border-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white">
             </div>
             <p class="mb-3 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
-                Payment way: <span class="font-bold text-gray-900 dark:text-white">Cash only</span>
+                {{ __('cart.payment_way') }} <span class="font-bold text-gray-900 dark:text-white">{{ __('cart.cash_only') }}</span>
             </p>
             <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Subtotal</span>
+                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('cart.subtotal') }}</span>
                 <span id="cart-total" class="text-xl font-black text-gray-900 dark:text-white">0.00 <span class="text-sm font-normal text-gray-400">SYP</span></span>
             </div>
             <button id="checkout-btn" class="mt-4 hidden w-full rounded-2xl bg-brand-500 py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-500/20 transition-all hover:bg-brand-600 hover:shadow-xl active:scale-[.98]">{{ __('cart.proceed_checkout') }}</button>

@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\User;
+use App\Models\Vendor;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,7 +33,9 @@ class EnsureUserIsVendor
         $vendor = $user->vendor;
 
         if (! $vendor || ! $vendor->is_active) {
-            $message = __('Your vendor account is inactive. Please contact support.');
+            $message = $vendor?->status === Vendor::STATUS_PENDING
+                ? __('Your vendor account is pending admin approval.')
+                : __('Your vendor account is inactive. Please contact support.');
 
             if ($request->expectsJson()) {
                 return response()->json(['message' => $message], 403);

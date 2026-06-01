@@ -120,10 +120,20 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('category-updated').textContent = new Date(category.updated_at).toLocaleString();
             document.getElementById('edit-link').href = `/admin/categories/${category.id}/edit`;
 
-            // Display logo
+            // Display logo + icon
             const logoContainer = document.getElementById('category-logo');
+            const assetParts = [];
+            if (category.icon_class) {
+                assetParts.push(`<div class="text-center"><p class="mb-1 text-xs font-medium text-gray-500">Icon (Font Awesome)</p><div class="mx-auto flex h-28 w-28 items-center justify-center rounded-lg bg-gray-50 ring-1 ring-gray-200"><i class="${esc(category.icon_class)} text-4xl text-brand-600" aria-hidden="true"></i></div><p class="mt-1 max-w-[12rem] break-all text-[10px] text-gray-400">${esc(category.icon_class)}</p></div>`);
+            }
             if (category.logo) {
-                logoContainer.innerHTML = `<img src="/storage/${category.logo}" alt="${esc(category.name)}" class="h-24 w-24 rounded-lg object-cover">`;
+                assetParts.push(`<div class="text-center"><p class="mb-1 text-xs font-medium text-gray-500">Logo</p><img src="/storage/${esc(category.logo)}" alt="${esc(category.name)}" class="mx-auto h-28 w-28 rounded-lg object-cover"></div>`);
+            }
+            if (category.icon) {
+                assetParts.push(`<div class="text-center"><p class="mb-1 text-xs font-medium text-gray-500">Icon</p><img src="/storage/${esc(category.icon)}" alt="" class="mx-auto h-20 w-20 rounded-lg object-cover ring-1 ring-gray-200"></div>`);
+            }
+            if (assetParts.length) {
+                logoContainer.innerHTML = `<div class="flex flex-wrap items-end justify-center gap-8">${assetParts.join('')}</div>`;
             }
 
             // Load subcategories
@@ -165,7 +175,9 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="card">
                 <div class="card-body">
                     <div class="flex items-start gap-4">
-                        ${sub.image ? `
+                        ${sub.icon_class ? `
+                            <div class="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg bg-gray-50 ring-1 ring-gray-200"><i class="${esc(sub.icon_class)} text-2xl text-brand-600" aria-hidden="true"></i></div>
+                        ` : sub.image ? `
                             <img src="/storage/${sub.image}" alt="${esc(sub.name)}" class="h-16 w-16 rounded-lg object-cover flex-shrink-0">
                         ` : `
                             <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-100 flex-shrink-0">

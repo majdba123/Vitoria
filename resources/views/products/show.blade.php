@@ -80,7 +80,7 @@
                                     <span id="product-quantity" class="text-sm font-bold text-gray-900 dark:text-white"></span>
                                 </div>
                                 <div class="rounded-xl border border-gray-100 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-800/50">
-                                    <div class="grid grid-cols-3 gap-2 text-center">
+                                    <div class="grid grid-cols-2 gap-2 text-center">
                                         <div>
                                             <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Category</p>
                                             <p id="product-category" class="mt-0.5 text-xs font-bold text-gray-900 dark:text-white">—</p>
@@ -88,10 +88,6 @@
                                         <div>
                                             <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Subcategory</p>
                                             <p id="product-subcategory" class="mt-0.5 text-xs font-bold text-gray-900 dark:text-white">—</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Commission</p>
-                                            <p id="product-commission" class="mt-0.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">—</p>
                                         </div>
                                     </div>
                                 </div>
@@ -194,7 +190,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         $('product-description').textContent = p.description || 'No description provided.';
         $('product-category').textContent = p.category?.name || '—';
         $('product-subcategory').textContent = p.subcategory?.name || '—';
-        $('product-commission').textContent = p.category?.commission ? parseFloat(p.category.commission).toFixed(2) + '%' : '—';
         $('product-discount-status').textContent = formatDiscountStatus(p.discount_status);
         $('product-discount-value').textContent = p.discount_percentage ? `${parseFloat(p.discount_percentage).toFixed(2)}%` : 'No discount';
         $('product-discount-start').textContent = formatDateOnly(p.discount_starts_at);

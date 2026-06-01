@@ -24,6 +24,8 @@ class UpdateCategoryRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'logo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],
+            'icon' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],
+            'icon_class' => ['nullable', 'string', 'max:191', 'regex:/^fa[a-z0-9\-_\s]+$/i'],
             'commission' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ];
     }

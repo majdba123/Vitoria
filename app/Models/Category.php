@@ -17,6 +17,8 @@ class Category extends Model
     protected $fillable = [
         'name',
         'logo',
+        'icon',
+        'icon_class',
         'commission',
     ];
 

@@ -4,8 +4,8 @@
         <div class="mb-8 flex items-end justify-between">
             <div>
                 <span class="inline-block rounded-full bg-blue-50 px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">Browse</span>
-                <h2 class="mt-3 text-2xl font-black text-gray-900 sm:text-3xl dark:text-white">Popular Subcategories</h2>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Explore specific product types</p>
+                <h2 class="mt-3 text-2xl font-black text-gray-900 sm:text-3xl dark:text-white">Subcategories</h2>
+                <p id="subs-section-desc" class="mt-1 text-sm text-gray-500 dark:text-gray-400">Explore product types in this category</p>
             </div>
             <div class="hidden gap-2 sm:flex">
                 <button onclick="document.getElementById('subs-track').scrollBy({left:-300,behavior:'smooth'})" class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 shadow-sm hover:border-brand-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg></button>

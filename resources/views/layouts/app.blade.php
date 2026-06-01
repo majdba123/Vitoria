@@ -12,6 +12,7 @@
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#030712" media="(prefers-color-scheme: dark)">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     @stack('styles')
     <script>
         (function(){
@@ -23,6 +24,20 @@
     </script>
 </head>
 <body class="min-h-screen bg-white text-gray-900 antialiased transition-colors duration-300 dark:bg-gray-950 dark:text-gray-100">
+    @php
+        $appStrings = [
+            'fav_added' => __('common.added_to_favourites'),
+            'fav_removed' => __('common.removed_from_favourites'),
+            'cart_added' => __('cart.added_to_cart_toast'),
+            'cart_empty_msg' => __('common.your_cart_empty'),
+            'order_created' => __('cart.order_created_fallback'),
+            'checkout_failed' => __('cart.checkout_failed'),
+            'checkout_ok' => __('cart.checkout_success_fallback'),
+            'processing' => __('cart.processing_checkout'),
+            'cart_remove' => __('cart.remove_line'),
+        ];
+    @endphp
+    <script>window.__appStrings = @json($appStrings);</script>
 
     <x-navbar />
 
@@ -139,7 +154,8 @@
                 const isFav = res.data.favourited;
                 if (isFav) window._favIds.add(productId); else window._favIds.delete(productId);
                 document.querySelectorAll('[data-fav-btn="' + productId + '"]').forEach(b => updateFavBtn(b, isFav));
-                favToast(isFav ? 'Added to favourites' : 'Removed from favourites');
+                const S = window.__appStrings || {};
+                favToast(isFav ? (S.fav_added || '') : (S.fav_removed || ''));
             } catch(e) {}
         };
 
@@ -200,7 +216,8 @@
             const checkoutBtn = document.getElementById('checkout-btn');
 
             if (successMessage) {
-                successMessage.textContent = message || 'Your order has been created.';
+                const _os = window.__appStrings || {};
+                successMessage.textContent = message || _os.order_created || '';
             }
             if (successWrap) {
                 successWrap.classList.remove('hidden');
@@ -231,7 +248,8 @@
             window.dispatchEvent(new CustomEvent('cartUpdated'));
             window._refreshCartDisplay&&window._refreshCartDisplay();
             if(typeof window.updateCartBadge==='function')window.updateCartBadge(true);
-            toast('Added to cart!');
+            const _ac = window.__appStrings || {};
+            toast(_ac.cart_added || '');
         };
         window.removeFromCart = function(id){
             let cart=JSON.parse(localStorage.getItem('cart')||'[]').filter(i=>i.id!==id);
@@ -251,19 +269,22 @@
             const cart=JSON.parse(localStorage.getItem('cart')||'[]');
             const items=document.getElementById('cart-items'),empty=document.getElementById('cart-empty'),total=document.getElementById('cart-total'),checkout=document.getElementById('checkout-btn'),count=document.getElementById('cart-item-count');
             if(!items)return;
+            const _rm=(window.__appStrings&&window.__appStrings.cart_remove)?window.__appStrings.cart_remove:'Remove';
             if(!cart.length){items.innerHTML='';empty&&empty.classList.remove('hidden');if(total)total.innerHTML='0.00 <span class="text-sm font-normal text-gray-400">SYP</span>';checkout&&checkout.classList.add('hidden');if(count)count.textContent='0 '+(count.getAttribute('data-items')||'items');return;}
             empty&&empty.classList.add('hidden');checkout&&checkout.classList.remove('hidden');
             const n=cart.reduce((s,i)=>s+i.quantity,0);if(count)count.textContent=n+' '+(n===1?(count.getAttribute('data-item')||'item'):(count.getAttribute('data-items')||'items'));
             let t=0;
-            items.innerHTML=cart.map(item=>{const sub=item.price*item.quantity;t+=sub;return `<div class="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-3 dark:border-gray-800 dark:bg-gray-800/50"><div class="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-800">${item.photo?`<img src="${_esc(item.photo)}" class="h-full w-full object-contain p-1" alt="">`:`<div class="flex h-full items-center justify-center"><svg class="h-5 w-5 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg></div>`}</div><div class="min-w-0 flex-1"><h4 class="truncate text-sm font-bold text-gray-900 dark:text-white">${_esc(item.name)}</h4><p class="text-xs text-gray-500">${item.price.toLocaleString()} SYP</p><p class="text-xs font-bold text-brand-600 dark:text-brand-400">${sub.toLocaleString()} SYP</p></div><div class="flex flex-col items-end gap-2"><div class="flex items-center rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"><button onclick="updateQty(${item.id},${item.quantity-1})" class="flex h-7 w-7 items-center justify-center text-gray-500 hover:text-brand-600"><svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" d="M19.5 12h-15"/></svg></button><span class="w-6 text-center text-xs font-bold dark:text-white">${item.quantity}</span><button onclick="updateQty(${item.id},${item.quantity+1})" class="flex h-7 w-7 items-center justify-center text-gray-500 hover:text-brand-600"><svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></button></div><button onclick="removeFromCart(${item.id})" class="text-[10px] font-semibold text-red-500 hover:text-red-700">Remove</button></div></div>`;}).join('');
+            items.innerHTML=cart.map(item=>{const sub=item.price*item.quantity;t+=sub;return `<div class="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-3 dark:border-gray-800 dark:bg-gray-800/50"><div class="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-800">${item.photo?`<img src="${_esc(item.photo)}" class="h-full w-full object-contain p-1" alt="">`:`<div class="flex h-full items-center justify-center"><svg class="h-5 w-5 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg></div>`}</div><div class="min-w-0 flex-1"><h4 class="truncate text-sm font-bold text-gray-900 dark:text-white">${_esc(item.name)}</h4><p class="text-xs text-gray-500">${item.price.toLocaleString()} SYP</p><p class="text-xs font-bold text-brand-600 dark:text-brand-400">${sub.toLocaleString()} SYP</p></div><div class="flex flex-col items-end gap-2"><div class="flex items-center rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"><button onclick="updateQty(${item.id},${item.quantity-1})" class="flex h-7 w-7 items-center justify-center text-gray-500 hover:text-brand-600"><svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" d="M19.5 12h-15"/></svg></button><span class="w-6 text-center text-xs font-bold dark:text-white">${item.quantity}</span><button onclick="updateQty(${item.id},${item.quantity+1})" class="flex h-7 w-7 items-center justify-center text-gray-500 hover:text-brand-600"><svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></button></div><button onclick="removeFromCart(${item.id})" class="text-[10px] font-semibold text-red-500 hover:text-red-700">${_esc(_rm)}</button></div></div>`;}).join('');
             if(total)total.innerHTML=t.toLocaleString()+' <span class="text-sm font-normal text-gray-400">SYP</span>';
         };
 
         window.checkoutCart = async function(){
+            const _S = window.__appStrings || {};
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
             if (!cart.length) {
-                showCartBackendMessage('Your cart is empty.', 'error');
-                toast('Your cart is empty.');
+                const emptyMsg = _S.cart_empty_msg || '';
+                showCartBackendMessage(emptyMsg, 'error');
+                toast(emptyMsg);
                 return;
             }
 
@@ -277,7 +298,7 @@
 
             if (checkoutBtn) {
                 checkoutBtn.disabled = true;
-                checkoutBtn.innerHTML = 'Processing...';
+                checkoutBtn.innerHTML = _S.processing || '';
             }
 
             try {
@@ -293,7 +314,7 @@
                 };
 
                 const response = await window.axios.post('/api/orders/checkout', payload);
-                const successMessage = response.data?.message || 'Checkout completed successfully.';
+                const successMessage = response.data?.message || _S.checkout_ok || '';
                 showCartBackendMessage(successMessage, 'success');
                 localStorage.removeItem('cart');
                 if (couponInput) couponInput.value = '';
@@ -307,7 +328,7 @@
                 const firstValidation = backendErrors
                     ? Object.values(backendErrors).flat().find(Boolean)
                     : null;
-                const message = firstValidation || backendMessage || 'Checkout failed. Please try again.';
+                const message = firstValidation || backendMessage || _S.checkout_failed || '';
                 showCartBackendMessage(message, 'error');
                 toast(message);
             } finally {

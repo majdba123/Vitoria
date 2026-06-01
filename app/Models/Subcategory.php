@@ -18,6 +18,7 @@ class Subcategory extends Model
         'category_id',
         'name',
         'image',
+        'icon_class',
     ];
 
     /**
