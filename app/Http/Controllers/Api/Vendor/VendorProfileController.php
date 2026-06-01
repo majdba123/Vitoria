@@ -32,6 +32,8 @@ class VendorProfileController extends Controller
                 'vendor' => $vendor ? [
                     'id' => $vendor->id,
                     'store_name' => $vendor->store_name,
+                    'business_type' => $vendor->business_type,
+                    'business_type_label' => Vendor::businessTypeLabels()[$vendor->business_type] ?? $vendor->business_type,
                     'description' => $vendor->description,
                     'address' => $vendor->address,
                     'logo' => $vendor->logo,
@@ -40,6 +42,8 @@ class VendorProfileController extends Controller
                     'categories' => $vendor->categories->map(fn ($c) => [
                         'id' => $c->id,
                         'name' => $c->name,
+                        'type' => $c->type,
+                        'type_label' => \App\Models\Category::typeLabels()[$c->type] ?? $c->type,
                         'commission' => $c->commission,
                     ]),
                     'created_at' => $vendor->created_at,
@@ -117,6 +121,8 @@ class VendorProfileController extends Controller
                     'vendor' => $vendor ? [
                         'id' => $vendor->id,
                         'store_name' => $vendor->store_name,
+                        'business_type' => $vendor->business_type,
+                        'business_type_label' => Vendor::businessTypeLabels()[$vendor->business_type] ?? $vendor->business_type,
                         'description' => $vendor->description,
                         'address' => $vendor->address,
                         'logo' => $vendor->logo,
@@ -125,6 +131,8 @@ class VendorProfileController extends Controller
                         'categories' => $vendor->categories->map(fn ($c) => [
                             'id' => $c->id,
                             'name' => $c->name,
+                            'type' => $c->type,
+                            'type_label' => \App\Models\Category::typeLabels()[$c->type] ?? $c->type,
                             'commission' => $c->commission,
                         ]),
                         'created_at' => $vendor->created_at,

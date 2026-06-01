@@ -21,6 +21,11 @@
         <div class="card-body">
             <div class="flex gap-2">
                 <input type="text" id="search-input" placeholder="Search categories by name..." class="form-input flex-1">
+                <select id="type-filter" class="form-select max-w-48">
+                    <option value="">All types</option>
+                    <option value="agriculture">Agriculture</option>
+                    <option value="veterinary">Veterinary</option>
+                </select>
                 <button id="search-btn" class="btn-primary btn-sm">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
@@ -93,10 +98,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const deleteCancel = document.getElementById('delete-cancel');
     const deleteConfirm = document.getElementById('delete-confirm');
     const searchInput = document.getElementById('search-input');
+    const typeFilter = document.getElementById('type-filter');
     const searchBtn = document.getElementById('search-btn');
     const clearSearch = document.getElementById('clear-search');
     let categoryToDelete = null;
     let searchTerm = '';
+    const initialParams = new URLSearchParams(window.location.search);
+
+    typeFilter.value = initialParams.get('type') || '';
 
     searchBtn.addEventListener('click', () => {
         searchTerm = searchInput.value.trim();
@@ -112,10 +121,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     clearSearch.addEventListener('click', () => {
         searchInput.value = '';
+        typeFilter.value = '';
         searchTerm = '';
         clearSearch.classList.add('hidden');
         loadCategories();
     });
+
+    typeFilter.addEventListener('change', loadCategories);
 
     async function loadCategories() {
         try {
@@ -127,8 +139,12 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 clearSearch.classList.add('hidden');
             }
+            if (typeFilter.value) {
+                params.append('type', typeFilter.value);
+            }
 
             const url = '/api/admin/categories' + (params.toString() ? '?' + params.toString() : '');
+            window.history.replaceState({}, '', params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location.pathname);
             const res = await window.axios.get(url);
             const categories = res.data.data || [];
 
@@ -176,6 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="flex-1">
                             <h3 class="text-base font-semibold text-gray-900">${esc(category.name)}</h3>
                             <p class="mt-1 text-sm text-gray-500">${category.subcategories?.length || 0} subcategories</p>
+                            <span class="mt-2 inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${category.type === 'veterinary' ? 'bg-blue-50 text-blue-700' : 'bg-emerald-50 text-emerald-700'}">${category.type === 'veterinary' ? 'Veterinary' : 'Agriculture'}</span>
                         </div>
                     </div>
                     <div class="mt-4 flex gap-2 border-t border-gray-100 pt-4">
@@ -228,4 +245,3 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
-

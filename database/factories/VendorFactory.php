@@ -21,6 +21,7 @@ class VendorFactory extends Factory
         return [
             'user_id' => User::factory()->state(['type' => User::TYPE_VENDOR]),
             'store_name' => fake()->company(),
+            'business_type' => Vendor::BUSINESS_TYPE_BOTH,
             'description' => fake()->sentence(),
             'address' => fake()->address(),
             'logo' => null,

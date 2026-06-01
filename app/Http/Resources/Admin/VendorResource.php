@@ -18,6 +18,8 @@ class VendorResource extends JsonResource
         return [
             'id' => $this->id,
             'store_name' => $this->store_name,
+            'business_type' => $this->business_type,
+            'business_type_label' => \App\Models\Vendor::businessTypeLabels()[$this->business_type] ?? $this->business_type,
             'description' => $this->description,
             'address' => $this->address,
             'city_id' => $this->city_id,
@@ -41,6 +43,8 @@ class VendorResource extends JsonResource
             'categories' => $this->whenLoaded('categories', fn () => $this->categories->map(fn ($c) => [
                 'id' => $c->id,
                 'name' => $c->name,
+                'type' => $c->type,
+                'type_label' => \App\Models\Category::typeLabels()[$c->type] ?? $c->type,
                 'commission' => $c->commission,
             ])),
             'category_ids' => $this->whenLoaded('categories', fn () => $this->categories->pluck('id')),

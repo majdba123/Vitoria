@@ -23,12 +23,19 @@ class Vendor extends Model
 
     public const REGISTRATION_SOURCE_SELF = 'self';
 
+    public const BUSINESS_TYPE_AGRICULTURE = 'agriculture';
+
+    public const BUSINESS_TYPE_VETERINARY = 'veterinary';
+
+    public const BUSINESS_TYPE_BOTH = 'both';
+
     /**
      * @var list<string>
      */
     protected $fillable = [
         'user_id',
         'store_name',
+        'business_type',
         'description',
         'address',
         'city_id',
@@ -52,6 +59,18 @@ class Vendor extends Model
             'paid_amount' => 'decimal:2',
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function businessTypeLabels(): array
+    {
+        return [
+            self::BUSINESS_TYPE_AGRICULTURE => 'Agriculture',
+            self::BUSINESS_TYPE_VETERINARY => 'Veterinary',
+            self::BUSINESS_TYPE_BOTH => 'Both',
         ];
     }
 

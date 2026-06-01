@@ -11,11 +11,16 @@ class Category extends Model
 {
     use HasFactory;
 
+    public const TYPE_AGRICULTURE = 'agriculture';
+
+    public const TYPE_VETERINARY = 'veterinary';
+
     /**
      * @var list<string>
      */
     protected $fillable = [
         'name',
+        'type',
         'logo',
         'icon',
         'icon_class',
@@ -29,6 +34,17 @@ class Category extends Model
     {
         return [
             'commission' => 'decimal:2',
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function typeLabels(): array
+    {
+        return [
+            self::TYPE_AGRICULTURE => 'Agriculture',
+            self::TYPE_VETERINARY => 'Veterinary',
         ];
     }
 

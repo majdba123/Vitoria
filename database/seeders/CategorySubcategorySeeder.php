@@ -72,11 +72,18 @@ class CategorySubcategorySeeder extends Seeder
             $category->delete();
         }
 
+        $catalogIndex = 0;
+
         foreach ($this->catalog as $categoryName => $config) {
+            $categoryType = in_array($catalogIndex, [0, 3], true)
+                ? Category::TYPE_VETERINARY
+                : Category::TYPE_AGRICULTURE;
+
             $category = Category::query()->updateOrCreate(
                 ['name' => $categoryName],
                 [
                     'logo' => null,
+                    'type' => $categoryType,
                     'icon' => null,
                     'icon_class' => $config['icon_class'],
                     'commission' => $config['commission'],
@@ -95,6 +102,8 @@ class CategorySubcategorySeeder extends Seeder
                     ],
                 );
             }
+
+            $catalogIndex++;
         }
 
         try {

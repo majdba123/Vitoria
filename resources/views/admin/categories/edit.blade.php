@@ -21,6 +21,15 @@
                         </div>
 
                         <div>
+                            <label for="type" class="form-label">Category Type <span class="text-red-500">*</span></label>
+                            <select id="type" name="type" class="form-select" required>
+                                <option value="">Select category type</option>
+                                <option value="agriculture">Agriculture</option>
+                                <option value="veterinary">Veterinary</option>
+                            </select>
+                        </div>
+
+                        <div>
                             <label for="commission" class="form-label">Commission (%) <span class="text-red-500">*</span></label>
                             <input type="number" id="commission" name="commission" class="form-input" step="0.01" min="0" max="100" placeholder="e.g. 10.00" value="0">
                             <p class="mt-1 text-xs text-gray-500">Percentage commission charged on products in this category (0–100).</p>
@@ -79,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const category = res.data.data;
 
             document.getElementById('name').value = category.name || '';
+            document.getElementById('type').value = category.type || '';
             document.getElementById('commission').value = category.commission ?? 0;
             document.getElementById('icon_class').value = category.icon_class || '';
             if (category.logo) {
@@ -122,4 +132,3 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
-

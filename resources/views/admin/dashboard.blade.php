@@ -106,6 +106,43 @@
         </div>
     </div>
 
+    {{-- Vendor & Category Type Stats --}}
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div class="card">
+            <div class="card-body border-b border-gray-100">
+                <h3 class="text-base font-semibold text-gray-900">Vendors by Type</h3>
+                <p class="mt-0.5 text-sm text-gray-500">Agriculture, Veterinary, and Both vendors</p>
+            </div>
+            <div id="vendors-by-type" class="card-body grid gap-3 sm:grid-cols-3"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-body border-b border-gray-100">
+                <h3 class="text-base font-semibold text-gray-900">Categories by Type</h3>
+                <p class="mt-0.5 text-sm text-gray-500">Category inventory by business line</p>
+            </div>
+            <div id="categories-by-type" class="card-body grid gap-3 sm:grid-cols-2"></div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div class="card">
+            <div class="card-body border-b border-gray-100">
+                <h3 class="text-base font-semibold text-gray-900">Most Selected Categories</h3>
+                <p class="mt-0.5 text-sm text-gray-500">Top categories by assigned vendors</p>
+            </div>
+            <div id="most-selected-categories" class="card-body space-y-3"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-body border-b border-gray-100">
+                <h3 class="text-base font-semibold text-gray-900">Recent Vendor Registrations</h3>
+                <p class="mt-0.5 text-sm text-gray-500">Latest merchant accounts</p>
+            </div>
+            <div id="recent-vendors" class="card-body space-y-3"></div>
+        </div>
+    </div>
+
     {{-- Vendors by Category --}}
     <div class="card">
         <div class="card-body border-b border-gray-100">
@@ -190,16 +227,18 @@
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
     try {
-        const [usersRes, vendorsRes, productsRes, categoryStatsRes] = await Promise.all([
+        const [usersRes, vendorsRes, productsRes, categoryStatsRes, overviewRes] = await Promise.all([
             window.axios.get('/api/admin/users?page=1'),
             window.axios.get('/api/admin/vendors?page=1'),
             window.axios.get('/api/admin/products?page=1&per_page=5'),
             window.axios.get('/api/admin/dashboard/vendor-category-stats'),
+            window.axios.get('/api/admin/dashboard/overview'),
         ]);
+        const overview = overviewRes.data.data || {};
 
         document.getElementById('stat-users').textContent = usersRes.data.meta?.total ?? '0';
 
-        const totalVendors = vendorsRes.data.meta?.total ?? 0;
+        const totalVendors = overview.total_vendors ?? vendorsRes.data.meta?.total ?? 0;
         document.getElementById('stat-vendors').textContent = totalVendors;
 
         const vendors = vendorsRes.data.data || [];
@@ -218,6 +257,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('stat-active-products').textContent = activeProducts;
 
         renderVendorCategoryStats(categoryStatsRes.data.data || []);
+        renderOverview(overview);
 
         // Render recent products
         const productsContainer = document.getElementById('recent-products');
@@ -285,6 +325,61 @@ document.addEventListener('DOMContentLoaded', async function () {
                 </a>
             `;
         }).join('');
+    }
+
+    function renderOverview(overview) {
+        renderMetricTiles('vendors-by-type', overview.vendors_by_type || [], 'vendor');
+        renderMetricTiles('categories-by-type', overview.categories_by_type || [], 'category');
+        renderMostSelectedCategories(overview.most_selected_categories || []);
+        renderRecentVendors(overview.recent_vendor_registrations || []);
+    }
+
+    function renderMetricTiles(id, rows, noun) {
+        const container = document.getElementById(id);
+        if (!container) return;
+
+        container.innerHTML = rows.map(row => `
+            <a href="${noun === 'vendor' ? `/admin/vendors?business_type=${encodeURIComponent(row.type)}` : `/admin/categories?type=${encodeURIComponent(row.type)}`}" class="rounded-lg border border-gray-200 p-4 transition-colors hover:border-brand-300 hover:bg-brand-50/40">
+                <p class="text-xs font-bold uppercase tracking-wider text-gray-500">${esc(row.label)}</p>
+                <p class="mt-2 text-2xl font-black text-gray-900">${Number(row.total || 0)}</p>
+            </a>
+        `).join('');
+    }
+
+    function renderMostSelectedCategories(rows) {
+        const container = document.getElementById('most-selected-categories');
+        if (!rows.length) {
+            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">No category selections yet.</p>';
+            return;
+        }
+
+        container.innerHTML = rows.map(row => `
+            <a href="/admin/vendors?category_id=${encodeURIComponent(row.id)}" class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:border-brand-300 hover:bg-brand-50/40">
+                <div class="min-w-0">
+                    <p class="truncate text-sm font-semibold text-gray-900">${esc(row.name)}</p>
+                    <p class="mt-0.5 text-xs text-gray-500">${esc(row.type_label || row.type || '')}</p>
+                </div>
+                <span class="badge badge-brand">${Number(row.vendors_count || 0)} vendors</span>
+            </a>
+        `).join('');
+    }
+
+    function renderRecentVendors(rows) {
+        const container = document.getElementById('recent-vendors');
+        if (!rows.length) {
+            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">No vendors yet.</p>';
+            return;
+        }
+
+        container.innerHTML = rows.map(vendor => `
+            <a href="/admin/vendors/${vendor.id}" class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:border-brand-300 hover:bg-brand-50/40">
+                <div class="min-w-0">
+                    <p class="truncate text-sm font-semibold text-gray-900">${esc(vendor.store_name)}</p>
+                    <p class="mt-0.5 text-xs text-gray-500">${esc(vendor.user?.name || '')} · ${esc(vendor.business_type_label || '')}</p>
+                </div>
+                <span class="badge ${vendor.status === 'pending' ? 'badge-warning' : (vendor.is_active ? 'badge-success' : 'badge-danger')}">${esc(vendor.status || '')}</span>
+            </a>
+        `).join('');
     }
 
     function esc(t) {

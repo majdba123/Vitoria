@@ -48,6 +48,16 @@
                         <x-form.input name="store_name" label="Store Name" placeholder="Store display name" :required="true" />
                         <x-form.input name="address" label="Address" placeholder="Store address (optional)" />
                         <div class="sm:col-span-2">
+                            <label for="business_type" class="form-label">Business Type <span class="text-red-500">*</span></label>
+                            <select id="business_type" name="business_type" required class="form-select">
+                                <option value="">Select business type</option>
+                                <option value="agriculture">Agriculture</option>
+                                <option value="veterinary">Veterinary</option>
+                                <option value="both">Both</option>
+                            </select>
+                            <p class="form-error" id="business_type-error"></p>
+                        </div>
+                        <div class="sm:col-span-2">
                             <label for="city_id" class="form-label">City <span class="text-red-500">*</span></label>
                             <select id="city_id" name="city_id" required class="form-input">
                                 <option value="">Select store city</option>
@@ -110,6 +120,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('create-vendor-form');
+    let allCategories = [];
     const SYRIA_CENTER = [35.0, 38.5];
     const DEFAULT_ZOOM = 6;
 
@@ -208,26 +219,57 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     loadAllCategories();
+    document.getElementById('business_type').addEventListener('change', renderCategories);
 
     async function loadAllCategories() {
         try {
             const res = await window.axios.get('/api/admin/categories');
-            const categories = res.data.data || [];
-            const container = document.getElementById('categories-checkboxes');
-            container.innerHTML = categories.map(cat => `
+            allCategories = res.data.data || [];
+            renderCategories();
+            document.getElementById('categories-loading').classList.add('hidden');
+            document.getElementById('categories-checkboxes').classList.remove('hidden');
+        } catch (e) {
+            document.getElementById('categories-loading').textContent = 'Failed to load categories.';
+        }
+    }
+
+    function renderCategories() {
+        const businessType = document.getElementById('business_type').value;
+        const container = document.getElementById('categories-checkboxes');
+
+        if (!businessType) {
+            container.innerHTML = '<p class="rounded-lg border border-dashed border-gray-300 px-3 py-3 text-sm text-gray-500 sm:col-span-2">Select a business type first.</p>';
+            return;
+        }
+
+        if (businessType === 'both') {
+            container.innerHTML = renderCategoryGroup('Agriculture Categories', allCategories.filter(cat => cat.type === 'agriculture'))
+                + renderCategoryGroup('Veterinary Categories', allCategories.filter(cat => cat.type === 'veterinary'));
+            return;
+        }
+
+        container.innerHTML = allCategories.filter(cat => cat.type === businessType).map(categoryCheckbox).join('');
+    }
+
+    function renderCategoryGroup(title, categories) {
+        return `
+            <div class="sm:col-span-2">
+                <h4 class="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">${title}</h4>
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">${categories.map(categoryCheckbox).join('')}</div>
+            </div>
+        `;
+    }
+
+    function categoryCheckbox(cat) {
+        return `
                 <label class="flex items-center gap-3 rounded-lg border border-gray-200 p-3 cursor-pointer hover:border-brand-300 hover:bg-brand-50/50 transition-colors">
                     <input type="checkbox" name="category_ids[]" value="${cat.id}" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 category-checkbox">
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-900">${esc(cat.name)}</span>
-                        <span class="ml-2 text-xs text-emerald-600 font-semibold">${parseFloat(cat.commission || 0).toFixed(2)}%</span>
+                        <span class="ml-2 text-xs font-semibold ${cat.type === 'veterinary' ? 'text-blue-600' : 'text-emerald-600'}">${cat.type === 'veterinary' ? 'Veterinary' : 'Agriculture'}</span>
                     </div>
                 </label>
-            `).join('');
-            document.getElementById('categories-loading').classList.add('hidden');
-            container.classList.remove('hidden');
-        } catch (e) {
-            document.getElementById('categories-loading').textContent = 'Failed to load categories.';
-        }
+            `;
     }
 
     function esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
@@ -245,6 +287,7 @@ document.addEventListener('DOMContentLoaded', function () {
             national_id: form.national_id.value.trim(),
             password: form.password.value,
             store_name: form.store_name.value.trim(),
+            business_type: form.business_type.value,
             city_id: parseInt(form.city_id.value, 10) || null,
             latitude: parseFloat(form.latitude.value) || null,
             longitude: parseFloat(form.longitude.value) || null,

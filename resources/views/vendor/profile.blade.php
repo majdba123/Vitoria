@@ -106,6 +106,10 @@
                         <x-form.input name="store_name" label="Store Name" placeholder="Your store name" :required="true" />
                         <x-form.input name="address" label="Address" placeholder="Store address (optional)" />
                     </div>
+                    <div class="mt-4 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Business Type</p>
+                        <p id="profile-business-type" class="mt-1 text-sm font-semibold text-gray-900">Loading...</p>
+                    </div>
                     <div class="mt-4">
                         <label for="description" class="form-label">Description</label>
                         <textarea id="description" name="description" rows="3" placeholder="Tell customers about your store..." class="form-textarea"></textarea>
@@ -169,6 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             document.getElementById('profile-name').textContent = user.name || 'Vendor';
             document.getElementById('profile-store').textContent = vendor?.store_name || 'My Store';
+            document.getElementById('profile-business-type').textContent = vendor?.business_type_label || 'Both';
             document.getElementById('avatar-initials').textContent = (user.name || 'V').charAt(0).toUpperCase();
 
             if (user.avatar_url) {
@@ -187,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const catsContainer = document.getElementById('profile-categories');
             if (vendor?.categories && vendor.categories.length > 0) {
                 catsContainer.innerHTML = vendor.categories.map(c =>
-                    `<span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">${esc(c.name)} <span class="text-emerald-500">${parseFloat(c.commission || 0).toFixed(0)}%</span></span>`
+                    `<span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ${c.type === 'veterinary' ? 'bg-blue-50 text-blue-700 ring-blue-200' : 'bg-emerald-50 text-emerald-700 ring-emerald-200'}">${esc(c.name)} <span>${esc(c.type_label || '')}</span></span>`
                 ).join('');
             } else {
                 catsContainer.innerHTML = '<span class="text-sm text-gray-400 italic">No categories assigned</span>';

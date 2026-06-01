@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Vendor;
+use App\Rules\CategoriesMatchBusinessType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreVendorRequest extends FormRequest
 {
@@ -31,6 +34,11 @@ class StoreVendorRequest extends FormRequest
 
             // Vendor profile fields
             'store_name' => ['required', 'string', 'max:255'],
+            'business_type' => ['required', Rule::in([
+                Vendor::BUSINESS_TYPE_AGRICULTURE,
+                Vendor::BUSINESS_TYPE_VETERINARY,
+                Vendor::BUSINESS_TYPE_BOTH,
+            ])],
             'description' => ['nullable', 'string', 'max:1000'],
             'address' => ['nullable', 'string', 'max:255'],
             'city_id' => ['required', 'integer', 'exists:cities,id'],
@@ -39,7 +47,15 @@ class StoreVendorRequest extends FormRequest
             'logo' => ['nullable', 'string', 'max:255'],
 
             // Allowed categories
-            'category_ids' => ['nullable', 'array'],
+            'category_ids' => [
+                'required',
+                'array',
+                'min:1',
+                new CategoriesMatchBusinessType(
+                    $this->input('business_type'),
+                    array_map('intval', (array) $this->input('category_ids', [])),
+                ),
+            ],
             'category_ids.*' => ['integer', 'exists:categories,id'],
         ];
     }

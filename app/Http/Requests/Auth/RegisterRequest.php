@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\Vendor;
+use App\Rules\CategoriesMatchBusinessType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class RegisterRequest extends FormRequest
 {
@@ -41,12 +44,25 @@ class RegisterRequest extends FormRequest
             'age' => ['required', 'integer', 'min:1', 'max:120'],
             'membership_number' => ['required', 'string', 'max:100', 'unique:users,membership_number'],
             'city_id' => ['required', 'integer', 'exists:cities,id'],
-            'latitude' => ['required', 'numeric', 'between:-90,90'],
-            'longitude' => ['required', 'numeric', 'between:-180,180'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['nullable', 'string', 'min:6', 'confirmed'],
             'store_name' => ['required_if:account_type,vendor', 'string', 'max:255'],
-            'category_ids' => ['required_if:account_type,vendor', 'array', 'min:1'],
+            'business_type' => ['required_if:account_type,vendor', Rule::in([
+                Vendor::BUSINESS_TYPE_AGRICULTURE,
+                Vendor::BUSINESS_TYPE_VETERINARY,
+                Vendor::BUSINESS_TYPE_BOTH,
+            ])],
+            'category_ids' => [
+                'required_if:account_type,vendor',
+                'array',
+                'min:1',
+                new CategoriesMatchBusinessType(
+                    $this->input('business_type'),
+                    array_map('intval', (array) $this->input('category_ids', [])),
+                ),
+            ],
             'category_ids.*' => ['integer', 'exists:categories,id'],
             'description' => ['nullable', 'string', 'max:1000'],
             'address' => ['nullable', 'string', 'max:255'],
@@ -73,8 +89,6 @@ class RegisterRequest extends FormRequest
             'membership_number.unique' => 'This membership number is already registered.',
             'city_id.required' => 'Please select your city.',
             'city_id.exists' => 'Selected city is invalid.',
-            'latitude.required' => 'Please set your location on the map.',
-            'longitude.required' => 'Please set your location on the map.',
             'email.required' => 'Email address is required.',
             'email.unique' => 'This email is already registered.',
             'email.email' => 'Please provide a valid email address.',
@@ -82,6 +96,8 @@ class RegisterRequest extends FormRequest
             'password.confirmed' => 'Password confirmation does not match.',
             'account_type.in' => 'Please select a valid account type.',
             'store_name.required_if' => 'Store name is required for merchant accounts.',
+            'business_type.required_if' => 'Please select a merchant business type.',
+            'business_type.in' => 'Please select a valid merchant business type.',
             'category_ids.required_if' => 'Please select at least one merchant category.',
             'category_ids.array' => 'Please select valid merchant categories.',
             'category_ids.min' => 'Please select at least one merchant category.',

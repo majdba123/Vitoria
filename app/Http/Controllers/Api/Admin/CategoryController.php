@@ -18,8 +18,9 @@ class CategoryController extends Controller
     public function index(\Illuminate\Http\Request $request): JsonResponse
     {
         $search = $request->input('search');
+        $type = $request->input('type');
 
-        $cacheKey = $search ? null : 'all_categories';
+        $cacheKey = $search || $type ? null : 'all_categories';
 
         if ($cacheKey) {
             try {
@@ -35,6 +36,7 @@ class CategoryController extends Controller
         } else {
             $categories = Category::query()
                 ->with('subcategories:id,name,image,category_id,icon_class')
+                ->when($type, fn ($query) => $query->where('type', $type))
                 ->where('name', 'like', '%'.$search.'%')
                 ->latest()
                 ->get();

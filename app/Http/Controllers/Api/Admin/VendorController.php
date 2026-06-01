@@ -27,6 +27,12 @@ class VendorController extends Controller
             ->when($request->filled('status'), function ($query) use ($request) {
                 $query->where('status', (string) $request->string('status'));
             })
+            ->when($request->filled('business_type'), function ($query) use ($request) {
+                $query->where('business_type', (string) $request->string('business_type'));
+            })
+            ->when($request->filled('category_type'), function ($query) use ($request) {
+                $query->whereHas('categories', fn ($categoryQuery) => $categoryQuery->where('categories.type', (string) $request->string('category_type')));
+            })
             ->when($request->filled('name'), function ($query) use ($request) {
                 $name = (string) $request->string('name');
                 $query->where(function ($builder) use ($name) {

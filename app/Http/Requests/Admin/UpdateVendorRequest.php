@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Vendor;
+use App\Rules\CategoriesMatchBusinessType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,6 +26,10 @@ class UpdateVendorRequest extends FormRequest
     {
         $vendor = $this->route('vendor');
         $userId = $vendor->user_id;
+        $businessType = $this->input('business_type', $vendor->business_type);
+        $categoryIds = $this->has('category_ids')
+            ? array_map('intval', (array) $this->input('category_ids', []))
+            : $vendor->categories()->pluck('categories.id')->all();
 
         return [
             // User account fields
@@ -35,6 +41,11 @@ class UpdateVendorRequest extends FormRequest
 
             // Vendor profile fields
             'store_name' => ['sometimes', 'string', 'max:255'],
+            'business_type' => ['sometimes', Rule::in([
+                Vendor::BUSINESS_TYPE_AGRICULTURE,
+                Vendor::BUSINESS_TYPE_VETERINARY,
+                Vendor::BUSINESS_TYPE_BOTH,
+            ])],
             'description' => ['nullable', 'string', 'max:1000'],
             'address' => ['nullable', 'string', 'max:255'],
             'city_id' => ['sometimes', 'integer', 'exists:cities,id'],
@@ -45,7 +56,14 @@ class UpdateVendorRequest extends FormRequest
             'is_active' => ['sometimes', 'boolean'],
 
             // Allowed categories
-            'category_ids' => ['nullable', 'array'],
+            'category_ids' => [
+                'nullable',
+                'array',
+                new CategoriesMatchBusinessType(
+                    $businessType,
+                    $categoryIds,
+                ),
+            ],
             'category_ids.*' => ['integer', 'exists:categories,id'],
         ];
     }

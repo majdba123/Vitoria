@@ -41,6 +41,28 @@ test('normal user registration still creates a normal user account', function ()
     $this->assertDatabaseCount('vendors', 0);
 });
 
+test('registration does not require map coordinates', function () {
+    $payload = registrationPayload([
+        'phone_number' => '0991000098',
+        'national_id' => '1234567898',
+        'membership_number' => 'MEM-100098',
+        'email' => 'no-location@example.com',
+    ]);
+
+    unset($payload['latitude'], $payload['longitude']);
+
+    $response = $this->post('/api/auth/register', $payload);
+
+    $response->assertCreated()
+        ->assertJsonPath('data.user.type', User::TYPE_USER);
+
+    $this->assertDatabaseHas('users', [
+        'phone_number' => '0991000098',
+        'latitude' => null,
+        'longitude' => null,
+    ]);
+});
+
 test('merchant registration requires merchant fields and commercial register upload', function () {
     $response = $this->postJson('/api/auth/register', registrationPayload([
         'account_type' => 'vendor',
@@ -49,6 +71,7 @@ test('merchant registration requires merchant fields and commercial register upl
     $response->assertUnprocessable()
         ->assertJsonValidationErrors([
             'store_name',
+            'business_type',
             'category_ids',
             'commercial_register_file',
         ]);
@@ -62,6 +85,7 @@ test('merchant self registration creates a pending inactive vendor with stored c
     $response = $this->post('/api/auth/register', registrationPayload([
         'account_type' => 'vendor',
         'store_name' => 'Bayer Market',
+        'business_type' => Vendor::BUSINESS_TYPE_BOTH,
         'category_ids' => [$category->id, $otherCategory->id],
         'description' => 'Local merchant store.',
         'address' => 'Damascus',
@@ -99,6 +123,7 @@ test('merchant registration fails with an invalid category', function () {
     $response = $this->postJson('/api/auth/register', registrationPayload([
         'account_type' => 'vendor',
         'store_name' => 'Invalid Category Store',
+        'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
         'category_ids' => [999999],
         'commercial_register_file' => UploadedFile::fake()->create('commercial-register.pdf', 120, 'application/pdf'),
         'phone_number' => '0992000099',
@@ -109,6 +134,63 @@ test('merchant registration fails with an invalid category', function () {
 
     $response->assertUnprocessable()
         ->assertJsonValidationErrors(['category_ids.0']);
+});
+
+test('merchant registration rejects categories outside selected business type', function () {
+    Storage::fake('local');
+    $veterinaryCategory = Category::query()->create([
+        'name' => 'Veterinary Only Category',
+        'type' => Category::TYPE_VETERINARY,
+    ]);
+
+    $response = $this->postJson('/api/auth/register', registrationPayload([
+        'account_type' => 'vendor',
+        'store_name' => 'Mismatched Category Store',
+        'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
+        'category_ids' => [$veterinaryCategory->id],
+        'commercial_register_file' => UploadedFile::fake()->create('commercial-register.pdf', 120, 'application/pdf'),
+        'phone_number' => '0992000088',
+        'national_id' => '2234567888',
+        'membership_number' => 'MEM-MISMATCH-CATEGORY',
+        'email' => 'mismatch-category@example.com',
+    ]));
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors(['category_ids']);
+});
+
+test('merchant registration accepts both business type with agriculture and veterinary categories', function () {
+    Storage::fake('local');
+    $agricultureCategory = Category::query()->create([
+        'name' => 'Both Agriculture Category',
+        'type' => Category::TYPE_AGRICULTURE,
+    ]);
+    $veterinaryCategory = Category::query()->create([
+        'name' => 'Both Veterinary Category',
+        'type' => Category::TYPE_VETERINARY,
+    ]);
+
+    $response = $this->post('/api/auth/register', registrationPayload([
+        'account_type' => 'vendor',
+        'store_name' => 'Both Type Store',
+        'business_type' => Vendor::BUSINESS_TYPE_BOTH,
+        'category_ids' => [$agricultureCategory->id, $veterinaryCategory->id],
+        'commercial_register_file' => UploadedFile::fake()->create('commercial-register.pdf', 120, 'application/pdf'),
+        'phone_number' => '0992000089',
+        'national_id' => '2234567889',
+        'membership_number' => 'MEM-BOTH-CATEGORY',
+        'email' => 'both-category@example.com',
+    ]));
+
+    $response->assertCreated();
+
+    $vendor = Vendor::query()->where('store_name', 'Both Type Store')->firstOrFail();
+
+    expect($vendor->business_type)->toBe(Vendor::BUSINESS_TYPE_BOTH)
+        ->and($vendor->categories()->pluck('categories.id')->sort()->values()->all())->toBe([
+            $agricultureCategory->id,
+            $veterinaryCategory->id,
+        ]);
 });
 
 test('merchant registration accepts document and image commercial register files', function (
@@ -122,6 +204,7 @@ test('merchant registration accepts document and image commercial register files
     $response = $this->post('/api/auth/register', registrationPayload([
         'account_type' => 'vendor',
         'store_name' => 'Document Store '.$index,
+        'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
         'category_id' => $category->id,
         'commercial_register_file' => UploadedFile::fake()->create($filename, 120, $mimeType),
         'phone_number' => '099300000'.$index,
@@ -152,6 +235,7 @@ test('merchant registration rejects unsafe commercial register files', function 
     $response = $this->postJson('/api/auth/register', registrationPayload([
         'account_type' => 'vendor',
         'store_name' => 'Unsafe Store',
+        'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
         'category_id' => $category->id,
         'commercial_register_file' => UploadedFile::fake()->create('commercial-register.php', 10, 'application/x-php'),
         'phone_number' => '0994000001',

@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('dashboard/vendor-category-stats', [DashboardController::class, 'vendorCategoryStats'])->name('dashboard.vendor-category-stats');
+Route::get('dashboard/overview', [DashboardController::class, 'overview'])->name('dashboard.overview');
 Route::apiResource('vendors', VendorController::class);
 Route::get('vendors/{vendor}/commission-stats', [VendorCommissionController::class, 'show'])->name('vendors.commission-stats');
 Route::post('vendors/{vendor}/commission-paid', [VendorCommissionController::class, 'updatePaidAmount'])->name('vendors.commission-paid');

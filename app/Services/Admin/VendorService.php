@@ -31,6 +31,7 @@ class VendorService
             $vendor = Vendor::query()->create([
                 'user_id' => $user->id,
                 'store_name' => $data['store_name'],
+                'business_type' => $data['business_type'],
                 'description' => $data['description'] ?? null,
                 'address' => $data['address'] ?? null,
                 'city_id' => $data['city_id'],
@@ -77,7 +78,7 @@ class VendorService
             }
 
             $vendorFields = array_intersect_key($data, array_flip([
-                'store_name', 'description', 'address', 'city_id', 'latitude', 'longitude', 'is_active',
+                'store_name', 'business_type', 'description', 'address', 'city_id', 'latitude', 'longitude', 'is_active',
             ]));
 
             if (isset($data['logo']) && $data['logo'] instanceof UploadedFile) {

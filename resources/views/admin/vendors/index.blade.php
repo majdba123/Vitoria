@@ -22,7 +22,7 @@
 
     {{-- Filters --}}
     <div class="card">
-        <div class="grid gap-3 p-4 sm:grid-cols-5">
+        <div class="grid gap-3 p-4 sm:grid-cols-7">
             <div>
                 <label for="filter-status" class="form-label">Status</label>
                 <select id="filter-status" class="form-input">
@@ -30,6 +30,23 @@
                     <option value="pending">Pending</option>
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
+                </select>
+            </div>
+            <div>
+                <label for="filter-business-type" class="form-label">Business Type</label>
+                <select id="filter-business-type" class="form-input">
+                    <option value="">All business types</option>
+                    <option value="agriculture">Agriculture</option>
+                    <option value="veterinary">Veterinary</option>
+                    <option value="both">Both</option>
+                </select>
+            </div>
+            <div>
+                <label for="filter-category-type" class="form-label">Category Type</label>
+                <select id="filter-category-type" class="form-input">
+                    <option value="">All category types</option>
+                    <option value="agriculture">Agriculture</option>
+                    <option value="veterinary">Veterinary</option>
                 </select>
             </div>
             <div>
@@ -82,6 +99,7 @@
                             <th>Store</th>
                             <th class="hidden md:table-cell">Owner</th>
                             <th class="hidden xl:table-cell">Source</th>
+                            <th class="hidden xl:table-cell">Type</th>
                             <th class="hidden xl:table-cell">Category</th>
                             <th class="hidden lg:table-cell">National ID</th>
                             <th>Status</th>
@@ -138,12 +156,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const initialParams = new URLSearchParams(window.location.search);
     let filters = {
         status: initialParams.get('status') || '',
+        business_type: initialParams.get('business_type') || '',
+        category_type: initialParams.get('category_type') || '',
         category_id: initialParams.get('category_id') || '',
         name: initialParams.get('name') || '',
         email: initialParams.get('email') || '',
     };
 
     document.getElementById('filter-status').value = filters.status;
+    document.getElementById('filter-business-type').value = filters.business_type;
+    document.getElementById('filter-category-type').value = filters.category_type;
     document.getElementById('filter-name').value = filters.name;
     document.getElementById('filter-email').value = filters.email;
     loadCategoryFilter();
@@ -215,6 +237,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     <span class="badge ${vendor.registration_source === 'self' ? 'badge-warning' : 'badge-info'}">${vendor.registration_source === 'self' ? 'Self registration' : 'Admin'}</span>
                 </td>
                 <td class="hidden xl:table-cell">
+                    <span class="badge badge-brand">${escapeHtml(vendor.business_type_label || vendor.business_type || 'Both')}</span>
+                </td>
+                <td class="hidden xl:table-cell">
                     ${renderCategoryBadges(vendor)}
                 </td>
                 <td class="hidden lg:table-cell">
@@ -275,6 +300,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function applyFilters() {
         filters = {
             status: document.getElementById('filter-status').value,
+            business_type: document.getElementById('filter-business-type').value,
+            category_type: document.getElementById('filter-category-type').value,
             category_id: document.getElementById('filter-category').value,
             name: document.getElementById('filter-name').value.trim(),
             email: document.getElementById('filter-email').value.trim(),
@@ -286,10 +313,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function resetFilters() {
         document.getElementById('filter-status').value = '';
+        document.getElementById('filter-business-type').value = '';
+        document.getElementById('filter-category-type').value = '';
         document.getElementById('filter-category').value = '';
         document.getElementById('filter-name').value = '';
         document.getElementById('filter-email').value = '';
-        filters = { status: '', category_id: '', name: '', email: '' };
+        filters = { status: '', business_type: '', category_type: '', category_id: '', name: '', email: '' };
         currentPage = 1;
         updateFilterUrl();
         loadVendors();
