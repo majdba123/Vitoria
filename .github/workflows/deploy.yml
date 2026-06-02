@@ -1,0 +1,88 @@
+# CI/CD Pipeline for MSZ
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, json, bcmath, curl, zip, pdo, mysql
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install NPM dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build
+
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /var/www/MSZ
+
+            # Fix git ownership issue
+            git config --global --add safe.directory /var/www/MSZ
+
+            # Force update to match GitHub (prevents conflicts)
+            git fetch origin
+            git reset --hard origin/main
+
+            # Install/update Composer dependencies
+            composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+            # Install NPM dependencies and build
+            npm ci
+            npm run build
+
+            # Run Laravel optimizations
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan event:cache
+
+            # Run migrations
+            php artisan migrate --force
+
+            # Restart queue workers (if using)
+            php artisan queue:restart
+
+            # Clear and rebuild caches
+            php artisan optimize
+
+            # Fix permissions
+            chown -R www-data:www-data .
+            chmod -R 775 storage
+            chmod -R 775 bootstrap/cache
+
+            # Restart services
+            systemctl reload php8.2-fpm
+            systemctl reload nginx
+
+            echo "Deployment completed successfully!"
