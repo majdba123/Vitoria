@@ -166,6 +166,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const res = await window.axios.get(`/api/products/${productId}`);
         const p = res.data.data;
         const photos = p.photos || [];
+        const displayImage = p.image_url || '';
 
         $('product-name').textContent = p.name || '—';
         $('bc-name').textContent = p.name || 'Details';
@@ -205,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             btn.disabled = false;
             btn.onclick = () => {
                 const primary = photos.find(ph => ph.is_primary) || photos[0];
-                const url = primary ? (primary.url || `/storage/${primary.path}`) : '';
+                const url = displayImage || (primary ? (primary.url || `/storage/${primary.path}`) : '');
                 window.addToCart(p.id, p.name, hasDiscount ? p.discounted_price : p.price, url);
             };
         } else {
@@ -221,6 +222,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (primary) {
             const url = primary.url || `/storage/${primary.path}`;
             $('primary-photo-container').innerHTML = `<img src="${url}" alt="${esc(p.name)}" class="h-full w-full object-contain p-4 transition-transform duration-500 hover:scale-105 cursor-zoom-in" onclick="window._viewLarge(this.src)" loading="eager">`;
+        } else if (displayImage) {
+            $('primary-photo-container').innerHTML = `<img src="${displayImage}" alt="${esc(p.name)}" class="h-full w-full object-contain p-4 transition-transform duration-500 hover:scale-105 cursor-zoom-in" onclick="window._viewLarge(this.src)" loading="eager">`;
         }
 
         $('photo-count').textContent = photos.length + ' photo' + (photos.length !== 1 ? 's' : '');

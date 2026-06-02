@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -234,79 +235,110 @@ class OrderController extends Controller
         $globalCouponDiscount = $coupon ? $this->calculateCouponDiscount($coupon, $globalSubtotal) : 0.0;
         $allocatedCouponDiscounts = $this->allocateCouponDiscountByVendor($vendorSubtotals, $globalCouponDiscount);
 
-        $createdOrders = DB::transaction(function () use (
-            $allocatedCouponDiscounts,
-            $coupon,
-            $groupedByVendor,
-            $paymentWay,
-            $products,
-            $user,
-            $vendorSubtotals
-        ) {
-            $orders = [];
+        try {
+            $createdOrders = DB::transaction(function () use (
+                $allocatedCouponDiscounts,
+                $coupon,
+                $groupedByVendor,
+                $paymentWay,
+                $productIds,
+                &$products,
+                $user,
+                $vendorSubtotals
+            ) {
+                $orders = [];
+                $products = Product::query()
+                    ->with('vendor:id,store_name,is_active')
+                    ->whereIn('id', $productIds)
+                    ->lockForUpdate()
+                    ->get()
+                    ->keyBy('id');
 
-            foreach ($groupedByVendor as $vendorId => $vendorItems) {
-                $subtotalAmount = (float) ($vendorSubtotals->get((int) $vendorId, 0) ?: 0);
-                $couponDiscountAmount = (float) ($allocatedCouponDiscounts->get((int) $vendorId, 0) ?: 0);
-                $totalAmount = max(round($subtotalAmount - $couponDiscountAmount, 2), 0);
+                foreach ($groupedByVendor as $vendorId => $vendorItems) {
+                    $subtotalAmount = (float) ($vendorSubtotals->get((int) $vendorId, 0) ?: 0);
+                    $couponDiscountAmount = (float) ($allocatedCouponDiscounts->get((int) $vendorId, 0) ?: 0);
+                    $totalAmount = max(round($subtotalAmount - $couponDiscountAmount, 2), 0);
 
-                $order = Order::create([
-                    'order_number' => $this->generateOrderNumber(),
-                    'user_id' => $user->id,
-                    'vendor_id' => (int) $vendorId,
-                    'coupon_id' => $coupon?->id,
-                    'coupon_code' => $coupon?->code,
-                    'coupon_type' => $coupon?->discount_type,
-                    'coupon_value' => $coupon?->discount_value,
-                    'status' => Order::STATUS_PENDING,
-                    'payment_way' => $paymentWay,
-                    'items_count' => 0,
-                    'subtotal_amount' => $subtotalAmount,
-                    'coupon_discount_amount' => $couponDiscountAmount,
-                    'total_amount' => $totalAmount,
-                ]);
-
-                $itemsCount = 0;
-
-                foreach ($vendorItems as $item) {
-                    /** @var Product $product */
-                    $product = $products[$item['product_id']];
-                    $originalUnitPrice = (float) $product->price;
-                    $hasDiscount = $product->hasActiveDiscount();
-                    $appliedDiscountPercentage = $hasDiscount ? (float) ($product->discount_percentage ?? 0) : null;
-                    $unitPrice = $product->getDiscountedPrice();
-                    $lineTotal = round($unitPrice * $item['quantity'], 2);
-                    $discountAmount = round(($originalUnitPrice - $unitPrice) * $item['quantity'], 2);
-
-                    $order->items()->create([
-                        'product_id' => $product->id,
-                        'product_name' => $product->name,
-                        'original_unit_price' => $originalUnitPrice,
-                        'has_discount' => $hasDiscount,
-                        'applied_discount_percentage' => $appliedDiscountPercentage,
-                        'unit_price' => $unitPrice,
-                        'quantity' => $item['quantity'],
-                        'line_total' => $lineTotal,
-                        'discount_amount' => max($discountAmount, 0),
+                    $order = Order::create([
+                        'order_number' => $this->generateOrderNumber(),
+                        'user_id' => $user->id,
+                        'vendor_id' => (int) $vendorId,
+                        'coupon_id' => $coupon?->id,
+                        'coupon_code' => $coupon?->code,
+                        'coupon_type' => $coupon?->discount_type,
+                        'coupon_value' => $coupon?->discount_value,
+                        'status' => Order::STATUS_PENDING,
+                        'payment_way' => $paymentWay,
+                        'items_count' => 0,
+                        'subtotal_amount' => $subtotalAmount,
+                        'coupon_discount_amount' => $couponDiscountAmount,
+                        'total_amount' => $totalAmount,
                     ]);
 
-                    $product->decrement('quantity', $item['quantity']);
-                    $itemsCount += $item['quantity'];
+                    $itemsCount = 0;
+
+                    foreach ($vendorItems as $item) {
+                        /** @var Product $product */
+                        $product = $products[$item['product_id']];
+
+                        if (! $product->is_active || $product->status !== Product::STATUS_APPROVED || ! $product->vendor?->is_active) {
+                            throw new \RuntimeException('Some products are no longer available for purchase.');
+                        }
+
+                        if ($product->quantity < $item['quantity']) {
+                            throw new \RuntimeException("Insufficient stock for product: {$product->name}.");
+                        }
+
+                        $originalUnitPrice = (float) $product->price;
+                        $hasDiscount = $product->hasActiveDiscount();
+                        $appliedDiscountPercentage = $hasDiscount ? (float) ($product->discount_percentage ?? 0) : null;
+                        $unitPrice = $product->getDiscountedPrice();
+                        $lineTotal = round($unitPrice * $item['quantity'], 2);
+                        $discountAmount = round(($originalUnitPrice - $unitPrice) * $item['quantity'], 2);
+
+                        $order->items()->create([
+                            'product_id' => $product->id,
+                            'product_name' => $product->name,
+                            'original_unit_price' => $originalUnitPrice,
+                            'has_discount' => $hasDiscount,
+                            'applied_discount_percentage' => $appliedDiscountPercentage,
+                            'unit_price' => $unitPrice,
+                            'quantity' => $item['quantity'],
+                            'line_total' => $lineTotal,
+                            'discount_amount' => max($discountAmount, 0),
+                        ]);
+
+                        $product->decrement('quantity', $item['quantity']);
+                        $itemsCount += $item['quantity'];
+                    }
+
+                    $order->update([
+                        'items_count' => $itemsCount,
+                    ]);
+
+                    $orders[] = $order;
                 }
 
-                $order->update([
-                    'items_count' => $itemsCount,
-                ]);
+                if ($coupon) {
+                    $coupon->increment('used_count');
+                }
 
-                $orders[] = $order;
-            }
+                return collect($orders);
+            });
+        } catch (\RuntimeException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+            ], 422);
+        } catch (\Throwable $exception) {
+            Log::error('Checkout transaction failed.', [
+                'user_id' => $user->id,
+                'exception' => $exception,
+            ]);
 
-            if ($coupon) {
-                $coupon->increment('used_count');
-            }
-
-            return collect($orders);
-        });
+            return response()->json([
+                'message' => 'Checkout failed. Please try again.',
+            ], 500);
+        }
 
         try {
             Cache::tags(['products'])->flush();
@@ -371,11 +403,13 @@ class OrderController extends Controller
             ]);
         }
 
-        $order->update([
-            'status' => Order::STATUS_CANCELLED,
-        ]);
+        DB::transaction(function () use ($order): void {
+            $order->update([
+                'status' => Order::STATUS_CANCELLED,
+            ]);
 
-        $this->restoreOrderQuantities($order);
+            $this->restoreOrderQuantities($order);
+        });
         try {
             Cache::tags(['products'])->flush();
         } catch (\Exception $e) {

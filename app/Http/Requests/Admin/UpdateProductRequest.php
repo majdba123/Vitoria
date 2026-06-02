@@ -21,6 +21,8 @@ class UpdateProductRequest extends FormRequest
             'subcategory_id' => ['sometimes', 'required', 'integer', 'required_with:category_id', 'exists:subcategories,id'],
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
+            'icon' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'],
             'price' => ['sometimes', 'required', 'numeric', 'min:0'],
             'discount_percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'quantity' => ['sometimes', 'required', 'integer', 'min:0'],

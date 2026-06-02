@@ -155,6 +155,8 @@ class VendorService
 
     protected function flushVendorCache(): void
     {
+        Cache::forget('admin_dashboard_overview');
+
         try {
             Cache::tags(['vendors'])->flush();
         } catch (\Exception $e) {
@@ -164,6 +166,8 @@ class VendorService
 
     protected function flushProductCache(): void
     {
+        Cache::forget('admin_dashboard_overview');
+
         try {
             Cache::tags(['products'])->flush();
         } catch (\Exception $e) {

@@ -26,7 +26,7 @@
     </div>
 
     {{-- Stats Grid --}}
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-7">
         {{-- Total Users --}}
         <div class="card card-body">
             <div class="flex items-start justify-between">
@@ -49,6 +49,19 @@
                 </div>
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72"/></svg>
+                </div>
+            </div>
+        </div>
+
+        {{-- Total Syndicates --}}
+        <div class="card card-body">
+            <div class="flex items-start justify-between">
+                <div class="min-w-0 flex-1">
+                    <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">Syndicates</p>
+                    <p id="stat-syndicates" class="mt-2 text-2xl font-bold text-gray-900">â€”</p>
+                </div>
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cyan-50 text-cyan-600">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.941 3.479a8.985 8.985 0 01-4.686 0m4.686 0V19.5m-4.686-.5a9.094 9.094 0 01-3.741-.479 3 3 0 014.682-2.72m-.941 3.479V19.5m0 0a3 3 0 11-6 0m6 0a3 3 0 00-6 0m6 0h.008v.008H12v-.008zM12 8.25a3 3 0 100-6 3 3 0 000 6z"/></svg>
                 </div>
             </div>
         </div>
@@ -128,6 +141,50 @@
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div class="card">
             <div class="card-body border-b border-gray-100">
+                <h3 class="text-base font-semibold text-gray-900">Syndicates by Type</h3>
+                <p class="mt-0.5 text-sm text-gray-500">Active agent coverage by business line</p>
+            </div>
+            <div id="syndicates-by-type" class="card-body grid gap-3 sm:grid-cols-2"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-body border-b border-gray-100">
+                <h3 class="text-base font-semibold text-gray-900">Recent Syndicate Agents</h3>
+                <p class="mt-0.5 text-sm text-gray-500">Latest agriculture and veterinary agent accounts</p>
+            </div>
+            <div id="recent-syndicate-agents" class="card-body space-y-3"></div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div class="card">
+            <div class="card-body border-b border-gray-100">
+                <h3 class="text-base font-semibold text-gray-900">Products by Type</h3>
+                <p class="mt-0.5 text-sm text-gray-500">Product inventory by category type</p>
+            </div>
+            <div id="products-by-category-type" class="card-body grid gap-3 sm:grid-cols-2 lg:grid-cols-1"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-body border-b border-gray-100">
+                <h3 class="text-base font-semibold text-gray-900">Top Vendors</h3>
+                <p class="mt-0.5 text-sm text-gray-500">Ranked by product count</p>
+            </div>
+            <div id="top-vendors-by-product-count" class="card-body space-y-3"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-body border-b border-gray-100">
+                <h3 class="text-base font-semibold text-gray-900">Monthly Product Growth</h3>
+                <p class="mt-0.5 text-sm text-gray-500">New products over the last 12 months</p>
+            </div>
+            <div id="monthly-product-growth" class="card-body space-y-2"></div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div class="card">
+            <div class="card-body border-b border-gray-100">
                 <h3 class="text-base font-semibold text-gray-900">Most Selected Categories</h3>
                 <p class="mt-0.5 text-sm text-gray-500">Top categories by assigned vendors</p>
             </div>
@@ -140,6 +197,24 @@
                 <p class="mt-0.5 text-sm text-gray-500">Latest merchant accounts</p>
             </div>
             <div id="recent-vendors" class="card-body space-y-3"></div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div class="card">
+            <div class="card-body border-b border-gray-100">
+                <h3 class="text-base font-semibold text-gray-900">Categories With No Products</h3>
+                <p class="mt-0.5 text-sm text-gray-500">Catalog sections that need product coverage</p>
+            </div>
+            <div id="categories-with-no-products" class="card-body space-y-3"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-body border-b border-gray-100">
+                <h3 class="text-base font-semibold text-gray-900">Categories With No Vendors</h3>
+                <p class="mt-0.5 text-sm text-gray-500">Business lines without assigned merchants</p>
+            </div>
+            <div id="categories-with-no-vendors" class="card-body space-y-3"></div>
         </div>
     </div>
 
@@ -240,6 +315,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         const totalVendors = overview.total_vendors ?? vendorsRes.data.meta?.total ?? 0;
         document.getElementById('stat-vendors').textContent = totalVendors;
+        document.getElementById('stat-syndicates').textContent = overview.total_syndicates ?? 0;
 
         const vendors = vendorsRes.data.data || [];
         let active = 0, inactive = 0;
@@ -248,13 +324,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('stat-active-vendors').textContent = active;
         document.getElementById('stat-inactive-vendors').textContent = inactive;
 
-        const totalProducts = productsRes.data.meta?.total ?? 0;
+        const totalProducts = overview.total_products ?? productsRes.data.meta?.total ?? 0;
         document.getElementById('stat-products').textContent = totalProducts;
 
-        const products = productsRes.data.data || [];
-        let activeProducts = 0;
-        products.forEach(p => { if (p.is_active) activeProducts++; });
-        document.getElementById('stat-active-products').textContent = activeProducts;
+        const products = overview.recent_products || productsRes.data.data || [];
+        document.getElementById('stat-active-products').textContent = overview.active_products ?? products.filter(p => p.is_active).length;
 
         renderVendorCategoryStats(categoryStatsRes.data.data || []);
         renderOverview(overview);
@@ -271,7 +345,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     </div>
                     <div class="min-w-0 flex-1">
                         <p class="text-sm font-semibold text-gray-900">${esc(p.name)}</p>
-                        <p class="text-xs text-gray-500">$${parseFloat(p.price || 0).toFixed(2)} · Qty: ${p.quantity}</p>
+                        <p class="text-xs text-gray-500">${esc(p.category?.name || p.status || '')}</p>
                     </div>
                     <span class="badge ${p.is_active ? 'badge-success' : 'badge-danger'}">
                         ${p.is_active ? 'Active' : 'Inactive'}
@@ -329,9 +403,16 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     function renderOverview(overview) {
         renderMetricTiles('vendors-by-type', overview.vendors_by_type || [], 'vendor');
+        renderMetricTiles('syndicates-by-type', overview.syndicates_by_type || [], 'syndicate');
         renderMetricTiles('categories-by-type', overview.categories_by_type || [], 'category');
+        renderMetricTiles('products-by-category-type', overview.products_by_category_type || [], 'product');
         renderMostSelectedCategories(overview.most_selected_categories || []);
         renderRecentVendors(overview.recent_vendor_registrations || []);
+        renderRecentSyndicates(overview.recent_syndicate_agents || []);
+        renderTopVendors(overview.top_vendors_by_product_count || []);
+        renderCategoryGapList('categories-with-no-products', overview.categories_with_no_products || [], 'products_count');
+        renderCategoryGapList('categories-with-no-vendors', overview.categories_with_no_vendors || [], 'vendors_count');
+        renderMonthlyProductGrowth(overview.monthly_product_growth || []);
     }
 
     function renderMetricTiles(id, rows, noun) {
@@ -339,11 +420,18 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (!container) return;
 
         container.innerHTML = rows.map(row => `
-            <a href="${noun === 'vendor' ? `/admin/vendors?business_type=${encodeURIComponent(row.type)}` : `/admin/categories?type=${encodeURIComponent(row.type)}`}" class="rounded-lg border border-gray-200 p-4 transition-colors hover:border-brand-300 hover:bg-brand-50/40">
+            <a href="${metricTileUrl(noun, row.type)}" class="rounded-lg border border-gray-200 p-4 transition-colors hover:border-brand-300 hover:bg-brand-50/40">
                 <p class="text-xs font-bold uppercase tracking-wider text-gray-500">${esc(row.label)}</p>
                 <p class="mt-2 text-2xl font-black text-gray-900">${Number(row.total || 0)}</p>
             </a>
         `).join('');
+    }
+
+    function metricTileUrl(noun, type) {
+        if (noun === 'vendor') return `/admin/vendors?business_type=${encodeURIComponent(type)}`;
+        if (noun === 'syndicate') return `/admin/syndicates?type=${encodeURIComponent(type)}`;
+        if (noun === 'product') return `/admin/products?category_type=${encodeURIComponent(type)}`;
+        return `/admin/categories?type=${encodeURIComponent(type)}`;
     }
 
     function renderMostSelectedCategories(rows) {
@@ -380,6 +468,85 @@ document.addEventListener('DOMContentLoaded', async function () {
                 <span class="badge ${vendor.status === 'pending' ? 'badge-warning' : (vendor.is_active ? 'badge-success' : 'badge-danger')}">${esc(vendor.status || '')}</span>
             </a>
         `).join('');
+    }
+
+    function renderRecentSyndicates(rows) {
+        const container = document.getElementById('recent-syndicate-agents');
+        if (!rows.length) {
+            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">No syndicate agents yet.</p>';
+            return;
+        }
+
+        container.innerHTML = rows.map(syndicate => `
+            <a href="/admin/syndicates/${syndicate.id}" class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:border-brand-300 hover:bg-brand-50/40">
+                <div class="min-w-0">
+                    <p class="truncate text-sm font-semibold text-gray-900">${esc(syndicate.name)}</p>
+                    <p class="mt-0.5 text-xs text-gray-500">${esc(syndicate.user?.email || '')} Â· ${esc(syndicate.type_label || '')}</p>
+                </div>
+                <span class="badge ${syndicate.status === 'active' ? 'badge-success' : 'badge-danger'}">${esc(syndicate.status || '')}</span>
+            </a>
+        `).join('');
+    }
+
+    function renderTopVendors(rows) {
+        const container = document.getElementById('top-vendors-by-product-count');
+        if (!rows.length) {
+            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">No vendor products yet.</p>';
+            return;
+        }
+
+        container.innerHTML = rows.map(vendor => `
+            <a href="/admin/vendors/${vendor.id}" class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:border-brand-300 hover:bg-brand-50/40">
+                <div class="min-w-0">
+                    <p class="truncate text-sm font-semibold text-gray-900">${esc(vendor.store_name)}</p>
+                    <p class="mt-0.5 text-xs text-gray-500">${esc(vendor.business_type_label || '')}</p>
+                </div>
+                <span class="badge badge-brand">${Number(vendor.products_count || 0)} products</span>
+            </a>
+        `).join('');
+    }
+
+    function renderCategoryGapList(id, rows, countKey) {
+        const container = document.getElementById(id);
+        if (!rows.length) {
+            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">No gaps found.</p>';
+            return;
+        }
+
+        container.innerHTML = rows.slice(0, 8).map(row => `
+            <a href="/admin/categories/${row.id}" class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:border-brand-300 hover:bg-brand-50/40">
+                <div class="min-w-0">
+                    <p class="truncate text-sm font-semibold text-gray-900">${esc(row.name)}</p>
+                    <p class="mt-0.5 text-xs text-gray-500">${esc(row.type_label || row.type || '')}</p>
+                </div>
+                <span class="badge badge-danger">${Number(row[countKey] || 0)}</span>
+            </a>
+        `).join('');
+    }
+
+    function renderMonthlyProductGrowth(rows) {
+        const container = document.getElementById('monthly-product-growth');
+        if (!rows.length) {
+            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">No product growth yet.</p>';
+            return;
+        }
+
+        const max = Math.max(...rows.map(row => Number(row.total || 0)), 1);
+        container.innerHTML = rows.map(row => {
+            const width = Math.max(4, Math.round((Number(row.total || 0) / max) * 100));
+
+            return `
+                <div>
+                    <div class="mb-1 flex items-center justify-between text-xs">
+                        <span class="font-semibold text-gray-700">${esc(row.month)}</span>
+                        <span class="text-gray-500">${Number(row.total || 0)}</span>
+                    </div>
+                    <div class="h-2 overflow-hidden rounded-full bg-gray-100">
+                        <div class="h-full rounded-full bg-brand-500" style="width: ${width}%"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 
     function esc(t) {

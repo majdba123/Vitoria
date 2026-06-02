@@ -68,6 +68,19 @@
                         <p class="form-error" id="description-error"></p>
                     </div>
 
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                            <label for="image" class="form-label">Product Image</label>
+                            <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/gif,image/webp" class="form-input">
+                            <p class="form-error" id="image-error"></p>
+                        </div>
+                        <div>
+                            <label for="icon" class="form-label">Product Icon</label>
+                            <input id="icon" name="icon" type="file" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" class="form-input">
+                            <p class="form-error" id="icon-error"></p>
+                        </div>
+                    </div>
+
                     <div class="flex items-center gap-3">
                         <label class="form-label mb-0">Active</label>
                         <label class="toggle-switch">
@@ -408,6 +421,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         formData.append('quantity', parseInt(form.quantity.value));
         const desc = form.description.value.trim();
         if (desc) formData.append('description', desc);
+        if (form.image?.files?.[0]) formData.append('image', form.image.files[0]);
+        if (form.icon?.files?.[0]) formData.append('icon', form.icon.files[0]);
         formData.append('is_active', document.getElementById('is_active').checked ? '1' : '0');
         if (document.getElementById('discount_starts_at').value) formData.append('discount_starts_at', document.getElementById('discount_starts_at').value);
         if (document.getElementById('discount_ends_at').value) formData.append('discount_ends_at', document.getElementById('discount_ends_at').value);

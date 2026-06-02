@@ -38,6 +38,10 @@ class ProductResource extends JsonResource
             'subcategory_id' => $this->subcategory_id,
             'name' => $this->name,
             'description' => $this->description,
+            'icon' => $this->icon,
+            'icon_url' => $this->icon ? asset('storage/'.$this->icon) : null,
+            'image' => $this->image,
+            'image_url' => $this->image ? asset('storage/'.$this->image) : null,
             'price' => $this->price,
             'discount_percentage' => $this->discount_percentage,
             'discount_is_active' => $this->discount_is_active,
@@ -60,6 +64,7 @@ class ProductResource extends JsonResource
                 $data = [
                     'id' => $category->id,
                     'name' => $category->name,
+                    'type' => $category->type,
                 ];
 
                 if ($this->shouldExposeVendor($request)) {

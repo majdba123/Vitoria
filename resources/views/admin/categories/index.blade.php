@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
     async function loadCategories() {
         try {
             loading.classList.remove('hidden');
-            const params = new URLSearchParams();
+            const params = new URLSearchParams({ per_page: '100' });
             if (searchTerm) {
                 params.append('search', searchTerm);
                 clearSearch.classList.remove('hidden');

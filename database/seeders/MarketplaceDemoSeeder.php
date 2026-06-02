@@ -32,7 +32,7 @@ class MarketplaceDemoSeeder extends Seeder
         Storage::disk('public')->makeDirectory('seed');
         $this->seedImagePaths = $this->collectSeedImages();
 
-        /** @var array<int, array{name: string, phone_number: string, national_id: string, age: int, membership_number: string, store_name: string, description: string, address: string, categories: list<string>}> $vendors */
+        /** @var array<int, array{name: string, phone_number: string, national_id: string, age: int, membership_number: string, store_name: string, business_type: string, description: string, address: string, categories: list<string>}> $vendors */
         $vendors = [
             [
                 'name' => 'Green Fields Vendor',
@@ -41,9 +41,10 @@ class MarketplaceDemoSeeder extends Seeder
                 'age' => 35,
                 'membership_number' => 'MEM-VENDOR-1000000001',
                 'store_name' => 'Green Fields Supply',
+                'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
                 'description' => 'Crop inputs, seeds, and field essentials.',
                 'address' => 'Damascus - Mazzeh',
-                'categories' => ['Agricultural products', 'Veterinary animal products'],
+                'categories' => ['Seeds', 'Fertilizers', 'Irrigation'],
             ],
             [
                 'name' => 'FarmEquip Vendor',
@@ -52,9 +53,10 @@ class MarketplaceDemoSeeder extends Seeder
                 'age' => 42,
                 'membership_number' => 'MEM-VENDOR-1000000002',
                 'store_name' => 'FarmEquip Pro',
+                'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
                 'description' => 'Tractors, tools, and barn hardware.',
                 'address' => 'Aleppo - New Aleppo',
-                'categories' => ['Agricultural equipment', 'Animal equipment'],
+                'categories' => ['Agricultural Equipment', 'Greenhouses'],
             ],
             [
                 'name' => 'AgriVet Vendor',
@@ -63,9 +65,22 @@ class MarketplaceDemoSeeder extends Seeder
                 'age' => 28,
                 'membership_number' => 'MEM-VENDOR-1000000003',
                 'store_name' => 'AgriVet Market',
+                'business_type' => Vendor::BUSINESS_TYPE_BOTH,
                 'description' => 'Mixed agricultural and animal-care products.',
                 'address' => 'Homs - City Center',
-                'categories' => ['Agricultural products', 'Agricultural equipment', 'Animal equipment'],
+                'categories' => ['Seeds', 'Animal Medicine', 'Feed Supplements'],
+            ],
+            [
+                'name' => 'CareVet Vendor',
+                'phone_number' => '0911000004',
+                'national_id' => '1000000004',
+                'age' => 38,
+                'membership_number' => 'MEM-VENDOR-1000000004',
+                'store_name' => 'CareVet Supplies',
+                'business_type' => Vendor::BUSINESS_TYPE_VETERINARY,
+                'description' => 'Veterinary medicine, vaccines, and livestock-care essentials.',
+                'address' => 'Latakia - City Center',
+                'categories' => ['Animal Medicine', 'Vaccines', 'Livestock Equipment'],
             ],
         ];
 
@@ -87,6 +102,7 @@ class MarketplaceDemoSeeder extends Seeder
                 ['user_id' => $user->id],
                 [
                     'store_name' => $vendorData['store_name'],
+                    'business_type' => $vendorData['business_type'],
                     'description' => $vendorData['description'],
                     'address' => $vendorData['address'],
                     'is_active' => true,
@@ -141,6 +157,11 @@ class MarketplaceDemoSeeder extends Seeder
                 ],
             );
 
+            $product->update([
+                'icon' => $product->icon ?: $this->copyProductSeedAsset($product, 'icon'),
+                'image' => $product->image ?: $this->copyProductSeedAsset($product, 'image'),
+            ]);
+
             $this->attachProductPhotos($product);
         }
     }
@@ -170,9 +191,21 @@ class MarketplaceDemoSeeder extends Seeder
         }
     }
 
-    /**
-     * @return list<string>
-     */
+    protected function copyProductSeedAsset(Product $product, string $kind): ?string
+    {
+        if (empty($this->seedImagePaths)) {
+            return null;
+        }
+
+        $sourcePath = $this->seedImagePaths[0];
+        $ext = pathinfo($sourcePath, PATHINFO_EXTENSION) ?: 'png';
+        $filename = "products/{$kind}/{$product->id}-{$kind}.{$ext}";
+
+        Storage::disk('public')->copy($sourcePath, $filename);
+
+        return $filename;
+    }
+
     /**
      * @return list<string> Storage paths on the public disk (under seed/) used as sources for product photos.
      */

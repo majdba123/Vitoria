@@ -6,45 +6,57 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreCategoryRequest;
 use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Models\Category;
+use App\Services\ApplicationCacheService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
+    public function __construct(protected ApplicationCacheService $cacheService) {}
+
     /**
      * List all categories (cached).
      */
-    public function index(\Illuminate\Http\Request $request): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $search = $request->input('search');
         $type = $request->input('type');
+        $perPage = min(max((int) $request->input('per_page', 24), 1), 100);
 
-        $cacheKey = $search || $type ? null : 'all_categories';
+        $cacheKey = $search ? null : 'categories:list:'.sha1(json_encode([
+            'type' => $type,
+            'per_page' => $perPage,
+            'page' => (int) $request->input('page', 1),
+        ], JSON_THROW_ON_ERROR));
 
         if ($cacheKey) {
-            try {
-                $categories = Cache::tags(['categories'])->remember($cacheKey, 1800, function () {
-                    return Category::query()
-                        ->with('subcategories:id,name,image,category_id,icon_class')
-                        ->latest()
-                        ->get();
-                });
-            } catch (\Exception $e) {
-                $categories = Category::query()->with('subcategories:id,name,image,category_id,icon_class')->latest()->get();
-            }
+            $categories = $this->cacheService->remember($cacheKey, 1800, function () use ($type, $perPage) {
+                return Category::query()
+                    ->with('subcategories:id,name,image,category_id,icon_class')
+                    ->when($type, fn ($query) => $query->where('type', $type))
+                    ->latest()
+                    ->paginate($perPage);
+            }, ['categories']);
         } else {
             $categories = Category::query()
                 ->with('subcategories:id,name,image,category_id,icon_class')
                 ->when($type, fn ($query) => $query->where('type', $type))
-                ->where('name', 'like', '%'.$search.'%')
+                ->when($search, fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
                 ->latest()
-                ->get();
+                ->paginate($perPage);
         }
 
         return response()->json([
             'message' => __('Categories retrieved successfully.'),
-            'data' => $categories,
+            'data' => $categories->items(),
+            'meta' => [
+                'current_page' => $categories->currentPage(),
+                'last_page' => $categories->lastPage(),
+                'per_page' => $categories->perPage(),
+                'total' => $categories->total(),
+            ],
         ]);
     }
 
@@ -56,11 +68,11 @@ class CategoryController extends Controller
         $cacheKey = "category:{$category->id}";
 
         try {
-            $data = Cache::tags(['categories'])->remember($cacheKey, 1800, function () use ($category) {
+            $data = $this->cacheService->remember($cacheKey, 1800, function () use ($category) {
                 $category->load('subcategories:id,name,image,category_id,icon_class');
 
                 return $category;
-            });
+            }, ['categories']);
         } catch (\Exception $e) {
             $category->load('subcategories:id,name,image,category_id,icon_class');
             $data = $category;
@@ -84,9 +96,8 @@ class CategoryController extends Controller
             $data['icon'] = $request->file('icon')->store('categories', 'public');
         }
 
-        $category = Category::create($data);
+        $category = DB::transaction(fn () => Category::create($data));
         $category->load('subcategories');
-        $this->flushCategoryCache();
 
         return response()->json([
             'message' => __('Category created successfully.'),
@@ -116,9 +127,14 @@ class CategoryController extends Controller
             unset($data['icon']);
         }
 
-        $category->update($data);
+        DB::transaction(function () use ($category, $data): void {
+            $category->fill($data);
+
+            if ($category->isDirty()) {
+                $category->save();
+            }
+        });
         $category->load('subcategories');
-        $this->flushCategoryCache();
 
         return response()->json([
             'message' => __('Category updated successfully.'),
@@ -136,20 +152,10 @@ class CategoryController extends Controller
             Storage::disk('public')->delete($category->icon);
         }
 
-        $category->delete();
-        $this->flushCategoryCache();
+        DB::transaction(fn () => $category->delete());
 
         return response()->json([
             'message' => __('Category deleted successfully.'),
         ]);
-    }
-
-    protected function flushCategoryCache(): void
-    {
-        try {
-            Cache::tags(['categories'])->flush();
-        } catch (\Exception $e) {
-            // Silently fail
-        }
     }
 }

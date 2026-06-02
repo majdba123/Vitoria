@@ -34,6 +34,8 @@ class Product extends Model
         'subcategory_id',
         'name',
         'description',
+        'icon',
+        'image',
         'price',
         'discount_percentage',
         'quantity',

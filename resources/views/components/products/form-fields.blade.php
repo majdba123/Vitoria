@@ -70,6 +70,21 @@
             <p class="form-error" id="description-error"></p>
         </div>
 
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+                <label for="image" class="form-label">Product Image</label>
+                <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/gif,image/webp" class="form-input">
+                <p class="mt-1 text-xs text-gray-500">Main display image. JPEG, PNG, GIF, or WebP. Max 5 MB.</p>
+                <p class="form-error" id="image-error"></p>
+            </div>
+            <div>
+                <label for="icon" class="form-label">Product Icon</label>
+                <input id="icon" name="icon" type="file" accept="image/jpeg,image/png,image/gif,image/webp" class="form-input">
+                <p class="mt-1 text-xs text-gray-500">Small product icon. Image or SVG. Max 2 MB.</p>
+                <p class="form-error" id="icon-error"></p>
+            </div>
+        </div>
+
         <div class="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3">
             <div>
                 <p class="text-sm font-medium text-gray-900">Active Status</p>
@@ -83,4 +98,3 @@
 
     </div>
 </div>
-

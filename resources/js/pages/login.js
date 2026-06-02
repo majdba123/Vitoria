@@ -35,6 +35,8 @@
                 redirectUrl = '/admin/dashboard';
             } else if (user.type === 2) { // Vendor
                 redirectUrl = '/vendor/dashboard';
+            } else if (user.type === 3) { // Syndicate
+                redirectUrl = '/syndicate/dashboard';
             } else { // User/Client
                 redirectUrl = '/';
             }
@@ -88,4 +90,3 @@
         }
     }
 })();
-

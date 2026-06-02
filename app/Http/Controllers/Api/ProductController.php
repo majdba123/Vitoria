@@ -19,6 +19,8 @@ use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
@@ -45,13 +47,14 @@ class ProductController extends Controller
                 abort(403, __('Vendor profile not found.'));
             }
             // Allow status and is_active filters for vendors
-            $filters = $request->only(['category_id', 'subcategory_id', 'status', 'is_active', 'has_discount']);
+            $filters = $request->only(['category_id', 'category_type', 'subcategory_id', 'status', 'is_active', 'has_discount']);
         } else {
             // Admin: can filter by vendor_id, subcategory_id, status, and is_active
-            $filters = $request->only(['vendor_id', 'category_id', 'subcategory_id', 'status', 'is_active', 'has_discount']);
+            $filters = $request->only(['vendor_id', 'category_id', 'category_type', 'subcategory_id', 'status', 'is_active', 'has_discount']);
         }
 
-        $products = $this->productService->list($vendor, 15, $filters);
+        $perPage = min(max((int) $request->input('per_page', 15), 1), 50);
+        $products = $this->productService->list($vendor, $perPage, $filters);
 
         return response()->json([
             'message' => __('Products retrieved successfully.'),
@@ -67,7 +70,7 @@ class ProductController extends Controller
 
     public function publicIndex(Request $request): JsonResponse
     {
-        $filters = $request->only(['category_id', 'subcategory_id', 'has_discount', 'per_page', 'sort']);
+        $filters = $request->only(['category_id', 'category_type', 'subcategory_id', 'has_discount', 'per_page', 'sort']);
         $perPage = min((int) ($filters['per_page'] ?? 15), 50);
         $filters['per_page'] = $perPage;
 
@@ -208,13 +211,43 @@ class ProductController extends Controller
         );
 
         $photos = $request->file('photos', []);
-        unset($validated['photos']);
+        $storedPaths = [];
+        $createdProductId = null;
 
-        $product = $this->productService->create($vendor, $validated);
+        try {
+            $product = DB::transaction(function () use (&$createdProductId, &$storedPaths, $photos, $request, $validated, $vendor) {
+                $displayAssets = $this->productService->storeDisplayAssets([
+                    'icon' => $request->file('icon'),
+                    'image' => $request->file('image'),
+                ]);
+                $storedPaths = array_values($displayAssets);
 
-        if (! empty($photos)) {
-            $this->productService->addPhotos($product, $photos);
-            $product->load('photos');
+                unset($validated['photos'], $validated['icon'], $validated['image']);
+                $productData = array_merge($validated, $displayAssets);
+
+                $product = $this->productService->create($vendor, $productData);
+                $createdProductId = $product->id;
+
+                if (! empty($photos)) {
+                    $createdPhotos = $this->productService->addPhotos($product, $photos);
+                    foreach ($createdPhotos as $photo) {
+                        $storedPaths[] = $photo->path;
+                    }
+                    $product->load('photos');
+                }
+
+                return $product;
+            });
+        } catch (\Throwable $exception) {
+            foreach ($storedPaths as $path) {
+                Storage::disk('public')->delete($path);
+            }
+
+            if ($createdProductId) {
+                Storage::disk('public')->deleteDirectory('products/'.$createdProductId);
+            }
+
+            throw $exception;
         }
 
         if ($product->discount_status === Product::DISCOUNT_STATUS_ACTIVE) {
@@ -300,7 +333,36 @@ class ProductController extends Controller
         $oldStarts = $product->discount_starts_at?->toDateTimeString();
         $oldEnds = $product->discount_ends_at?->toDateTimeString();
 
-        $product = $this->productService->update($product, $validated);
+        $oldAssets = [
+            'icon' => $product->icon,
+            'image' => $product->image,
+        ];
+        $newAssets = [];
+
+        try {
+            $product = DB::transaction(function () use ($request, $product, $validated, &$newAssets) {
+                $newAssets = $this->productService->replaceDisplayAssets($product, [
+                    'icon' => $request->file('icon'),
+                    'image' => $request->file('image'),
+                ]);
+                unset($validated['icon'], $validated['image']);
+
+                return $this->productService->update($product, array_merge($validated, $newAssets));
+            });
+        } catch (\Throwable $exception) {
+            foreach ($newAssets as $path) {
+                Storage::disk('public')->delete($path);
+            }
+
+            throw $exception;
+        }
+
+        foreach ($newAssets as $field => $path) {
+            if ($path && ! empty($oldAssets[$field])) {
+                Storage::disk('public')->delete($oldAssets[$field]);
+            }
+        }
+
         $product->load($user && $user->type === User::TYPE_VENDOR ? ['photos', 'subcategory.category'] : ['vendor.user', 'photos', 'subcategory.category']);
 
         if ($product->discount_status === Product::DISCOUNT_STATUS_ACTIVE) {

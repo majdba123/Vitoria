@@ -118,6 +118,8 @@ class SubcategoryController extends Controller
 
     protected function flushCategoryCache(): void
     {
+        Cache::forget('admin_dashboard_overview');
+
         try {
             Cache::tags(['categories'])->flush();
         } catch (\Exception $e) {

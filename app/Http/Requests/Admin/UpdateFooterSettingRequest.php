@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateFooterSettingRequest extends FormRequest
 {
@@ -23,6 +24,7 @@ class UpdateFooterSettingRequest extends FormRequest
             'twitter_url' => ['nullable', 'string', 'url', 'max:500'],
             'contact_email' => ['nullable', 'string', 'email', 'max:255'],
             'contact_address' => ['nullable', 'string', 'max:500'],
+            'default_timezone' => ['nullable', 'string', Rule::in(timezone_identifiers_list())],
         ];
     }
 }

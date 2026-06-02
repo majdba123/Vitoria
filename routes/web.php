@@ -24,6 +24,7 @@ Route::get('/login', function () {
         return match (auth()->user()->type) {
             \App\Models\User::TYPE_ADMIN => redirect()->route('admin.dashboard'),
             \App\Models\User::TYPE_VENDOR => redirect()->route('vendor.dashboard'),
+            \App\Models\User::TYPE_SYNDICATE => redirect()->route('syndicate.dashboard'),
             default => redirect()->route('home'),
         };
     }
@@ -144,6 +145,18 @@ Route::prefix('vendor')->as('vendor.')->middleware(['auth', 'vendor'])->group(fu
     })->name('profile');
 });
 
+Route::prefix('syndicate')->as('syndicate.')->middleware(['auth', 'syndicate'])->group(function () {
+    Route::get('/', function () {
+        return redirect()->route('syndicate.dashboard');
+    });
+
+    foreach (['dashboard', 'categories', 'vendors', 'products', 'podcasts', 'orders', 'sales', 'reports'] as $section) {
+        Route::get('/'.$section, function () use ($section) {
+            return view('syndicate.dashboard', ['section' => $section]);
+        })->name($section);
+    }
+});
+
 /*
 |--------------------------------------------------------------------------
 | Admin Web Routes
@@ -168,6 +181,22 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(funct
     Route::get('/vendors', function () {
         return view('admin.vendors.index');
     })->name('vendors.index');
+
+    Route::get('/syndicates', function () {
+        return view('admin.syndicates.index');
+    })->name('syndicates.index');
+
+    Route::get('/syndicates/create', function () {
+        return view('admin.syndicates.create');
+    })->name('syndicates.create');
+
+    Route::get('/syndicates/{id}', function (string $id) {
+        return view('admin.syndicates.show', ['syndicateId' => $id]);
+    })->name('syndicates.show');
+
+    Route::get('/syndicates/{id}/edit', function (string $id) {
+        return view('admin.syndicates.edit', ['syndicateId' => $id]);
+    })->name('syndicates.edit');
 
     Route::get('/vendors/create', function () {
         return view('admin.vendors.create');

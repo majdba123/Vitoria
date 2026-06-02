@@ -79,6 +79,11 @@
                         <input type="text" id="p-phone" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" placeholder="09XXXXXXXX">
                         <p id="err-phone_number" class="mt-1 hidden text-xs text-red-500"></p>
                     </div>
+                    <div>
+                        <label for="p-timezone" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Timezone</label>
+                        <select id="p-timezone" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500"></select>
+                        <p id="err-timezone" class="mt-1 hidden text-xs text-red-500"></p>
+                    </div>
 
                     {{-- Read-only fields --}}
                     <div class="grid grid-cols-2 gap-4 rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800/50">
@@ -257,6 +262,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
+    await loadTimezoneOptions(user);
     fillForm(user);
     $('profile-loading').classList.add('hidden');
     $('profile-content').classList.remove('hidden');
@@ -315,6 +321,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         $('p-name').value = u.name || '';
         $('p-email').value = u.email || '';
         $('p-phone').value = u.phone_number || '';
+        if ($('p-timezone').options.length) {
+            $('p-timezone').value = u.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Damascus';
+        }
         const roleMap = PROFILE_ROLE_MAP;
         $('p-type').textContent = roleMap[u.type] ?? PROFILE_ROLE_DEFAULT;
         $('p-since').textContent = u.created_at ? new Date(u.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
@@ -326,6 +335,18 @@ document.addEventListener('DOMContentLoaded', async function () {
         } else {
             preview.innerHTML = `<span class="text-3xl font-black text-white">${(u.name || '?').charAt(0).toUpperCase()}</span>`;
             $('avatar-remove').classList.add('hidden');
+        }
+    }
+
+    async function loadTimezoneOptions(user) {
+        try {
+            const res = await window.axios.get('/api/startup/preferences');
+            const data = res.data.data || {};
+            const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || data.default_timezone || 'Asia/Damascus';
+            $('p-timezone').innerHTML = (data.timezones || []).map(tz => `<option value="${tz.value}">${tz.label}</option>`).join('');
+            $('p-timezone').value = user.timezone || data.timezone || browserTimezone;
+        } catch (e) {
+            $('p-timezone').innerHTML = '<option value="Asia/Damascus">Asia/Damascus</option>';
         }
     }
 
@@ -599,6 +620,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             fd.append('name', $('p-name').value.trim());
             fd.append('email', $('p-email').value.trim());
             fd.append('phone_number', $('p-phone').value.trim());
+            fd.append('timezone', $('p-timezone').value);
             if (pendingAvatar && pendingAvatar !== 'remove') {
                 fd.append('avatar', pendingAvatar);
             } else if (pendingAvatar === 'remove') {

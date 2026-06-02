@@ -22,7 +22,7 @@ class AuthController extends Controller
     {
         $result = $this->authService->register($request->validated());
 
-        $result['user']->load('city');
+        $result['user']->load(['city', 'syndicate']);
 
         // Establish web session alongside the API token
         Auth::login($result['user']);
@@ -30,7 +30,7 @@ class AuthController extends Controller
         return response()->json([
             'message' => __('User registered successfully.'),
             'data' => [
-                'user' => new UserResource($result['user']),
+                'user' => new UserResource($result['user']->load('syndicate')),
                 'token' => $result['token'],
             ],
         ], 201);
@@ -49,7 +49,7 @@ class AuthController extends Controller
         return response()->json([
             'message' => __('Logged in successfully.'),
             'data' => [
-                'user' => new UserResource($result['user']),
+                'user' => new UserResource($result['user']->load('syndicate')),
                 'token' => $result['token'],
             ],
         ]);

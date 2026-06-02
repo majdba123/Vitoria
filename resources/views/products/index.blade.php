@@ -22,6 +22,7 @@
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400" id="result-count"></p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
+                <select id="f-category-type" class="h-10 rounded-xl border border-gray-200 bg-white px-3 pr-8 text-sm font-medium text-gray-700 shadow-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"><option value="">All Types</option><option value="agriculture">Agriculture</option><option value="veterinary">Veterinary</option></select>
                 <select id="f-category" class="h-10 rounded-xl border border-gray-200 bg-white px-3 pr-8 text-sm font-medium text-gray-700 shadow-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"><option value="">All Categories</option></select>
                 <select id="f-subcategory" class="h-10 rounded-xl border border-gray-200 bg-white px-3 pr-8 text-sm font-medium text-gray-700 shadow-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"><option value="">All Subcategories</option></select>
                 <select id="f-discount" class="h-10 rounded-xl border border-gray-200 bg-white px-3 pr-8 text-sm font-medium text-gray-700 shadow-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"><option value="">All Discounts</option><option value="1">Discounted</option><option value="0">No Discount</option></select>
@@ -45,19 +46,25 @@
 <script>
 document.addEventListener('DOMContentLoaded', async function() {
     const $ = id => document.getElementById(id);
-    let page = 1, cId = '', sId = '', dFilter = '';
+    let page = 1, ct = '', cId = '', sId = '', dFilter = '';
     const params = new URLSearchParams(window.location.search);
-    cId = params.get('category_id') || ''; sId = params.get('subcategory_id') || ''; dFilter = params.get('has_discount') || '';
+    ct = params.get('category_type') || ''; cId = params.get('category_id') || ''; sId = params.get('subcategory_id') || ''; dFilter = params.get('has_discount') || '';
     let allCats = [];
 
     async function init() {
-        const cRes = await axios.get('/api/categories');
+        const cRes = await axios.get('/api/categories?per_page=100');
         allCats = cRes.data.data || [];
-        $('f-category').innerHTML = '<option value="">All Categories</option>' + allCats.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+        $('f-category-type').value = ct;
+        populateCategories();
         if (cId) { $('f-category').value = cId; populateSubs(cId); }
         if (dFilter) $('f-discount').value = dFilter;
         if (sId) setTimeout(() => $('f-subcategory').value = sId, 100);
         load();
+    }
+
+    function populateCategories() {
+        const cats = ct ? allCats.filter(c => c.type === ct) : allCats;
+        $('f-category').innerHTML = '<option value="">All Categories</option>' + cats.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
     }
 
     function populateSubs(catId) {
@@ -66,11 +73,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         $('f-subcategory').innerHTML = '<option value="">All Subcategories</option>' + subs.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
     }
 
+    $('f-category-type').addEventListener('change', function() { ct = this.value; cId = ''; sId = ''; populateCategories(); populateSubs(''); });
     $('f-category').addEventListener('change', function() { populateSubs(this.value); sId = ''; });
 
     async function load() {
         $('loading').classList.remove('hidden'); $('grid').innerHTML = ''; $('empty').classList.add('hidden'); $('pagination').innerHTML = '';
-        const p = new URLSearchParams({ page }); if (sId) p.append('subcategory_id', sId); else if (cId) p.append('category_id', cId); if (dFilter !== '') p.append('has_discount', dFilter);
+        const p = new URLSearchParams({ page }); if (ct) p.append('category_type', ct); if (sId) p.append('subcategory_id', sId); else if (cId) p.append('category_id', cId); if (dFilter !== '') p.append('has_discount', dFilter);
         try {
             const res = await axios.get('/api/products?' + p.toString());
             const { data, meta } = res.data;
@@ -127,8 +135,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     function getR(c,l){if(l<=7)return Array.from({length:l},(_,i)=>i+1);const p=[1];if(c>3)p.push('...');for(let i=Math.max(2,c-1);i<=Math.min(l-1,c+1);i++)p.push(i);if(c<l-2)p.push('...');p.push(l);return p;}
 
     window.goP = function(p) { page=p; load(); window.scrollTo({top:0,behavior:'smooth'}); };
-    $('btn-apply').addEventListener('click', () => { page=1; cId=$('f-category').value; sId=$('f-subcategory').value; dFilter=$('f-discount').value; load(); });
-    $('btn-clear').addEventListener('click', () => { $('f-category').value=''; $('f-subcategory').innerHTML='<option value="">All Subcategories</option>'; $('f-discount').value=''; cId=''; sId=''; dFilter=''; page=1; load(); });
+    $('btn-apply').addEventListener('click', () => { page=1; ct=$('f-category-type').value; cId=$('f-category').value; sId=$('f-subcategory').value; dFilter=$('f-discount').value; load(); });
+    $('btn-clear').addEventListener('click', () => { $('f-category-type').value=''; $('f-category').value=''; $('f-subcategory').innerHTML='<option value="">All Subcategories</option>'; $('f-discount').value=''; ct=''; cId=''; sId=''; dFilter=''; page=1; populateCategories(); load(); });
 
     function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
     init();

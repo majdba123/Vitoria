@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     async function loadCategories() {
         try {
-            const res = await window.axios.get('/api/categories');
+            const res = await window.axios.get('/api/categories?per_page=100');
             allCategories = res.data.data || [];
             $('cats-loading')?.classList.add('hidden');
             if (!allCategories.length) {

@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function loadMerchantCategories() {
         try {
-            const res = await window.axios.get('/api/categories');
+            const res = await window.axios.get('/api/categories?per_page=100');
             allCategories = res.data.data || [];
 
             renderMerchantCategories();

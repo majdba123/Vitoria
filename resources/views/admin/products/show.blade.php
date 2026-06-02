@@ -330,6 +330,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     </div>
                 </div>
             `;
+        } else if (p.image_url) {
+            primaryPhotoContainer.innerHTML = `
+                <div class="group relative h-80 w-full max-w-md overflow-hidden rounded-xl border-2 border-brand-500 bg-gray-50">
+                    <img src="${p.image_url}" class="h-full w-full object-contain transition-transform group-hover:scale-105" alt="Product image">
+                </div>
+            `;
         } else {
             primaryPhotoContainer.innerHTML = '<p class="text-sm text-gray-400 py-8">No primary photo available.</p>';
         }
@@ -384,4 +390,3 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 </script>
 @endpush
-

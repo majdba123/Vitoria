@@ -16,6 +16,11 @@
     <div class="mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 lg:px-8">
         <h1 class="text-2xl font-black text-gray-900 sm:text-3xl dark:text-white">{{ __('categories.page_heading') }}</h1>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('categories.page_subtitle') }}</p>
+        <div class="mt-5 flex flex-wrap gap-2">
+            <button type="button" data-type-filter="" class="category-type-filter rounded-xl border border-brand-500 bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-sm">All</button>
+            <button type="button" data-type-filter="agriculture" class="category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">Agriculture</button>
+            <button type="button" data-type-filter="veterinary" class="category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">Veterinary</button>
+        </div>
 
         <div id="loading" class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <div class="skeleton h-48 rounded-2xl"></div><div class="skeleton h-48 rounded-2xl"></div><div class="skeleton h-48 rounded-2xl"></div>
@@ -37,7 +42,16 @@
 <script>
 const catPageI18n = @json($categoriesIndexScriptI18n);
 document.addEventListener('DOMContentLoaded', async function() {
+    let selectedType = new URLSearchParams(window.location.search).get('type') || '';
     function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+    function setActiveTypeButton() {
+        document.querySelectorAll('.category-type-filter').forEach(button => {
+            const active = button.dataset.typeFilter === selectedType;
+            button.className = active
+                ? 'category-type-filter rounded-xl border border-brand-500 bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-sm'
+                : 'category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300';
+        });
+    }
     function categoryThumbInner(cat) {
         if (cat.icon_class) {
             return `<i class="${esc(cat.icon_class)} text-3xl leading-none text-brand-500 dark:text-brand-400" aria-hidden="true"></i>`;
@@ -65,8 +79,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     function commissionLine(pct) {
         return (catPageI18n.commission || '').replace(':count', String(pct));
     }
-    try {
-        const res = await axios.get('/api/categories');
+    async function loadCategories() {
+        document.getElementById('loading').classList.remove('hidden');
+        document.getElementById('grid').innerHTML = '';
+        setActiveTypeButton();
+        const params = new URLSearchParams({ per_page: '100' });
+        if (selectedType) params.set('type', selectedType);
+        const res = await axios.get('/api/categories?' + params.toString());
         const cats = res.data.data || [];
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('grid').innerHTML = cats.map(cat => {
@@ -88,6 +107,17 @@ document.addEventListener('DOMContentLoaded', async function() {
                 </div>` : ''}
             </div>`;
         }).join('');
+    }
+
+    document.querySelectorAll('.category-type-filter').forEach(button => {
+        button.addEventListener('click', async () => {
+            selectedType = button.dataset.typeFilter || '';
+            await loadCategories();
+        });
+    });
+
+    try {
+        await loadCategories();
     } catch(e) { document.getElementById('loading').innerHTML = '<p class="text-sm text-gray-400">' + esc(catPageI18n.loadErr || '') + '</p>'; }
 });
 </script>

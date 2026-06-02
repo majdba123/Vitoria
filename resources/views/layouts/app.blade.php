@@ -46,6 +46,46 @@
     {{-- ═══ Global Cart Modal ═══ --}}
     <x-home.cart-modal />
 
+    <div id="startup-modal" class="fixed inset-0 z-[100] hidden bg-gray-950/70 p-4 backdrop-blur-sm">
+        <div class="mx-auto flex min-h-full max-w-xl items-center justify-center">
+            <div class="w-full overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-gray-950/10 dark:bg-gray-900 dark:ring-white/10">
+                <div class="border-b border-gray-100 px-6 py-5 dark:border-gray-800">
+                    <p class="text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400">SyriaZone</p>
+                    <h2 id="startup-title" class="mt-1 text-xl font-black text-gray-900 dark:text-white">Set your shopping preferences</h2>
+                </div>
+                <div class="px-6 py-5">
+                    <div class="mb-5 grid grid-cols-2 gap-2">
+                        <div id="startup-step-location-indicator" class="h-1.5 rounded-full bg-brand-500"></div>
+                        <div id="startup-step-timezone-indicator" class="h-1.5 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                    </div>
+                    <div id="startup-location-step" class="space-y-4">
+                        <div>
+                            <label for="startup-location" class="mb-1.5 block text-sm font-bold text-gray-800 dark:text-gray-200">Location or address preference</label>
+                            <input id="startup-location" type="text" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="City, area, or delivery preference">
+                        </div>
+                        <button type="button" id="startup-use-browser-location" class="inline-flex items-center gap-2 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-brand-500/10">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+                            Use browser location
+                        </button>
+                        <input id="startup-latitude" type="hidden">
+                        <input id="startup-longitude" type="hidden">
+                    </div>
+                    <div id="startup-timezone-step" class="hidden space-y-4">
+                        <div>
+                            <label for="startup-timezone" class="mb-1.5 block text-sm font-bold text-gray-800 dark:text-gray-200">Timezone</label>
+                            <select id="startup-timezone" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"></select>
+                        </div>
+                    </div>
+                    <p id="startup-error" class="mt-4 hidden rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300"></p>
+                </div>
+                <div class="flex items-center justify-between gap-3 border-t border-gray-100 px-6 py-4 dark:border-gray-800">
+                    <button type="button" id="startup-back" class="hidden rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800">Back</button>
+                    <button type="button" id="startup-next" class="ml-auto rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-black text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- ═══ Footer ═══ --}}
     <footer class="border-t border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
         <div class="mx-auto max-w-screen-2xl px-4 py-14 sm:px-6 lg:px-8">
@@ -183,6 +223,110 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => window.loadFavIds());
+    })();
+    </script>
+
+    <script>
+    (function(){
+        const modal = document.getElementById('startup-modal');
+        const locationStep = document.getElementById('startup-location-step');
+        const timezoneStep = document.getElementById('startup-timezone-step');
+        const timezoneSelect = document.getElementById('startup-timezone');
+        const nextBtn = document.getElementById('startup-next');
+        const backBtn = document.getElementById('startup-back');
+        const errorEl = document.getElementById('startup-error');
+        const titleEl = document.getElementById('startup-title');
+        const locIndicator = document.getElementById('startup-step-location-indicator');
+        const tzIndicator = document.getElementById('startup-step-timezone-indicator');
+        let step = 'location';
+
+        function showError(message) {
+            if (!message) {
+                errorEl.classList.add('hidden');
+                errorEl.textContent = '';
+                return;
+            }
+
+            errorEl.textContent = message;
+            errorEl.classList.remove('hidden');
+        }
+
+        function showStep(nextStep) {
+            step = nextStep;
+            showError('');
+            const isTimezone = step === 'timezone';
+            locationStep.classList.toggle('hidden', isTimezone);
+            timezoneStep.classList.toggle('hidden', !isTimezone);
+            backBtn.classList.toggle('hidden', !isTimezone);
+            nextBtn.textContent = isTimezone ? 'Finish setup' : 'Continue';
+            titleEl.textContent = isTimezone ? 'Choose your timezone' : 'Set your shopping preferences';
+            locIndicator.className = 'h-1.5 rounded-full ' + (isTimezone ? 'bg-brand-500/50' : 'bg-brand-500');
+            tzIndicator.className = 'h-1.5 rounded-full ' + (isTimezone ? 'bg-brand-500' : 'bg-gray-200 dark:bg-gray-700');
+        }
+
+        async function initStartupFlow() {
+            if (localStorage.getItem('sz_startup_completed') === '1') {
+                return;
+            }
+
+            try {
+                const response = await window.axios.get('/api/startup/preferences');
+                const data = response.data.data || {};
+
+                if (data.completed) {
+                    localStorage.setItem('sz_startup_completed', '1');
+                    return;
+                }
+
+                const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || data.default_timezone || 'Asia/Damascus';
+                timezoneSelect.innerHTML = (data.timezones || []).map(tz => `<option value="${tz.value}">${tz.label}</option>`).join('');
+                timezoneSelect.value = data.timezone || browserTimezone;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } catch (error) {}
+        }
+
+        document.getElementById('startup-use-browser-location')?.addEventListener('click', function () {
+            if (!navigator.geolocation) {
+                showError('Browser location is not available.');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+                document.getElementById('startup-latitude').value = position.coords.latitude;
+                document.getElementById('startup-longitude').value = position.coords.longitude;
+                document.getElementById('startup-location').value = 'Browser location selected';
+            }, function() {
+                showError('Could not read browser location. You can type a location instead.');
+            }, { enableHighAccuracy: false, timeout: 6000 });
+        });
+
+        backBtn?.addEventListener('click', () => showStep('location'));
+        nextBtn?.addEventListener('click', async function () {
+            if (step === 'location') {
+                showStep('timezone');
+                return;
+            }
+
+            nextBtn.disabled = true;
+            try {
+                await window.axios.post('/api/startup/preferences', {
+                    timezone: timezoneSelect.value,
+                    location_preference: document.getElementById('startup-location').value || null,
+                    latitude: document.getElementById('startup-latitude').value || null,
+                    longitude: document.getElementById('startup-longitude').value || null,
+                });
+                localStorage.setItem('sz_startup_completed', '1');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            } catch (error) {
+                showError(error.response?.data?.message || 'Could not save preferences.');
+            } finally {
+                nextBtn.disabled = false;
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', initStartupFlow);
     })();
     </script>
 

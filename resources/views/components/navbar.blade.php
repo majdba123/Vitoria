@@ -589,7 +589,7 @@ async function fetchAndSetUser() {
 
 async function loadNavCategories() {
     try {
-        const res = await window.axios.get('/api/categories');
+        const res = await window.axios.get('/api/categories?per_page=100');
         const cats = res.data.data || [];
         window._navCats = cats;
 

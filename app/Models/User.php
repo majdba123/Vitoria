@@ -25,6 +25,8 @@ class User extends Authenticatable
 
     public const TYPE_VENDOR = 2;
 
+    public const TYPE_SYNDICATE = 3;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -39,6 +41,7 @@ class User extends Authenticatable
         'city_id',
         'latitude',
         'longitude',
+        'timezone',
         'type',
         'email',
         'avatar',
@@ -87,6 +90,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Determine if the user is a syndicate agent.
+     */
+    public function isSyndicate(): bool
+    {
+        return $this->type === self::TYPE_SYNDICATE;
+    }
+
+    /**
      * The city of this user.
      */
     public function city(): BelongsTo
@@ -100,6 +111,14 @@ class User extends Authenticatable
     public function vendor(): HasOne
     {
         return $this->hasOne(Vendor::class);
+    }
+
+    /**
+     * The syndicate profile linked to this user.
+     */
+    public function syndicate(): HasOne
+    {
+        return $this->hasOne(Syndicate::class);
     }
 
     /**

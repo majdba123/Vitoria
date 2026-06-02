@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -62,5 +63,25 @@ class Category extends Model
     public function vendors(): BelongsToMany
     {
         return $this->belongsToMany(Vendor::class)->withTimestamps();
+    }
+
+    public function scopeAgriculture(Builder $query): Builder
+    {
+        return $query->where('type', self::TYPE_AGRICULTURE);
+    }
+
+    public function scopeVeterinary(Builder $query): Builder
+    {
+        return $query->where('type', self::TYPE_VETERINARY);
+    }
+
+    public function isAgriculture(): bool
+    {
+        return $this->type === self::TYPE_AGRICULTURE;
+    }
+
+    public function isVeterinary(): bool
+    {
+        return $this->type === self::TYPE_VETERINARY;
     }
 }

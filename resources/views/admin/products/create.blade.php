@@ -155,6 +155,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         formData.append('is_active', document.getElementById('is_active').checked ? '1' : '0');
         const desc = form.description.value.trim();
         if (desc) formData.append('description', desc);
+        if (form.image?.files?.[0]) formData.append('image', form.image.files[0]);
+        if (form.icon?.files?.[0]) formData.append('icon', form.icon.files[0]);
         if (document.getElementById('discount_starts_at').value) formData.append('discount_starts_at', document.getElementById('discount_starts_at').value);
         if (document.getElementById('discount_ends_at').value) formData.append('discount_ends_at', document.getElementById('discount_ends_at').value);
 

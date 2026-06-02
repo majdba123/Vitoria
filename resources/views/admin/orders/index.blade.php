@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const [usersRes, vendorsRes, categoriesRes] = await Promise.all([
                 window.axios.get('/api/admin/users'),
                 window.axios.get('/api/vendors'),
-                window.axios.get('/api/categories'),
+                window.axios.get('/api/categories?per_page=100'),
             ]);
 
             const users = usersRes.data.data || [];

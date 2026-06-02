@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\EnsureUserIsSyndicate;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -23,6 +24,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->prefix('api/vendor')
                 ->as('vendor.')
                 ->group(base_path('routes/api_vendor.php'));
+
+            Route::middleware(['api', 'auth:sanctum', 'syndicate'])
+                ->prefix('api/syndicate')
+                ->as('syndicate.')
+                ->group(base_path('routes/api_syndicate.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
@@ -32,8 +38,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
             'vendor' => \App\Http\Middleware\EnsureUserIsVendor::class,
+            'syndicate' => EnsureUserIsSyndicate::class,
             'cache.response' => \App\Http\Middleware\CacheResponse::class,
+            'timezone' => \App\Http\Middleware\ApplyUserTimezone::class,
         ]);
+        $middleware->appendToGroup('web', [\App\Http\Middleware\ApplyUserTimezone::class]);
+        $middleware->appendToGroup('api', [\App\Http\Middleware\ApplyUserTimezone::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

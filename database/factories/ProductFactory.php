@@ -21,6 +21,8 @@ class ProductFactory extends Factory
             'vendor_id' => Vendor::factory(),
             'name' => fake()->words(3, true),
             'description' => fake()->sentence(),
+            'icon' => null,
+            'image' => null,
             'price' => fake()->randomFloat(2, 1, 999),
             'quantity' => fake()->numberBetween(0, 500),
             'is_active' => true,

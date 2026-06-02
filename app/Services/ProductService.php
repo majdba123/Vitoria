@@ -24,7 +24,7 @@ class ProductService
         $query->with([
             'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(3),
             'subcategory:id,name,category_id',
-            'subcategory.category:id,name,commission',
+            'subcategory.category:id,name,type,commission',
         ]);
 
         if (! $vendor && ! empty($filters['vendor_id'])) {
@@ -33,6 +33,10 @@ class ProductService
 
         if (! empty($filters['category_id'])) {
             $query->whereHas('subcategory', fn ($q) => $q->where('category_id', $filters['category_id']));
+        }
+
+        if (! empty($filters['category_type'])) {
+            $query->whereHas('subcategory.category', fn ($q) => $q->where('type', $filters['category_type']));
         }
 
         if (! empty($filters['subcategory_id'])) {
@@ -78,12 +82,10 @@ class ProductService
     /**
      * @param  array<string, mixed>  $filters
      */
-    /**
-     * @param  array<string, mixed>  $filters
-     */
     public function listPublic(int $perPage = 15, array $filters = []): LengthAwarePaginator
     {
         $categoryId = ! empty($filters['category_id']) ? (int) $filters['category_id'] : null;
+        $categoryType = ! empty($filters['category_type']) ? (string) $filters['category_type'] : null;
         $subcategoryId = ! empty($filters['subcategory_id']) ? (int) $filters['subcategory_id'] : null;
         $hasDiscount = isset($filters['has_discount']) && $filters['has_discount'] !== ''
             ? filter_var($filters['has_discount'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)
@@ -92,10 +94,10 @@ class ProductService
             ? $filters['sort'] : 'latest';
         $page = (int) request()->get('page', 1);
 
-        $cacheKey = "pub_products:c{$categoryId}:s{$subcategoryId}:d{$hasDiscount}:srt{$sort}:pp{$perPage}:p{$page}";
+        $cacheKey = "pub_products:c{$categoryId}:ct{$categoryType}:s{$subcategoryId}:d{$hasDiscount}:srt{$sort}:pp{$perPage}:p{$page}";
 
-        return $this->cachedOrFetch(['products'], $cacheKey, 900, function () use ($perPage, $categoryId, $subcategoryId, $hasDiscount, $sort) {
-            return $this->fetchPublicProducts($perPage, $categoryId, $subcategoryId, $hasDiscount, $sort);
+        return $this->cachedOrFetch(['products'], $cacheKey, 900, function () use ($perPage, $categoryId, $categoryType, $subcategoryId, $hasDiscount, $sort) {
+            return $this->fetchPublicProducts($perPage, $categoryId, $categoryType, $subcategoryId, $hasDiscount, $sort);
         });
     }
 
@@ -105,6 +107,7 @@ class ProductService
     protected function fetchPublicProducts(
         int $perPage,
         ?int $categoryId = null,
+        ?string $categoryType = null,
         ?int $subcategoryId = null,
         ?bool $hasDiscount = null,
         string $sort = 'latest'
@@ -124,6 +127,10 @@ class ProductService
             $query->where('subcategory_id', $subcategoryId);
         } elseif ($categoryId) {
             $query->whereHas('subcategory', fn ($q) => $q->where('category_id', $categoryId));
+        }
+
+        if ($categoryType) {
+            $query->whereHas('subcategory.category', fn ($q) => $q->where('type', $categoryType));
         }
 
         if ($hasDiscount !== null) {
@@ -193,6 +200,8 @@ class ProductService
 
     public function delete(Product $product): void
     {
+        $this->deleteDisplayAssets($product);
+
         foreach ($product->photos as $photo) {
             Storage::disk('public')->delete($photo->path);
         }
@@ -258,6 +267,37 @@ class ProductService
         return $photos;
     }
 
+    /**
+     * @param  array<string, UploadedFile|null>  $files
+     * @return array<string, string>
+     */
+    public function storeDisplayAssets(array $files): array
+    {
+        $paths = [];
+
+        foreach (['icon', 'image'] as $field) {
+            if (($files[$field] ?? null) instanceof UploadedFile) {
+                $paths[$field] = $files[$field]->store('products/'.$field, 'public');
+            }
+        }
+
+        return $paths;
+    }
+
+    public function replaceDisplayAssets(Product $product, array $files): array
+    {
+        return $this->storeDisplayAssets($files);
+    }
+
+    protected function deleteDisplayAssets(Product $product): void
+    {
+        foreach (['icon', 'image'] as $field) {
+            if ($product->{$field}) {
+                Storage::disk('public')->delete($product->{$field});
+            }
+        }
+    }
+
     public function removePhoto(ProductPhoto $photo): void
     {
         Storage::disk('public')->delete($photo->path);
@@ -296,6 +336,8 @@ class ProductService
      */
     protected function flushProductCache(): void
     {
+        Cache::forget('admin_dashboard_overview');
+
         try {
             Cache::tags(['products'])->flush();
         } catch (\Exception $e) {

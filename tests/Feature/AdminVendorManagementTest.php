@@ -2,8 +2,11 @@
 
 use App\Models\Category;
 use App\Models\City;
+use App\Models\Product;
+use App\Models\Subcategory;
 use App\Models\User;
 use App\Models\Vendor;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 
@@ -67,6 +70,27 @@ test('admin category creation requires a valid type', function () {
     ])
         ->assertCreated()
         ->assertJsonPath('data.type', Category::TYPE_VETERINARY);
+});
+
+test('category endpoints filter categories by type', function () {
+    actingAsAdmin();
+    $agricultureCategory = Category::query()->create([
+        'name' => 'Filter Seeds',
+        'type' => Category::TYPE_AGRICULTURE,
+    ]);
+    $veterinaryCategory = Category::query()->create([
+        'name' => 'Filter Vaccines',
+        'type' => Category::TYPE_VETERINARY,
+    ]);
+
+    $response = $this->getJson('/api/admin/categories?type='.Category::TYPE_AGRICULTURE);
+
+    $response->assertOk();
+
+    $categoryIds = collect($response->json('data'))->pluck('id');
+
+    expect($categoryIds)->toContain($agricultureCategory->id)
+        ->and($categoryIds)->not->toContain($veterinaryCategory->id);
 });
 
 test('admin vendor creation rejects categories outside business type', function () {
@@ -249,6 +273,7 @@ test('admin dashboard vendor category statistics are grouped by category', funct
 });
 
 test('admin dashboard overview includes vendor type category type and recent vendor statistics', function () {
+    Cache::forget('admin_dashboard_overview');
     actingAsAdmin();
     $agricultureCategory = Category::query()->create([
         'name' => 'Overview Agriculture',
@@ -257,6 +282,14 @@ test('admin dashboard overview includes vendor type category type and recent ven
     $veterinaryCategory = Category::query()->create([
         'name' => 'Overview Veterinary',
         'type' => Category::TYPE_VETERINARY,
+    ]);
+    $agricultureSubcategory = Subcategory::query()->create([
+        'category_id' => $agricultureCategory->id,
+        'name' => 'Overview Seeds',
+    ]);
+    $veterinarySubcategory = Subcategory::query()->create([
+        'category_id' => $veterinaryCategory->id,
+        'name' => 'Overview Vaccines',
     ]);
 
     $agricultureVendor = Vendor::factory()->create([
@@ -271,21 +304,45 @@ test('admin dashboard overview includes vendor type category type and recent ven
     ]);
     $bothVendor->categories()->sync([$agricultureCategory->id, $veterinaryCategory->id]);
 
+    Product::factory()->for($agricultureVendor)->create([
+        'name' => 'Overview Agriculture Product',
+        'subcategory_id' => $agricultureSubcategory->id,
+        'status' => Product::STATUS_APPROVED,
+        'is_active' => true,
+    ]);
+    Product::factory()->for($bothVendor)->inactive()->create([
+        'name' => 'Overview Veterinary Product',
+        'subcategory_id' => $veterinarySubcategory->id,
+        'status' => Product::STATUS_PENDING,
+    ]);
+
     $response = $this->getJson('/api/admin/dashboard/overview');
 
     $response->assertOk()
-        ->assertJsonPath('data.total_vendors', 2);
+        ->assertJsonPath('data.total_vendors', 2)
+        ->assertJsonPath('data.total_products', 2)
+        ->assertJsonPath('data.active_products', 1)
+        ->assertJsonPath('data.inactive_products', 1)
+        ->assertJsonPath('data.type_stats.vendors_in_both', 1)
+        ->assertJsonPath('data.type_stats.products_in_agriculture', 1)
+        ->assertJsonPath('data.type_stats.products_in_veterinary', 1);
 
     $vendorsByType = collect($response->json('data.vendors_by_type'));
     $categoriesByType = collect($response->json('data.categories_by_type'));
     $mostSelected = collect($response->json('data.most_selected_categories'));
+    $productsByCategoryType = collect($response->json('data.products_by_category_type'));
+    $topVendors = collect($response->json('data.top_vendors_by_product_count'));
 
     expect($vendorsByType->firstWhere('type', Vendor::BUSINESS_TYPE_AGRICULTURE)['total'])->toBe(1)
         ->and($vendorsByType->firstWhere('type', Vendor::BUSINESS_TYPE_BOTH)['total'])->toBe(1)
         ->and($categoriesByType->firstWhere('type', Category::TYPE_AGRICULTURE)['total'])->toBe(1)
         ->and($categoriesByType->firstWhere('type', Category::TYPE_VETERINARY)['total'])->toBe(1)
         ->and($mostSelected->firstWhere('id', $agricultureCategory->id)['vendors_count'])->toBe(2)
-        ->and($response->json('data.recent_vendor_registrations.0.store_name'))->toBe('Overview Both Vendor');
+        ->and($productsByCategoryType->firstWhere('type', Category::TYPE_AGRICULTURE)['total'])->toBe(1)
+        ->and($productsByCategoryType->firstWhere('type', Category::TYPE_VETERINARY)['total'])->toBe(1)
+        ->and($topVendors->pluck('products_count')->max())->toBe(1)
+        ->and($response->json('data.recent_vendor_registrations.0.store_name'))->toBe('Overview Both Vendor')
+        ->and($response->json('data.recent_products.0.name'))->toBe('Overview Veterinary Product');
 });
 
 test('admin can download a merchant commercial register document', function () {

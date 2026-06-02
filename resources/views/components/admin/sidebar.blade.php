@@ -47,6 +47,18 @@
             @endif
         </a>
 
+        <a href="{{ route('admin.syndicates.index') }}"
+           class="mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150
+                  {{ str_starts_with($currentRoute, 'admin.syndicates') ? 'bg-white/10 text-white' : 'text-gray-400 hover:bg-white/5 hover:text-gray-200' }}">
+            <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a4.5 4.5 0 014.5 4.5v.75h.75A2.25 2.25 0 0119.5 14.25v4.5A2.25 2.25 0 0117.25 21H6.75a2.25 2.25 0 01-2.25-2.25v-4.5A2.25 2.25 0 016.75 12h.75v-.75A4.5 4.5 0 0112 6.75z"/>
+            </svg>
+            Syndicates
+            @if(str_starts_with($currentRoute, 'admin.syndicates'))
+                <span class="ml-auto h-1.5 w-1.5 rounded-full bg-brand-400"></span>
+            @endif
+        </a>
+
         {{-- Products --}}
         <a href="{{ route('admin.products.index') }}"
            class="mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150

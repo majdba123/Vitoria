@@ -5,6 +5,7 @@ namespace App\Services\Auth;
 use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -56,6 +57,8 @@ class AuthService
 
             return $user;
         });
+
+        Cache::forget('admin_dashboard_overview');
 
         $token = $user->createToken('auth_token')->plainTextToken;
 

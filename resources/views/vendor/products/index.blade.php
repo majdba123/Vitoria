@@ -29,6 +29,14 @@
                     </select>
                 </div>
                 <div class="flex-1">
+                    <label for="filter-category-type" class="form-label">Filter by Type</label>
+                    <select id="filter-category-type" class="form-input">
+                        <option value="">All Types</option>
+                        <option value="agriculture">Agriculture</option>
+                        <option value="veterinary">Veterinary</option>
+                    </select>
+                </div>
+                <div class="flex-1">
                     <label for="filter-category" class="form-label">Filter by Category</label>
                     <select id="filter-category" class="form-input">
                         <option value="">All Categories</option>
@@ -125,6 +133,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentPage = 1;
     let deleteId = null;
     const productStatusSelect = document.getElementById('filter-product-status');
+    const categoryTypeSelect = document.getElementById('filter-category-type');
     const categorySelect = document.getElementById('filter-category');
     const subcategorySelect = document.getElementById('filter-subcategory');
     const statusSelect = document.getElementById('filter-status');
@@ -148,9 +157,16 @@ document.addEventListener('DOMContentLoaded', function () {
     categorySelect.addEventListener('change', async function () {
         await loadSubcategories(categorySelect.value);
     });
+    categoryTypeSelect.addEventListener('change', async function () {
+        categorySelect.value = '';
+        subcategorySelect.innerHTML = '<option value="">Select category first...</option>';
+        subcategorySelect.disabled = true;
+        await loadCategories();
+    });
 
     document.getElementById('clear-filters').addEventListener('click', () => {
         productStatusSelect.value = '';
+        categoryTypeSelect.value = '';
         categorySelect.value = '';
         subcategorySelect.innerHTML = '<option value="">Select category first...</option>';
         subcategorySelect.disabled = true;
@@ -168,6 +184,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const params = new URLSearchParams({ page: currentPage });
             if (productStatusSelect && productStatusSelect.value) {
                 params.append('status', productStatusSelect.value);
+            }
+            if (categoryTypeSelect && categoryTypeSelect.value) {
+                params.append('category_type', categoryTypeSelect.value);
             }
             if (categorySelect && categorySelect.value) {
                 params.append('category_id', categorySelect.value);
@@ -297,7 +316,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function loadCategories() {
         try {
-            const res = await window.axios.get('/api/vendor/allowed-categories');
+            const params = new URLSearchParams();
+            if (categoryTypeSelect && categoryTypeSelect.value) {
+                params.append('type', categoryTypeSelect.value);
+            }
+            const res = await window.axios.get('/api/vendor/allowed-categories' + (params.toString() ? '?' + params.toString() : ''));
             const categories = res.data.data || [];
             categorySelect.innerHTML = '<option value="">All Categories</option>' +
                 categories.map(category => `<option value="${category.id}">${esc(category.name)}</option>`).join('');

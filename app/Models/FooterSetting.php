@@ -16,6 +16,7 @@ class FooterSetting extends Model
         'twitter_url',
         'contact_email',
         'contact_address',
+        'default_timezone',
     ];
 
     /**
