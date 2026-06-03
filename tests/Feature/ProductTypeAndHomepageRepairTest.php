@@ -73,7 +73,7 @@ test('homepage product api is safe with missing optional image and category data
         ->and($response->json('data.0.fallback_photo_url'))->toContain('product-placeholder.svg');
 });
 
-test('normal website users are redirected to product type selection until they choose a type', function () {
+test('normal website users can choose product type from the homepage', function () {
     $user = User::factory()->create([
         'type' => User::TYPE_USER,
         'preferred_product_type' => null,
@@ -81,22 +81,29 @@ test('normal website users are redirected to product type selection until they c
 
     $this->actingAs($user)
         ->get('/')
-        ->assertRedirect(route('product-type.select'));
+        ->assertOk()
+        ->assertSee('name="preferred_product_type"', false)
+        ->assertSee('value="agriculture"', false)
+        ->assertSee('value="veterinary"', false);
 
     $this->actingAs($user)
         ->post(route('product-type.store'), [
             'preferred_product_type' => Category::TYPE_AGRICULTURE,
+            'redirect_to' => 'home',
         ])
-        ->assertRedirect(route('categories.index', ['type' => Category::TYPE_AGRICULTURE]))
+        ->assertRedirect(route('home', ['type' => Category::TYPE_AGRICULTURE]))
         ->assertCookie('preferred_product_type', Category::TYPE_AGRICULTURE);
 
     expect($user->refresh()->preferred_product_type)->toBe(Category::TYPE_AGRICULTURE)
         ->and(session('preferred_product_type'))->toBe(Category::TYPE_AGRICULTURE);
 });
 
-test('guests are redirected to type selection and the selected type persists for browsing', function () {
+test('guests can choose product type from the homepage and still use the dedicated selection page', function () {
     $this->get('/')
-        ->assertRedirect(route('product-type.select'));
+        ->assertOk()
+        ->assertSee('name="preferred_product_type"', false)
+        ->assertSee('value="agriculture"', false)
+        ->assertSee('value="veterinary"', false);
 
     $this->get(route('product-type.select'))
         ->assertOk()
@@ -113,6 +120,21 @@ test('guests are redirected to type selection and the selected type persists for
     $this->withCookie('preferred_product_type', Category::TYPE_VETERINARY)
         ->get(route('home'))
         ->assertOk();
+});
+
+test('homepage product type form redirects back home with selected type', function () {
+    $this->post(route('product-type.store'), [
+        'preferred_product_type' => Category::TYPE_AGRICULTURE,
+        'redirect_to' => 'home',
+    ])
+        ->assertRedirect(route('home', ['type' => Category::TYPE_AGRICULTURE]))
+        ->assertCookie('preferred_product_type', Category::TYPE_AGRICULTURE);
+
+    $this->withCookie('preferred_product_type', Category::TYPE_AGRICULTURE)
+        ->get(route('home', ['type' => Category::TYPE_AGRICULTURE]))
+        ->assertOk()
+        ->assertSee('value="agriculture"', false)
+        ->assertSee('value="veterinary"', false);
 });
 
 test('selected user product type filters categories and public products on backend', function () {

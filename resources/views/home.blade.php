@@ -5,7 +5,80 @@
 @section('content')
     @php
         $homeCategoryId = request()->query('category_id');
+        $selectedHomeType = app(\App\Services\SelectedProductTypeService::class)->resolve(request());
+        $typeCards = [
+            \App\Models\Category::TYPE_AGRICULTURE => [
+                'label' => 'زراعي',
+                'description' => 'تصفح المنتجات والخدمات الزراعية',
+                'icon' => 'fa-solid fa-seedling',
+                'button' => 'تصفح الزراعي',
+            ],
+            \App\Models\Category::TYPE_VETERINARY => [
+                'label' => 'بيطري',
+                'description' => 'تصفح المنتجات والخدمات البيطرية',
+                'icon' => 'fa-solid fa-stethoscope',
+                'button' => 'تصفح البيطري',
+            ],
+        ];
     @endphp
+    <section id="home-type-selector" class="bg-gray-50 py-10 dark:bg-gray-950 sm:py-14">
+        <div class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-3xl text-center">
+                <span class="inline-flex rounded-full bg-brand-50 px-4 py-1.5 text-[11px] font-black text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">ابدأ من هنا</span>
+                <h1 class="mt-4 text-3xl font-black text-gray-900 dark:text-white sm:text-4xl">اختر نوع المنتجات التي ترغب في تصفحها</h1>
+                <p class="mt-3 text-sm leading-7 text-gray-500 dark:text-gray-400">سيتم عرض التصنيفات والمنتجات المناسبة لاختيارك فقط، ويمكنك تغيير النوع من هنا في أي وقت.</p>
+            </div>
+
+            @if (session('success'))
+                <div class="mx-auto mt-6 max-w-3xl rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @error('preferred_product_type')
+                <div class="mx-auto mt-6 max-w-3xl rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+                    {{ $message }}
+                </div>
+            @enderror
+
+            <form method="POST" action="{{ route('product-type.store') }}" class="mx-auto mt-8 grid max-w-4xl gap-4 sm:grid-cols-2">
+                @csrf
+                <input type="hidden" name="redirect_to" value="home">
+
+                @foreach ($typeCards as $value => $type)
+                    @php
+                        $isSelected = $selectedHomeType === $value;
+                    @endphp
+                    <button
+                        type="submit"
+                        name="preferred_product_type"
+                        value="{{ $value }}"
+                        class="group h-full rounded-2xl border bg-white p-5 text-start shadow-sm transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-brand-500/20 dark:bg-gray-900 {{ $isSelected ? 'border-brand-500 shadow-brand-100/80 dark:bg-brand-500/5' : 'border-gray-200 dark:border-gray-800 dark:hover:border-brand-500' }}"
+                    >
+                        <span class="flex items-start gap-4">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
+                                <i class="{{ $type['icon'] }} text-2xl" aria-hidden="true"></i>
+                            </span>
+                            <span class="min-w-0 flex-1">
+                                <span class="flex flex-wrap items-center gap-2">
+                                    <span class="text-xl font-black text-gray-900 dark:text-white">{{ $type['label'] }}</span>
+                                    <span class="rounded-full px-3 py-1 text-[11px] font-black {{ $isSelected ? 'bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' }}">
+                                        {{ $isSelected ? 'محدد الآن' : 'اختيار' }}
+                                    </span>
+                                </span>
+                                <span class="mt-2 block text-sm leading-6 text-gray-500 dark:text-gray-400">{{ $type['description'] }}</span>
+                                <span class="mt-4 inline-flex rounded-xl bg-gray-900 px-4 py-2 text-xs font-black text-white transition group-hover:bg-brand-600 dark:bg-white dark:text-gray-900 dark:group-hover:bg-brand-500 dark:group-hover:text-white">
+                                    {{ $type['button'] }}
+                                </span>
+                            </span>
+                        </span>
+                    </button>
+                @endforeach
+            </form>
+        </div>
+    </section>
+
+    @if ($selectedHomeType)
     {{-- Step 1: pick a category (same page, links add ?category_id=) --}}
     <div id="sz-category-gate" class="{{ $homeCategoryId ? 'hidden' : '' }}">
         <x-home.categories />
@@ -19,7 +92,7 @@
                     {{ __('home.browsing_prefix') }}
                     <span id="sz-category-bar-name" class="font-bold text-gray-900 dark:text-white">—</span>
                 </p>
-                <a href="{{ url('/') }}" class="rounded-xl border border-gray-200 bg-white px-4 py-2 text-xs font-bold text-gray-700 transition-colors hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-brand-500">
+                <a href="{{ route('home', ['type' => $selectedHomeType]) }}" class="rounded-xl border border-gray-200 bg-white px-4 py-2 text-xs font-bold text-gray-700 transition-colors hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-brand-500">
                     {{ __('home.change_category') }}
                 </a>
             </div>
@@ -31,8 +104,17 @@
         <x-home.most-favorited-products />
     </div>
 
-    <x-home.trust-badges />
-    <x-home.contact />
+        <x-home.trust-badges />
+        <x-home.contact />
+    @else
+        <section class="bg-white py-12 dark:bg-gray-950">
+            <div class="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
+                <p class="rounded-2xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm font-semibold text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400">
+                    اختر النوع أولا حتى تظهر التصنيفات والمنتجات المناسبة.
+                </p>
+            </div>
+        </section>
+    @endif
 @endsection
 
 @push('scripts')
@@ -56,9 +138,20 @@
 @endphp
 <script>
 const homeI18n = @json($homeScriptI18n);
+const selectedHomeType = @json($selectedHomeType);
 document.addEventListener('DOMContentLoaded', async function () {
     const $ = id => document.getElementById(id);
     function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function typedUrl(url, key = 'type') {
+        if (!selectedHomeType) {
+            return url;
+        }
+
+        const parsed = new URL(url, window.location.origin);
+        parsed.searchParams.set(key, selectedHomeType);
+
+        return parsed.pathname + parsed.search;
+    }
     function categoryThumbInner(cat) {
         if (cat.icon_class) {
             return `<i class="${esc(cat.icon_class)} text-2xl sm:text-3xl leading-none text-brand-500 dark:text-brand-400" aria-hidden="true"></i>`;
@@ -114,6 +207,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     function productsPageUrl(sort) {
         const p = new URLSearchParams();
+        if (selectedHomeType) {
+            p.set('type', selectedHomeType);
+        }
         if (selectedCategoryId) {
             p.set('category_id', selectedCategoryId);
         }
@@ -148,7 +244,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     async function loadCategories() {
         try {
-            const res = await window.axios.get('/api/categories?per_page=100');
+            const res = await window.axios.get(typedUrl('/api/categories?per_page=100'));
             allCategories = res.data.data || [];
             $('cats-loading')?.classList.add('hidden');
             if (!allCategories.length) {
@@ -162,7 +258,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
                 grid.innerHTML = allCategories.map((cat, i) => {
                     const subs = cat.subcategories || [];
-                    const href = '/?category_id=' + encodeURIComponent(String(cat.id));
+                    const hrefParams = new URLSearchParams({
+                        category_id: String(cat.id),
+                        type: selectedHomeType,
+                    });
+                    const href = '/?' + hrefParams.toString();
 
                     return `
                 <a href="${href}" class="cat-card group overflow-hidden rounded-2xl border border-gray-200/80 bg-white dark:border-gray-800 dark:bg-gray-900" style="opacity:0;transform:translateY(20px);transition:opacity .5s ease ${i * 0.06}s,transform .5s ease ${i * 0.06}s;">
@@ -242,7 +342,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const apiUrl = selectedCategoryId
                 ? ('/api/products?per_page=24&category_id=' + encodeURIComponent(selectedCategoryId))
                 : '/api/products?per_page=5';
-            const res = await window.axios.get(apiUrl);
+            const res = await window.axios.get(typedUrl(apiUrl, 'category_type'));
             const { data } = res.data;
             if (!data.length) { $('products-empty')?.classList.remove('hidden'); }
             else {
@@ -350,7 +450,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const q = selectedCategoryId
                 ? ('&category_id=' + encodeURIComponent(selectedCategoryId))
                 : '';
-            const res = await window.axios.get('/api/products?per_page=5&sort=best_selling' + q);
+            const res = await window.axios.get(typedUrl('/api/products?per_page=5&sort=best_selling' + q, 'category_type'));
             const data = res.data.data || [];
             renderProductCards(data, gridEl, emptyEl, loadingEl);
         } catch (e) { if (emptyEl) emptyEl.classList.remove('hidden'); }
@@ -364,7 +464,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const q = selectedCategoryId
                 ? ('&category_id=' + encodeURIComponent(selectedCategoryId))
                 : '';
-            const res = await window.axios.get('/api/products?per_page=5&sort=most_favorited' + q);
+            const res = await window.axios.get(typedUrl('/api/products?per_page=5&sort=most_favorited' + q, 'category_type'));
             const data = res.data.data || [];
             renderProductCards(data, gridEl, emptyEl, loadingEl);
         } catch (e) { if (emptyEl) emptyEl.classList.remove('hidden'); }
@@ -422,6 +522,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 if (btnText) btnText.textContent = homeI18n.contactSend || '';
             }
         });
+    }
+
+    if (!selectedHomeType) {
+        return;
     }
 
     await loadCategories();

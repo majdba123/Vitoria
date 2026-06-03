@@ -8,6 +8,7 @@ use App\Services\ApplicationCacheService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class SyndicateService
 {
@@ -28,9 +29,9 @@ class SyndicateService
                     'name' => $data['name'],
                     'email' => $data['email'],
                     'phone_number' => $data['phone'],
-                    'national_id' => fake()->unique()->numerify('##########'),
+                    'national_id' => $this->uniqueNationalId(),
                     'age' => 30,
-                    'membership_number' => fake()->unique()->bothify('SYN-########'),
+                    'membership_number' => $this->uniqueMembershipNumber(),
                     'type' => User::TYPE_SYNDICATE,
                     'password' => $data['password'],
                 ]);
@@ -144,5 +145,23 @@ class SyndicateService
     protected function flushCaches(): void
     {
         $this->cacheService->flushSyndicates();
+    }
+
+    protected function uniqueNationalId(): string
+    {
+        do {
+            $value = (string) random_int(10000, 99999).(string) random_int(10000, 99999);
+        } while (User::query()->where('national_id', $value)->exists());
+
+        return $value;
+    }
+
+    protected function uniqueMembershipNumber(): string
+    {
+        do {
+            $value = 'SYN-'.Str::upper(Str::random(10));
+        } while (User::query()->where('membership_number', $value)->exists());
+
+        return $value;
     }
 }

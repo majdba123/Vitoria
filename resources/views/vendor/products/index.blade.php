@@ -1,5 +1,7 @@
 @extends('layouts.vendor')
-@php($discountOnly = $discountOnly ?? false)
+@php
+    $discountOnly = $discountOnly ?? false;
+@endphp
 
 @section('title', 'Products — Vetora Vendor')
 @section('page-title', 'Products')

@@ -24,26 +24,14 @@ class ProductTypePreferenceController extends Controller
 
         return view('preferences.product-type', [
             'selectedType' => $this->selectedProductTypeService->resolve($request),
-            'types' => [
-                Category::TYPE_AGRICULTURE => [
-                    'label' => 'زراعي',
-                    'description' => 'تصفح المنتجات والخدمات الزراعية المناسبة لاحتياجاتك اليومية.',
-                    'icon' => 'fa-solid fa-seedling',
-                    'button' => 'اختيار القسم الزراعي',
-                ],
-                Category::TYPE_VETERINARY => [
-                    'label' => 'بيطري',
-                    'description' => 'تصفح المنتجات والخدمات البيطرية مع وصول أسرع للفئات المناسبة.',
-                    'icon' => 'fa-solid fa-stethoscope',
-                    'button' => 'اختيار القسم البيطري',
-                ],
-            ],
+            'types' => $this->types(),
         ]);
     }
 
     public function store(StoreProductTypePreferenceRequest $request): RedirectResponse
     {
         $type = $request->validated('preferred_product_type');
+        $redirectTo = $request->validated('redirect_to') ?? 'categories';
         $user = $request->user();
 
         if ($user && $user->type === User::TYPE_USER) {
@@ -52,9 +40,34 @@ class ProductTypePreferenceController extends Controller
 
         $this->selectedProductTypeService->remember($request, $type);
 
+        $route = $redirectTo === 'home'
+            ? route('home', ['type' => $type])
+            : route('categories.index', ['type' => $type]);
+
         return redirect()
-            ->route('categories.index', ['type' => $type])
+            ->to($route)
             ->with('success', 'تم حفظ نوع التصفح بنجاح.');
+    }
+
+    /**
+     * @return array<string, array{label: string, description: string, icon: string, button: string}>
+     */
+    private function types(): array
+    {
+        return [
+            Category::TYPE_AGRICULTURE => [
+                'label' => 'زراعي',
+                'description' => 'تصفح المنتجات والخدمات الزراعية المناسبة لاحتياجاتك اليومية.',
+                'icon' => 'fa-solid fa-seedling',
+                'button' => 'اختيار القسم الزراعي',
+            ],
+            Category::TYPE_VETERINARY => [
+                'label' => 'بيطري',
+                'description' => 'تصفح المنتجات والخدمات البيطرية مع وصول أسرع للفئات المناسبة.',
+                'icon' => 'fa-solid fa-stethoscope',
+                'button' => 'اختيار القسم البيطري',
+            ],
+        ];
     }
 
     private function dashboardPathFor(User $user): string

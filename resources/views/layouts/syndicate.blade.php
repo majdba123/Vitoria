@@ -28,17 +28,19 @@
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
-            @php($currentRoute = request()->route()?->getName() ?? '')
-            @php($links = [
-                ['route' => 'syndicate.dashboard', 'label' => 'نظرة عامة'],
-                ['route' => 'syndicate.categories', 'label' => 'التصنيفات'],
-                ['route' => 'syndicate.vendors', 'label' => 'التجار'],
-                ['route' => 'syndicate.products', 'label' => 'المنتجات'],
-                ['route' => 'syndicate.podcasts', 'label' => 'البودكاست'],
-                ['route' => 'syndicate.orders', 'label' => 'الطلبات'],
-                ['route' => 'syndicate.sales', 'label' => 'المبيعات'],
-                ['route' => 'syndicate.reports', 'label' => 'التقارير'],
-            ])
+            @php
+                $currentRoute = request()->route()?->getName() ?? '';
+                $links = [
+                    ['route' => 'syndicate.dashboard', 'label' => 'نظرة عامة'],
+                    ['route' => 'syndicate.categories', 'label' => 'التصنيفات'],
+                    ['route' => 'syndicate.vendors', 'label' => 'التجار'],
+                    ['route' => 'syndicate.products', 'label' => 'المنتجات'],
+                    ['route' => 'syndicate.podcasts', 'label' => 'البودكاست'],
+                    ['route' => 'syndicate.orders', 'label' => 'الطلبات'],
+                    ['route' => 'syndicate.sales', 'label' => 'المبيعات'],
+                    ['route' => 'syndicate.reports', 'label' => 'التقارير'],
+                ];
+            @endphp
             <nav class="flex-1 overflow-y-auto px-4 py-5">
                 <p class="mb-2 px-3 text-[10px] font-bold uppercase tracking-widest text-gray-500">مساحة العمل</p>
                 @foreach($links as $link)

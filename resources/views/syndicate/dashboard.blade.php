@@ -1,16 +1,18 @@
 @extends('layouts.syndicate')
 
-@php($section = $section ?? 'dashboard')
-@php($sectionLabels = [
-    'dashboard' => 'نظرة عامة',
-    'categories' => 'التصنيفات',
-    'vendors' => 'التجار',
-    'products' => 'المنتجات',
-    'podcasts' => 'البودكاست',
-    'orders' => 'الطلبات',
-    'sales' => 'المبيعات',
-    'reports' => 'التقارير',
-])
+@php
+    $section = $section ?? 'dashboard';
+    $sectionLabels = [
+        'dashboard' => 'نظرة عامة',
+        'categories' => 'التصنيفات',
+        'vendors' => 'التجار',
+        'products' => 'المنتجات',
+        'podcasts' => 'البودكاست',
+        'orders' => 'الطلبات',
+        'sales' => 'المبيعات',
+        'reports' => 'التقارير',
+    ];
+@endphp
 
 @section('title', ($sectionLabels[$section] ?? 'لوحة النقابة') . ' - Vetora')
 @section('page-title', $sectionLabels[$section] ?? 'لوحة النقابة')

@@ -33,7 +33,9 @@
             @csrf
 
             @foreach ($types as $value => $type)
-                @php($isSelected = old('preferred_product_type', $selectedType) === $value)
+                @php
+                    $isSelected = old('preferred_product_type', $selectedType) === $value;
+                @endphp
                 <button
                     type="submit"
                     name="preferred_product_type"

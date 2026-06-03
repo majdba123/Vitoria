@@ -23,6 +23,7 @@ class StoreProductTypePreferenceRequest extends FormRequest
                 Category::TYPE_AGRICULTURE,
                 Category::TYPE_VETERINARY,
             ])],
+            'redirect_to' => ['sometimes', 'nullable', 'string', Rule::in(['home', 'categories'])],
         ];
     }
 
@@ -34,6 +35,7 @@ class StoreProductTypePreferenceRequest extends FormRequest
         return [
             'preferred_product_type.required' => 'يرجى اختيار نوع صحيح للمتابعة.',
             'preferred_product_type.in' => 'نوع التصفح المحدد غير صالح.',
+            'redirect_to.in' => 'وجهة المتابعة المحددة غير صالحة.',
         ];
     }
 }
