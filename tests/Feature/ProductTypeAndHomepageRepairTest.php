@@ -98,6 +98,12 @@ test('guests are redirected to type selection and the selected type persists for
     $this->get('/')
         ->assertRedirect(route('product-type.select'));
 
+    $this->get(route('product-type.select'))
+        ->assertOk()
+        ->assertSee('name="preferred_product_type"', false)
+        ->assertSee('value="agriculture"', false)
+        ->assertSee('value="veterinary"', false);
+
     $this->post(route('product-type.store'), [
         'preferred_product_type' => Category::TYPE_VETERINARY,
     ])
@@ -204,6 +210,49 @@ test('admin can create syndicate without logo and with valid logo', function () 
     expect($response->json('data.logo'))->toStartWith('syndicates/logos/');
     Storage::disk('public')->assertExists($response->json('data.logo'));
 });
+
+test('admin can create syndicate when an empty logo value is submitted by the browser', function () {
+    Storage::fake('public');
+    repairAdmin();
+
+    $this->postJson('/api/admin/syndicates', [
+        'name' => 'Empty Logo Syndicate',
+        'email' => 'empty-logo-syndicate@example.com',
+        'phone' => '0998000011',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'type' => Category::TYPE_AGRICULTURE,
+        'status' => Syndicate::STATUS_ACTIVE,
+        'logo' => '',
+    ])
+        ->assertCreated()
+        ->assertJsonPath('data.logo', null)
+        ->assertJsonPath('data.logo_url', asset('images/syndicate-placeholder.svg'));
+});
+
+test('admin can upload supported syndicate logo image formats', function (string $extension) {
+    Storage::fake('public');
+    repairAdmin();
+
+    $response = $this->postJson('/api/admin/syndicates', [
+        'name' => 'Logo Format '.$extension,
+        'email' => 'logo-format-'.$extension.'@example.com',
+        'phone' => match ($extension) {
+            'jpg' => '0998000020',
+            'jpeg' => '0998000021',
+            'png' => '0998000022',
+            'webp' => '0998000023',
+        },
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'type' => Category::TYPE_VETERINARY,
+        'status' => Syndicate::STATUS_ACTIVE,
+        'logo' => UploadedFile::fake()->image('logo.'.$extension, 200, 200),
+    ]);
+
+    $response->assertCreated();
+    expect($response->json('data.logo'))->toStartWith('syndicates/logos/');
+})->with(['jpg', 'jpeg', 'png', 'webp']);
 
 test('admin syndicate logo upload rejects invalid files and details include aggregate fields', function () {
     Storage::fake('public');

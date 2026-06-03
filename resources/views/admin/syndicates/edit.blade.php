@@ -99,7 +99,7 @@ form.addEventListener('submit', async function (event) {
     const button = document.getElementById('submit-btn');
     button.disabled = true;
     button.textContent = 'جاري الحفظ...';
-    const formData = new FormData(form);
+    const formData = syndicateFormData(form);
     formData.append('_method', 'PUT');
     if (!form.password.value) {
         formData.delete('password');
@@ -118,6 +118,16 @@ form.addEventListener('submit', async function (event) {
         button.textContent = 'حفظ التعديلات';
     }
 });
+
+function syndicateFormData(form) {
+    const formData = new FormData(form);
+    const logo = form.querySelector('input[name="logo"]');
+    if (!logo || !logo.files || logo.files.length === 0) {
+        formData.delete('logo');
+    }
+
+    return formData;
+}
 
 function clearErrors() {
     document.querySelectorAll('.form-error').forEach(el => { el.textContent = ''; el.classList.add('hidden'); });

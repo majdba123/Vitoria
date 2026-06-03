@@ -75,7 +75,7 @@ document.getElementById('syndicate-form').addEventListener('submit', async funct
     button.textContent = 'جاري الحفظ...';
 
     try {
-        const res = await window.axios.post('/api/admin/syndicates', new FormData(form), { silent: true });
+        const res = await window.axios.post('/api/admin/syndicates', syndicateFormData(form), { silent: true });
         window.location.href = '/admin/syndicates/' + res.data.data.id;
     } catch (error) {
         const parsed = window.showApiError ? window.showApiError(error) : window.ApiErrors.parse(error);
@@ -86,6 +86,16 @@ document.getElementById('syndicate-form').addEventListener('submit', async funct
         button.textContent = 'إنشاء وكيل النقابة';
     }
 });
+
+function syndicateFormData(form) {
+    const formData = new FormData(form);
+    const logo = form.querySelector('input[name="logo"]');
+    if (!logo || !logo.files || logo.files.length === 0) {
+        formData.delete('logo');
+    }
+
+    return formData;
+}
 
 function clearErrors() {
     document.querySelectorAll('.form-error').forEach(el => { el.textContent = ''; el.classList.add('hidden'); });

@@ -7,9 +7,9 @@
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-2xl text-center">
             <span class="inline-flex rounded-full bg-brand-50 px-4 py-1.5 text-xs font-black text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">ابدأ التصفح</span>
-            <h1 class="mt-4 text-3xl font-black text-gray-900 dark:text-white sm:text-4xl">اختر نوع المنتجات التي تريد استكشافها</h1>
+            <h1 class="mt-4 text-3xl font-black text-gray-900 dark:text-white sm:text-4xl">اختر نوع المنتجات التي ترغب في تصفحها</h1>
             <p class="mt-3 text-sm leading-7 text-gray-500 dark:text-gray-400">
-                قبل عرض التصنيفات والمنتجات، اختر القسم المناسب لك لنُظهر لك محتوى زراعياً أو بيطرياً فقط.
+                سيتم عرض التصنيفات والمنتجات المناسبة لاختيارك فقط، ويمكنك تغيير هذا الاختيار لاحقا من نفس الصفحة أو من الملف الشخصي.
             </p>
         </div>
 
@@ -25,60 +25,52 @@
             </div>
         @endif
 
+        @error('preferred_product_type')
+            <div class="mx-auto mt-8 max-w-2xl rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">{{ $message }}</div>
+        @enderror
+
         <form method="POST" action="{{ route('product-type.store') }}" class="mt-10 grid gap-5 lg:grid-cols-2">
             @csrf
 
             @foreach ($types as $value => $type)
-                @php
-                    $isSelected = old('preferred_product_type', $selectedType) === $value;
-                @endphp
-                <label class="group cursor-pointer overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-lg has-[:checked]:border-brand-500 has-[:checked]:shadow-brand-100/80 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-brand-500 dark:has-[:checked]:bg-brand-500/5">
-                    <input type="radio" name="preferred_product_type" value="{{ $value }}" class="sr-only" @checked($isSelected)>
-                    <div class="flex h-full flex-col p-6 sm:p-7">
-                        <div class="flex items-start justify-between gap-4">
-                            <div class="flex h-16 w-16 items-center justify-center rounded-3xl bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
-                                <i class="{{ $type['icon'] }} text-3xl" aria-hidden="true"></i>
-                            </div>
-                            <span class="inline-flex rounded-full px-3 py-1 text-[11px] font-black {{ $isSelected ? 'bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' }}">
-                                {{ $isSelected ? 'محدد الآن' : 'متاح للاختيار' }}
-                            </span>
-                        </div>
+                @php($isSelected = old('preferred_product_type', $selectedType) === $value)
+                <button
+                    type="submit"
+                    name="preferred_product_type"
+                    value="{{ $value }}"
+                    class="group h-full rounded-3xl border bg-white p-6 text-start shadow-sm transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-brand-500/20 sm:p-7 dark:bg-gray-900 {{ $isSelected ? 'border-brand-500 shadow-brand-100/80 dark:bg-brand-500/5' : 'border-gray-200 dark:border-gray-800 dark:hover:border-brand-500' }}"
+                    aria-label="{{ $type['button'] }}"
+                >
+                    <span class="flex items-start justify-between gap-4">
+                        <span class="flex h-16 w-16 items-center justify-center rounded-3xl bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
+                            <i class="{{ $type['icon'] }} text-3xl" aria-hidden="true"></i>
+                        </span>
+                        <span class="inline-flex rounded-full px-3 py-1 text-[11px] font-black {{ $isSelected ? 'bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' }}">
+                            {{ $isSelected ? 'محدد الآن' : 'اختيار' }}
+                        </span>
+                    </span>
 
-                        <div class="mt-6">
-                            <h2 class="text-2xl font-black text-gray-900 dark:text-white">{{ $type['label'] }}</h2>
-                            <p class="mt-3 text-sm leading-7 text-gray-500 dark:text-gray-400">{{ $type['description'] }}</p>
-                        </div>
+                    <span class="mt-6 block">
+                        <span class="block text-2xl font-black text-gray-900 dark:text-white">{{ $type['label'] }}</span>
+                        <span class="mt-3 block text-sm leading-7 text-gray-500 dark:text-gray-400">{{ $type['description'] }}</span>
+                    </span>
 
-                        <div class="mt-6 space-y-3 text-sm text-gray-500 dark:text-gray-400">
-                            <div class="flex items-center gap-2">
-                                <span class="h-2 w-2 rounded-full bg-brand-500"></span>
-                                <span>عرض التصنيفات المطابقة فقط</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="h-2 w-2 rounded-full bg-brand-500"></span>
-                                <span>تصفية المنتجات والبحث حسب القسم المحدد</span>
-                            </div>
-                        </div>
+                    <span class="mt-6 block space-y-3 text-sm text-gray-500 dark:text-gray-400">
+                        <span class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-brand-500"></span>
+                            <span>عرض التصنيفات المطابقة فقط</span>
+                        </span>
+                        <span class="flex items-center gap-2">
+                            <span class="h-2 w-2 rounded-full bg-brand-500"></span>
+                            <span>تصفية المنتجات والبحث حسب القسم المحدد</span>
+                        </span>
+                    </span>
 
-                        <div class="mt-8">
-                            <span class="inline-flex items-center justify-center rounded-2xl bg-gray-900 px-5 py-3 text-sm font-black text-white transition group-hover:bg-brand-600 dark:bg-white dark:text-gray-900 dark:group-hover:bg-brand-500 dark:group-hover:text-white">
-                                {{ $type['button'] }}
-                            </span>
-                        </div>
-                    </div>
-                </label>
-            @endforeach
-
-            @error('preferred_product_type')
-                <p class="lg:col-span-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">{{ $message }}</p>
-            @enderror
-
-            <div class="lg:col-span-2 flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-gray-200 bg-white px-5 py-4 dark:border-gray-800 dark:bg-gray-900">
-                <p class="text-sm text-gray-500 dark:text-gray-400">يمكنك تعديل نوع التصفح لاحقاً من الصفحة نفسها أو من ملفك الشخصي.</p>
-                <button type="submit" class="rounded-2xl bg-gray-900 px-6 py-3 text-sm font-black text-white transition hover:bg-brand-600 active:scale-[.98] dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">
-                    متابعة
+                    <span class="mt-8 inline-flex items-center justify-center rounded-2xl bg-gray-900 px-5 py-3 text-sm font-black text-white transition group-hover:bg-brand-600 dark:bg-white dark:text-gray-900 dark:group-hover:bg-brand-500 dark:group-hover:text-white">
+                        {{ $type['button'] }}
+                    </span>
                 </button>
-            </div>
+            @endforeach
         </form>
     </div>
 </div>

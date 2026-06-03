@@ -307,6 +307,17 @@ test('syndicate and admin pages render with Vetora Arabic branding', function ()
         ->and(__('Vetora'))->toBe('Vetora');
 });
 
+test('syndicate dashboard page renders the professional workspace shell', function () {
+    $user = syndicateUser(Category::TYPE_AGRICULTURE);
+
+    $this->actingAs($user)
+        ->get(route('syndicate.dashboard'))
+        ->assertOk()
+        ->assertSee('مساحة عمل النقابة')
+        ->assertSee('نظرة عامة')
+        ->assertSee('الأعلى أداء');
+});
+
 test('admin dashboard overview includes syndicate statistics', function () {
     Cache::forget('admin_dashboard_overview');
     syndicateAdmin();

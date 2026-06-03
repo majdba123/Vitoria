@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -35,5 +36,14 @@ class Subcategory extends Model
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function scopeForCategoryType(Builder $query, ?string $type): Builder
+    {
+        if (! in_array($type, [Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY], true)) {
+            return $query;
+        }
+
+        return $query->whereHas('category', fn (Builder $categoryQuery) => $categoryQuery->where('type', $type));
     }
 }
