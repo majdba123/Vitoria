@@ -97,6 +97,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (c === 1) return homeI18n.revOne || '';
         return (homeI18n.revN || '').replace(':count', String(c));
     }
+    function categoryTypeLabel(type) {
+        if (type === 'agriculture') return 'زراعي';
+        if (type === 'veterinary') return 'بيطري';
+        return '';
+    }
 
     const urlParams = new URLSearchParams(window.location.search);
     const selectedCategoryId = urlParams.get('category_id');
@@ -250,7 +255,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     let h = ''; for (let i = 0; i < 5; i++) h += i < r ? filled : empty; return h;
                 }
                 grid.innerHTML = data.map((p, i) => {
-                    const photo = p.first_photo_url || '', inStock = p.quantity > 0;
+                    const photo = p.first_photo_url || p.fallback_photo_url || '{{ asset('images/product-placeholder.svg') }}', inStock = p.quantity > 0;
+                    const typeLabel = categoryTypeLabel(p.category?.type);
                     const isFav = window._favIds && window._favIds.has(p.id);
                     const revCount = parseInt(p.review_count, 10) || 0;
                     return `
@@ -265,6 +271,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         </div>
                         <div class="p-3 sm:p-4">
                             <a href="/products/${p.id}"><h3 class="line-clamp-2 text-sm font-bold leading-snug text-gray-900 hover:text-brand-600 dark:text-white dark:hover:text-brand-400">${esc(p.name)}</h3></a>
+                            ${typeLabel ? `<span class="mt-2 inline-flex rounded-lg bg-brand-50 px-2 py-1 text-[10px] font-black text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">${esc(typeLabel)}</span>` : ''}
                             <div class="mt-1.5 flex items-center gap-1.5 text-amber-400">${starStars(p.average_rating)}<span class="text-[11px] text-gray-400 dark:text-gray-500">${revCount ? esc(revLabel(revCount)) : ''}</span></div>
                             <div class="mt-2.5 flex items-baseline gap-1">
                                 <span class="text-lg font-black ${p.has_active_discount ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}">${parseFloat(p.has_active_discount ? p.discounted_price : p.price).toLocaleString()}</span><span class="text-[11px] text-gray-400">SYP</span>
@@ -279,7 +286,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }).join('');
                 grid.querySelectorAll('.product-card').forEach(el => observer.observe(el));
             }
-        } catch (e) { $('products-empty')?.classList.remove('hidden'); }
+        } catch (e) {
+            if ($('products-empty')) {
+                $('products-empty').textContent = homeI18n.genericErr || '';
+                $('products-empty').classList.remove('hidden');
+            }
+        }
         $('products-loading')?.classList.add('hidden');
     }
 
@@ -299,9 +311,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
         if (emptyEl) emptyEl.classList.add('hidden');
         gridEl.innerHTML = data.map((p, i) => {
-            const photo = p.first_photo_url || '', inStock = p.quantity > 0;
+            const photo = p.first_photo_url || p.fallback_photo_url || '{{ asset('images/product-placeholder.svg') }}', inStock = p.quantity > 0;
             const isFav = window._favIds && window._favIds.has(p.id);
             const revCount = parseInt(p.review_count, 10) || 0;
+            const typeLabel = categoryTypeLabel(p.category?.type);
             return `
             <div class="product-card overflow-hidden rounded-2xl border border-gray-200/80 bg-white dark:border-gray-800 dark:bg-gray-900" style="opacity:0;transform:translateY(16px);transition:opacity .4s ease ${(startOpacity + i) * 0.05}s,transform .4s ease ${(startOpacity + i) * 0.05}s;">
                 <div class="relative">
@@ -314,6 +327,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 </div>
                 <div class="p-3 sm:p-4">
                     <a href="/products/${p.id}"><h3 class="line-clamp-2 text-sm font-bold leading-snug text-gray-900 hover:text-brand-600 dark:text-white dark:hover:text-brand-400">${esc(p.name)}</h3></a>
+                    ${typeLabel ? `<span class="mt-2 inline-flex rounded-lg bg-brand-50 px-2 py-1 text-[10px] font-black text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">${esc(typeLabel)}</span>` : ''}
                     <div class="mt-1.5 flex items-center gap-1.5 text-amber-400">${starStars(p.average_rating)}<span class="text-[11px] text-gray-400 dark:text-gray-500">${revCount ? esc(revLabel(revCount)) : ''}</span></div>
                     <div class="mt-2.5 flex items-baseline gap-1">
                         <span class="text-lg font-black ${p.has_active_discount ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}">${parseFloat(p.has_active_discount ? p.discounted_price : p.price).toLocaleString()}</span><span class="text-[11px] text-gray-400">SYP</span>

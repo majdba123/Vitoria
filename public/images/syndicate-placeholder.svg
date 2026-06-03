@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="Syndicate logo placeholder">
+  <rect width="256" height="256" rx="48" fill="#ecfdf5"/>
+  <circle cx="128" cy="104" r="44" fill="#10b981"/>
+  <path d="M56 210c14-42 50-66 72-66s58 24 72 66" fill="#a7f3d0"/>
+  <path d="M84 92c18-34 54-42 88-20-20 4-34 14-44 30-11-16-25-25-44-10Z" fill="#ffffff" opacity=".9"/>
+</svg>

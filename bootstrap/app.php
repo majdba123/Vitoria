@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureProductTypeSelected;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsSyndicate;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -47,6 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: ['api/*']);
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
+            'product.type.selected' => EnsureProductTypeSelected::class,
             'vendor' => \App\Http\Middleware\EnsureUserIsVendor::class,
             'syndicate' => EnsureUserIsSyndicate::class,
             'cache.response' => \App\Http\Middleware\CacheResponse::class,

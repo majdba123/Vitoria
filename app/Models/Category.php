@@ -75,6 +75,15 @@ class Category extends Model
         return $query->where('type', self::TYPE_VETERINARY);
     }
 
+    public function scopeForType(Builder $query, ?string $type): Builder
+    {
+        if (! in_array($type, [self::TYPE_AGRICULTURE, self::TYPE_VETERINARY], true)) {
+            return $query;
+        }
+
+        return $query->where('type', $type);
+    }
+
     public function isAgriculture(): bool
     {
         return $this->type === self::TYPE_AGRICULTURE;

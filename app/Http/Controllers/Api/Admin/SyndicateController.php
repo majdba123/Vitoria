@@ -125,6 +125,8 @@ class SyndicateController extends Controller
                 'vendors_count' => $this->dashboardService->vendorQuery($type)->count(),
                 'products_count' => $this->dashboardService->productQuery($type)->count(),
                 'orders_count' => $this->dashboardService->orderQuery($type)->count(),
+                'completed_orders_count' => $this->dashboardService->orderQuery($type)->where('status', \App\Models\Order::STATUS_COMPLETED)->count(),
+                'total_sales' => $this->dashboardService->lineTotalQuery($type)->where('orders.status', \App\Models\Order::STATUS_COMPLETED)->sum('order_items.line_total'),
             ],
         ]);
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\Auth\UserResource;
+use App\Models\User;
 use App\Services\Auth\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -32,6 +33,7 @@ class AuthController extends Controller
             'data' => [
                 'user' => new UserResource($result['user']->load('syndicate')),
                 'token' => $result['token'],
+                'redirect_url' => $this->redirectUrlFor($result['user']),
             ],
         ], 201);
     }
@@ -51,6 +53,7 @@ class AuthController extends Controller
             'data' => [
                 'user' => new UserResource($result['user']->load('syndicate')),
                 'token' => $result['token'],
+                'redirect_url' => $this->redirectUrlFor($result['user']),
             ],
         ]);
     }
@@ -89,5 +92,17 @@ class AuthController extends Controller
         return response()->json([
             'message' => __('Logged out successfully.'),
         ]);
+    }
+
+    protected function redirectUrlFor(User $user): string
+    {
+        return match ($user->type) {
+            User::TYPE_ADMIN => route('admin.dashboard'),
+            User::TYPE_VENDOR => route('vendor.dashboard'),
+            User::TYPE_SYNDICATE => route('syndicate.dashboard'),
+            default => $user->preferred_product_type
+                ? route('home')
+                : route('product-type.select'),
+        };
     }
 }

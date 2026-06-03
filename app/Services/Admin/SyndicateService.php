@@ -18,36 +18,44 @@ class SyndicateService
      */
     public function create(array $data): Syndicate
     {
-        return DB::transaction(function () use ($data) {
-            $user = User::query()->create([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'phone_number' => $data['phone'],
-                'national_id' => fake()->unique()->numerify('##########'),
-                'age' => 30,
-                'membership_number' => fake()->unique()->bothify('SYN-########'),
-                'type' => User::TYPE_SYNDICATE,
-                'password' => $data['password'],
-            ]);
+        $logo = ($data['logo'] ?? null) instanceof UploadedFile
+            ? $data['logo']->store('syndicates/logos', 'public')
+            : null;
 
-            $logo = ($data['logo'] ?? null) instanceof UploadedFile
-                ? $data['logo']->store('syndicates', 'public')
-                : null;
+        try {
+            return DB::transaction(function () use ($data, $logo) {
+                $user = User::query()->create([
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'phone_number' => $data['phone'],
+                    'national_id' => fake()->unique()->numerify('##########'),
+                    'age' => 30,
+                    'membership_number' => fake()->unique()->bothify('SYN-########'),
+                    'type' => User::TYPE_SYNDICATE,
+                    'password' => $data['password'],
+                ]);
 
-            $syndicate = Syndicate::query()->create([
-                'user_id' => $user->id,
-                'name' => $data['name'],
-                'type' => $data['type'],
-                'phone' => $data['phone'],
-                'email' => $data['email'],
-                'status' => $data['status'] ?? Syndicate::STATUS_ACTIVE,
-                'logo' => $logo,
-            ]);
+                $syndicate = Syndicate::query()->create([
+                    'user_id' => $user->id,
+                    'name' => $data['name'],
+                    'type' => $data['type'],
+                    'phone' => $data['phone'],
+                    'email' => $data['email'],
+                    'status' => $data['status'] ?? Syndicate::STATUS_ACTIVE,
+                    'logo' => $logo,
+                ]);
 
-            $this->flushCaches();
+                $this->flushCaches();
 
-            return $syndicate->fresh(['user']);
-        });
+                return $syndicate->fresh(['user']);
+            });
+        } catch (\Throwable $exception) {
+            if ($logo) {
+                Storage::disk('public')->delete($logo);
+            }
+
+            throw $exception;
+        }
     }
 
     /**
@@ -55,38 +63,53 @@ class SyndicateService
      */
     public function update(Syndicate $syndicate, array $data): Syndicate
     {
-        return DB::transaction(function () use ($syndicate, $data) {
-            $userFields = array_filter(
-                array_intersect_key($data, array_flip(['name', 'email', 'password'])),
-                fn ($value) => $value !== null && $value !== '',
-            );
+        $newLogo = ($data['logo'] ?? null) instanceof UploadedFile
+            ? $data['logo']->store('syndicates/logos', 'public')
+            : null;
+        $oldLogo = $syndicate->logo;
 
-            if (array_key_exists('phone', $data)) {
-                $userFields['phone_number'] = $data['phone'];
-            }
+        try {
+            $updated = DB::transaction(function () use ($syndicate, $data, $newLogo) {
+                $userFields = array_filter(
+                    array_intersect_key($data, array_flip(['name', 'email', 'password'])),
+                    fn ($value) => $value !== null && $value !== '',
+                );
 
-            if ($userFields) {
-                $syndicate->user->update($userFields);
-            }
-
-            $syndicateFields = array_intersect_key($data, array_flip(['name', 'type', 'phone', 'email', 'status']));
-
-            if (($data['logo'] ?? null) instanceof UploadedFile) {
-                if ($syndicate->logo) {
-                    Storage::disk('public')->delete($syndicate->logo);
+                if (array_key_exists('phone', $data)) {
+                    $userFields['phone_number'] = $data['phone'];
                 }
 
-                $syndicateFields['logo'] = $data['logo']->store('syndicates', 'public');
+                if ($userFields) {
+                    $syndicate->user->update($userFields);
+                }
+
+                $syndicateFields = array_intersect_key($data, array_flip(['name', 'type', 'phone', 'email', 'status']));
+
+                if ($newLogo) {
+                    $syndicateFields['logo'] = $newLogo;
+                }
+
+                if ($syndicateFields) {
+                    $syndicate->update($syndicateFields);
+                }
+
+                $this->flushCaches();
+
+                return $syndicate->fresh(['user']);
+            });
+        } catch (\Throwable $exception) {
+            if ($newLogo) {
+                Storage::disk('public')->delete($newLogo);
             }
 
-            if ($syndicateFields) {
-                $syndicate->update($syndicateFields);
-            }
+            throw $exception;
+        }
 
-            $this->flushCaches();
+        if ($newLogo && $oldLogo) {
+            Storage::disk('public')->delete($oldLogo);
+        }
 
-            return $syndicate->fresh(['user']);
-        });
+        return $updated;
     }
 
     public function toggleActive(Syndicate $syndicate): Syndicate

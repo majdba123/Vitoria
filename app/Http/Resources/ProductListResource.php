@@ -60,16 +60,34 @@ class ProductListResource extends JsonResource
             'is_active' => $this->is_active,
             'status' => $this->status,
             'first_photo_url' => $this->image ? asset('storage/'.$this->image) : ($displayPhoto ? '/storage/'.$displayPhoto->path : null),
+            'fallback_photo_url' => asset('images/product-placeholder.svg'),
             'average_rating' => round((float) ($this->reviews_avg_rating ?? 0), 2),
             'review_count' => (int) ($this->reviews_count ?? 0),
         ];
 
-        if ($this->shouldExposeVendor($request) && $this->relationLoaded('vendor') && $this->vendor) {
+        if ($this->relationLoaded('subcategory')) {
+            $category = $this->subcategory?->category;
+            $data['category'] = $category ? [
+                'id' => $category->id,
+                'name' => $category->name,
+                'type' => $category->type,
+                'type_label' => \App\Models\Category::typeLabels()[$category->type] ?? $category->type,
+            ] : null;
+            $data['subcategory'] = $this->subcategory ? [
+                'id' => $this->subcategory->id,
+                'name' => $this->subcategory->name,
+                'category_id' => $this->subcategory->category_id,
+            ] : null;
+        }
+
+        if ($this->relationLoaded('vendor') && $this->vendor) {
             $vendor = $this->vendor;
             $data['vendor'] = [
                 'id' => $vendor->id,
                 'store_name' => $vendor->store_name,
-                'user' => $vendor->relationLoaded('user') && $vendor->user ? [
+                'logo' => $vendor->logo,
+                'logo_url' => $vendor->logo ? asset('storage/'.$vendor->logo) : null,
+                'user' => $this->shouldExposeVendor($request) && $vendor->relationLoaded('user') && $vendor->user ? [
                     'id' => $vendor->user->id,
                     'name' => $vendor->user->name,
                 ] : null,

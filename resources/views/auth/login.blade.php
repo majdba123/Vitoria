@@ -70,6 +70,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                     window.location.href = '{{ url("/admin/dashboard") }}';
                 } else if (t === 2) {
                     window.location.href = '{{ route("vendor.dashboard") }}';
+                } else if (t === 3) {
+                    window.location.href = '{{ route("syndicate.dashboard") }}';
+                } else if (!user.preferred_product_type) {
+                    window.location.href = '{{ route("product-type.select") }}';
                 } else {
                     window.location.href = '{{ url("/") }}';
                 }
@@ -107,6 +111,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
 
             const userType = response.data.data.user?.type;
+            const redirectUrl = response.data.data.redirect_url;
 
             showAlert('login-success', @json(__('auth.signed_in_success')));
 
@@ -115,6 +120,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                     window.location.href = '{{ url("/admin/dashboard") }}';
                 } else if (userType === 2) {
                     window.location.href = '{{ route("vendor.dashboard") }}';
+                } else if (userType === 3) {
+                    window.location.href = '{{ route("syndicate.dashboard") }}';
+                } else if (redirectUrl) {
+                    window.location.href = redirectUrl;
                 } else {
                     window.location.href = '{{ url("/") }}';
                 }
@@ -161,4 +170,3 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 </script>
 @endpush
-

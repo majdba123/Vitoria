@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreCategoryRequest;
 use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Models\Category;
+use App\Models\User;
 use App\Services\ApplicationCacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class CategoryController extends Controller
     public function index(Request $request): JsonResponse
     {
         $search = $request->input('search');
-        $type = $request->input('type');
+        $type = $request->input('type') ?: $this->preferredCategoryType($request);
         $perPage = min(max((int) $request->input('per_page', 24), 1), 100);
 
         $cacheKey = $search ? null : 'categories:list:'.sha1(json_encode([
@@ -157,5 +158,19 @@ class CategoryController extends Controller
         return response()->json([
             'message' => __('Category deleted successfully.'),
         ]);
+    }
+
+    protected function preferredCategoryType(Request $request): ?string
+    {
+        $user = $request->user();
+        $type = $user instanceof User && $user->type === User::TYPE_USER
+            ? $user->preferred_product_type
+            : null;
+
+        $type ??= $request->hasSession() ? $request->session()->get('preferred_product_type') : null;
+
+        return in_array($type, [Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY], true)
+            ? $type
+            : null;
     }
 }

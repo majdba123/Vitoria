@@ -4,7 +4,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('home');
-})->name('home');
+})->middleware('product.type.selected')->name('home');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/product-type/select', [\App\Http\Controllers\ProductTypePreferenceController::class, 'show'])->name('product-type.select');
+    Route::post('/product-type/select', [\App\Http\Controllers\ProductTypePreferenceController::class, 'store'])->name('product-type.store');
+});
 
 Route::get('/locale/{locale}', function (string $locale) {
     if (in_array($locale, ['ar', 'en'], true)) {
@@ -25,7 +30,9 @@ Route::get('/login', function () {
             \App\Models\User::TYPE_ADMIN => redirect()->route('admin.dashboard'),
             \App\Models\User::TYPE_VENDOR => redirect()->route('vendor.dashboard'),
             \App\Models\User::TYPE_SYNDICATE => redirect()->route('syndicate.dashboard'),
-            default => redirect()->route('home'),
+            default => auth()->user()->preferred_product_type
+                ? redirect()->route('home')
+                : redirect()->route('product-type.select'),
         };
     }
 
@@ -57,7 +64,7 @@ Route::middleware('auth')->group(function () {
 */
 Route::get('/products', function () {
     return view('products.index');
-})->name('products.index');
+})->middleware('product.type.selected')->name('products.index');
 
 Route::get('/products/{id}', function (string $id) {
     return view('products.show', ['productId' => $id]);
@@ -65,7 +72,7 @@ Route::get('/products/{id}', function (string $id) {
 
 Route::get('/categories', function () {
     return view('categories.index');
-})->name('categories.index');
+})->middleware('product.type.selected')->name('categories.index');
 
 Route::get('/categories/{id}', function (string $id) {
     return view('categories.show', ['categoryId' => $id]);

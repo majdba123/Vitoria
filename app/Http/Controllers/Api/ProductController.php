@@ -73,6 +73,7 @@ class ProductController extends Controller
         $filters = $request->only(['category_id', 'category_type', 'subcategory_id', 'has_discount', 'per_page', 'sort']);
         $perPage = min((int) ($filters['per_page'] ?? 15), 50);
         $filters['per_page'] = $perPage;
+        $filters['category_type'] = $filters['category_type'] ?? $this->preferredCategoryType($request);
 
         $products = $this->productService->listPublic($perPage, $filters);
 
@@ -488,5 +489,19 @@ class ProductController extends Controller
                 'category_id' => __('Selected category is not assigned to this vendor.'),
             ]);
         }
+    }
+
+    protected function preferredCategoryType(Request $request): ?string
+    {
+        $user = $request->user();
+        $type = $user instanceof User && $user->type === User::TYPE_USER
+            ? $user->preferred_product_type
+            : null;
+
+        $type ??= $request->hasSession() ? $request->session()->get('preferred_product_type') : null;
+
+        return in_array($type, [\App\Models\Category::TYPE_AGRICULTURE, \App\Models\Category::TYPE_VETERINARY], true)
+            ? $type
+            : null;
     }
 }

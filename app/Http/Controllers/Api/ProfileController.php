@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Auth\UserResource;
+use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +22,7 @@ class ProfileController extends Controller
             'email' => ['sometimes', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'phone_number' => ['sometimes', 'string', 'max:20', Rule::unique('users')->ignore($user->id)],
             'timezone' => ['sometimes', 'nullable', 'string', Rule::in(timezone_identifiers_list())],
+            'preferred_product_type' => ['sometimes', 'nullable', Rule::in([Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY])],
             'avatar' => ['sometimes', 'nullable', 'image', 'max:2048'],
         ]);
 
@@ -53,6 +55,10 @@ class ProfileController extends Controller
         }
 
         $user->refresh();
+
+        if (array_key_exists('preferred_product_type', $validated) && $request->hasSession()) {
+            $request->session()->put('preferred_product_type', $user->preferred_product_type);
+        }
 
         return response()->json([
             'message' => __('Profile updated successfully.'),

@@ -84,6 +84,15 @@
                         <select id="p-timezone" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500"></select>
                         <p id="err-timezone" class="mt-1 hidden text-xs text-red-500"></p>
                     </div>
+                    <div>
+                        <label for="p-preferred-product-type" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">نوع المنتجات المفضل</label>
+                        <select id="p-preferred-product-type" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500">
+                            <option value="">اختر النوع</option>
+                            <option value="agriculture">زراعي</option>
+                            <option value="veterinary">بيطري</option>
+                        </select>
+                        <p id="err-preferred_product_type" class="mt-1 hidden text-xs text-red-500"></p>
+                    </div>
 
                     {{-- Read-only fields --}}
                     <div class="grid grid-cols-2 gap-4 rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800/50">
@@ -324,6 +333,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         if ($('p-timezone').options.length) {
             $('p-timezone').value = u.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Damascus';
         }
+        $('p-preferred-product-type').value = u.preferred_product_type || '';
         const roleMap = PROFILE_ROLE_MAP;
         $('p-type').textContent = roleMap[u.type] ?? PROFILE_ROLE_DEFAULT;
         $('p-since').textContent = u.created_at ? new Date(u.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
@@ -621,6 +631,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             fd.append('email', $('p-email').value.trim());
             fd.append('phone_number', $('p-phone').value.trim());
             fd.append('timezone', $('p-timezone').value);
+            fd.append('preferred_product_type', $('p-preferred-product-type').value);
             if (pendingAvatar && pendingAvatar !== 'remove') {
                 fd.append('avatar', pendingAvatar);
             } else if (pendingAvatar === 'remove') {

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -118,6 +119,24 @@ class Product extends Model
     public function reviews(): HasMany
     {
         return $this->hasMany(ProductReview::class)->latest();
+    }
+
+    public function scopeVisible(Builder $query): Builder
+    {
+        return $query
+            ->where('is_active', true)
+            ->where('status', self::STATUS_APPROVED)
+            ->where('quantity', '>', 0)
+            ->whereHas('vendor', fn (Builder $vendorQuery) => $vendorQuery->where('is_active', true));
+    }
+
+    public function scopeForCategoryType(Builder $query, ?string $type): Builder
+    {
+        if (! in_array($type, [Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY], true)) {
+            return $query;
+        }
+
+        return $query->whereHas('subcategory.category', fn (Builder $categoryQuery) => $categoryQuery->where('type', $type));
     }
 
     public function hasActiveDiscount(): bool

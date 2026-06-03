@@ -6,7 +6,7 @@
 @section('content')
 <div class="mx-auto max-w-3xl">
     <div id="form-alert" class="mb-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"></div>
-    <form id="syndicate-form" class="card card-body space-y-5">
+    <form id="syndicate-form" enctype="multipart/form-data" class="card card-body space-y-5">
         <div class="grid gap-4 sm:grid-cols-2">
             <div>
                 <label class="form-label">الاسم</label>
@@ -50,8 +50,8 @@
                 <p id="status-error" class="form-error"></p>
             </div>
             <div>
-                <label class="form-label">الشعار</label>
-                <input name="logo" type="file" accept="image/jpeg,image/png,image/gif,image/webp" class="form-input">
+                <label class="form-label">الشعار <span class="text-xs font-normal text-gray-400">(اختياري)</span></label>
+                <input name="logo" type="file" accept="image/jpeg,image/png,image/webp" class="form-input">
                 <div id="logo-preview" class="mt-2 hidden items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-900/60">
                     <img id="logo-preview-img" src="" alt="" class="h-12 w-12 rounded-lg object-cover">
                     <p class="text-xs font-semibold text-gray-500">الشعار الحالي</p>

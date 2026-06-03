@@ -113,14 +113,14 @@ class ProductService
         string $sort = 'latest'
     ): LengthAwarePaginator {
         $query = Product::query()
-            ->where('is_active', true)
-            ->where('status', Product::STATUS_APPROVED)
-            ->where('quantity', '>', 0)
-            ->whereHas('vendor', fn ($q) => $q->where('is_active', true))
+            ->visible()
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->with([
                 'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(1),
+                'subcategory:id,name,category_id',
+                'subcategory.category:id,name,type,logo,icon,icon_class',
+                'vendor:id,store_name,user_id,logo,is_active,status',
             ]);
 
         if ($subcategoryId) {
@@ -130,7 +130,7 @@ class ProductService
         }
 
         if ($categoryType) {
-            $query->whereHas('subcategory.category', fn ($q) => $q->where('type', $categoryType));
+            $query->forCategoryType($categoryType);
         }
 
         if ($hasDiscount !== null) {

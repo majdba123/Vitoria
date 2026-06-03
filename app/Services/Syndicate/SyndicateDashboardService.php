@@ -280,7 +280,7 @@ class SyndicateDashboardService
         ];
     }
 
-    protected function lineTotalQuery(string $type): \Illuminate\Database\Query\Builder
+    public function lineTotalQuery(string $type): \Illuminate\Database\Query\Builder
     {
         return DB::table('order_items')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
