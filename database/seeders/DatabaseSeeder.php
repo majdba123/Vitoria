@@ -18,20 +18,19 @@ class DatabaseSeeder extends Seeder
         User::query()->updateOrCreate(
             ['phone_number' => '0935027218'],
             [
-                'name' => 'Admin',
+                'name' => 'مدير النظام',
                 'national_id' => '0000000001',
                 'age' => 30,
                 'membership_number' => 'MEM-ADMIN-001',
                 'type' => User::TYPE_ADMIN,
-                'email' => 'admin@msz-demo.test',
+                'email' => 'admin@vetora.test',
+                'timezone' => 'Asia/Damascus',
                 'password' => 'password',
             ],
         );
 
         $this->call([
-            CitySeeder::class,
-            CategorySubcategorySeeder::class,
-            SyndicateSeeder::class,
+            ArabicDemoDatabaseSeeder::class,
         ]);
     }
 }

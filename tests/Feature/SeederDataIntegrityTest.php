@@ -13,18 +13,20 @@ test('marketplace seeders create valid category vendor and product type data', f
     $this->seed(CategorySubcategorySeeder::class);
     $this->seed(MarketplaceDemoSeeder::class);
 
-    expect(Category::query()->where('type', Category::TYPE_AGRICULTURE)->count())->toBe(5)
-        ->and(Category::query()->where('type', Category::TYPE_VETERINARY)->count())->toBe(5)
-        ->and(Vendor::query()->where('business_type', Vendor::BUSINESS_TYPE_AGRICULTURE)->count())->toBe(2)
+    expect(Category::query()->where('type', Category::TYPE_AGRICULTURE)->count())->toBe(8)
+        ->and(Category::query()->where('type', Category::TYPE_VETERINARY)->count())->toBe(8)
+        ->and(Vendor::query()->where('business_type', Vendor::BUSINESS_TYPE_AGRICULTURE)->count())->toBe(1)
         ->and(Vendor::query()->where('business_type', Vendor::BUSINESS_TYPE_VETERINARY)->count())->toBe(1)
-        ->and(Vendor::query()->where('business_type', Vendor::BUSINESS_TYPE_BOTH)->count())->toBe(1)
-        ->and(Product::query()->count())->toBeGreaterThan(0);
+        ->and(Vendor::query()->where('business_type', Vendor::BUSINESS_TYPE_BOTH)->count())->toBe(0)
+        ->and(Product::query()->count())->toBe(16);
 
     Vendor::query()
         ->with('categories:id,type')
         ->get()
         ->each(function (Vendor $vendor): void {
             $types = $vendor->categories->pluck('type')->unique()->values();
+
+            expect($vendor->store_name)->toMatch('/\p{Arabic}/u');
 
             if ($vendor->business_type === Vendor::BUSINESS_TYPE_AGRICULTURE) {
                 expect($types->all())->toBe([Category::TYPE_AGRICULTURE]);
