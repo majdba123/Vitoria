@@ -22,7 +22,7 @@ class DashboardController extends Controller
 
     public function categories(Request $request): JsonResponse
     {
-        $categories = $this->dashboardService->categories($this->syndicate($request), 15);
+        $categories = $this->dashboardService->categories($this->syndicate($request), $this->perPage($request));
 
         return response()->json([
             'message' => __('Syndicate categories retrieved successfully.'),
@@ -33,7 +33,7 @@ class DashboardController extends Controller
 
     public function vendors(Request $request): JsonResponse
     {
-        $vendors = $this->dashboardService->vendors($this->syndicate($request), 15);
+        $vendors = $this->dashboardService->vendors($this->syndicate($request), $this->perPage($request));
 
         return response()->json([
             'message' => __('Syndicate merchants retrieved successfully.'),
@@ -44,7 +44,7 @@ class DashboardController extends Controller
 
     public function products(Request $request): JsonResponse
     {
-        $products = $this->dashboardService->products($this->syndicate($request), 15);
+        $products = $this->dashboardService->products($this->syndicate($request), $this->perPage($request));
 
         return response()->json([
             'message' => __('Syndicate products retrieved successfully.'),
@@ -55,7 +55,7 @@ class DashboardController extends Controller
 
     public function orders(Request $request): JsonResponse
     {
-        $orders = $this->dashboardService->orders($this->syndicate($request), 15);
+        $orders = $this->dashboardService->orders($this->syndicate($request), $this->perPage($request));
 
         return response()->json([
             'message' => __('Syndicate orders retrieved successfully.'),
@@ -83,6 +83,11 @@ class DashboardController extends Controller
     protected function syndicate(Request $request): Syndicate
     {
         return $request->user()->syndicate;
+    }
+
+    protected function perPage(Request $request): int
+    {
+        return min(max((int) $request->input('per_page', 15), 1), 50);
     }
 
     /**

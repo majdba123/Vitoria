@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 @php($discountOnly = $discountOnly ?? false)
 
-@section('title', 'Products — SyriaZone Admin')
+@section('title', 'Products — Vetora Admin')
 @section('page-title', 'Products')
 
 @section('content')

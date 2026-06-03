@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Dashboard — SyriaZone Admin')
-@section('page-title', 'Dashboard')
+@section('title', 'لوحة التحكم — Vetora')
+@section('page-title', 'لوحة التحكم')
 
 @section('content')
 <div class="space-y-6">
@@ -9,17 +9,17 @@
     <div class="card card-body">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h2 class="text-lg font-bold text-gray-900">Welcome back!</h2>
-                <p class="mt-0.5 text-sm text-gray-500">Here's what's happening with your platform today.</p>
+                <h2 class="text-lg font-bold text-gray-900">مرحباً بعودتك!</h2>
+                <p class="mt-0.5 text-sm text-gray-500">هذه أهم مؤشرات المنصة وحالة النقابات اليوم.</p>
             </div>
             <div class="flex flex-wrap gap-2">
                 <a href="{{ route('admin.vendors.create') }}" class="btn-primary btn-sm">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                    Add Vendor
+                    إضافة تاجر
                 </a>
                 <a href="{{ route('admin.users.create') }}" class="btn-secondary btn-sm">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
-                    Add User
+                    إضافة مستخدم
                 </a>
             </div>
         </div>
@@ -31,7 +31,7 @@
         <div class="card card-body">
             <div class="flex items-start justify-between">
                 <div class="min-w-0 flex-1">
-                    <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">Total Users</p>
+                    <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">إجمالي المستخدمين</p>
                     <p id="stat-users" class="mt-2 text-2xl font-bold text-gray-900">—</p>
                 </div>
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
@@ -44,7 +44,7 @@
         <div class="card card-body">
             <div class="flex items-start justify-between">
                 <div class="min-w-0 flex-1">
-                    <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">Total Vendors</p>
+                    <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">إجمالي التجار</p>
                     <p id="stat-vendors" class="mt-2 text-2xl font-bold text-gray-900">—</p>
                 </div>
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
@@ -57,8 +57,8 @@
         <div class="card card-body">
             <div class="flex items-start justify-between">
                 <div class="min-w-0 flex-1">
-                    <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">Syndicates</p>
-                    <p id="stat-syndicates" class="mt-2 text-2xl font-bold text-gray-900">â€”</p>
+                    <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">النقابات</p>
+                    <p id="stat-syndicates" class="mt-2 text-2xl font-bold text-gray-900">—</p>
                 </div>
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cyan-50 text-cyan-600">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.941 3.479a8.985 8.985 0 01-4.686 0m4.686 0V19.5m-4.686-.5a9.094 9.094 0 01-3.741-.479 3 3 0 014.682-2.72m-.941 3.479V19.5m0 0a3 3 0 11-6 0m6 0a3 3 0 00-6 0m6 0h.008v.008H12v-.008zM12 8.25a3 3 0 100-6 3 3 0 000 6z"/></svg>
@@ -70,7 +70,7 @@
         <div class="card card-body">
             <div class="flex items-start justify-between">
                 <div class="min-w-0 flex-1">
-                    <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">Active Vendors</p>
+                    <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">تجار نشطون</p>
                     <p id="stat-active-vendors" class="mt-2 text-2xl font-bold text-emerald-600">—</p>
                 </div>
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
@@ -83,7 +83,7 @@
         <div class="card card-body">
             <div class="flex items-start justify-between">
                 <div class="min-w-0 flex-1">
-                    <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">Inactive Vendors</p>
+                    <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">تجار غير نشطين</p>
                     <p id="stat-inactive-vendors" class="mt-2 text-2xl font-bold text-red-600">—</p>
                 </div>
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600">
@@ -96,7 +96,7 @@
         <div class="card card-body">
             <div class="flex items-start justify-between">
                 <div class="min-w-0 flex-1">
-                    <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">Total Products</p>
+                    <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">إجمالي المنتجات</p>
                     <p id="stat-products" class="mt-2 text-2xl font-bold text-gray-900">—</p>
                 </div>
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple-50 text-purple-600">
@@ -109,7 +109,7 @@
         <div class="card card-body">
             <div class="flex items-start justify-between">
                 <div class="min-w-0 flex-1">
-                    <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">Active Products</p>
+                    <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">منتجات نشطة</p>
                     <p id="stat-active-products" class="mt-2 text-2xl font-bold text-emerald-600">—</p>
                 </div>
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
@@ -123,16 +123,16 @@
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div class="card">
             <div class="card-body border-b border-gray-100">
-                <h3 class="text-base font-semibold text-gray-900">Vendors by Type</h3>
-                <p class="mt-0.5 text-sm text-gray-500">Agriculture, Veterinary, and Both vendors</p>
+                <h3 class="text-base font-semibold text-gray-900">التجار حسب النوع</h3>
+                <p class="mt-0.5 text-sm text-gray-500">زراعي، بيطري، أو كلاهما</p>
             </div>
             <div id="vendors-by-type" class="card-body grid gap-3 sm:grid-cols-3"></div>
         </div>
 
         <div class="card">
             <div class="card-body border-b border-gray-100">
-                <h3 class="text-base font-semibold text-gray-900">Categories by Type</h3>
-                <p class="mt-0.5 text-sm text-gray-500">Category inventory by business line</p>
+                <h3 class="text-base font-semibold text-gray-900">التصنيفات حسب النوع</h3>
+                <p class="mt-0.5 text-sm text-gray-500">توزيع التصنيفات حسب خط العمل</p>
             </div>
             <div id="categories-by-type" class="card-body grid gap-3 sm:grid-cols-2"></div>
         </div>
@@ -141,16 +141,16 @@
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div class="card">
             <div class="card-body border-b border-gray-100">
-                <h3 class="text-base font-semibold text-gray-900">Syndicates by Type</h3>
-                <p class="mt-0.5 text-sm text-gray-500">Active agent coverage by business line</p>
+                <h3 class="text-base font-semibold text-gray-900">النقابات حسب النوع</h3>
+                <p class="mt-0.5 text-sm text-gray-500">تغطية وكلاء النقابات حسب خط العمل</p>
             </div>
             <div id="syndicates-by-type" class="card-body grid gap-3 sm:grid-cols-2"></div>
         </div>
 
         <div class="card">
             <div class="card-body border-b border-gray-100">
-                <h3 class="text-base font-semibold text-gray-900">Recent Syndicate Agents</h3>
-                <p class="mt-0.5 text-sm text-gray-500">Latest agriculture and veterinary agent accounts</p>
+                <h3 class="text-base font-semibold text-gray-900">أحدث وكلاء النقابات</h3>
+                <p class="mt-0.5 text-sm text-gray-500">آخر حسابات الزراعة والبيطرة</p>
             </div>
             <div id="recent-syndicate-agents" class="card-body space-y-3"></div>
         </div>
@@ -159,24 +159,24 @@
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div class="card">
             <div class="card-body border-b border-gray-100">
-                <h3 class="text-base font-semibold text-gray-900">Products by Type</h3>
-                <p class="mt-0.5 text-sm text-gray-500">Product inventory by category type</p>
+                <h3 class="text-base font-semibold text-gray-900">المنتجات حسب النوع</h3>
+                <p class="mt-0.5 text-sm text-gray-500">مخزون المنتجات حسب نوع التصنيف</p>
             </div>
             <div id="products-by-category-type" class="card-body grid gap-3 sm:grid-cols-2 lg:grid-cols-1"></div>
         </div>
 
         <div class="card">
             <div class="card-body border-b border-gray-100">
-                <h3 class="text-base font-semibold text-gray-900">Top Vendors</h3>
-                <p class="mt-0.5 text-sm text-gray-500">Ranked by product count</p>
+                <h3 class="text-base font-semibold text-gray-900">أفضل التجار</h3>
+                <p class="mt-0.5 text-sm text-gray-500">مرتبة حسب عدد المنتجات</p>
             </div>
             <div id="top-vendors-by-product-count" class="card-body space-y-3"></div>
         </div>
 
         <div class="card">
             <div class="card-body border-b border-gray-100">
-                <h3 class="text-base font-semibold text-gray-900">Monthly Product Growth</h3>
-                <p class="mt-0.5 text-sm text-gray-500">New products over the last 12 months</p>
+                <h3 class="text-base font-semibold text-gray-900">نمو المنتجات الشهري</h3>
+                <p class="mt-0.5 text-sm text-gray-500">المنتجات الجديدة خلال آخر 12 شهراً</p>
             </div>
             <div id="monthly-product-growth" class="card-body space-y-2"></div>
         </div>
@@ -185,16 +185,16 @@
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div class="card">
             <div class="card-body border-b border-gray-100">
-                <h3 class="text-base font-semibold text-gray-900">Most Selected Categories</h3>
-                <p class="mt-0.5 text-sm text-gray-500">Top categories by assigned vendors</p>
+                <h3 class="text-base font-semibold text-gray-900">التصنيفات الأكثر اختياراً</h3>
+                <p class="mt-0.5 text-sm text-gray-500">أعلى التصنيفات حسب التجار المرتبطين</p>
             </div>
             <div id="most-selected-categories" class="card-body space-y-3"></div>
         </div>
 
         <div class="card">
             <div class="card-body border-b border-gray-100">
-                <h3 class="text-base font-semibold text-gray-900">Recent Vendor Registrations</h3>
-                <p class="mt-0.5 text-sm text-gray-500">Latest merchant accounts</p>
+                <h3 class="text-base font-semibold text-gray-900">أحدث تسجيلات التجار</h3>
+                <p class="mt-0.5 text-sm text-gray-500">آخر حسابات التجار</p>
             </div>
             <div id="recent-vendors" class="card-body space-y-3"></div>
         </div>
@@ -203,16 +203,16 @@
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div class="card">
             <div class="card-body border-b border-gray-100">
-                <h3 class="text-base font-semibold text-gray-900">Categories With No Products</h3>
-                <p class="mt-0.5 text-sm text-gray-500">Catalog sections that need product coverage</p>
+                <h3 class="text-base font-semibold text-gray-900">تصنيفات بلا منتجات</h3>
+                <p class="mt-0.5 text-sm text-gray-500">أقسام تحتاج إلى تغطية منتجات</p>
             </div>
             <div id="categories-with-no-products" class="card-body space-y-3"></div>
         </div>
 
         <div class="card">
             <div class="card-body border-b border-gray-100">
-                <h3 class="text-base font-semibold text-gray-900">Categories With No Vendors</h3>
-                <p class="mt-0.5 text-sm text-gray-500">Business lines without assigned merchants</p>
+                <h3 class="text-base font-semibold text-gray-900">تصنيفات بلا تجار</h3>
+                <p class="mt-0.5 text-sm text-gray-500">خطوط عمل دون تجار مرتبطين</p>
             </div>
             <div id="categories-with-no-vendors" class="card-body space-y-3"></div>
         </div>
@@ -223,17 +223,17 @@
         <div class="card-body border-b border-gray-100">
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h3 class="text-base font-semibold text-gray-900">Vendors by Category</h3>
-                    <p class="mt-0.5 text-sm text-gray-500">Merchant distribution based on assigned categories</p>
+                <h3 class="text-base font-semibold text-gray-900">التجار حسب التصنيف</h3>
+                <p class="mt-0.5 text-sm text-gray-500">توزيع التجار حسب التصنيفات المرتبطة</p>
                 </div>
-                <a href="{{ route('admin.vendors.index') }}" class="btn-secondary btn-xs">View Vendors</a>
+                <a href="{{ route('admin.vendors.index') }}" class="btn-secondary btn-xs">عرض التجار</a>
             </div>
         </div>
         <div class="card-body">
             <div id="vendor-category-stats" class="space-y-3">
                 <div class="py-8 text-center">
                     <div class="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-brand-500"></div>
-                    <p class="mt-2 text-sm text-gray-500">Loading category statistics...</p>
+            <p class="mt-2 text-sm text-gray-500">جارٍ تحميل إحصاءات التصنيفات...</p>
                 </div>
             </div>
         </div>
@@ -244,17 +244,17 @@
         <div class="card-body border-b border-gray-100">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-base font-semibold text-gray-900">Recent Products</h3>
-                    <p class="mt-0.5 text-sm text-gray-500">Latest products added to the platform</p>
+                <h3 class="text-base font-semibold text-gray-900">أحدث المنتجات</h3>
+                <p class="mt-0.5 text-sm text-gray-500">آخر المنتجات المضافة إلى المنصة</p>
                 </div>
-                <a href="{{ route('admin.products.index') }}" class="btn-secondary btn-xs">View All</a>
+                <a href="{{ route('admin.products.index') }}" class="btn-secondary btn-xs">عرض الكل</a>
             </div>
         </div>
         <div class="card-body">
             <div id="recent-products" class="space-y-3">
                 <div class="py-8 text-center">
                     <div class="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-brand-500"></div>
-                    <p class="mt-2 text-sm text-gray-500">Loading products...</p>
+            <p class="mt-2 text-sm text-gray-500">جارٍ تحميل المنتجات...</p>
                 </div>
             </div>
         </div>
@@ -267,8 +267,8 @@
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35"/></svg>
             </div>
             <div class="min-w-0 flex-1">
-                <p class="text-sm font-semibold text-gray-900">Manage Vendors</p>
-                <p class="text-xs text-gray-500">View, edit, and toggle vendor accounts</p>
+                    <p class="text-sm font-semibold text-gray-900">إدارة التجار</p>
+                    <p class="text-xs text-gray-500">عرض وتعديل وتفعيل حسابات التجار</p>
             </div>
             <svg class="h-5 w-5 shrink-0 text-gray-400 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
         </a>
@@ -278,8 +278,8 @@
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
             </div>
             <div class="min-w-0 flex-1">
-                <p class="text-sm font-semibold text-gray-900">Manage Users</p>
-                <p class="text-xs text-gray-500">View, edit, and manage user accounts</p>
+                    <p class="text-sm font-semibold text-gray-900">إدارة المستخدمين</p>
+                    <p class="text-xs text-gray-500">عرض وتعديل وإدارة حسابات المستخدمين</p>
             </div>
             <svg class="h-5 w-5 shrink-0 text-gray-400 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
         </a>
@@ -289,8 +289,8 @@
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
             </div>
             <div class="min-w-0 flex-1">
-                <p class="text-sm font-semibold text-gray-900">Manage Products</p>
-                <p class="text-xs text-gray-500">View, edit, and manage all products</p>
+                    <p class="text-sm font-semibold text-gray-900">إدارة المنتجات</p>
+                    <p class="text-xs text-gray-500">عرض وتعديل وإدارة كل المنتجات</p>
             </div>
             <svg class="h-5 w-5 shrink-0 text-gray-400 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
         </a>
@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Render recent products
         const productsContainer = document.getElementById('recent-products');
         if (products.length === 0) {
-            productsContainer.innerHTML = '<p class="py-8 text-center text-sm text-gray-400">No products yet.</p>';
+            productsContainer.innerHTML = '<p class="py-8 text-center text-sm text-gray-400">لا توجد منتجات بعد.</p>';
         } else {
             productsContainer.innerHTML = products.map(p => `
                 <a href="/admin/products/${p.id}" class="group flex items-center gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:border-brand-300 hover:bg-brand-50/50">
@@ -348,21 +348,21 @@ document.addEventListener('DOMContentLoaded', async function () {
                         <p class="text-xs text-gray-500">${esc(p.category?.name || p.status || '')}</p>
                     </div>
                     <span class="badge ${p.is_active ? 'badge-success' : 'badge-danger'}">
-                        ${p.is_active ? 'Active' : 'Inactive'}
+                        ${p.is_active ? 'نشط' : 'غير نشط'}
                     </span>
                     <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                 </a>
             `).join('');
         }
     } catch (e) {
-        document.getElementById('vendor-category-stats').innerHTML = '<p class="py-8 text-center text-sm text-red-500">Failed to load dashboard statistics.</p>';
+        document.getElementById('vendor-category-stats').innerHTML = '<p class="py-8 text-center text-sm text-red-500">تعذر تحميل إحصاءات لوحة التحكم.</p>';
     }
 
     function renderVendorCategoryStats(rows) {
         const container = document.getElementById('vendor-category-stats');
 
         if (!rows.length) {
-            container.innerHTML = '<p class="py-8 text-center text-sm text-gray-400">No vendor categories yet.</p>';
+            container.innerHTML = '<p class="py-8 text-center text-sm text-gray-400">لا توجد تصنيفات تجار بعد.</p>';
             return;
         }
 
@@ -381,12 +381,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div class="min-w-0">
                             <p class="truncate text-sm font-semibold text-gray-900">${esc(row.name)}</p>
-                            <p class="mt-1 text-xs text-gray-500">${total} vendor${total === 1 ? '' : 's'} total</p>
+                    <p class="mt-1 text-xs text-gray-500">${total} تاجر إجمالاً</p>
                         </div>
                         <div class="flex flex-wrap gap-2">
-                            <span class="badge badge-success">${active} active</span>
-                            <span class="badge badge-warning">${pending} pending</span>
-                            <span class="badge badge-danger">${inactive} inactive</span>
+                        <span class="badge badge-success">${active} نشط</span>
+                        <span class="badge badge-warning">${pending} معلق</span>
+                        <span class="badge badge-danger">${inactive} غير نشط</span>
                         </div>
                     </div>
                     <div class="mt-3 h-2 overflow-hidden rounded-full bg-gray-100">
@@ -421,7 +421,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         container.innerHTML = rows.map(row => `
             <a href="${metricTileUrl(noun, row.type)}" class="rounded-lg border border-gray-200 p-4 transition-colors hover:border-brand-300 hover:bg-brand-50/40">
-                <p class="text-xs font-bold uppercase tracking-wider text-gray-500">${esc(row.label)}</p>
+                <p class="text-xs font-bold uppercase tracking-wider text-gray-500">${esc(typeLabel(row.type, row.label))}</p>
                 <p class="mt-2 text-2xl font-black text-gray-900">${Number(row.total || 0)}</p>
             </a>
         `).join('');
@@ -437,7 +437,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     function renderMostSelectedCategories(rows) {
         const container = document.getElementById('most-selected-categories');
         if (!rows.length) {
-            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">No category selections yet.</p>';
+            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">لا توجد اختيارات تصنيفات بعد.</p>';
             return;
         }
 
@@ -445,9 +445,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             <a href="/admin/vendors?category_id=${encodeURIComponent(row.id)}" class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:border-brand-300 hover:bg-brand-50/40">
                 <div class="min-w-0">
                     <p class="truncate text-sm font-semibold text-gray-900">${esc(row.name)}</p>
-                    <p class="mt-0.5 text-xs text-gray-500">${esc(row.type_label || row.type || '')}</p>
+                    <p class="mt-0.5 text-xs text-gray-500">${esc(typeLabel(row.type, row.type_label))}</p>
                 </div>
-                <span class="badge badge-brand">${Number(row.vendors_count || 0)} vendors</span>
+                <span class="badge badge-brand">${Number(row.vendors_count || 0)} تاجر</span>
             </a>
         `).join('');
     }
@@ -455,7 +455,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     function renderRecentVendors(rows) {
         const container = document.getElementById('recent-vendors');
         if (!rows.length) {
-            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">No vendors yet.</p>';
+            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">لا يوجد تجار بعد.</p>';
             return;
         }
 
@@ -463,9 +463,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             <a href="/admin/vendors/${vendor.id}" class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:border-brand-300 hover:bg-brand-50/40">
                 <div class="min-w-0">
                     <p class="truncate text-sm font-semibold text-gray-900">${esc(vendor.store_name)}</p>
-                    <p class="mt-0.5 text-xs text-gray-500">${esc(vendor.user?.name || '')} · ${esc(vendor.business_type_label || '')}</p>
+                    <p class="mt-0.5 text-xs text-gray-500">${esc(vendor.user?.name || '')} · ${esc(businessTypeLabel(vendor.business_type, vendor.business_type_label))}</p>
                 </div>
-                <span class="badge ${vendor.status === 'pending' ? 'badge-warning' : (vendor.is_active ? 'badge-success' : 'badge-danger')}">${esc(vendor.status || '')}</span>
+                <span class="badge ${vendor.status === 'pending' ? 'badge-warning' : (vendor.is_active ? 'badge-success' : 'badge-danger')}">${esc(statusLabel(vendor.status || (vendor.is_active ? 'active' : 'inactive')))}</span>
             </a>
         `).join('');
     }
@@ -473,7 +473,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     function renderRecentSyndicates(rows) {
         const container = document.getElementById('recent-syndicate-agents');
         if (!rows.length) {
-            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">No syndicate agents yet.</p>';
+            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">لا يوجد وكلاء نقابات بعد.</p>';
             return;
         }
 
@@ -481,9 +481,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             <a href="/admin/syndicates/${syndicate.id}" class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:border-brand-300 hover:bg-brand-50/40">
                 <div class="min-w-0">
                     <p class="truncate text-sm font-semibold text-gray-900">${esc(syndicate.name)}</p>
-                    <p class="mt-0.5 text-xs text-gray-500">${esc(syndicate.user?.email || '')} Â· ${esc(syndicate.type_label || '')}</p>
+                    <p class="mt-0.5 text-xs text-gray-500">${esc(syndicate.user?.email || '')} · ${esc(typeLabel(syndicate.type, syndicate.type_label))}</p>
                 </div>
-                <span class="badge ${syndicate.status === 'active' ? 'badge-success' : 'badge-danger'}">${esc(syndicate.status || '')}</span>
+                <span class="badge ${syndicate.status === 'active' ? 'badge-success' : 'badge-danger'}">${esc(statusLabel(syndicate.status))}</span>
             </a>
         `).join('');
     }
@@ -491,7 +491,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     function renderTopVendors(rows) {
         const container = document.getElementById('top-vendors-by-product-count');
         if (!rows.length) {
-            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">No vendor products yet.</p>';
+            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">لا توجد منتجات تجار بعد.</p>';
             return;
         }
 
@@ -499,9 +499,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             <a href="/admin/vendors/${vendor.id}" class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:border-brand-300 hover:bg-brand-50/40">
                 <div class="min-w-0">
                     <p class="truncate text-sm font-semibold text-gray-900">${esc(vendor.store_name)}</p>
-                    <p class="mt-0.5 text-xs text-gray-500">${esc(vendor.business_type_label || '')}</p>
+                    <p class="mt-0.5 text-xs text-gray-500">${esc(businessTypeLabel(vendor.business_type, vendor.business_type_label))}</p>
                 </div>
-                <span class="badge badge-brand">${Number(vendor.products_count || 0)} products</span>
+                <span class="badge badge-brand">${Number(vendor.products_count || 0)} منتج</span>
             </a>
         `).join('');
     }
@@ -509,7 +509,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     function renderCategoryGapList(id, rows, countKey) {
         const container = document.getElementById(id);
         if (!rows.length) {
-            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">No gaps found.</p>';
+            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">لا توجد فجوات حالياً.</p>';
             return;
         }
 
@@ -517,7 +517,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             <a href="/admin/categories/${row.id}" class="flex items-center justify-between gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:border-brand-300 hover:bg-brand-50/40">
                 <div class="min-w-0">
                     <p class="truncate text-sm font-semibold text-gray-900">${esc(row.name)}</p>
-                    <p class="mt-0.5 text-xs text-gray-500">${esc(row.type_label || row.type || '')}</p>
+                    <p class="mt-0.5 text-xs text-gray-500">${esc(typeLabel(row.type, row.type_label))}</p>
                 </div>
                 <span class="badge badge-danger">${Number(row[countKey] || 0)}</span>
             </a>
@@ -527,7 +527,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     function renderMonthlyProductGrowth(rows) {
         const container = document.getElementById('monthly-product-growth');
         if (!rows.length) {
-            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">No product growth yet.</p>';
+            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">لا يوجد نمو منتجات بعد.</p>';
             return;
         }
 
@@ -554,6 +554,25 @@ document.addEventListener('DOMContentLoaded', async function () {
         const d = document.createElement('div');
         d.textContent = t;
         return d.innerHTML;
+    }
+
+    function typeLabel(type, fallback = '') {
+        if (type === 'agriculture') return 'زراعي';
+        if (type === 'veterinary') return 'بيطري';
+        if (type === 'both') return 'زراعي وبيطري';
+        return fallback || type || '';
+    }
+
+    function businessTypeLabel(type, fallback = '') {
+        return typeLabel(type, fallback);
+    }
+
+    function statusLabel(status) {
+        if (status === 'active') return 'نشط';
+        if (status === 'inactive') return 'غير نشط';
+        if (status === 'pending') return 'معلق';
+        if (status === 'approved') return 'معتمد';
+        return status || '';
     }
 });
 </script>

@@ -8,7 +8,7 @@
     {{-- Logo --}}
     <div class="flex h-14 shrink-0 items-center gap-3 border-b border-white/10 px-6">
         <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2">
-            <span class="text-xl font-bold tracking-tight text-white">{{ __('SyriaZone') }}</span>
+            <span class="text-xl font-bold tracking-tight text-white">{{ __('Vetora') }}</span>
         </a>
         <span class="rounded-md bg-brand-500/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-400">{{ __('admin.badge') }}</span>
 
@@ -53,7 +53,7 @@
             <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a4.5 4.5 0 014.5 4.5v.75h.75A2.25 2.25 0 0119.5 14.25v4.5A2.25 2.25 0 0117.25 21H6.75a2.25 2.25 0 01-2.25-2.25v-4.5A2.25 2.25 0 016.75 12h.75v-.75A4.5 4.5 0 0112 6.75z"/>
             </svg>
-            Syndicates
+            {{ __('admin.syndicates') }}
             @if(str_starts_with($currentRoute, 'admin.syndicates'))
                 <span class="ml-auto h-1.5 w-1.5 rounded-full bg-brand-400"></span>
             @endif
@@ -144,7 +144,7 @@
             <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
             </svg>
-            سجل الإشعارات
+            {{ __('admin.notifications_log') }}
             @if(str_starts_with($currentRoute, 'admin.notifications'))
                 <span class="ml-auto h-1.5 w-1.5 rounded-full bg-brand-400"></span>
             @endif
@@ -179,6 +179,6 @@
 
     {{-- Footer --}}
     <div class="border-t border-white/10 px-6 py-3">
-        <p class="text-[11px] text-gray-500">&copy; {{ date('Y') }} {{ __('SyriaZone') }}</p>
+        <p class="text-[11px] text-gray-500">&copy; {{ date('Y') }} {{ __('Vetora') }}</p>
     </div>
 </aside>

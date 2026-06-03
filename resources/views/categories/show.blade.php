@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Category — SyriaZone')
+@section('title', 'Category — Vetora')
 
 @section('content')
 <div class="bg-white dark:bg-gray-950">
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     try {
         const res = await axios.get('/api/categories/' + catId);
         const cat = res.data.data;
-        document.title = cat.name + ' — SyriaZone';
+        document.title = cat.name + ' — Vetora';
         $('bc-name').textContent = cat.name;
         $('cat-name').textContent = cat.name;
         $('cat-meta').textContent = (cat.subcategories||[]).length + ' subcategories · ' + cat.commission + '% commission';

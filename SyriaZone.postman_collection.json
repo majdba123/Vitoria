@@ -1,7 +1,7 @@
 {
     "info": {
-        "name": "SyriaZone API",
-        "description": "SyriaZone Authentication API Collection",
+        "name": "Vetora API",
+        "description": "Vetora Authentication API Collection",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "variable": [

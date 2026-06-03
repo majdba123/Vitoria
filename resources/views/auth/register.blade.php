@@ -32,7 +32,7 @@
                 <h1 class="text-2xl font-bold text-gray-950 dark:text-white lg:hidden">{{ __('auth.create_account_title') }}</h1>
                 <div class="hidden items-center justify-between gap-4 lg:flex">
                     <div>
-                        <p class="text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400">SyriaZone</p>
+                        <p class="text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400">Vetora</p>
                         <h2 class="mt-1 text-xl font-bold text-gray-950 dark:text-white">Account details</h2>
                     </div>
                     <a href="{{ route('login') }}" class="btn-secondary btn-sm">{{ __('nav.sign_in') }}</a>

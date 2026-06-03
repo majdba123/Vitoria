@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('Forbidden') . ' — SyriaZone')
+@section('title', __('Forbidden') . ' — Vetora')
 
 @section('content')
 <div class="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4 py-12">

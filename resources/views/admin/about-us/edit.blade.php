@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', __('admin.about_us') . ' (Footer) — ' . __('SyriaZone'))
+@section('title', __('admin.about_us') . ' (Footer) — ' . __('Vetora'))
 @section('page-title', __('admin.about_us'))
 
 @section('content')

@@ -93,6 +93,7 @@ test('admin can create a syndicate agent', function () {
         'email' => 'north-agriculture@example.com',
         'phone' => '0993999001',
         'password' => 'password',
+        'password_confirmation' => 'password',
         'type' => Category::TYPE_AGRICULTURE,
         'status' => Syndicate::STATUS_ACTIVE,
     ]);
@@ -113,6 +114,69 @@ test('admin can create a syndicate agent', function () {
         'type' => Category::TYPE_AGRICULTURE,
         'status' => Syndicate::STATUS_ACTIVE,
     ]);
+});
+
+test('admin can update a syndicate agent', function () {
+    syndicateAdmin();
+
+    $syndicate = Syndicate::factory()->agriculture()->create([
+        'name' => 'Editable Agriculture Agent',
+        'status' => Syndicate::STATUS_ACTIVE,
+    ]);
+
+    $response = $this->putJson('/api/admin/syndicates/'.$syndicate->id, [
+        'name' => 'Updated Veterinary Agent',
+        'email' => 'updated-syndicate@example.com',
+        'phone' => '0993999005',
+        'type' => Category::TYPE_VETERINARY,
+        'status' => Syndicate::STATUS_INACTIVE,
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('data.name', 'Updated Veterinary Agent')
+        ->assertJsonPath('data.type', Category::TYPE_VETERINARY)
+        ->assertJsonPath('data.status', Syndicate::STATUS_INACTIVE);
+
+    $this->assertDatabaseHas('syndicates', [
+        'id' => $syndicate->id,
+        'type' => Category::TYPE_VETERINARY,
+        'status' => Syndicate::STATUS_INACTIVE,
+    ]);
+});
+
+test('syndicate agents cannot access admin syndicate edit api', function () {
+    $user = syndicateUser(Category::TYPE_AGRICULTURE);
+    $target = Syndicate::factory()->veterinary()->create();
+
+    Sanctum::actingAs($user);
+
+    $this->putJson('/api/admin/syndicates/'.$target->id, [
+        'name' => 'Blocked Update',
+        'email' => 'blocked@example.com',
+        'phone' => '0993999010',
+        'type' => Category::TYPE_VETERINARY,
+        'status' => Syndicate::STATUS_ACTIVE,
+    ])
+        ->assertForbidden()
+        ->assertJsonPath('message', __('Unauthorized. Admin access required.'));
+
+    $this->assertDatabaseMissing('syndicates', [
+        'id' => $target->id,
+        'name' => 'Blocked Update',
+    ]);
+});
+
+test('syndicate creation validates required type status and password confirmation', function () {
+    syndicateAdmin();
+
+    $this->postJson('/api/admin/syndicates', [
+        'name' => 'Invalid Syndicate',
+        'email' => 'invalid-syndicate@example.com',
+        'phone' => '0993999020',
+        'password' => 'password',
+    ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['password', 'type', 'status']);
 });
 
 test('syndicate login redirects to the syndicate dashboard', function () {
@@ -217,6 +281,30 @@ test('admin can filter syndicate agents by type and status', function () {
         ->assertJsonPath('meta.total', 1)
         ->assertJsonPath('data.0.name', 'Filter Agriculture Agent')
         ->assertJsonPath('data.0.type', Category::TYPE_AGRICULTURE);
+});
+
+test('syndicate list pagination has a safe maximum per page', function () {
+    syndicateAdmin();
+
+    Syndicate::factory()->count(60)->agriculture()->create();
+
+    $this->getJson('/api/admin/syndicates?per_page=500')
+        ->assertOk()
+        ->assertJsonPath('meta.per_page', 50);
+});
+
+test('syndicate and admin pages render with Vetora Arabic branding', function () {
+    $admin = syndicateAdmin();
+
+    $this->actingAs($admin)
+        ->get('/admin/syndicates')
+        ->assertOk()
+        ->assertSee('Vetora')
+        ->assertSee('إدارة النقابات');
+
+    expect(config('app.name'))->toBe('Vetora')
+        ->and(config('app.locale'))->toBe('ar')
+        ->and(__('Vetora'))->toBe('Vetora');
 });
 
 test('admin dashboard overview includes syndicate statistics', function () {

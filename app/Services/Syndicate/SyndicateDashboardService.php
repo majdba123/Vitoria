@@ -7,20 +7,22 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Syndicate;
 use App\Models\Vendor;
+use App\Services\ApplicationCacheService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class SyndicateDashboardService
 {
+    public function __construct(protected ApplicationCacheService $cacheService) {}
+
     /**
      * @return array<string, mixed>
      */
     public function overview(Syndicate $syndicate): array
     {
-        return Cache::remember("syndicate_dashboard:{$syndicate->id}:{$syndicate->type}", 300, function () use ($syndicate): array {
+        return $this->cacheService->remember("syndicate_dashboard:{$syndicate->id}:{$syndicate->type}", 300, function () use ($syndicate): array {
             $type = $syndicate->type;
             $ordersByStatus = $this->ordersByStatus($type);
             $sales = $this->salesStats($type);
@@ -46,7 +48,7 @@ class SyndicateDashboardService
                 'top_selling_products' => $this->topSellingProducts($type),
                 'top_merchants_by_sales' => $this->topMerchantsBySales($type),
             ];
-        });
+        }, ['syndicates', 'dashboard']);
     }
 
     public function categories(Syndicate $syndicate, int $perPage = 15): LengthAwarePaginator

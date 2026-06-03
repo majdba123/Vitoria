@@ -1,6 +1,6 @@
 @extends('layouts.vendor')
 
-@section('title', 'Notifications — SyriaZone Vendor')
+@section('title', 'Notifications — Vetora Vendor')
 @section('page-title', 'سجل الإشعارات')
 
 @section('content')

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('SyriaZone') . ' ' . __('site.meta_title_separator') . ' ' . __('home.meta_title'))
+@section('title', __('Vetora') . ' ' . __('site.meta_title_separator') . ' ' . __('home.meta_title'))
 
 @section('content')
     @php

@@ -31,7 +31,7 @@ class UpdateSyndicateRequest extends FormRequest
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'email' => ['sometimes', 'required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($syndicateUserId)],
             'phone' => ['sometimes', 'required', 'string', 'max:30', Rule::unique('users', 'phone_number')->ignore($syndicateUserId)],
-            'password' => ['nullable', 'string', 'min:6'],
+            'password' => ['nullable', 'string', 'min:6', 'confirmed'],
             'type' => ['sometimes', 'required', Rule::in([Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY])],
             'status' => ['sometimes', Rule::in([Syndicate::STATUS_ACTIVE, Syndicate::STATUS_INACTIVE])],
             'logo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('profile.my_profile') . ' — ' . __('SyriaZone'))
+@section('title', __('profile.my_profile') . ' — ' . __('Vetora'))
 
 @section('content')
 <div class="bg-white dark:bg-gray-950">

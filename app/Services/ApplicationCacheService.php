@@ -59,6 +59,12 @@ class ApplicationCacheService
         $this->flushDashboard();
     }
 
+    public function flushSyndicates(): void
+    {
+        $this->flushTags(['syndicates']);
+        $this->flushDashboard();
+    }
+
     public function flushOrders(): void
     {
         $this->flushTags(['orders']);

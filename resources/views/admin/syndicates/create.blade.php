@@ -1,21 +1,64 @@
 @extends('layouts.admin')
 
-@section('title', 'Create Syndicate - SyriaZone Admin')
-@section('page-title', 'Create Syndicate')
+@section('title', 'إضافة وكيل نقابة - Vetora')
+@section('page-title', 'إضافة وكيل نقابة')
 
 @section('content')
 <div class="mx-auto max-w-3xl">
-    <form id="syndicate-form" class="card card-body space-y-4">
+    <div id="form-alert" class="mb-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"></div>
+    <form id="syndicate-form" class="card card-body space-y-5">
         <div class="grid gap-4 sm:grid-cols-2">
-            <div><label class="form-label">Name</label><input name="name" class="form-input" required><p id="name-error" class="form-error"></p></div>
-            <div><label class="form-label">Email</label><input name="email" type="email" class="form-input" required><p id="email-error" class="form-error"></p></div>
-            <div><label class="form-label">Phone</label><input name="phone" class="form-input"><p id="phone-error" class="form-error"></p></div>
-            <div><label class="form-label">Password</label><input name="password" type="password" class="form-input" required><p id="password-error" class="form-error"></p></div>
-            <div><label class="form-label">Type</label><select name="type" class="form-input" required><option value="agriculture">Agriculture</option><option value="veterinary">Veterinary</option></select><p id="type-error" class="form-error"></p></div>
-            <div><label class="form-label">Status</label><select name="status" class="form-input"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
-            <div class="sm:col-span-2"><label class="form-label">Logo</label><input name="logo" type="file" accept="image/jpeg,image/png,image/gif,image/webp" class="form-input"><p id="logo-error" class="form-error"></p></div>
+            <div>
+                <label class="form-label">الاسم</label>
+                <input name="name" class="form-input" required>
+                <p id="name-error" class="form-error"></p>
+            </div>
+            <div>
+                <label class="form-label">البريد الإلكتروني</label>
+                <input name="email" type="email" class="form-input" required>
+                <p id="email-error" class="form-error"></p>
+            </div>
+            <div>
+                <label class="form-label">الهاتف</label>
+                <input name="phone" class="form-input" required>
+                <p id="phone-error" class="form-error"></p>
+            </div>
+            <div>
+                <label class="form-label">النوع</label>
+                <select name="type" class="form-input" required>
+                    <option value="agriculture">زراعي</option>
+                    <option value="veterinary">بيطري</option>
+                </select>
+                <p id="type-error" class="form-error"></p>
+            </div>
+            <div>
+                <label class="form-label">كلمة المرور</label>
+                <input name="password" type="password" class="form-input" required autocomplete="new-password">
+                <p id="password-error" class="form-error"></p>
+            </div>
+            <div>
+                <label class="form-label">تأكيد كلمة المرور</label>
+                <input name="password_confirmation" type="password" class="form-input" required autocomplete="new-password">
+                <p id="password_confirmation-error" class="form-error"></p>
+            </div>
+            <div>
+                <label class="form-label">الحالة</label>
+                <select name="status" class="form-input" required>
+                    <option value="active">نشط</option>
+                    <option value="inactive">غير نشط</option>
+                </select>
+                <p id="status-error" class="form-error"></p>
+            </div>
+            <div>
+                <label class="form-label">الشعار</label>
+                <input name="logo" type="file" accept="image/jpeg,image/png,image/gif,image/webp" class="form-input">
+                <p id="logo-error" class="form-error"></p>
+            </div>
         </div>
-        <div class="flex justify-end gap-2"><a href="{{ route('admin.syndicates.index') }}" class="btn-secondary">Cancel</a><button class="btn-primary">Create Syndicate</button></div>
+        <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <a href="{{ route('admin.syndicates.index') }}" class="btn-secondary">إلغاء</a>
+            <button id="submit-btn" class="btn-primary">إنشاء وكيل النقابة</button>
+        </div>
     </form>
 </div>
 @endsection
@@ -24,15 +67,36 @@
 <script>
 document.getElementById('syndicate-form').addEventListener('submit', async function (event) {
     event.preventDefault();
-    document.querySelectorAll('.form-error').forEach(el => el.textContent = '');
-    const formData = new FormData(event.target);
+    const form = event.target;
+    const button = document.getElementById('submit-btn');
+    clearErrors();
+    button.disabled = true;
+    button.textContent = 'جاري الحفظ...';
+
     try {
-        const res = await window.axios.post('/api/admin/syndicates', formData);
+        const res = await window.axios.post('/api/admin/syndicates', new FormData(form), { silent: true });
         window.location.href = '/admin/syndicates/' + res.data.data.id;
     } catch (error) {
-        const errors = error.response?.data?.errors || {};
-        Object.entries(errors).forEach(([key, messages]) => { const el = document.getElementById(key + '-error'); if (el) el.textContent = messages[0]; });
+        const parsed = window.showApiError ? window.showApiError(error) : window.ApiErrors.parse(error);
+        window.ApiErrors.showFieldErrors(parsed.fieldErrors);
+        showAlert(parsed.generalMessage, 'error');
+    } finally {
+        button.disabled = false;
+        button.textContent = 'إنشاء وكيل النقابة';
     }
 });
+
+function clearErrors() {
+    document.querySelectorAll('.form-error').forEach(el => { el.textContent = ''; el.classList.add('hidden'); });
+    document.getElementById('form-alert').classList.add('hidden');
+}
+
+function showAlert(message, type) {
+    const box = document.getElementById('form-alert');
+    box.textContent = message;
+    box.className = type === 'error'
+        ? 'mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700'
+        : 'mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700';
+}
 </script>
 @endpush

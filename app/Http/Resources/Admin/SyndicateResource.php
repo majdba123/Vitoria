@@ -27,6 +27,10 @@ class SyndicateResource extends JsonResource
             'is_active' => $this->status === Syndicate::STATUS_ACTIVE,
             'logo' => $this->logo,
             'logo_url' => $this->logo ? asset('storage/'.$this->logo) : null,
+            'categories_count' => (int) ($this->categories_count ?? 0),
+            'vendors_count' => (int) ($this->vendors_count ?? 0),
+            'products_count' => (int) ($this->products_count ?? 0),
+            'orders_count' => (int) ($this->orders_count ?? 0),
             'user' => $this->whenLoaded('user', fn () => $this->user ? [
                 'id' => $this->user->id,
                 'name' => $this->user->name,

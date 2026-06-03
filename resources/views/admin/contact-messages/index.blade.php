@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Contact Messages — SyriaZone Admin')
+@section('title', 'Contact Messages — Vetora Admin')
 @section('page-title', 'Contact Messages')
 
 @section('content')

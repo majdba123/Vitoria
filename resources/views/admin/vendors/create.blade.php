@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', __('admin.vendors_create') . ' — ' . __('SyriaZone') . ' ' . __('admin.dashboard'))
+@section('title', __('admin.vendors_create') . ' — ' . __('Vetora') . ' ' . __('admin.dashboard'))
 @section('page-title', __('admin.vendors_create'))
 
 @section('content')
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
             setTimeout(function () {
                 lastSearchAt = Date.now();
                 fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) + '&format=json&limit=1&countrycodes=sy', {
-                    headers: { 'Accept': 'application/json', 'User-Agent': 'SyriaZone/1.0' }
+                    headers: { 'Accept': 'application/json', 'User-Agent': 'Vetora/1.0' }
                 }).then(function (r) { return r.json(); }).then(function (results) {
                     if (results && results[0]) {
                         var lat = parseFloat(results[0].lat);

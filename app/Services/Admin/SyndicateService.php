@@ -4,13 +4,15 @@ namespace App\Services\Admin;
 
 use App\Models\Syndicate;
 use App\Models\User;
+use App\Services\ApplicationCacheService;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class SyndicateService
 {
+    public function __construct(protected ApplicationCacheService $cacheService) {}
+
     /**
      * @param  array<string, mixed>  $data
      */
@@ -118,12 +120,6 @@ class SyndicateService
 
     protected function flushCaches(): void
     {
-        Cache::forget('admin_dashboard_overview');
-
-        try {
-            Cache::tags(['syndicates'])->flush();
-        } catch (\Exception) {
-            //
-        }
+        $this->cacheService->flushSyndicates();
     }
 }

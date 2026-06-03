@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'All Stores — SyriaZone')
+@section('title', 'All Stores — Vetora')
 
 @section('content')
 <div class="bg-white dark:bg-gray-950">

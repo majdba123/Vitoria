@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', __('SyriaZone'))</title>
+    <title>@yield('title', __('Vetora'))</title>
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
     <link rel="dns-prefetch" href="https://fonts.bunny.net">
     <link rel="preload" href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800,900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -50,8 +50,8 @@
         <div class="mx-auto flex min-h-full max-w-xl items-center justify-center">
             <div class="w-full overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-gray-950/10 dark:bg-gray-900 dark:ring-white/10">
                 <div class="border-b border-gray-100 px-6 py-5 dark:border-gray-800">
-                    <p class="text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400">SyriaZone</p>
-                    <h2 id="startup-title" class="mt-1 text-xl font-black text-gray-900 dark:text-white">Set your shopping preferences</h2>
+                    <p class="text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400">Vetora</p>
+                    <h2 id="startup-title" class="mt-1 text-xl font-black text-gray-900 dark:text-white">اضبط تفضيلاتك</h2>
                 </div>
                 <div class="px-6 py-5">
                     <div class="mb-5 grid grid-cols-2 gap-2">
@@ -60,27 +60,27 @@
                     </div>
                     <div id="startup-location-step" class="space-y-4">
                         <div>
-                            <label for="startup-location" class="mb-1.5 block text-sm font-bold text-gray-800 dark:text-gray-200">Location or address preference</label>
-                            <input id="startup-location" type="text" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="City, area, or delivery preference">
+                            <label for="startup-location" class="mb-1.5 block text-sm font-bold text-gray-800 dark:text-gray-200">العنوان أو تفضيل الموقع</label>
+                            <input id="startup-location" type="text" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="المدينة، المنطقة، أو تفضيل التوصيل">
                         </div>
                         <button type="button" id="startup-use-browser-location" class="inline-flex items-center gap-2 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-brand-500/10">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
-                            Use browser location
+                            استخدام موقع المتصفح
                         </button>
                         <input id="startup-latitude" type="hidden">
                         <input id="startup-longitude" type="hidden">
                     </div>
                     <div id="startup-timezone-step" class="hidden space-y-4">
                         <div>
-                            <label for="startup-timezone" class="mb-1.5 block text-sm font-bold text-gray-800 dark:text-gray-200">Timezone</label>
+                            <label for="startup-timezone" class="mb-1.5 block text-sm font-bold text-gray-800 dark:text-gray-200">المنطقة الزمنية</label>
                             <select id="startup-timezone" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"></select>
                         </div>
                     </div>
                     <p id="startup-error" class="mt-4 hidden rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300"></p>
                 </div>
                 <div class="flex items-center justify-between gap-3 border-t border-gray-100 px-6 py-4 dark:border-gray-800">
-                    <button type="button" id="startup-back" class="hidden rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800">Back</button>
-                    <button type="button" id="startup-next" class="ml-auto rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-black text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">Continue</button>
+                    <button type="button" id="startup-back" class="hidden rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800">رجوع</button>
+                    <button type="button" id="startup-next" class="ms-auto rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-black text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">متابعة</button>
                 </div>
             </div>
         </div>
@@ -96,7 +96,7 @@
                         <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500">
                             <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72"/></svg>
                         </div>
-                        Syria<span class="text-brand-500">Zone</span>
+                        Vetora
                     </a>
                     <p class="mt-4 max-w-sm text-sm leading-relaxed text-gray-500 dark:text-gray-400">
                         {{ $footerSettings->about_description ?? __('home.tagline') }}
@@ -156,7 +156,7 @@
                 </div>
             </div>
             <div class="mt-10 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-8 sm:flex-row dark:border-gray-800">
-                <p class="text-xs text-gray-400 dark:text-gray-500">&copy; {{ date('Y') }} SyriaZone. {{ __('footer.rights') }}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500">&copy; {{ date('Y') }} Vetora. {{ __('footer.rights') }}</p>
                 <div class="flex gap-6 text-xs text-gray-400 dark:text-gray-500">
                     <a href="#" class="hover:text-gray-600 dark:hover:text-gray-300">{{ __('footer.privacy') }}</a>
                     <a href="#" class="hover:text-gray-600 dark:hover:text-gray-300">{{ __('footer.terms') }}</a>
@@ -258,8 +258,8 @@
             locationStep.classList.toggle('hidden', isTimezone);
             timezoneStep.classList.toggle('hidden', !isTimezone);
             backBtn.classList.toggle('hidden', !isTimezone);
-            nextBtn.textContent = isTimezone ? 'Finish setup' : 'Continue';
-            titleEl.textContent = isTimezone ? 'Choose your timezone' : 'Set your shopping preferences';
+            nextBtn.textContent = isTimezone ? 'إنهاء الإعداد' : 'متابعة';
+            titleEl.textContent = isTimezone ? 'اختر المنطقة الزمنية' : 'اضبط تفضيلاتك';
             locIndicator.className = 'h-1.5 rounded-full ' + (isTimezone ? 'bg-brand-500/50' : 'bg-brand-500');
             tzIndicator.className = 'h-1.5 rounded-full ' + (isTimezone ? 'bg-brand-500' : 'bg-gray-200 dark:bg-gray-700');
         }
@@ -288,16 +288,16 @@
 
         document.getElementById('startup-use-browser-location')?.addEventListener('click', function () {
             if (!navigator.geolocation) {
-                showError('Browser location is not available.');
+                showError('موقع المتصفح غير متاح.');
                 return;
             }
 
             navigator.geolocation.getCurrentPosition(function(position) {
                 document.getElementById('startup-latitude').value = position.coords.latitude;
                 document.getElementById('startup-longitude').value = position.coords.longitude;
-                document.getElementById('startup-location').value = 'Browser location selected';
+                document.getElementById('startup-location').value = 'تم اختيار موقع المتصفح';
             }, function() {
-                showError('Could not read browser location. You can type a location instead.');
+                showError('تعذر قراءة موقع المتصفح. يمكنك كتابة الموقع يدوياً.');
             }, { enableHighAccuracy: false, timeout: 6000 });
         });
 
@@ -320,7 +320,7 @@
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
             } catch (error) {
-                showError(error.response?.data?.message || 'Could not save preferences.');
+                showError(error.response?.data?.message || 'تعذر حفظ التفضيلات.');
             } finally {
                 nextBtn.disabled = false;
             }

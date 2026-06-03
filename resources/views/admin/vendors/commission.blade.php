@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Vendor Commission — SyriaZone Admin')
+@section('title', 'Vendor Commission — Vetora Admin')
 @section('page-title', 'Vendor Commission Dashboard')
 
 @section('content')

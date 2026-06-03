@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Users — SyriaZone Admin')
+@section('title', 'Users — Vetora Admin')
 @section('page-title', 'Users')
 
 @section('content')

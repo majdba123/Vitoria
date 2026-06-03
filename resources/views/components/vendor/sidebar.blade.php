@@ -8,7 +8,7 @@
     {{-- Logo --}}
     <div class="flex h-14 shrink-0 items-center gap-3 border-b border-white/10 px-6">
         <a href="{{ route('vendor.dashboard') }}" class="flex items-center gap-2">
-            <span class="text-xl font-bold tracking-tight text-white">Syria<span class="text-emerald-400">Zone</span></span>
+            <span class="text-xl font-bold tracking-tight text-white">Vetora</span>
         </a>
         <span class="rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400">Vendor</span>
 
@@ -125,7 +125,7 @@
 
     {{-- Footer --}}
     <div class="border-t border-white/10 px-6 py-3">
-        <p class="text-[11px] text-gray-500">&copy; {{ date('Y') }} SyriaZone</p>
+        <p class="text-[11px] text-gray-500">&copy; {{ date('Y') }} Vetora</p>
     </div>
 </aside>
 

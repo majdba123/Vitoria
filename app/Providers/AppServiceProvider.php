@@ -6,11 +6,13 @@ use App\Models\Category;
 use App\Models\FooterSetting;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Syndicate;
 use App\Models\Vendor;
 use App\Observers\CategoryObserver;
 use App\Observers\FooterSettingObserver;
 use App\Observers\OrderObserver;
 use App\Observers\ProductObserver;
+use App\Observers\SyndicateObserver;
 use App\Observers\VendorObserver;
 use App\Services\ApplicationCacheService;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -40,6 +42,7 @@ class AppServiceProvider extends ServiceProvider
         Category::observe(CategoryObserver::class);
         Product::observe(ProductObserver::class);
         Vendor::observe(VendorObserver::class);
+        Syndicate::observe(SyndicateObserver::class);
         Order::observe(OrderObserver::class);
         FooterSetting::observe(FooterSettingObserver::class);
 

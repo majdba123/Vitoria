@@ -12,7 +12,7 @@ window.axios.defaults.withXSRFToken = true;
  * Backend error parsing utilities.
  */
 window.ApiErrors = {
-    fallbackMessage: 'Something went wrong. Please try again.',
+    fallbackMessage: 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.',
 
     parse(error) {
         const responseData = error?.response?.data ?? error?.data ?? error;
@@ -110,6 +110,38 @@ window.ApiErrors = {
     },
 };
 
+window.AppToast = {
+    show(message, type = 'error') {
+        const safeMessage = window.ApiErrors?.cleanMessage?.(message) || window.ApiErrors?.fallbackMessage || 'حدث خطأ غير متوقع.';
+        const toast = document.createElement('div');
+        const palette = {
+            success: 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200',
+            error: 'border-red-200 bg-red-50 text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200',
+            warning: 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200',
+            info: 'border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-200',
+        };
+
+        toast.className = `fixed right-4 top-4 z-[120] max-w-sm rounded-xl border px-4 py-3 text-sm font-semibold shadow-xl backdrop-blur ${palette[type] || palette.error}`;
+        toast.setAttribute('role', 'alert');
+        toast.textContent = safeMessage;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-6px)';
+            toast.style.transition = 'opacity .25s ease, transform .25s ease';
+            setTimeout(() => toast.remove(), 260);
+        }, 4200);
+    },
+};
+
+window.showApiError = function (error, fallback = null) {
+    const parsed = window.ApiErrors.parse(error);
+    window.AppToast.show(parsed.generalMessage || fallback || window.ApiErrors.fallbackMessage, 'error');
+
+    return parsed;
+};
+
 /**
  * Token management utilities.
  */
@@ -181,13 +213,17 @@ window.axios.interceptors.response.use(
         const status = error.response?.status;
         const url = String(error.config?.url || '');
 
-        if (status !== 401) {
-            return Promise.reject(error);
-        }
-
         const isAuthAttempt =
             url.includes('/api/auth/login') ||
             url.includes('/api/auth/register');
+
+        if (status !== 401) {
+            if (!error.config?.silent && !isAuthAttempt) {
+                window.showApiError(error);
+            }
+
+            return Promise.reject(error);
+        }
 
         if (isAuthAttempt) {
             return Promise.reject(error);

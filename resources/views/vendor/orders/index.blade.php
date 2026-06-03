@@ -1,6 +1,6 @@
 @extends('layouts.vendor')
 
-@section('title', 'Orders — SyriaZone Vendor')
+@section('title', 'Orders — Vetora Vendor')
 @section('page-title', 'Orders')
 
 @section('content')
