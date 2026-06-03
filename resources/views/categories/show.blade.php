@@ -47,8 +47,10 @@
 <script>
 document.addEventListener('DOMContentLoaded', async function() {
     const catId = {{ $categoryId }};
+    const selectedType = @json(auth()->user()?->preferred_product_type ?? session('preferred_product_type', request()->cookie('preferred_product_type', '')));
     const $ = id => document.getElementById(id);
     let page = 1;
+    const withSelectedType = (url) => selectedType ? `${url}${url.includes('?') ? '&' : '?'}type=${encodeURIComponent(selectedType)}` : url;
     function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
     function categoryHeroInner(cat) {
         if (cat.icon_class) {
@@ -71,7 +73,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     try {
-        const res = await axios.get('/api/categories/' + catId);
+        const res = await axios.get(withSelectedType('/api/categories/' + catId));
         const cat = res.data.data;
         document.title = cat.name + ' — Vetora';
         $('bc-name').textContent = cat.name;
@@ -95,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function loadProducts() {
         $('p-loading').classList.remove('hidden'); $('p-grid').innerHTML = ''; $('p-empty').classList.add('hidden'); $('p-pagination').innerHTML = '';
         try {
-            const res = await axios.get('/api/products?category_id='+catId+'&page='+page);
+            const res = await axios.get(withSelectedType('/api/products?category_id='+catId+'&page='+page));
             const { data, meta } = res.data;
             if (!data.length) { $('p-empty').classList.remove('hidden'); } else { $('p-grid').innerHTML = data.map(p => pCard(p)).join(''); }
             renderPag(meta);

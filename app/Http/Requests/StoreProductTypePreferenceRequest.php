@@ -32,8 +32,8 @@ class StoreProductTypePreferenceRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'preferred_product_type.required' => 'يرجى اختيار نوع المنتجات.',
-            'preferred_product_type.in' => 'نوع المنتجات المحدد غير صالح.',
+            'preferred_product_type.required' => 'يرجى اختيار نوع صحيح للمتابعة.',
+            'preferred_product_type.in' => 'نوع التصفح المحدد غير صالح.',
         ];
     }
 }

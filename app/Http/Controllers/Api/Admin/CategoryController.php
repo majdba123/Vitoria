@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreCategoryRequest;
 use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Models\Category;
-use App\Models\User;
 use App\Services\ApplicationCacheService;
+use App\Services\SelectedProductTypeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +15,10 @@ use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
-    public function __construct(protected ApplicationCacheService $cacheService) {}
+    public function __construct(
+        protected ApplicationCacheService $cacheService,
+        protected SelectedProductTypeService $selectedProductTypeService,
+    ) {}
 
     /**
      * List all categories (cached).
@@ -64,8 +67,10 @@ class CategoryController extends Controller
     /**
      * Show a specific category (cached).
      */
-    public function show(Category $category): JsonResponse
+    public function show(Request $request, Category $category): JsonResponse
     {
+        $this->selectedProductTypeService->abortIfTypeMismatch($request, $category->type);
+
         $cacheKey = "category:{$category->id}";
 
         try {
@@ -162,15 +167,6 @@ class CategoryController extends Controller
 
     protected function preferredCategoryType(Request $request): ?string
     {
-        $user = $request->user();
-        $type = $user instanceof User && $user->type === User::TYPE_USER
-            ? $user->preferred_product_type
-            : null;
-
-        $type ??= $request->hasSession() ? $request->session()->get('preferred_product_type') : null;
-
-        return in_array($type, [Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY], true)
-            ? $type
-            : null;
+        return $this->selectedProductTypeService->resolve($request);
     }
 }

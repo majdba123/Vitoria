@@ -42,7 +42,7 @@
 <script>
 const catPageI18n = @json($categoriesIndexScriptI18n);
 document.addEventListener('DOMContentLoaded', async function() {
-    let selectedType = new URLSearchParams(window.location.search).get('type') || @json(auth()->user()?->preferred_product_type ?? session('preferred_product_type', ''));
+    let selectedType = new URLSearchParams(window.location.search).get('type') || @json(auth()->user()?->preferred_product_type ?? session('preferred_product_type', request()->cookie('preferred_product_type', '')));
     function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
     function setActiveTypeButton() {
         document.querySelectorAll('.category-type-filter').forEach(button => {

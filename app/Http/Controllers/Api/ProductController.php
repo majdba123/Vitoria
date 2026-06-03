@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\Vendor;
 use App\Services\NotificationService;
 use App\Services\ProductService;
+use App\Services\SelectedProductTypeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -28,6 +29,7 @@ class ProductController extends Controller
     public function __construct(
         public NotificationService $notificationService,
         public ProductService $productService,
+        public SelectedProductTypeService $selectedProductTypeService,
     ) {}
 
     /**
@@ -92,7 +94,7 @@ class ProductController extends Controller
     /**
      * Show a public product (for clients/users).
      */
-    public function publicShow(Product $product): JsonResponse
+    public function publicShow(Request $request, Product $product): JsonResponse
     {
         if (! $product->is_active || $product->status !== Product::STATUS_APPROVED || $product->quantity <= 0) {
             abort(404, __('Product not found.'));
@@ -101,6 +103,9 @@ class ProductController extends Controller
         if (! $product->vendor || ! $product->vendor->is_active) {
             abort(404, __('Product not found.'));
         }
+
+        $product->loadMissing('subcategory.category');
+        $this->selectedProductTypeService->abortIfTypeMismatch($request, $product->subcategory?->category?->type);
 
         $cacheKey = "pub_product:{$product->id}";
         try {
@@ -493,15 +498,6 @@ class ProductController extends Controller
 
     protected function preferredCategoryType(Request $request): ?string
     {
-        $user = $request->user();
-        $type = $user instanceof User && $user->type === User::TYPE_USER
-            ? $user->preferred_product_type
-            : null;
-
-        $type ??= $request->hasSession() ? $request->session()->get('preferred_product_type') : null;
-
-        return in_array($type, [\App\Models\Category::TYPE_AGRICULTURE, \App\Models\Category::TYPE_VETERINARY], true)
-            ? $type
-            : null;
+        return $this->selectedProductTypeService->resolve($request);
     }
 }

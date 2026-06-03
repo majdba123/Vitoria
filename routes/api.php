@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\StartupPreferenceController;
+use App\Services\SelectedProductTypeService;
 use Illuminate\Broadcasting\BroadcastController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,7 +28,7 @@ Route::middleware('web')->prefix('startup')->as('startup.')->group(function () {
 | Public Product Routes (for clients/users)
 |--------------------------------------------------------------------------
 */
-Route::prefix('products')->as('products.')->group(function () {
+Route::middleware('web')->prefix('products')->as('products.')->group(function () {
     Route::get('/', [\App\Http\Controllers\Api\ProductController::class, 'publicIndex'])->middleware('throttle:search.filters')->name('public.index');
     Route::get('/{product}/reviews', [\App\Http\Controllers\Api\ProductReviewController::class, 'index'])->name('reviews.index');
     Route::get('/{product}', [\App\Http\Controllers\Api\ProductController::class, 'publicShow'])->name('public.show');
@@ -42,7 +43,7 @@ Route::post('/contact', [\App\Http\Controllers\Api\ContactMessageController::cla
 
 Route::get('/cities', [\App\Http\Controllers\Api\CityController::class, 'index'])->name('cities.index');
 
-Route::middleware('cache.response:120')->group(function () {
+Route::middleware(['web', 'cache.response:120'])->group(function () {
     Route::prefix('vendors')->as('vendors.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\VendorController::class, 'index'])->name('public.index');
         Route::get('/{vendor}', [\App\Http\Controllers\Api\VendorController::class, 'show'])->name('public.show');
@@ -51,9 +52,11 @@ Route::middleware('cache.response:120')->group(function () {
     Route::prefix('categories')->as('categories.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'index'])->name('public.index');
         Route::get('/{category}', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'show'])->name('public.show');
-        Route::get('/{category}/subcategories', function (\App\Models\Category $category) {
+        Route::get('/{category}/subcategories', function (Request $request, \App\Models\Category $category, SelectedProductTypeService $selectedProductTypeService) {
+            $selectedProductTypeService->abortIfTypeMismatch($request, $category->type);
+
             $subs = \Illuminate\Support\Facades\Cache::tags(['categories'])->remember(
-                "cat:{$category->id}:subs",
+                "cat:{$category->id}:subs:".($selectedProductTypeService->resolve($request) ?? 'all'),
                 1800,
                 fn () => $category->subcategories()->select('id', 'name', 'image', 'category_id', 'icon_class')->get()
             );
@@ -63,12 +66,15 @@ Route::middleware('cache.response:120')->group(function () {
     });
 
     Route::prefix('subcategories')->as('subcategories.')->group(function () {
-        Route::get('/{subcategory}', function (\App\Models\Subcategory $subcategory) {
+        Route::get('/{subcategory}', function (Request $request, \App\Models\Subcategory $subcategory, SelectedProductTypeService $selectedProductTypeService) {
+            $subcategory->loadMissing('category:id,name,type');
+            $selectedProductTypeService->abortIfTypeMismatch($request, $subcategory->category?->type);
+
             $data = \Illuminate\Support\Facades\Cache::tags(['categories'])->remember(
-                "subcategory:{$subcategory->id}",
+                "subcategory:{$subcategory->id}:".($selectedProductTypeService->resolve($request) ?? 'all'),
                 1800,
                 function () use ($subcategory) {
-                    $subcategory->load('category:id,name');
+                    $subcategory->load('category:id,name,type');
 
                     return $subcategory;
                 }

@@ -54,7 +54,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', async function() {
     const $ = id => document.getElementById(id);
-    const preferredType = @json(auth()->user()?->preferred_product_type ?? session('preferred_product_type', ''));
+    const preferredType = @json(auth()->user()?->preferred_product_type ?? session('preferred_product_type', request()->cookie('preferred_product_type', '')));
     let page = 1, ct = '', cId = '', sId = '', dFilter = '';
     const params = new URLSearchParams(window.location.search);
     ct = params.get('category_type') || params.get('type') || preferredType || '';

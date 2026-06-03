@@ -87,10 +87,26 @@ test('normal website users are redirected to product type selection until they c
         ->post(route('product-type.store'), [
             'preferred_product_type' => Category::TYPE_AGRICULTURE,
         ])
-        ->assertRedirect(route('categories.index', ['type' => Category::TYPE_AGRICULTURE]));
+        ->assertRedirect(route('categories.index', ['type' => Category::TYPE_AGRICULTURE]))
+        ->assertCookie('preferred_product_type', Category::TYPE_AGRICULTURE);
 
     expect($user->refresh()->preferred_product_type)->toBe(Category::TYPE_AGRICULTURE)
         ->and(session('preferred_product_type'))->toBe(Category::TYPE_AGRICULTURE);
+});
+
+test('guests are redirected to type selection and the selected type persists for browsing', function () {
+    $this->get('/')
+        ->assertRedirect(route('product-type.select'));
+
+    $this->post(route('product-type.store'), [
+        'preferred_product_type' => Category::TYPE_VETERINARY,
+    ])
+        ->assertRedirect(route('categories.index', ['type' => Category::TYPE_VETERINARY]))
+        ->assertCookie('preferred_product_type', Category::TYPE_VETERINARY);
+
+    $this->withCookie('preferred_product_type', Category::TYPE_VETERINARY)
+        ->get(route('home'))
+        ->assertOk();
 });
 
 test('selected user product type filters categories and public products on backend', function () {
@@ -108,6 +124,29 @@ test('selected user product type filters categories and public products on backe
 
     expect($categoryIds)->toContain($veterinary['category']->id)->not->toContain($agriculture['category']->id)
         ->and($productIds)->toContain($veterinary['product']->id)->not->toContain($agriculture['product']->id);
+});
+
+test('public detail endpoints do not expose opposite type data', function () {
+    $agriculture = repairCategorySet(Category::TYPE_AGRICULTURE, 'Agriculture Category');
+    $veterinary = repairCategorySet(Category::TYPE_VETERINARY, 'Veterinary Category');
+
+    $this->getJson('/api/categories/'.$agriculture['category']->id.'?type='.Category::TYPE_AGRICULTURE)
+        ->assertOk();
+
+    $this->getJson('/api/categories/'.$veterinary['category']->id.'?type='.Category::TYPE_AGRICULTURE)
+        ->assertNotFound();
+
+    $this->getJson('/api/subcategories/'.$agriculture['subcategory']->id.'?type='.Category::TYPE_AGRICULTURE)
+        ->assertOk();
+
+    $this->getJson('/api/subcategories/'.$veterinary['subcategory']->id.'?type='.Category::TYPE_AGRICULTURE)
+        ->assertNotFound();
+
+    $this->getJson('/api/products/'.$agriculture['product']->id.'?type='.Category::TYPE_AGRICULTURE)
+        ->assertOk();
+
+    $this->getJson('/api/products/'.$veterinary['product']->id.'?type='.Category::TYPE_AGRICULTURE)
+        ->assertNotFound();
 });
 
 test('syndicate login redirects to syndicate dashboard and skips user type selection', function () {

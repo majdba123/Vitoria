@@ -157,13 +157,15 @@
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
     const productId = {{ $productId ?? 'null' }};
+    const selectedType = @json(auth()->user()?->preferred_product_type ?? session('preferred_product_type', request()->cookie('preferred_product_type', '')));
     const $ = id => document.getElementById(id);
     function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+    const withSelectedType = (url) => selectedType ? `${url}${url.includes('?') ? '&' : '?'}type=${encodeURIComponent(selectedType)}` : url;
 
     if (!productId) { $('show-loading').classList.add('hidden'); $('product-error').classList.remove('hidden'); return; }
 
     try {
-        const res = await window.axios.get(`/api/products/${productId}`);
+        const res = await window.axios.get(withSelectedType(`/api/products/${productId}`));
         const p = res.data.data;
         const photos = p.photos || [];
         const displayImage = p.image_url || '';
@@ -343,7 +345,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     if (window.Auth && window.Auth.applyToken) window.Auth.applyToken();
                     window.axios.delete('/api/products/' + productId + '/reviews/' + rid).then(function() {
                         loadReviews(window._reviewsCurrentPage);
-                        window.axios.get('/api/products/' + productId).then(function(res) {
+                        window.axios.get(withSelectedType('/api/products/' + productId)).then(function(res) {
                             var p = res.data.data;
                             if (p) {
                                 $('product-stars').innerHTML = renderStars(parseFloat(p.average_rating) || 0, 5, 'w-5 h-5');

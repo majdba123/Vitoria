@@ -35,11 +35,13 @@
 <script>
 document.addEventListener('DOMContentLoaded', async function() {
     const subId = {{ $subcategoryId }};
+    const selectedType = @json(auth()->user()?->preferred_product_type ?? session('preferred_product_type', request()->cookie('preferred_product_type', '')));
     const $ = id => document.getElementById(id);
     let page = 1;
+    const withSelectedType = (url) => selectedType ? `${url}${url.includes('?') ? '&' : '?'}type=${encodeURIComponent(selectedType)}` : url;
 
     try {
-        const res = await axios.get('/api/subcategories/' + subId);
+        const res = await axios.get(withSelectedType('/api/subcategories/' + subId));
         const sub = res.data.data;
         const cat = sub.category || {};
         document.title = sub.name + ' — Vetora';
@@ -55,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function loadProducts() {
         $('p-loading').classList.remove('hidden'); $('p-grid').innerHTML = ''; $('p-empty').classList.add('hidden'); $('p-pagination').innerHTML = '';
         try {
-            const res = await axios.get('/api/products?subcategory_id='+subId+'&page='+page);
+            const res = await axios.get(withSelectedType('/api/products?subcategory_id='+subId+'&page='+page));
             const { data, meta } = res.data;
             if (!data.length) { $('p-empty').classList.remove('hidden'); } else { $('p-grid').innerHTML = data.map(p => pCard(p)).join(''); }
             renderPag(meta);

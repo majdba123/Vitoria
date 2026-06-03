@@ -2,13 +2,15 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
+use App\Services\SelectedProductTypeService;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureProductTypeSelected
 {
+    public function __construct(protected SelectedProductTypeService $selectedProductTypeService) {}
+
     /**
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
@@ -16,11 +18,11 @@ class EnsureProductTypeSelected
     {
         $user = $request->user();
 
-        if (! $user || $user->type !== User::TYPE_USER) {
+        if (! $this->selectedProductTypeService->requiresSelection($user)) {
             return $next($request);
         }
 
-        if ($user->preferred_product_type || $request->session()->has('preferred_product_type')) {
+        if ($this->selectedProductTypeService->resolve($request)) {
             return $next($request);
         }
 

@@ -6,10 +6,8 @@ Route::get('/', function () {
     return view('home');
 })->middleware('product.type.selected')->name('home');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/product-type/select', [\App\Http\Controllers\ProductTypePreferenceController::class, 'show'])->name('product-type.select');
-    Route::post('/product-type/select', [\App\Http\Controllers\ProductTypePreferenceController::class, 'store'])->name('product-type.store');
-});
+Route::get('/product-type/select', [\App\Http\Controllers\ProductTypePreferenceController::class, 'show'])->name('product-type.select');
+Route::post('/product-type/select', [\App\Http\Controllers\ProductTypePreferenceController::class, 'store'])->name('product-type.store');
 
 Route::get('/locale/{locale}', function (string $locale) {
     if (in_array($locale, ['ar', 'en'], true)) {
@@ -68,7 +66,7 @@ Route::get('/products', function () {
 
 Route::get('/products/{id}', function (string $id) {
     return view('products.show', ['productId' => $id]);
-})->name('products.show');
+})->middleware('product.type.selected')->name('products.show');
 
 Route::get('/categories', function () {
     return view('categories.index');
@@ -76,11 +74,11 @@ Route::get('/categories', function () {
 
 Route::get('/categories/{id}', function (string $id) {
     return view('categories.show', ['categoryId' => $id]);
-})->name('categories.show');
+})->middleware('product.type.selected')->name('categories.show');
 
 Route::get('/subcategories/{id}', function (string $id) {
     return view('subcategories.show', ['subcategoryId' => $id]);
-})->name('subcategories.show');
+})->middleware('product.type.selected')->name('subcategories.show');
 
 Route::redirect('/vendors', '/', 302)->name('vendors.index');
 
