@@ -7,9 +7,9 @@
 @section('page-title', 'Products')
 
 @section('content')
-<div class="space-y-4">
+<div class="content-stack">
     {{-- Page Header --}}
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div class="page-header mb-0">
         <p class="text-sm text-gray-500">Manage your store products.</p>
         <a href="{{ route('vendor.products.create') }}" class="btn-primary btn-sm w-full shrink-0 sm:w-auto">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
@@ -18,59 +18,57 @@
     </div>
 
     {{-- Filters --}}
-    <div class="card">
-        <div class="card-body">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-end">
-                <div class="flex-1">
+    <div class="filter-panel">
+        <div class="filter-grid-wide">
+                <div>
                     <label for="filter-product-status" class="form-label">Filter by Product Status</label>
-                    <select id="filter-product-status" class="form-input">
+                    <select id="filter-product-status" class="form-select">
                         <option value="">All Status</option>
                         <option value="pending">Pending</option>
                         <option value="approved">Approved</option>
                         <option value="rejected">Rejected</option>
                     </select>
                 </div>
-                <div class="flex-1">
+                <div>
                     <label for="filter-category-type" class="form-label">Filter by Type</label>
-                    <select id="filter-category-type" class="form-input">
+                    <select id="filter-category-type" class="form-select">
                         <option value="">All Types</option>
                         <option value="agriculture">Agriculture</option>
                         <option value="veterinary">Veterinary</option>
                     </select>
                 </div>
-                <div class="flex-1">
+                <div>
                     <label for="filter-category" class="form-label">Filter by Category</label>
-                    <select id="filter-category" class="form-input">
+                    <select id="filter-category" class="form-select">
                         <option value="">All Categories</option>
                     </select>
                 </div>
-                <div class="flex-1">
+                <div>
                     <label for="filter-subcategory" class="form-label">Filter by Subcategory</label>
-                    <select id="filter-subcategory" class="form-input" disabled>
+                    <select id="filter-subcategory" class="form-select" disabled>
                         <option value="">Select category first...</option>
                     </select>
                 </div>
-                <div class="flex-1">
+                <div>
                     <label for="filter-status" class="form-label">Filter by Active</label>
-                    <select id="filter-status" class="form-input">
+                    <select id="filter-status" class="form-select">
                         <option value="">All</option>
                         <option value="1">Active</option>
                         <option value="0">Inactive</option>
                     </select>
                 </div>
-                <div class="flex-1">
+                <div>
                     <label for="filter-discount" class="form-label">Filter by Discount</label>
-                    <select id="filter-discount" class="form-input">
+                    <select id="filter-discount" class="form-select">
                         <option value="">All</option>
                         <option value="1">With Discount</option>
                         <option value="0">Without Discount</option>
                     </select>
                 </div>
-                <div class="flex gap-2">
-                    <button id="apply-filters" class="btn-primary btn-sm">Apply Filters</button>
-                    <button id="clear-filters" class="btn-secondary btn-sm">Clear</button>
+                <div class="filter-actions">
+                    <button id="apply-filters" class="btn-primary btn-sm w-full sm:w-auto">Apply Filters</button>
+                    <button id="clear-filters" class="btn-secondary btn-sm w-full sm:w-auto">Clear</button>
                 </div>
-            </div>
         </div>
     </div>
 
@@ -97,7 +95,7 @@
 
     {{-- Products Grid --}}
     <div id="products-grid-wrapper" class="hidden">
-        <div id="products-grid" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></div>
+        <div id="products-grid" class="responsive-product-grid"></div>
 
         <div class="mt-4 flex flex-col items-center gap-3 border-t border-gray-100 px-4 py-3 sm:flex-row sm:justify-between">
             <p id="products-info" class="text-xs text-gray-500"></p>
@@ -110,8 +108,8 @@
 </div>
 
 {{-- Delete Modal --}}
-<div id="delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4">
-    <div class="w-full max-w-sm rounded-xl bg-white p-6 shadow-2xl">
+<div id="delete-modal" class="mobile-dialog">
+    <div class="mobile-dialog-card">
         <div class="flex items-center gap-3">
             <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100">
                 <svg class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>

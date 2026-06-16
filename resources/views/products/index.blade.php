@@ -4,8 +4,8 @@
 @section('content')
 <div class="bg-white dark:bg-gray-950">
     <div class="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
-        <div class="mx-auto max-w-screen-2xl px-4 py-3 sm:px-6 lg:px-8">
-            <nav class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+        <div class="page-shell py-3">
+            <nav class="page-breadcrumb">
                 <a href="{{ route('home') }}" class="hover:text-brand-600 dark:hover:text-brand-400">{{ __('nav.home') }}</a>
                 <svg class="h-3 w-3 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                 <span class="font-medium text-gray-900 dark:text-white">جميع المنتجات</span>
@@ -13,34 +13,34 @@
         </div>
     </div>
 
-    <div class="mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 lg:px-8">
-        <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div class="page-shell">
+        <div class="page-header">
             <div>
                 <h1 class="text-2xl font-black text-gray-900 sm:text-3xl dark:text-white">جميع المنتجات</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400" id="result-count"></p>
             </div>
-            <div class="flex flex-wrap items-center gap-2">
-                <select id="f-category-type" class="h-10 rounded-xl border border-gray-200 bg-white px-3 pe-8 text-sm font-medium text-gray-700 shadow-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+            <div class="filter-panel flex w-full flex-wrap items-center gap-3">
+                <select id="f-category-type" class="form-select">
                     <option value="">كل الأنواع</option>
                     <option value="agriculture">زراعي</option>
                     <option value="veterinary">بيطري</option>
                 </select>
-                <select id="f-category" class="h-10 rounded-xl border border-gray-200 bg-white px-3 pe-8 text-sm font-medium text-gray-700 shadow-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"><option value="">كل التصنيفات</option></select>
-                <select id="f-subcategory" class="h-10 rounded-xl border border-gray-200 bg-white px-3 pe-8 text-sm font-medium text-gray-700 shadow-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"><option value="">كل التصنيفات الفرعية</option></select>
-                <select id="f-discount" class="h-10 rounded-xl border border-gray-200 bg-white px-3 pe-8 text-sm font-medium text-gray-700 shadow-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                <select id="f-category" class="form-select"><option value="">كل التصنيفات</option></select>
+                <select id="f-subcategory" class="form-select"><option value="">كل التصنيفات الفرعية</option></select>
+                <select id="f-discount" class="form-select">
                     <option value="">كل الخصومات</option>
                     <option value="1">عليه خصم</option>
                     <option value="0">بدون خصم</option>
                 </select>
-                <button id="btn-apply" class="h-10 rounded-xl bg-brand-500 px-5 text-sm font-bold text-white shadow-sm hover:bg-brand-600 active:scale-[.97]">تطبيق</button>
-                <button id="btn-clear" class="h-10 rounded-xl px-3 text-sm font-medium text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800">مسح</button>
+                <button id="btn-apply" class="btn-primary w-full sm:w-auto">تطبيق</button>
+                <button id="btn-clear" class="btn-secondary w-full sm:w-auto">مسح</button>
             </div>
         </div>
 
-        <div id="loading" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div id="loading" class="responsive-shop-grid">
             <div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton hidden h-80 rounded-2xl xl:block"></div>
         </div>
-        <div id="grid" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"></div>
+        <div id="grid" class="responsive-shop-grid"></div>
         <div id="empty" class="hidden py-20 text-center">
             <svg class="mx-auto h-16 w-16 text-gray-200 dark:text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5"/></svg>
             <p class="mt-4 font-bold text-gray-600 dark:text-gray-400" id="empty-message">لا توجد منتجات</p>

@@ -21,12 +21,12 @@
             ],
         ];
     @endphp
-    <section id="home-type-selector" class="bg-gray-50 py-10 dark:bg-gray-950 sm:py-14">
-        <div class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
-            <div class="mx-auto max-w-3xl text-center">
-                <span class="inline-flex rounded-full bg-brand-50 px-4 py-1.5 text-[11px] font-black text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">ابدأ من هنا</span>
-                <h1 class="mt-4 text-3xl font-black text-gray-900 dark:text-white sm:text-4xl">اختر نوع المنتجات التي ترغب في تصفحها</h1>
-                <p class="mt-3 text-sm leading-7 text-gray-500 dark:text-gray-400">سيتم عرض التصنيفات والمنتجات المناسبة لاختيارك فقط، ويمكنك تغيير النوع من هنا في أي وقت.</p>
+    <section id="home-type-selector" class="page-shell">
+        <div class="workspace-hero soft-grid">
+            <div class="mx-auto max-w-3xl text-center lg:mx-0 lg:max-w-2xl lg:text-start">
+                <span class="badge-brand">ابدأ من هنا</span>
+                <h1 class="mt-4 max-w-2xl text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">اختر نوع المنتجات التي ترغب في تصفحها</h1>
+                <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">سيتم عرض التصنيفات والمنتجات المناسبة لاختيارك فقط، ويمكنك تغيير النوع من هنا في أي وقت.</p>
             </div>
 
             @if (session('success'))
@@ -41,28 +41,28 @@
                 </div>
             @enderror
 
-            <div class="mx-auto mt-8 grid max-w-4xl gap-4 sm:grid-cols-2">
+            <div class="mx-auto mt-8 grid max-w-5xl gap-4 lg:grid-cols-2">
                 @foreach ($typeCards as $value => $type)
                     @php
                         $isSelected = $selectedHomeType === $value;
                     @endphp
                     <a
                         href="{{ route('product-type.select', ['preferred_product_type' => $value, 'redirect_to' => 'home']) }}"
-                        class="group block h-full rounded-2xl border bg-white p-5 text-start shadow-sm transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-brand-500/20 dark:bg-gray-900 {{ $isSelected ? 'border-brand-500 shadow-brand-100/80 dark:bg-brand-500/5' : 'border-gray-200 dark:border-gray-800 dark:hover:border-brand-500' }}"
+                        class="group surface-card block h-full p-6 text-start transition duration-300 hover:-translate-y-1 hover:border-brand-300 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-brand-500/20 {{ $isSelected ? 'border-brand-500 bg-white/95 shadow-[0_28px_70px_-42px_rgba(229,93,34,0.68)] dark:bg-brand-500/10' : 'border-white/10 bg-white/92 dark:border-slate-700/70 dark:bg-slate-950/75 dark:hover:border-brand-500' }}"
                     >
                         <span class="flex items-start gap-4">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
+                            <span class="icon-chip h-14 w-14 shrink-0 rounded-2xl">
                                 <i class="{{ $type['icon'] }} text-2xl" aria-hidden="true"></i>
                             </span>
                             <span class="min-w-0 flex-1">
                                 <span class="flex flex-wrap items-center gap-2">
                                     <span class="text-xl font-black text-gray-900 dark:text-white">{{ $type['label'] }}</span>
-                                    <span class="rounded-full px-3 py-1 text-[11px] font-black {{ $isSelected ? 'bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' }}">
+                                    <span class="rounded-full px-3 py-1 text-[11px] font-black {{ $isSelected ? 'bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300' }}">
                                         {{ $isSelected ? 'محدد الآن' : 'اختيار' }}
                                     </span>
                                 </span>
-                                <span class="mt-2 block text-sm leading-6 text-gray-500 dark:text-gray-400">{{ $type['description'] }}</span>
-                                <span class="mt-4 inline-flex rounded-xl bg-gray-900 px-4 py-2 text-xs font-black text-white transition group-hover:bg-brand-600 dark:bg-white dark:text-gray-900 dark:group-hover:bg-brand-500 dark:group-hover:text-white">
+                                <span class="mt-2 block text-sm leading-6 text-gray-500 dark:text-slate-300">{{ $type['description'] }}</span>
+                                <span class="btn-primary mt-4 inline-flex px-4 py-2 text-xs">
                                     {{ $type['button'] }}
                                 </span>
                             </span>
@@ -81,13 +81,13 @@
 
     {{-- Step 2: home browse for selected category --}}
     <div id="sz-main-store" class="{{ $homeCategoryId ? '' : 'hidden' }}">
-        <section id="sz-category-bar" class="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900/80">
-            <div class="mx-auto flex max-w-screen-2xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
+        <section id="sz-category-bar" class="page-shell pt-0">
+            <div class="surface-card-muted flex flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-6">
                 <p class="text-sm text-gray-600 dark:text-gray-400">
                     {{ __('home.browsing_prefix') }}
                     <span id="sz-category-bar-name" class="font-bold text-gray-900 dark:text-white">—</span>
                 </p>
-                <a href="{{ route('home', ['type' => $selectedHomeType]) }}" class="rounded-xl border border-gray-200 bg-white px-4 py-2 text-xs font-bold text-gray-700 transition-colors hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-brand-500">
+                <a href="{{ route('home', ['type' => $selectedHomeType]) }}" class="btn-secondary btn-xs">
                     {{ __('home.change_category') }}
                 </a>
             </div>
@@ -102,9 +102,9 @@
         <x-home.trust-badges />
         <x-home.contact />
     @else
-        <section class="bg-white py-12 dark:bg-gray-950">
-            <div class="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
-                <p class="rounded-2xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm font-semibold text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400">
+        <section class="page-shell">
+            <div class="mx-auto max-w-3xl text-center">
+                <p class="state-panel text-sm font-semibold text-gray-500 dark:text-gray-400">
                     اختر النوع أولا حتى تظهر التصنيفات والمنتجات المناسبة.
                 </p>
             </div>

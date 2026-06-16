@@ -140,6 +140,7 @@
     body {
         @apply bg-ink-50 text-ink-900 antialiased;
         background: var(--site-bg);
+        overflow-x: clip;
     }
 
     body.dashboard-body {
@@ -492,11 +493,11 @@
     }
 
     .admin-table th {
-        @apply px-4 py-3 text-left text-[11px] font-extrabold uppercase tracking-[0.18em] text-ink-500;
+        @apply px-4 py-3 text-left text-[11px] font-extrabold uppercase tracking-[0.18em] text-ink-500 whitespace-nowrap;
     }
 
     .admin-table td {
-        @apply px-4 py-3.5 text-sm text-ink-700 dark:text-slate-200;
+        @apply px-4 py-3.5 text-sm text-ink-700 dark:text-slate-200 align-top;
     }
 
     .admin-table tbody tr {
@@ -607,6 +608,85 @@
         @apply py-8 sm:py-10;
     }
 
+    .page-shell {
+        @apply mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8;
+    }
+
+    .page-header {
+        @apply mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between;
+    }
+
+    .page-breadcrumb {
+        @apply flex flex-wrap items-center gap-2 text-xs text-ink-500 dark:text-slate-400;
+    }
+
+    .page-breadcrumb-current {
+        @apply font-semibold text-ink-900 dark:text-white;
+    }
+
+    .filter-panel {
+        @apply rounded-[28px] p-5 sm:p-6;
+        background: var(--site-surface-strong);
+        border: 1px solid var(--site-border);
+        box-shadow: var(--site-shadow-soft);
+    }
+
+    .filter-grid {
+        @apply grid gap-4 md:grid-cols-2 xl:grid-cols-4;
+    }
+
+    .filter-grid-wide {
+        @apply grid gap-4 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6;
+    }
+
+    .filter-actions {
+        @apply flex flex-col gap-2 sm:flex-row sm:flex-wrap xl:col-span-full;
+    }
+
+    .responsive-product-grid {
+        @apply grid grid-cols-1 gap-4 min-[430px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+    }
+
+    .responsive-shop-grid {
+        @apply grid grid-cols-1 gap-4 min-[430px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5;
+    }
+
+    .content-stack {
+        @apply space-y-6;
+    }
+
+    .split-dashboard-grid {
+        @apply grid gap-6 xl:grid-cols-3;
+    }
+
+    .split-dashboard-main {
+        @apply xl:col-span-2;
+    }
+
+    .info-grid {
+        @apply grid gap-4 sm:grid-cols-2;
+    }
+
+    .compact-info-grid {
+        @apply grid gap-3 sm:grid-cols-2 lg:grid-cols-4;
+    }
+
+    .mobile-dialog {
+        @apply fixed inset-0 z-50 hidden items-center justify-center bg-gray-950/60 p-4 backdrop-blur-sm;
+    }
+
+    .mobile-dialog-card {
+        @apply w-full max-w-md rounded-[28px] p-6;
+        background: var(--site-surface-strong);
+        border: 1px solid var(--site-border);
+        box-shadow: var(--site-shadow);
+    }
+
+    .admin-table-wrap {
+        @apply overflow-x-auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
     .auth-shell {
         @apply relative isolate overflow-hidden rounded-[34px] border p-6 shadow-2xl sm:p-8;
         background: var(--site-surface-strong);
@@ -676,5 +756,11 @@
 
     .dashboard-section-copy {
         @apply mt-1 text-sm leading-6 text-ink-500 dark:text-slate-400;
+    }
+
+    .status-note {
+        @apply rounded-2xl border border-dashed px-4 py-3 text-sm font-medium text-ink-500 dark:text-slate-400;
+        border-color: rgba(148, 163, 184, 0.24);
+        background: rgba(148, 163, 184, 0.06);
     }
 }

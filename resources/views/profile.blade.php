@@ -5,8 +5,8 @@
 @section('content')
 <div class="bg-white dark:bg-gray-950">
     <div class="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
-        <div class="mx-auto max-w-screen-2xl px-4 py-3 sm:px-6 lg:px-8">
-            <nav class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+        <div class="page-shell py-3">
+            <nav class="page-breadcrumb">
                 <a href="{{ route('home') }}" class="hover:text-brand-600 dark:hover:text-brand-400">{{ __('profile.home') }}</a>
                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                 <span class="font-medium text-gray-900 dark:text-white">{{ __('profile.my_profile') }}</span>
@@ -14,7 +14,7 @@
         </div>
     </div>
 
-    <div class="mx-auto max-w-screen-2xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="page-shell">
         {{-- Loading --}}
         <div id="profile-loading" class="py-20 text-center">
             <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500 dark:border-gray-700"></div>
@@ -31,16 +31,16 @@
         {{-- Profile Form --}}
         <div id="profile-content" class="hidden">
             <div class="mb-8">
-                <h1 class="text-2xl font-black text-gray-900 dark:text-white">{{ __('profile.my_profile') }}</h1>
+                <h1 class="section-title text-2xl">{{ __('profile.my_profile') }}</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('profile.update_info') }}</p>
             </div>
 
-            <div class="grid gap-8 lg:grid-cols-3">
+            <div class="split-dashboard-grid">
             {{-- Left Column: Profile Form --}}
-            <div class="lg:col-span-1">
+            <div>
 
             {{-- Avatar Section --}}
-            <div class="mb-6 rounded-2xl border border-gray-200/80 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+            <div class="surface-card mb-6 p-6">
                 <label class="mb-4 block text-sm font-bold text-gray-900 dark:text-white">{{ __('profile.profile_photo') }}</label>
                 <div class="flex items-center gap-6">
                     <div class="relative">
@@ -61,32 +61,32 @@
             </div>
 
             {{-- Form Fields --}}
-            <div class="mb-6 rounded-2xl border border-gray-200/80 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+            <div class="surface-card mb-6 p-6">
                 <h3 class="mb-5 text-base font-bold text-gray-900 dark:text-white">{{ __('profile.personal_info') }}</h3>
                 <form id="profile-form" class="space-y-5">
                     <div>
                         <label for="p-name" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('profile.full_name') }}</label>
-                        <input type="text" id="p-name" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" placeholder="Your full name">
+                        <input type="text" id="p-name" class="form-input" placeholder="Your full name">
                         <p id="err-name" class="mt-1 hidden text-xs text-red-500"></p>
                     </div>
                     <div>
                         <label for="p-email" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('profile.email_address') }}</label>
-                        <input type="email" id="p-email" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" placeholder="you@example.com">
+                        <input type="email" id="p-email" class="form-input" placeholder="you@example.com">
                         <p id="err-email" class="mt-1 hidden text-xs text-red-500"></p>
                     </div>
                     <div>
                         <label for="p-phone" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('profile.phone_number') }}</label>
-                        <input type="text" id="p-phone" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" placeholder="09XXXXXXXX">
+                        <input type="text" id="p-phone" class="form-input" placeholder="09XXXXXXXX">
                         <p id="err-phone_number" class="mt-1 hidden text-xs text-red-500"></p>
                     </div>
                     <div>
                         <label for="p-timezone" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Timezone</label>
-                        <select id="p-timezone" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500"></select>
+                        <select id="p-timezone" class="form-select"></select>
                         <p id="err-timezone" class="mt-1 hidden text-xs text-red-500"></p>
                     </div>
                     <div>
                         <label for="p-preferred-product-type" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">نوع المنتجات المفضل</label>
-                        <select id="p-preferred-product-type" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500">
+                        <select id="p-preferred-product-type" class="form-select">
                             <option value="">اختر النوع</option>
                             <option value="agriculture">زراعي</option>
                             <option value="veterinary">بيطري</option>
@@ -95,7 +95,7 @@
                     </div>
 
                     {{-- Read-only fields --}}
-                    <div class="grid grid-cols-2 gap-4 rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800/50">
+                    <div class="info-grid rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800/50">
                         <div>
                             <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Account Type</p>
                             <p id="p-type" class="mt-0.5 text-sm font-bold text-gray-900 dark:text-white">—</p>
@@ -124,8 +124,8 @@
             </div>{{-- end left column --}}
 
             {{-- Right Column: Favourites --}}
-            <div class="lg:col-span-2">
-                <div class="rounded-2xl border border-gray-200/80 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+            <div class="split-dashboard-main space-y-6">
+                <div class="surface-card p-6">
                     <div class="mb-5 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 dark:bg-red-500/10">
@@ -138,10 +138,10 @@
                         </div>
                     </div>
 
-                    <div id="fav-loading" class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    <div id="fav-loading" class="responsive-product-grid">
                         <div class="skeleton h-52 rounded-xl"></div><div class="skeleton h-52 rounded-xl"></div><div class="skeleton h-52 rounded-xl"></div>
                     </div>
-                    <div id="fav-grid" class="grid grid-cols-2 gap-3 sm:grid-cols-3"></div>
+                    <div id="fav-grid" class="responsive-product-grid"></div>
                     <div id="fav-empty" class="hidden py-12 text-center">
                         <svg class="mx-auto h-12 w-12 text-gray-200 dark:text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
                         <p class="mt-3 text-sm font-bold text-gray-500 dark:text-gray-400">No favourites yet</p>
@@ -150,7 +150,7 @@
                     </div>
                 </div>
 
-                <div class="mt-6 rounded-2xl border border-gray-200/80 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+                <div class="surface-card p-6">
                     <div class="mb-5 flex items-center justify-between">
                         <div>
                             <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ __('profile.order_history') }}</h3>
@@ -159,11 +159,11 @@
                         <p class="rounded-full bg-gray-100 px-3 py-1 text-[11px] font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-300">{{ __('profile.payment_cash') }}</p>
                     </div>
 
-                    <div class="mb-4 grid gap-2 sm:grid-cols-3">
+                    <div class="filter-grid mb-4">
                         <input id="orders-filter-search" type="text" placeholder="Search order/product"
-                            class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-900 outline-none transition-colors focus:border-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            class="form-input text-xs">
                         <select id="orders-filter-status"
-                            class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-900 outline-none transition-colors focus:border-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            class="form-select text-xs">
                             <option value="">{{ __('profile.all_statuses') }}</option>
                             <option value="pending">Pending</option>
                             <option value="confirmed">Confirmed</option>
@@ -171,7 +171,7 @@
                             <option value="cancelled">Cancelled</option>
                         </select>
                         <button id="orders-filter-reset" type="button"
-                            class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
+                            class="btn-secondary btn-sm w-full sm:w-auto">
                             Reset
                         </button>
                     </div>
@@ -199,7 +199,7 @@
                 </div>
 
                 {{-- Contact messages history --}}
-                <div class="mt-6 rounded-2xl border border-gray-200/80 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+                <div class="surface-card p-6">
                     <div class="mb-5 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-500/10">
