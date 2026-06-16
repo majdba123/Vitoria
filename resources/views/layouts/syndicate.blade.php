@@ -13,63 +13,96 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'لوحة النقابة - Vetora')</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|sora:600,700,800|ibm-plex-sans-arabic:400,500,600,700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
+    <script>
+        (function () {
+            const theme = localStorage.getItem('sz_theme');
+            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 </head>
-<body class="min-h-screen bg-gray-50 font-sans text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100">
+<body class="dashboard-body min-h-screen font-sans text-gray-900 antialiased dark:text-gray-100">
     <div id="syndicate-app" class="hidden">
-        <div id="sidebar-backdrop" class="fixed inset-0 z-40 hidden bg-gray-900/60 backdrop-blur-sm lg:hidden" onclick="closeSidebar()"></div>
-        <aside id="syndicate-sidebar" class="fixed inset-y-0 {{ $sidebarEdgeClass }} z-50 flex w-72 {{ $sidebarHiddenClass }} flex-col bg-gray-900 transition-transform duration-300 lg:translate-x-0">
-            <div class="flex h-14 items-center gap-3 border-b border-white/10 px-6">
-                <a href="{{ route('syndicate.dashboard') }}" class="text-xl font-bold text-white">Vetora</a>
-                <span class="rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400">النقابة</span>
-                <button onclick="closeSidebar()" class="{{ $closeMarginClass }} rounded-md p-1 text-gray-400 hover:text-white lg:hidden">
+        <div id="sidebar-backdrop" class="fixed inset-0 z-40 hidden bg-gray-950/55 backdrop-blur-sm lg:hidden" onclick="closeSidebar()"></div>
+        <aside id="syndicate-sidebar" class="dashboard-sidebar fixed inset-y-0 {{ $sidebarEdgeClass }} z-50 flex w-72 {{ $sidebarHiddenClass }} flex-col lg:translate-x-0">
+            <div class="flex h-[88px] items-center gap-3 border-b border-white/8 px-6">
+                <a href="{{ route('syndicate.dashboard') }}" class="flex items-center gap-3 text-white">
+                    <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-teal-700 shadow-lg shadow-cyan-500/20">
+                        <i class="fa-solid fa-users-rays text-sm"></i>
+                    </span>
+                    <span>
+                        <span class="block font-display text-xl font-extrabold">Vetora</span>
+                        <span class="mt-1 block text-[11px] font-extrabold uppercase tracking-[0.28em] text-cyan-200">Syndicate</span>
+                    </span>
+                </a>
+                <button onclick="closeSidebar()" class="{{ $closeMarginClass }} rounded-2xl p-2 text-gray-400 hover:bg-white/5 hover:text-white lg:hidden">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
             @php
                 $currentRoute = request()->route()?->getName() ?? '';
                 $links = [
-                    ['route' => 'syndicate.dashboard', 'label' => 'نظرة عامة'],
-                    ['route' => 'syndicate.categories', 'label' => 'التصنيفات'],
-                    ['route' => 'syndicate.vendors', 'label' => 'التجار'],
-                    ['route' => 'syndicate.products', 'label' => 'المنتجات'],
-                    ['route' => 'syndicate.podcasts', 'label' => 'البودكاست'],
-                    ['route' => 'syndicate.orders', 'label' => 'الطلبات'],
-                    ['route' => 'syndicate.sales', 'label' => 'المبيعات'],
-                    ['route' => 'syndicate.reports', 'label' => 'التقارير'],
+                    ['route' => 'syndicate.dashboard', 'label' => 'نظرة عامة', 'icon' => 'fa-solid fa-grid-2'],
+                    ['route' => 'syndicate.categories', 'label' => 'التصنيفات', 'icon' => 'fa-solid fa-layer-group'],
+                    ['route' => 'syndicate.vendors', 'label' => 'التجار', 'icon' => 'fa-solid fa-store'],
+                    ['route' => 'syndicate.products', 'label' => 'المنتجات', 'icon' => 'fa-solid fa-box-open'],
+                    ['route' => 'syndicate.podcasts', 'label' => 'البودكاست', 'icon' => 'fa-solid fa-microphone-lines'],
+                    ['route' => 'syndicate.orders', 'label' => 'الطلبات', 'icon' => 'fa-solid fa-bag-shopping'],
+                    ['route' => 'syndicate.sales', 'label' => 'المبيعات', 'icon' => 'fa-solid fa-chart-line'],
+                    ['route' => 'syndicate.reports', 'label' => 'التقارير', 'icon' => 'fa-regular fa-chart-bar'],
                 ];
             @endphp
+            <div class="px-6 pt-5">
+                <div class="rounded-[24px] border border-white/8 bg-white/5 p-4 text-white/80">
+                    <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-white/45">Association layer</p>
+                    <p class="mt-2 text-sm leading-6 text-white/75">Track type-specific network performance, category coverage, and sales intelligence from one secure view.</p>
+                </div>
+            </div>
             <nav class="flex-1 overflow-y-auto px-4 py-5">
-                <p class="mb-2 px-3 text-[10px] font-bold uppercase tracking-widest text-gray-500">مساحة العمل</p>
-                @foreach($links as $link)
-                    <a href="{{ route($link['route']) }}" class="mb-0.5 flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all {{ $currentRoute === $link['route'] ? 'bg-white/10 text-white' : 'text-gray-400 hover:bg-white/5 hover:text-gray-200' }}">
-                        <span class="h-2 w-2 rounded-full {{ $currentRoute === $link['route'] ? 'bg-emerald-400' : 'bg-gray-600' }}"></span>
-                        {{ $link['label'] }}
+                <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-white/35">Workspace</p>
+                @foreach ($links as $link)
+                    @php
+                        $isActive = $currentRoute === $link['route'];
+                    @endphp
+                    <a href="{{ route($link['route']) }}" class="dashboard-sidebar-link {{ $isActive ? 'is-active' : '' }}">
+                        <span class="dashboard-sidebar-bullet h-2.5 w-2.5 rounded-full bg-white/20"></span>
+                        <i class="{{ $link['icon'] }} w-4 text-center text-[13px]"></i>
+                        <span class="flex-1">{{ $link['label'] }}</span>
                     </a>
                 @endforeach
             </nav>
-            <div class="border-t border-white/10 px-6 py-3">
-                <p class="text-[11px] text-gray-500">&copy; {{ date('Y') }} Vetora</p>
+            <div class="border-t border-white/8 px-6 py-4 text-[11px] text-white/40">
+                <p>&copy; {{ date('Y') }} Vetora</p>
             </div>
         </aside>
         <div class="{{ $mainPaddingClass }}">
-            <header class="sticky top-0 z-30 border-b border-gray-200 bg-white/95 backdrop-blur dark:border-gray-800 dark:bg-gray-900/95">
-                <div class="flex h-14 items-center gap-4 px-4 sm:px-6 lg:px-8">
-                    <button type="button" id="sidebar-toggle" class="-m-2.5 p-2.5 text-gray-500 lg:hidden">
+            <header class="dashboard-topbar sticky top-0 z-30">
+                <div class="workspace-shell flex h-[78px] items-center gap-4">
+                    <button type="button" id="sidebar-toggle" class="-m-2.5 flex h-10 w-10 items-center justify-center rounded-2xl text-gray-500 hover:bg-white/70 dark:hover:bg-white/5 lg:hidden">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
                     </button>
-                    <h1 class="flex-1 text-base font-semibold text-gray-900 dark:text-white">@yield('page-title', 'النقابة')</h1>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-cyan-600 dark:text-cyan-300">Syndicate hub</p>
+                        <h1 class="mt-1 truncate text-lg font-black text-gray-900 dark:text-white">@yield('page-title', 'النقابة')</h1>
+                    </div>
                     <span id="syndicate-type-badge" class="badge badge-brand"></span>
                     <button onclick="syndicateLogout()" class="btn-secondary btn-sm">تسجيل الخروج</button>
                 </div>
             </header>
-            <main class="px-4 py-6 sm:px-6 lg:px-8">@yield('content')</main>
+            <main class="workspace-shell py-8">@yield('content')</main>
         </div>
     </div>
     <div id="syndicate-loading" class="flex min-h-screen items-center justify-center">
-        <div class="text-center"><div class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-emerald-500"></div><p class="mt-4 text-sm text-gray-500">جارٍ التحقق من صلاحية النقابة...</p></div>
+        <div class="text-center">
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-white/70 shadow-lg shadow-gray-900/5 backdrop-blur-md dark:bg-white/5 dark:shadow-black/20">
+                <div class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-cyan-500"></div>
+            </div>
+            <p class="mt-4 text-sm font-semibold text-gray-500">جارٍ التحقق من صلاحية النقابة...</p>
+        </div>
     </div>
     <script>
         const syndicateHiddenClass = @json($sidebarHiddenClass);
@@ -80,7 +113,7 @@
             return 'نقابة';
         }
         window.syndicateLogout = async function() {
-            try { await window.axios.post('/api/auth/logout'); } catch (e) {}
+            try { await window.axios.post('/api/auth/logout'); } catch (error) {}
             if (window.Auth?.clearAll) window.Auth.clearAll(); else localStorage.clear();
             deleteCookie('XSRF-TOKEN'); deleteCookie('laravel_session');
             window.location.replace('{{ route("login") }}?logout=1');
@@ -95,7 +128,7 @@
                 document.getElementById('syndicate-loading').classList.add('hidden');
                 document.getElementById('syndicate-app').classList.remove('hidden');
                 document.dispatchEvent(new CustomEvent('syndicate-ready'));
-            } catch (e) { window.Auth.removeToken(); window.location.href = '{{ route("login") }}'; }
+            } catch (error) { window.Auth.removeToken(); window.location.href = '{{ route("login") }}'; }
         });
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('sidebar-toggle')?.addEventListener('click', function () {

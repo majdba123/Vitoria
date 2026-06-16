@@ -3,44 +3,39 @@
 @section('title', __('auth.create_account_title') . ' ' . __('site.meta_title_separator') . ' ' . __('site.meta_title_suffix'))
 
 @section('content')
-<div class="bg-gray-50 px-4 py-10 dark:bg-gray-950 sm:px-6 lg:px-8">
-    <div class="mx-auto grid min-h-[calc(100vh-8rem)] max-w-6xl items-center gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-        <aside class="hidden lg:block">
-            <div class="max-w-md">
-                <div class="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-brand-500 text-white shadow-lg shadow-brand-500/20">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72L4.318 3.44A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72"/>
-                    </svg>
+<section class="workspace-shell workspace-section">
+    <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+        <aside class="surface-card overflow-hidden p-8 sm:p-10">
+            <span class="eyebrow">Create your account</span>
+            <h1 class="mt-6 font-display text-4xl font-extrabold tracking-tight text-ink-900 dark:text-white">{{ __('auth.create_account_title') }}</h1>
+            <p class="mt-4 text-base leading-8 text-ink-500 dark:text-slate-400">{{ __('auth.join_today') }}</p>
+
+            <div class="mt-8 grid gap-4">
+                <div class="surface-card-muted p-5">
+                    <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-brand-600 dark:text-brand-300">Customer account</p>
+                    <p class="mt-2 text-sm leading-7 text-ink-500 dark:text-slate-400">Discover products, save favorites, and manage orders from a polished personal workspace.</p>
                 </div>
-                <h1 class="mt-6 text-4xl font-black leading-tight text-gray-950 dark:text-white">{{ __('auth.create_account_title') }}</h1>
-                <p class="mt-4 text-base leading-7 text-gray-600 dark:text-gray-400">{{ __('auth.join_today') }}</p>
-                <div class="mt-8 grid gap-3">
-                    <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                        <p class="text-sm font-bold text-gray-900 dark:text-white">Customer account</p>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Shop products and manage orders from one place.</p>
-                    </div>
-                    <div class="rounded-lg border border-brand-200 bg-brand-50 p-4 shadow-sm dark:border-brand-500/20 dark:bg-brand-500/10">
-                        <p class="text-sm font-bold text-gray-900 dark:text-white">Merchant account</p>
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Create a vendor profile with every category your store serves.</p>
-                    </div>
+                <div class="surface-card-muted p-5">
+                    <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-emerald-600 dark:text-emerald-300">Merchant account</p>
+                    <p class="mt-2 text-sm leading-7 text-ink-500 dark:text-slate-400">Launch your storefront, request approval, and sell across the categories your business serves.</p>
+                </div>
+                <div class="surface-card-muted p-5">
+                    <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-cyan-600 dark:text-cyan-300">Unified platform</p>
+                    <p class="mt-2 text-sm leading-7 text-ink-500 dark:text-slate-400">One identity, one system, and a smoother handoff from public website to operational dashboard.</p>
                 </div>
             </div>
         </aside>
 
-        <section class="rounded-lg border border-gray-200 bg-white shadow-xl shadow-gray-200/60 dark:border-gray-800 dark:bg-gray-900 dark:shadow-black/20">
-            <div class="border-b border-gray-100 px-5 py-5 dark:border-gray-800 sm:px-8">
-                <h1 class="text-2xl font-bold text-gray-950 dark:text-white lg:hidden">{{ __('auth.create_account_title') }}</h1>
-                <div class="hidden items-center justify-between gap-4 lg:flex">
-                    <div>
-                        <p class="text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400">Vetora</p>
-                        <h2 class="mt-1 text-xl font-bold text-gray-950 dark:text-white">Account details</h2>
-                    </div>
-                    <a href="{{ route('login') }}" class="btn-secondary btn-sm">{{ __('nav.sign_in') }}</a>
+        <section class="auth-shell">
+            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-6 dark:border-gray-800">
+                <div>
+                    <span class="eyebrow">Application form</span>
+                    <h2 class="mt-4 font-display text-3xl font-extrabold tracking-tight text-ink-900 dark:text-white">Set up your Vetora profile.</h2>
                 </div>
-                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 lg:hidden">{{ __('auth.join_today') }}</p>
+                <a href="{{ route('login') }}" class="btn-secondary btn-sm">{{ __('nav.sign_in') }}</a>
             </div>
 
-            <div class="p-5 sm:p-8">
+            <div class="mt-8">
                 <x-alert type="error" id="register-alert" />
                 <x-alert type="success" id="register-success" />
 
@@ -48,14 +43,14 @@
                     <div>
                         <label class="form-label">Account type <span class="text-red-500">*</span></label>
                         <div class="grid gap-3 sm:grid-cols-2">
-                            <label class="account-type-option relative flex cursor-pointer items-start gap-3 rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-brand-300 hover:bg-brand-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800">
+                            <label class="account-type-option surface-card-muted flex cursor-pointer items-start gap-3 p-4">
                                 <input type="radio" name="account_type" value="user" class="mt-1 h-4 w-4 border-gray-300 text-brand-600 focus:ring-brand-500" checked>
                                 <span>
                                     <span class="block text-sm font-bold text-gray-900 dark:text-white">Normal user</span>
                                     <span class="mt-1 block text-xs text-gray-500 dark:text-gray-400">Buy and track orders</span>
                                 </span>
                             </label>
-                            <label class="account-type-option relative flex cursor-pointer items-start gap-3 rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-brand-300 hover:bg-brand-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800">
+                            <label class="account-type-option surface-card-muted flex cursor-pointer items-start gap-3 p-4">
                                 <input type="radio" name="account_type" value="vendor" class="mt-1 h-4 w-4 border-gray-300 text-brand-600 focus:ring-brand-500">
                                 <span>
                                     <span class="block text-sm font-bold text-gray-900 dark:text-white">Merchant / Vendor</span>
@@ -82,7 +77,7 @@
                         </div>
                     </div>
 
-                    <div id="merchant-fields" class="hidden rounded-lg border border-gray-200 bg-gray-50 p-5 dark:border-gray-700 dark:bg-gray-800/50">
+                    <div id="merchant-fields" class="hidden surface-card-muted p-5">
                         <div class="mb-5 flex items-start justify-between gap-4">
                             <div>
                                 <h2 class="text-base font-bold text-gray-950 dark:text-white">Merchant details</h2>
@@ -108,14 +103,14 @@
                             <div>
                                 <label for="commercial_register_file" class="form-label">Commercial registration document <span class="text-red-500">*</span></label>
                                 <input type="file" id="commercial_register_file" name="commercial_register_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg,image/png" class="form-input">
-                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">PDF, DOC, DOCX, JPG, JPEG, or PNG. Max 5 MB.</p>
+                                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">PDF, DOC, DOCX, JPG, JPEG, or PNG. Max 5 MB.</p>
                                 <p class="form-error" id="commercial_register_file-error"></p>
                             </div>
 
                             <div class="md:col-span-2">
                                 <label class="form-label">Merchant categories <span class="text-red-500">*</span></label>
                                 <div id="category-options" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
-                                <p id="category-loading" class="rounded-lg border border-dashed border-gray-300 bg-white px-4 py-3 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">Loading categories...</p>
+                                <p id="category-loading" class="rounded-2xl border border-dashed border-gray-300 bg-white/70 px-4 py-3 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-900/60 dark:text-gray-400">Loading categories...</p>
                                 <p class="form-error" id="category_ids-error"></p>
                             </div>
 
@@ -139,14 +134,14 @@
                         <x-form.input name="password_confirmation" label="{{ __('auth.confirm_password') }}" type="password" placeholder="{{ __('auth.placeholder_password_confirm') }}" autocomplete="new-password" />
                     </div>
 
-                    <div class="flex flex-col gap-3 border-t border-gray-100 pt-6 dark:border-gray-800 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex flex-col gap-4 border-t border-gray-100 pt-6 dark:border-gray-800 sm:flex-row sm:items-center sm:justify-between">
                         <p class="text-sm text-gray-500 dark:text-gray-400">
                             {{ __('auth.has_account') }}
                             <a href="{{ route('login') }}" class="font-semibold text-brand-600 hover:text-brand-500">{{ __('nav.sign_in') }}</a>
                         </p>
                         <x-form.button type="submit" id="register-btn" class="sm:w-auto">
                             <span id="register-btn-text">{{ __('nav.register') }}</span>
-                            <svg id="register-spinner" class="ml-2 hidden h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <svg id="register-spinner" class="hidden h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4z"></path>
                             </svg>
@@ -156,7 +151,7 @@
             </div>
         </section>
     </div>
-</div>
+</section>
 @endsection
 
 @push('scripts')
@@ -194,7 +189,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const res = await window.axios.get('/api/cities');
             const cities = res.data.data || [];
             const sel = document.getElementById('city_id');
-
             cities.forEach(function (city) {
                 const opt = document.createElement('option');
                 opt.value = city.id;
@@ -211,14 +205,10 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const res = await window.axios.get('/api/categories?per_page=100');
             allCategories = res.data.data || [];
-
             renderMerchantCategories();
             categoryLoading.classList.add('hidden');
         } catch (e) {
-            const parsed = window.ApiErrors?.parse
-                ? window.ApiErrors.parse(e)
-                : { generalMessage: 'Could not load categories.' };
-
+            const parsed = window.ApiErrors?.parse ? window.ApiErrors.parse(e) : { generalMessage: 'Could not load categories.' };
             categoryLoading.textContent = parsed.generalMessage || 'Could not load categories.';
             document.getElementById('category_ids-error').classList.remove('hidden');
         }
@@ -229,15 +219,13 @@ document.addEventListener('DOMContentLoaded', function () {
         categoryOptions.innerHTML = '';
 
         if (!selectedType) {
-            categoryOptions.innerHTML = '<p class="rounded-lg border border-dashed border-gray-300 bg-white px-4 py-3 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400 sm:col-span-2 lg:col-span-3">Select a business type to choose categories.</p>';
-
+            categoryOptions.innerHTML = '<p class="rounded-2xl border border-dashed border-gray-300 bg-white/70 px-4 py-3 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-900/60 dark:text-gray-400 sm:col-span-2 lg:col-span-3">Select a business type to choose categories.</p>';
             return;
         }
 
         if (selectedType === 'both') {
             categoryOptions.appendChild(createCategoryGroup('Agriculture Categories', allCategories.filter(category => category.type === 'agriculture')));
             categoryOptions.appendChild(createCategoryGroup('Veterinary Categories', allCategories.filter(category => category.type === 'veterinary')));
-
             return;
         }
 
@@ -259,13 +247,12 @@ document.addEventListener('DOMContentLoaded', function () {
         categories.forEach(category => grid.appendChild(createCategoryOption(category)));
 
         section.append(heading, grid);
-
         return section;
     }
 
     function createCategoryOption(category) {
         const label = document.createElement('label');
-        label.className = 'flex min-h-20 cursor-pointer items-start gap-3 rounded-lg border border-gray-200 bg-white p-3 text-sm shadow-sm transition-all hover:border-brand-300 hover:bg-brand-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800';
+        label.className = 'surface-card-muted flex min-h-20 cursor-pointer items-start gap-3 p-3 text-sm';
 
         const input = document.createElement('input');
         input.type = 'checkbox';
@@ -291,7 +278,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         content.append(name, meta);
         label.append(input, content);
-
         return label;
     }
 
@@ -404,6 +390,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const msg = document.getElementById(id + '-message');
         msg.textContent = message;
         box.classList.remove('hidden');
+        box.classList.add('flex');
     }
 
     function handleErrors(error) {
@@ -424,7 +411,6 @@ document.addEventListener('DOMContentLoaded', function () {
             form.commercial_register_file.value = '';
         }
     }
-
 });
 </script>
 @endpush

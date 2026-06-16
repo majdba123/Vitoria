@@ -7,8 +7,8 @@
     <title>@yield('title', __('Vetora'))</title>
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
     <link rel="dns-prefetch" href="https://fonts.bunny.net">
-    <link rel="preload" href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800,900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800,900&display=swap" rel="stylesheet"></noscript>
+    <link rel="preload" href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|sora:600,700,800|ibm-plex-sans-arabic:400,500,600,700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|sora:600,700,800|ibm-plex-sans-arabic:400,500,600,700&display=swap" rel="stylesheet"></noscript>
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#030712" media="(prefers-color-scheme: dark)">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -23,7 +23,7 @@
         })();
     </script>
 </head>
-<body class="min-h-screen bg-white text-gray-900 antialiased transition-colors duration-300 dark:bg-gray-950 dark:text-gray-100">
+<body class="min-h-screen text-gray-900 antialiased transition-colors duration-300 dark:text-gray-100">
     @php
         $appStrings = [
             'fav_added' => __('common.added_to_favourites'),
@@ -41,7 +41,10 @@
 
     <x-navbar />
 
-    <main>@yield('content')</main>
+    <main class="relative isolate">
+        <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 bg-gradient-to-b from-white/45 to-transparent dark:from-white/5"></div>
+        @yield('content')
+    </main>
 
     {{-- ═══ Global Cart Modal ═══ --}}
     <x-home.cart-modal />
@@ -87,33 +90,34 @@
     </div>
 
     {{-- ═══ Footer ═══ --}}
-    <footer class="border-t border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
-        <div class="mx-auto max-w-screen-2xl px-4 py-14 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-2 gap-8 sm:grid-cols-2 lg:grid-cols-5">
+    <footer class="mt-12 border-t border-white/30 bg-transparent dark:border-white/8">
+        <div class="workspace-shell pb-10 pt-6">
+            <div class="surface-card overflow-hidden px-6 py-10 sm:px-8 lg:px-10">
+            <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
                 {{-- Brand --}}
-                <div class="col-span-2 sm:col-span-2 lg:col-span-2">
-                    <a href="{{ url('/') }}" class="inline-flex items-center gap-2 text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-                        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500">
+                <div class="col-span-1 sm:col-span-2 lg:col-span-2">
+                    <a href="{{ url('/') }}" class="inline-flex items-center gap-3 text-2xl font-black tracking-tight text-gray-900 dark:text-white">
+                        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 shadow-lg shadow-brand-500/20">
                             <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72"/></svg>
                         </div>
                         Vetora
                     </a>
-                    <p class="mt-4 max-w-sm text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+                    <p class="mt-4 max-w-md text-sm leading-7 text-gray-500 dark:text-gray-400">
                         {{ $footerSettings->about_description ?? __('home.tagline') }}
                     </p>
-                    <div class="mt-5 flex gap-3">
+                    <div class="mt-6 flex gap-3">
                         @if(!empty($footerSettings->facebook_url))
-                            <a href="{{ $footerSettings->facebook_url }}" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-200 text-gray-600 transition-all hover:bg-brand-500 hover:text-white dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-brand-500 dark:hover:text-white" aria-label="Facebook">
+                            <a href="{{ $footerSettings->facebook_url }}" target="_blank" rel="noopener noreferrer" class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gray-100 text-gray-600 transition-all hover:-translate-y-0.5 hover:bg-brand-500 hover:text-white dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-brand-500 dark:hover:text-white" aria-label="Facebook">
                                 <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                             </a>
                         @endif
                         @if(!empty($footerSettings->instagram_url))
-                            <a href="{{ $footerSettings->instagram_url }}" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-200 text-gray-600 transition-all hover:bg-brand-500 hover:text-white dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-brand-500 dark:hover:text-white" aria-label="Instagram">
+                            <a href="{{ $footerSettings->instagram_url }}" target="_blank" rel="noopener noreferrer" class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gray-100 text-gray-600 transition-all hover:-translate-y-0.5 hover:bg-brand-500 hover:text-white dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-brand-500 dark:hover:text-white" aria-label="Instagram">
                                 <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
                             </a>
                         @endif
                         @if(!empty($footerSettings->twitter_url))
-                            <a href="{{ $footerSettings->twitter_url }}" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-200 text-gray-600 transition-all hover:bg-brand-500 hover:text-white dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-brand-500 dark:hover:text-white" aria-label="Twitter">
+                            <a href="{{ $footerSettings->twitter_url }}" target="_blank" rel="noopener noreferrer" class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gray-100 text-gray-600 transition-all hover:-translate-y-0.5 hover:bg-brand-500 hover:text-white dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-brand-500 dark:hover:text-white" aria-label="Twitter">
                                 <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
                             </a>
                         @endif
@@ -121,24 +125,24 @@
                 </div>
                 {{-- Quick Links --}}
                 <div>
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-gray-900 dark:text-gray-200">{{ __('footer.shop') }}</h4>
-                    <ul class="mt-4 space-y-2.5 text-sm">
+                    <h4 class="text-xs font-black uppercase tracking-[0.24em] text-gray-900 dark:text-gray-200">{{ __('footer.shop') }}</h4>
+                    <ul class="mt-4 space-y-3 text-sm">
                         <li><a href="{{ route('categories.index') }}" class="text-gray-500 transition-colors hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400">{{ __('nav.categories') }}</a></li>
                         <li><a href="{{ route('products.index') }}" class="text-gray-500 transition-colors hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400">{{ __('footer.all_products') }}</a></li>
                     </ul>
                 </div>
                 {{-- Account --}}
                 <div>
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-gray-900 dark:text-gray-200">{{ __('footer.account') }}</h4>
-                    <ul class="mt-4 space-y-2.5 text-sm">
+                    <h4 class="text-xs font-black uppercase tracking-[0.24em] text-gray-900 dark:text-gray-200">{{ __('footer.account') }}</h4>
+                    <ul class="mt-4 space-y-3 text-sm">
                         <li><a href="{{ route('login') }}" class="text-gray-500 transition-colors hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400">{{ __('nav.sign_in') }}</a></li>
                         <li><a href="{{ route('register') }}" class="text-gray-500 transition-colors hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400">{{ __('footer.create_account') }}</a></li>
                     </ul>
                 </div>
                 {{-- Contact --}}
                 <div>
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-gray-900 dark:text-gray-200">{{ __('footer.contact') }}</h4>
-                    <ul class="mt-4 space-y-2.5 text-sm">
+                    <h4 class="text-xs font-black uppercase tracking-[0.24em] text-gray-900 dark:text-gray-200">{{ __('footer.contact') }}</h4>
+                    <ul class="mt-4 space-y-3 text-sm">
                         <li><a href="{{ route('home') }}#contact" class="text-gray-500 transition-colors hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400">{{ __('footer.contact_us') }}</a></li>
                         @if(!empty($footerSettings->contact_email))
                             <li class="flex items-center gap-2 text-gray-500 dark:text-gray-400">
@@ -155,12 +159,13 @@
                     </ul>
                 </div>
             </div>
-            <div class="mt-10 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-8 sm:flex-row dark:border-gray-800">
+            <div class="mt-10 flex flex-col items-center justify-between gap-4 border-t border-gray-200/70 pt-8 sm:flex-row dark:border-gray-800/70">
                 <p class="text-xs text-gray-400 dark:text-gray-500">&copy; {{ date('Y') }} Vetora. {{ __('footer.rights') }}</p>
                 <div class="flex gap-6 text-xs text-gray-400 dark:text-gray-500">
                     <a href="#" class="hover:text-gray-600 dark:hover:text-gray-300">{{ __('footer.privacy') }}</a>
                     <a href="#" class="hover:text-gray-600 dark:hover:text-gray-300">{{ __('footer.terms') }}</a>
                 </div>
+            </div>
             </div>
         </div>
     </footer>

@@ -3,57 +3,81 @@
 @section('title', __('auth.sign_in') . ' ' . __('site.meta_title_separator') . ' ' . __('site.meta_title_suffix'))
 
 @section('content')
-<div class="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-    <div class="w-full max-w-md">
-        {{-- Card --}}
-        <div class="rounded-xl bg-white p-8 shadow-xl ring-1 ring-gray-100 dark:bg-gray-900 dark:ring-gray-800">
-            {{-- Header --}}
-            <div class="mb-8 text-center">
-                <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ __('auth.welcome_back') }}</h1>
-                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ __('auth.sign_in_to_account') }}</p>
+<section class="workspace-shell workspace-section">
+    <div class="grid min-h-[calc(100vh-11rem)] items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+        <div class="relative overflow-hidden rounded-[34px] border border-white/40 bg-gradient-to-br from-ink-900 via-ink-800 to-ink-700 p-8 text-white shadow-2xl shadow-ink-900/30 dark:border-white/10 sm:p-10">
+            <div class="absolute inset-0 soft-grid opacity-20"></div>
+            <div class="absolute -left-10 top-10 h-36 w-36 rounded-full bg-brand-400/25 blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 h-44 w-44 rounded-full bg-blue-400/15 blur-3xl"></div>
+            <div class="relative">
+                <span class="eyebrow bg-white/10 text-brand-100">Vetora access</span>
+                <h1 class="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl">A refined workspace for every buyer, seller, and partner.</h1>
+                <p class="mt-5 max-w-xl text-base leading-8 text-white/72">Sign in to move from discovery into action with a smoother storefront, cleaner dashboards, and a single product language across the platform.</p>
+
+                <div class="mt-8 grid gap-4 sm:grid-cols-3">
+                    <div class="rounded-[24px] border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                        <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-white/45">Customers</p>
+                        <p class="mt-2 text-sm text-white/75">Track favorites, orders, and saved preferences from one calm interface.</p>
+                    </div>
+                    <div class="rounded-[24px] border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                        <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-white/45">Vendors</p>
+                        <p class="mt-2 text-sm text-white/75">Manage listings, pricing, and store operations with clarity.</p>
+                    </div>
+                    <div class="rounded-[24px] border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                        <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-white/45">Syndicates</p>
+                        <p class="mt-2 text-sm text-white/75">Monitor network performance and category health in real time.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-shell">
+            <div class="relative">
+                <span class="eyebrow">Secure sign in</span>
+                <h2 class="mt-5 font-display text-3xl font-extrabold tracking-tight text-ink-900 dark:text-white">{{ __('auth.welcome_back') }}</h2>
+                <p class="mt-2 text-sm leading-7 text-ink-500 dark:text-slate-400">{{ __('auth.sign_in_to_account') }}</p>
             </div>
 
-            {{-- Alert --}}
-            <x-alert type="error" id="login-alert" />
-            <x-alert type="success" id="login-success" />
+            <div class="mt-8">
+                <x-alert type="error" id="login-alert" />
+                <x-alert type="success" id="login-success" />
 
-            {{-- Form --}}
-            <form id="login-form" class="space-y-5" novalidate>
-                <x-form.input
-                    name="phone_number"
-                    label="{{ __('auth.phone_number') }}"
-                    type="tel"
-                    placeholder="{{ __('auth.placeholder_phone') }}"
-                    :required="true"
-                    autocomplete="tel"
-                />
+                <form id="login-form" class="space-y-5" novalidate>
+                    <x-form.input
+                        name="phone_number"
+                        label="{{ __('auth.phone_number') }}"
+                        type="tel"
+                        placeholder="{{ __('auth.placeholder_phone') }}"
+                        :required="true"
+                        autocomplete="tel"
+                    />
 
-                <x-form.input
-                    name="password"
-                    label="{{ __('auth.password') }}"
-                    type="password"
-                    placeholder="{{ __('auth.placeholder_password') }}"
-                    :required="true"
-                    autocomplete="current-password"
-                />
+                    <x-form.input
+                        name="password"
+                        label="{{ __('auth.password') }}"
+                        type="password"
+                        placeholder="{{ __('auth.placeholder_password') }}"
+                        :required="true"
+                        autocomplete="current-password"
+                    />
 
-                <x-form.button type="submit" id="login-btn">
-                    <span id="login-btn-text">{{ __('nav.sign_in') }}</span>
-                    <svg id="login-spinner" class="ml-2 hidden h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                    </svg>
-                </x-form.button>
-            </form>
+                    <x-form.button type="submit" id="login-btn">
+                        <span id="login-btn-text">{{ __('nav.sign_in') }}</span>
+                        <svg id="login-spinner" class="hidden h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                    </x-form.button>
+                </form>
+            </div>
 
-            {{-- Footer --}}
-            <p class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-                {{ __('auth.dont_have_account') }}
-                <a href="{{ route('register') }}" class="font-semibold text-brand-600 hover:text-brand-500">{{ __('auth.create_one') }}</a>
-            </p>
+            <div class="mt-8 flex items-center justify-between rounded-[24px] border border-gray-200/80 bg-gray-50/70 px-5 py-4 text-sm dark:border-gray-800 dark:bg-gray-900/50">
+                <p class="text-ink-500 dark:text-slate-400">{{ __('auth.dont_have_account') }}</p>
+                <a href="{{ route('register') }}" class="font-bold text-brand-600 hover:text-brand-500">{{ __('auth.create_one') }}</a>
+            </div>
         </div>
     </div>
-</div>
+</section>
 @endsection
 
 @push('scripts')
@@ -80,9 +104,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 return;
             }
-        } catch (e) {
-            // Invalid or expired token: stay on login (interceptor clears client session)
-        }
+        } catch (e) {}
     }
 
     const form = document.getElementById('login-form');
@@ -151,6 +173,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const msg = document.getElementById(id + '-message');
         msg.textContent = message;
         box.classList.remove('hidden');
+        box.classList.add('flex');
     }
 
     function handleErrors(error) {

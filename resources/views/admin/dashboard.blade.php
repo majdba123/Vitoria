@@ -6,7 +6,7 @@
 @section('content')
 <div class="space-y-6">
     {{-- Welcome --}}
-    <div class="card card-body">
+    <div class="workspace-hero">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h2 class="text-lg font-bold text-gray-900">مرحباً بعودتك!</h2>
@@ -28,7 +28,7 @@
     {{-- Stats Grid --}}
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-7">
         {{-- Total Users --}}
-        <div class="card card-body">
+        <div class="stat-tile card-body">
             <div class="flex items-start justify-between">
                 <div class="min-w-0 flex-1">
                     <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">إجمالي المستخدمين</p>
@@ -41,7 +41,7 @@
         </div>
 
         {{-- Total Vendors --}}
-        <div class="card card-body">
+        <div class="stat-tile card-body">
             <div class="flex items-start justify-between">
                 <div class="min-w-0 flex-1">
                     <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">إجمالي التجار</p>
@@ -54,7 +54,7 @@
         </div>
 
         {{-- Total Syndicates --}}
-        <div class="card card-body">
+        <div class="stat-tile card-body">
             <div class="flex items-start justify-between">
                 <div class="min-w-0 flex-1">
                     <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">النقابات</p>
@@ -67,7 +67,7 @@
         </div>
 
         {{-- Active Vendors --}}
-        <div class="card card-body">
+        <div class="stat-tile card-body">
             <div class="flex items-start justify-between">
                 <div class="min-w-0 flex-1">
                     <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">تجار نشطون</p>
@@ -80,7 +80,7 @@
         </div>
 
         {{-- Inactive Vendors --}}
-        <div class="card card-body">
+        <div class="stat-tile card-body">
             <div class="flex items-start justify-between">
                 <div class="min-w-0 flex-1">
                     <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">تجار غير نشطين</p>
@@ -93,7 +93,7 @@
         </div>
 
         {{-- Total Products --}}
-        <div class="card card-body">
+        <div class="stat-tile card-body">
             <div class="flex items-start justify-between">
                 <div class="min-w-0 flex-1">
                     <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">إجمالي المنتجات</p>
@@ -106,7 +106,7 @@
         </div>
 
         {{-- Active Products --}}
-        <div class="card card-body">
+        <div class="stat-tile card-body">
             <div class="flex items-start justify-between">
                 <div class="min-w-0 flex-1">
                     <p class="truncate text-xs font-semibold uppercase tracking-wider text-gray-500">منتجات نشطة</p>

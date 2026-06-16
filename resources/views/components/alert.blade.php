@@ -5,10 +5,10 @@
 
 @php
     $colors = match($type) {
-        'success' => 'border-emerald-200 bg-emerald-50 text-emerald-800',
-        'error' => 'border-red-200 bg-red-50 text-red-800',
-        'warning' => 'border-amber-200 bg-amber-50 text-amber-800',
-        default => 'border-blue-200 bg-blue-50 text-blue-800',
+        'success' => 'border-emerald-500/20 bg-emerald-50/90 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-200',
+        'error' => 'border-rose-500/20 bg-rose-50/90 text-rose-800 dark:bg-rose-500/10 dark:text-rose-200',
+        'warning' => 'border-amber-500/20 bg-amber-50/90 text-amber-800 dark:bg-amber-500/10 dark:text-amber-200',
+        default => 'border-blue-500/20 bg-blue-50/90 text-blue-800 dark:bg-blue-500/10 dark:text-blue-200',
     };
 
     $icon = match($type) {
@@ -20,7 +20,7 @@
 @endphp
 
 <div id="{{ $id }}"
-     class="mb-4 hidden items-start gap-2.5 rounded-lg border p-3 text-sm {{ $colors }}"
+     class="alert-shell hidden {{ $colors }}"
      role="alert">
     {!! $icon !!}
     <p id="{{ $id }}-message" class="flex-1"></p>

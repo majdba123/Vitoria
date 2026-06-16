@@ -19,7 +19,7 @@
 
 @section('content')
 <div class="space-y-6">
-    <section class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <section class="workspace-hero">
         <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div class="min-w-0">
                 <p class="text-xs font-black text-brand-700 dark:text-brand-300">مساحة عمل النقابة</p>
@@ -39,7 +39,7 @@
 
     <section id="overview-grid" class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         @for ($i = 0; $i < 8; $i++)
-            <div class="card card-body">
+            <div class="stat-tile card-body">
                 <div class="skeleton h-4 w-24 rounded"></div>
                 <div class="skeleton mt-4 h-8 w-20 rounded"></div>
             </div>
