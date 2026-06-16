@@ -2,6 +2,20 @@
 
 use Illuminate\Support\Facades\Route;
 
+if (! function_exists('redirectAuthenticatedUser')) {
+    function redirectAuthenticatedUser(\App\Models\User $user)
+    {
+        return match ($user->type) {
+            \App\Models\User::TYPE_ADMIN => redirect()->route('admin.dashboard'),
+            \App\Models\User::TYPE_VENDOR => redirect()->route('vendor.dashboard'),
+            \App\Models\User::TYPE_SYNDICATE => redirect()->route('syndicate.dashboard'),
+            default => $user->preferred_product_type
+                ? redirect()->route('home')
+                : redirect()->route('product-type.select'),
+        };
+    }
+}
+
 Route::get('/', function () {
     return view('home');
 })->name('home');
@@ -24,14 +38,7 @@ Route::get('/login', function () {
     }
 
     if (auth()->check()) {
-        return match (auth()->user()->type) {
-            \App\Models\User::TYPE_ADMIN => redirect()->route('admin.dashboard'),
-            \App\Models\User::TYPE_VENDOR => redirect()->route('vendor.dashboard'),
-            \App\Models\User::TYPE_SYNDICATE => redirect()->route('syndicate.dashboard'),
-            default => auth()->user()->preferred_product_type
-                ? redirect()->route('home')
-                : redirect()->route('product-type.select'),
-        };
+        return redirectAuthenticatedUser(auth()->user());
     }
 
     return view('auth.login');
@@ -39,7 +46,7 @@ Route::get('/login', function () {
 
 Route::get('/register', function () {
     if (auth()->check()) {
-        return redirect()->route('home');
+        return redirectAuthenticatedUser(auth()->user());
     }
 
     return view('auth.register');

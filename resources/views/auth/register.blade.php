@@ -130,8 +130,8 @@
 
                     <div class="grid gap-5 md:grid-cols-2">
                         <x-form.input name="email" label="{{ __('auth.email') }}" type="email" placeholder="{{ __('auth.placeholder_email') }}" :required="true" autocomplete="email" />
-                        <x-form.input name="password" label="{{ __('auth.password') }}" type="password" placeholder="{{ __('auth.placeholder_password_optional') }}" autocomplete="new-password" />
-                        <x-form.input name="password_confirmation" label="{{ __('auth.confirm_password') }}" type="password" placeholder="{{ __('auth.placeholder_password_confirm') }}" autocomplete="new-password" />
+                        <x-form.input name="password" label="{{ __('auth.password') }}" type="password" placeholder="{{ __('auth.placeholder_password') }}" :required="true" autocomplete="new-password" />
+                        <x-form.input name="password_confirmation" label="{{ __('auth.confirm_password') }}" type="password" placeholder="{{ __('auth.placeholder_password_confirm') }}" :required="true" autocomplete="new-password" />
                     </div>
 
                     <div class="flex flex-col gap-4 border-t border-gray-100 pt-6 dark:border-gray-800 sm:flex-row sm:items-center sm:justify-between">
@@ -173,7 +173,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const categoryOptions = document.getElementById('category-options');
     const categoryLoading = document.getElementById('category-loading');
     const businessTypeSelect = document.getElementById('business_type');
+    const citySelect = document.getElementById('city_id');
     let allCategories = [];
+
+    const field = function (name) {
+        return form.elements.namedItem(name);
+    };
 
     loadCities();
     loadMerchantCategories();
@@ -188,12 +193,11 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const res = await window.axios.get('/api/cities');
             const cities = res.data.data || [];
-            const sel = document.getElementById('city_id');
             cities.forEach(function (city) {
                 const opt = document.createElement('option');
                 opt.value = city.id;
                 opt.textContent = city.name;
-                sel.appendChild(opt);
+                citySelect.appendChild(opt);
             });
         } catch (e) {
             document.getElementById('city_id-error').textContent = registerI18n.could_not_load_cities || '';
@@ -296,30 +300,27 @@ document.addEventListener('DOMContentLoaded', function () {
         const accountType = form.querySelector('input[name="account_type"]:checked')?.value || 'user';
         const payload = new FormData();
         payload.append('account_type', accountType);
-        payload.append('name', form.name.value.trim());
-        payload.append('phone_number', form.phone_number.value.trim());
-        payload.append('national_id', form.national_id.value.trim());
-        payload.append('age', parseInt(form.age.value, 10) || '');
-        payload.append('membership_number', form.membership_number.value.trim());
-        payload.append('city_id', parseInt(form.city_id.value, 10) || '');
-        payload.append('email', form.email.value.trim());
-
-        if (form.password.value) {
-            payload.append('password', form.password.value);
-            payload.append('password_confirmation', form.password_confirmation.value);
-        }
+        payload.append('name', field('name').value.trim());
+        payload.append('phone_number', field('phone_number').value.trim());
+        payload.append('national_id', field('national_id').value.trim());
+        payload.append('age', parseInt(field('age').value, 10) || '');
+        payload.append('membership_number', field('membership_number').value.trim());
+        payload.append('city_id', parseInt(citySelect.value, 10) || '');
+        payload.append('email', field('email').value.trim());
+        payload.append('password', field('password').value);
+        payload.append('password_confirmation', field('password_confirmation').value);
 
         if (accountType === 'vendor') {
-            payload.append('store_name', form.store_name.value.trim());
-            payload.append('business_type', form.business_type.value);
+            payload.append('store_name', field('store_name').value.trim());
+            payload.append('business_type', field('business_type').value);
             document.querySelectorAll('input[name="category_ids[]"]:checked').forEach(input => {
                 payload.append('category_ids[]', parseInt(input.value, 10) || '');
             });
-            payload.append('address', form.address.value.trim());
-            payload.append('description', form.description.value.trim());
+            payload.append('address', field('address').value.trim());
+            payload.append('description', field('description').value.trim());
 
-            if (form.commercial_register_file.files[0]) {
-                payload.append('commercial_register_file', form.commercial_register_file.files[0]);
+            if (field('commercial_register_file').files[0]) {
+                payload.append('commercial_register_file', field('commercial_register_file').files[0]);
             }
         }
 
@@ -335,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function () {
             showAlert('register-success', registerI18n.account_created || '');
 
             setTimeout(() => {
-                window.location.href = '{{ url("/") }}';
+                window.location.href = response.data.data.redirect_url || '{{ url("/") }}';
             }, 500);
         } catch (error) {
             handleErrors(error);
@@ -360,9 +361,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const isMerchant = accountType === 'vendor';
 
         merchantFields.classList.toggle('hidden', !isMerchant);
-        form.store_name.required = isMerchant;
-        form.business_type.required = isMerchant;
-        form.commercial_register_file.required = isMerchant;
+        field('store_name').required = isMerchant;
+        field('business_type').required = isMerchant;
+        field('commercial_register_file').required = isMerchant;
 
         document.querySelectorAll('.account-type-option').forEach(label => {
             const input = label.querySelector('input[type="radio"]');
@@ -372,16 +373,16 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         if (!isMerchant) {
-            form.store_name.value = '';
-            form.business_type.value = '';
+            field('store_name').value = '';
+            field('business_type').value = '';
             document.querySelectorAll('input[name="category_ids[]"]').forEach(input => {
                 input.checked = false;
                 input.closest('label')?.classList.remove('border-brand-400', 'bg-brand-50', 'dark:bg-brand-500/10');
             });
             renderMerchantCategories();
-            form.address.value = '';
-            form.description.value = '';
-            form.commercial_register_file.value = '';
+            field('address').value = '';
+            field('description').value = '';
+            field('commercial_register_file').value = '';
         }
     }
 
@@ -408,7 +409,7 @@ document.addEventListener('DOMContentLoaded', function () {
         showAlert('register-alert', parsed.generalMessage || registerI18n.unexpected || '');
 
         if (parsed.fieldErrors?.commercial_register_file || parsed.fieldErrors?.commercial_register) {
-            form.commercial_register_file.value = '';
+            field('commercial_register_file').value = '';
         }
     }
 });

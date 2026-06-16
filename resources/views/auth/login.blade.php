@@ -83,25 +83,35 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
+    const redirectByUser = function (user, fallbackUrl = '{{ url("/") }}') {
+        const redirectUrl = user?.redirect_url || fallbackUrl;
+        const type = Number(user?.type);
+
+        if (type === 1) {
+            window.location.href = '{{ route("admin.dashboard") }}';
+            return;
+        }
+
+        if (type === 2) {
+            window.location.href = '{{ route("vendor.dashboard") }}';
+            return;
+        }
+
+        if (type === 3) {
+            window.location.href = '{{ route("syndicate.dashboard") }}';
+            return;
+        }
+
+        window.location.href = redirectUrl;
+    };
+
     if (window.Auth && window.Auth.getToken && window.Auth.getToken()) {
         try {
             const res = await window.axios.get('/api/user');
             const user = res.data.data || res.data;
             if (user && typeof user === 'object') {
                 window.Auth.setUser(user);
-                const t = user.type;
-                if (t === 1) {
-                    window.location.href = '{{ url("/admin/dashboard") }}';
-                } else if (t === 2) {
-                    window.location.href = '{{ route("vendor.dashboard") }}';
-                } else if (t === 3) {
-                    window.location.href = '{{ route("syndicate.dashboard") }}';
-                } else if (!user.preferred_product_type) {
-                    window.location.href = '{{ route("product-type.select") }}';
-                } else {
-                    window.location.href = '{{ url("/") }}';
-                }
-
+                redirectByUser(user, user.preferred_product_type ? '{{ url("/") }}' : '{{ route("product-type.select") }}');
                 return;
             }
         } catch (e) {}
@@ -132,23 +142,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                 window.Auth.setUser(response.data.data.user);
             }
 
-            const userType = response.data.data.user?.type;
             const redirectUrl = response.data.data.redirect_url;
 
             showAlert('login-success', @json(__('auth.signed_in_success')));
 
             setTimeout(() => {
-                if (userType === 1) {
-                    window.location.href = '{{ url("/admin/dashboard") }}';
-                } else if (userType === 2) {
-                    window.location.href = '{{ route("vendor.dashboard") }}';
-                } else if (userType === 3) {
-                    window.location.href = '{{ route("syndicate.dashboard") }}';
-                } else if (redirectUrl) {
-                    window.location.href = redirectUrl;
-                } else {
-                    window.location.href = '{{ url("/") }}';
-                }
+                redirectByUser(response.data.data.user, redirectUrl || '{{ url("/") }}');
             }, 500);
         } catch (error) {
             handleErrors(error);

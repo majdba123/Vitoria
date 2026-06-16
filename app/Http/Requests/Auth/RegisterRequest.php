@@ -47,7 +47,7 @@ class RegisterRequest extends FormRequest
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['nullable', 'string', 'min:6', 'confirmed'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
             'store_name' => ['required_if:account_type,vendor', 'string', 'max:255'],
             'business_type' => ['required_if:account_type,vendor', Rule::in([
                 Vendor::BUSINESS_TYPE_AGRICULTURE,
@@ -92,6 +92,7 @@ class RegisterRequest extends FormRequest
             'email.required' => 'Email address is required.',
             'email.unique' => 'This email is already registered.',
             'email.email' => 'Please provide a valid email address.',
+            'password.required' => 'Password is required.',
             'password.min' => 'Password must be at least 6 characters.',
             'password.confirmed' => 'Password confirmation does not match.',
             'account_type.in' => 'Please select a valid account type.',
