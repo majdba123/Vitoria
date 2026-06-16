@@ -29,18 +29,14 @@
             <div class="mx-auto mt-8 max-w-2xl rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">{{ $message }}</div>
         @enderror
 
-        <form method="POST" action="{{ route('product-type.store') }}" class="mt-10 grid gap-5 lg:grid-cols-2">
-            @csrf
-
+        <div class="mt-10 grid gap-5 lg:grid-cols-2">
             @foreach ($types as $value => $type)
                 @php
                     $isSelected = old('preferred_product_type', $selectedType) === $value;
                 @endphp
-                <button
-                    type="submit"
-                    name="preferred_product_type"
-                    value="{{ $value }}"
-                    class="group h-full rounded-3xl border bg-white p-6 text-start shadow-sm transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-brand-500/20 sm:p-7 dark:bg-gray-900 {{ $isSelected ? 'border-brand-500 shadow-brand-100/80 dark:bg-brand-500/5' : 'border-gray-200 dark:border-gray-800 dark:hover:border-brand-500' }}"
+                <a
+                    href="{{ route('product-type.select', ['preferred_product_type' => $value, 'redirect_to' => 'categories']) }}"
+                    class="group block h-full rounded-3xl border bg-white p-6 text-start shadow-sm transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-brand-500/20 sm:p-7 dark:bg-gray-900 {{ $isSelected ? 'border-brand-500 shadow-brand-100/80 dark:bg-brand-500/5' : 'border-gray-200 dark:border-gray-800 dark:hover:border-brand-500' }}"
                     aria-label="{{ $type['button'] }}"
                 >
                     <span class="flex items-start justify-between gap-4">
@@ -71,9 +67,9 @@
                     <span class="mt-8 inline-flex items-center justify-center rounded-2xl bg-gray-900 px-5 py-3 text-sm font-black text-white transition group-hover:bg-brand-600 dark:bg-white dark:text-gray-900 dark:group-hover:bg-brand-500 dark:group-hover:text-white">
                         {{ $type['button'] }}
                     </span>
-                </button>
+                </a>
             @endforeach
-        </form>
+        </div>
     </div>
 </div>
 @endsection

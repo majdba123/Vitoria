@@ -41,19 +41,14 @@
                 </div>
             @enderror
 
-            <form method="POST" action="{{ route('product-type.store') }}" class="mx-auto mt-8 grid max-w-4xl gap-4 sm:grid-cols-2">
-                @csrf
-                <input type="hidden" name="redirect_to" value="home">
-
+            <div class="mx-auto mt-8 grid max-w-4xl gap-4 sm:grid-cols-2">
                 @foreach ($typeCards as $value => $type)
                     @php
                         $isSelected = $selectedHomeType === $value;
                     @endphp
-                    <button
-                        type="submit"
-                        name="preferred_product_type"
-                        value="{{ $value }}"
-                        class="group h-full rounded-2xl border bg-white p-5 text-start shadow-sm transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-brand-500/20 dark:bg-gray-900 {{ $isSelected ? 'border-brand-500 shadow-brand-100/80 dark:bg-brand-500/5' : 'border-gray-200 dark:border-gray-800 dark:hover:border-brand-500' }}"
+                    <a
+                        href="{{ route('product-type.select', ['preferred_product_type' => $value, 'redirect_to' => 'home']) }}"
+                        class="group block h-full rounded-2xl border bg-white p-5 text-start shadow-sm transition hover:-translate-y-1 hover:border-brand-300 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-brand-500/20 dark:bg-gray-900 {{ $isSelected ? 'border-brand-500 shadow-brand-100/80 dark:bg-brand-500/5' : 'border-gray-200 dark:border-gray-800 dark:hover:border-brand-500' }}"
                     >
                         <span class="flex items-start gap-4">
                             <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
@@ -72,9 +67,9 @@
                                 </span>
                             </span>
                         </span>
-                    </button>
+                    </a>
                 @endforeach
-            </form>
+            </div>
         </div>
     </section>
 

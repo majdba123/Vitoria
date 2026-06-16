@@ -4,7 +4,7 @@ test('the application returns a successful response', function () {
     $response = $this->get('/');
 
     $response->assertOk()
-        ->assertSee('name="preferred_product_type"', false)
-        ->assertSee('value="agriculture"', false)
-        ->assertSee('value="veterinary"', false);
+        ->assertSee('preferred_product_type=agriculture', false)
+        ->assertSee('preferred_product_type=veterinary', false)
+        ->assertSee('redirect_to=home', false);
 });

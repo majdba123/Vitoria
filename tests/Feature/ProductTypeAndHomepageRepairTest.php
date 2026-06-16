@@ -82,9 +82,9 @@ test('normal website users can choose product type from the homepage', function 
     $this->actingAs($user)
         ->get('/')
         ->assertOk()
-        ->assertSee('name="preferred_product_type"', false)
-        ->assertSee('value="agriculture"', false)
-        ->assertSee('value="veterinary"', false);
+        ->assertSee('preferred_product_type='.Category::TYPE_AGRICULTURE, false)
+        ->assertSee('preferred_product_type='.Category::TYPE_VETERINARY, false)
+        ->assertSee('redirect_to=home', false);
 
     $this->actingAs($user)
         ->post(route('product-type.store'), [
@@ -101,15 +101,15 @@ test('normal website users can choose product type from the homepage', function 
 test('guests can choose product type from the homepage and still use the dedicated selection page', function () {
     $this->get('/')
         ->assertOk()
-        ->assertSee('name="preferred_product_type"', false)
-        ->assertSee('value="agriculture"', false)
-        ->assertSee('value="veterinary"', false);
+        ->assertSee('preferred_product_type='.Category::TYPE_AGRICULTURE, false)
+        ->assertSee('preferred_product_type='.Category::TYPE_VETERINARY, false)
+        ->assertSee('redirect_to=home', false);
 
     $this->get(route('product-type.select'))
         ->assertOk()
-        ->assertSee('name="preferred_product_type"', false)
-        ->assertSee('value="agriculture"', false)
-        ->assertSee('value="veterinary"', false);
+        ->assertSee('preferred_product_type='.Category::TYPE_AGRICULTURE, false)
+        ->assertSee('preferred_product_type='.Category::TYPE_VETERINARY, false)
+        ->assertSee('redirect_to=categories', false);
 
     $this->post(route('product-type.store'), [
         'preferred_product_type' => Category::TYPE_VETERINARY,
@@ -133,8 +133,22 @@ test('homepage product type form redirects back home with selected type', functi
     $this->withCookie('preferred_product_type', Category::TYPE_AGRICULTURE)
         ->get(route('home', ['type' => Category::TYPE_AGRICULTURE]))
         ->assertOk()
-        ->assertSee('value="agriculture"', false)
-        ->assertSee('value="veterinary"', false);
+        ->assertSee('preferred_product_type='.Category::TYPE_AGRICULTURE, false)
+        ->assertSee('preferred_product_type='.Category::TYPE_VETERINARY, false)
+        ->assertSee('redirect_to=home', false);
+});
+
+test('guests can choose product type through the dedicated selection links without posting', function () {
+    $this->get(route('product-type.select', [
+        'preferred_product_type' => Category::TYPE_VETERINARY,
+        'redirect_to' => 'categories',
+    ]))
+        ->assertRedirect(route('categories.index', ['type' => Category::TYPE_VETERINARY]))
+        ->assertCookie('preferred_product_type', Category::TYPE_VETERINARY);
+
+    $this->withCookie('preferred_product_type', Category::TYPE_VETERINARY)
+        ->get(route('home'))
+        ->assertOk();
 });
 
 test('selected user product type filters categories and public products on backend', function () {
