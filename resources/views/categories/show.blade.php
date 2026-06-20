@@ -2,10 +2,10 @@
 @section('title', 'Category — Vetora')
 
 @section('content')
-<div class="bg-white dark:bg-gray-950">
-    <div class="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
-        <div class="mx-auto max-w-screen-2xl px-4 py-3 sm:px-6 lg:px-8">
-            <nav id="breadcrumb" class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+<div class="bg-transparent">
+    <div class="border-b border-white/40 bg-white/60 backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
+        <div class="page-shell py-3">
+            <nav id="breadcrumb" class="page-breadcrumb">
                 <a href="{{ route('home') }}" class="hover:text-brand-600">Home</a>
                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                 <a href="{{ route('categories.index') }}" class="hover:text-brand-600">Categories</a>
@@ -15,9 +15,9 @@
         </div>
     </div>
 
-    <div class="mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="page-shell">
         {{-- Category Header --}}
-        <div id="cat-header" class="mb-8 flex items-center gap-4">
+        <div id="cat-header" class="surface-card mb-8 flex items-center gap-4 p-5 sm:p-6">
             <div id="cat-logo" class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-50 dark:bg-brand-500/10"></div>
             <div><h1 id="cat-name" class="text-2xl font-black text-gray-900 sm:text-3xl dark:text-white"></h1><p id="cat-meta" class="mt-0.5 text-sm text-gray-500 dark:text-gray-400"></p></div>
         </div>

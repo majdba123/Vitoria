@@ -1,5 +1,8 @@
 @php
     $currentRoute = request()->route()?->getName() ?? '';
+    $isRtl = app()->getLocale() === 'ar';
+    $sidebarEdgeClass = $isRtl ? 'right-0 translate-x-full lg:translate-x-0' : 'left-0 -translate-x-full lg:translate-x-0';
+    $closeMarginClass = $isRtl ? 'mr-auto' : 'ml-auto';
     $links = [
         ['group' => 'Overview', 'route' => 'vendor.dashboard', 'label' => 'Dashboard', 'icon' => 'fa-solid fa-grid-2'],
         ['group' => 'My Store', 'route' => 'vendor.products.index', 'label' => 'Products', 'icon' => 'fa-solid fa-box-open'],
@@ -12,7 +15,7 @@
     $groupedLinks = collect($links)->groupBy('group');
 @endphp
 
-<aside id="vendor-sidebar" class="dashboard-sidebar fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col lg:translate-x-0">
+<aside id="vendor-sidebar" class="dashboard-sidebar fixed inset-y-0 {{ $sidebarEdgeClass }} z-50 flex w-72 flex-col">
     <div class="flex h-[88px] items-center gap-3 border-b border-white/8 px-6">
         <a href="{{ route('vendor.dashboard') }}" class="flex items-center gap-3 text-white">
             <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-700 shadow-lg shadow-emerald-500/20">
@@ -23,7 +26,7 @@
                 <span class="mt-1 block text-[11px] font-extrabold uppercase tracking-[0.28em] text-emerald-200">Vendor</span>
             </span>
         </a>
-        <button onclick="closeSidebar()" class="ml-auto rounded-2xl p-2 text-gray-400 hover:bg-white/5 hover:text-white lg:hidden">
+        <button onclick="closeSidebar()" class="{{ $closeMarginClass }} rounded-2xl p-2 text-gray-400 hover:bg-white/5 hover:text-white lg:hidden">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
     </div>

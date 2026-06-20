@@ -25,7 +25,7 @@
     </button>
     <div
         data-lang-dropdown
-        class="absolute top-full z-50 mt-2 hidden min-w-[10rem] overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-lg ring-1 ring-black/5 dark:border-gray-700 dark:bg-gray-900 dark:ring-white/10 rtl:right-0 rtl:left-auto"
+        class="dropdown-panel absolute top-full z-50 mt-2 hidden min-w-[10rem] py-1 rtl:right-0 rtl:left-auto"
     >
         <a href="{{ route('locale.switch', ['locale' => 'ar']) }}" class="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/80 {{ $isAr ? 'bg-brand-50 font-semibold text-brand-700 dark:bg-brand-500/10 dark:text-brand-400' : 'text-gray-700 dark:text-gray-300' }}">
             @if($isAr)

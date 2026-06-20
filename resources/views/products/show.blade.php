@@ -3,10 +3,10 @@
 @section('title', 'Product Details — Vetora')
 
 @section('content')
-<div class="bg-white dark:bg-gray-950">
-    <div class="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
-        <div class="mx-auto max-w-screen-2xl px-4 py-3 sm:px-6 lg:px-8">
-            <nav class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+<div class="bg-transparent">
+    <div class="border-b border-white/40 bg-white/60 backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
+        <div class="page-shell py-3">
+            <nav class="page-breadcrumb">
                 <a href="{{ route('home') }}" class="hover:text-brand-600 dark:hover:text-brand-400">Home</a>
                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                 <a href="{{ route('products.index') }}" class="hover:text-brand-600 dark:hover:text-brand-400">Products</a>
@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="page-shell">
         <div id="show-loading" class="py-16 text-center">
             <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500 dark:border-gray-700"></div>
             <p class="mt-4 text-sm font-medium text-gray-500 dark:text-gray-400">Loading product details...</p>
@@ -143,7 +143,7 @@
             </div>
         </div>
 
-        <div id="product-error" class="hidden py-16 text-center">
+        <div id="product-error" class="empty-state hidden py-16">
             <svg class="mx-auto h-16 w-16 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
             <p class="mt-4 text-base font-bold text-gray-900 dark:text-white">Product not found</p>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">The product you're looking for doesn't exist or has been removed.</p>

@@ -51,7 +51,7 @@
 
     <div id="startup-modal" class="fixed inset-0 z-[100] hidden bg-gray-950/70 p-4 backdrop-blur-sm">
         <div class="mx-auto flex min-h-full max-w-xl items-center justify-center">
-            <div class="w-full overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-gray-950/10 dark:bg-gray-900 dark:ring-white/10">
+            <div class="modal-shell w-full">
                 <div class="border-b border-gray-100 px-6 py-5 dark:border-gray-800">
                     <p class="text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400">Vetora</p>
                     <h2 id="startup-title" class="mt-1 text-xl font-black text-gray-900 dark:text-white">اضبط تفضيلاتك</h2>
@@ -220,7 +220,7 @@
 
         function favToast(msg) {
             const t = document.createElement('div');
-            t.className = 'fixed bottom-6 left-6 z-[80] flex items-center gap-3 rounded-2xl bg-gray-900 px-6 py-4 text-sm font-medium text-white shadow-2xl dark:bg-white dark:text-gray-900';
+            t.className = 'toast-shell fixed bottom-6 left-6 z-[80] flex items-center gap-3 px-6 py-4';
             t.style.animation = 'fadeInUp .3s cubic-bezier(.22,1,.36,1)';
             t.innerHTML = '<svg class="h-5 w-5 text-red-400 dark:text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"/></svg>' + msg;
             document.body.appendChild(t);
@@ -339,7 +339,7 @@
     <script>
     (function(){
         function _esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-        function toast(msg){const t=document.createElement('div');t.className='fixed bottom-6 right-6 z-[80] flex items-center gap-3 rounded-2xl bg-gray-900 px-6 py-4 text-sm font-medium text-white shadow-2xl dark:bg-white dark:text-gray-900';t.style.animation='fadeInUp .3s cubic-bezier(.22,1,.36,1)';t.innerHTML=`<svg class="h-5 w-5 text-emerald-400 dark:text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>${_esc(msg)}`;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300);},2500);}
+        function toast(msg){const t=document.createElement('div');t.className='toast-shell fixed bottom-6 right-6 z-[80] flex items-center gap-3 px-6 py-4';t.style.animation='fadeInUp .3s cubic-bezier(.22,1,.36,1)';t.innerHTML=`<svg class="h-5 w-5 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>${_esc(msg)}`;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300);},2500);}
         function showCartBackendMessage(msg, type = 'info') {
             const el = document.getElementById('cart-backend-message');
             if (!el) return;

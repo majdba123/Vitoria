@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() === 'ar' ? 'ar' : 'en' }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
+@php
+    $isRtl = app()->getLocale() === 'ar';
+    $adminMainPaddingClass = $isRtl ? 'lg:pr-72' : 'lg:pl-72';
+@endphp
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,7 +32,7 @@
 
         <x-admin.sidebar />
 
-        <div class="lg:pl-72">
+        <div class="{{ $adminMainPaddingClass }}">
             <header class="dashboard-topbar sticky top-0 z-30">
                 <div class="workspace-shell flex h-[78px] items-center gap-x-4">
                     <button type="button" id="sidebar-toggle" class="-m-2.5 flex h-10 w-10 items-center justify-center rounded-2xl text-gray-500 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200 lg:hidden" aria-label="{{ __('admin.open_sidebar') }}">
@@ -54,7 +58,7 @@
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
                                 <span id="admin-notif-badge" class="absolute -right-0.5 -top-0.5 hidden min-w-[16px] rounded-full bg-amber-500 px-1 text-[10px] font-bold leading-[16px] text-white">0</span>
                             </button>
-                            <div id="admin-notif-dropdown" class="absolute right-0 top-full z-50 mt-2 hidden w-[min(420px,95vw)] max-h-[min(32rem,75vh)] overflow-hidden rounded-[26px] border border-white/50 bg-white/94 shadow-2xl shadow-gray-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/94 dark:shadow-black/40">
+                            <div id="admin-notif-dropdown" class="dropdown-panel absolute right-0 top-full z-50 mt-2 hidden w-[min(420px,95vw)] max-h-[min(32rem,75vh)]">
                                 <div class="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-gray-800">
                                     <a href="{{ route('admin.notifications.index') }}" class="text-[13px] font-medium uppercase tracking-wider text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">{{ __('admin.notifications_title') }}</a>
                                     <div class="flex items-center gap-2">
@@ -122,6 +126,7 @@
     @endphp
     <script>
         window.__adminStrings = @json($adminStrings);
+        const adminSidebarHiddenClass = @json($isRtl ? 'translate-x-full' : '-translate-x-full');
         function toggleAdminTheme() {
             const isDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('sz_theme', isDark ? 'dark' : 'light');
@@ -219,7 +224,7 @@
             const toggle = document.getElementById('sidebar-toggle');
             if (toggle) {
                 toggle.addEventListener('click', function () {
-                    document.getElementById('admin-sidebar').classList.remove('-translate-x-full');
+                    document.getElementById('admin-sidebar').classList.remove(adminSidebarHiddenClass);
                     document.getElementById('sidebar-backdrop').classList.remove('hidden');
                     document.body.classList.add('overflow-hidden', 'lg:overflow-auto');
                 });
@@ -227,7 +232,7 @@
         });
 
         function closeSidebar() {
-            document.getElementById('admin-sidebar').classList.add('-translate-x-full');
+            document.getElementById('admin-sidebar').classList.add(adminSidebarHiddenClass);
             document.getElementById('sidebar-backdrop').classList.add('hidden');
             document.body.classList.remove('overflow-hidden', 'lg:overflow-auto');
         }

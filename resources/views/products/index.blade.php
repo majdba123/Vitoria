@@ -2,8 +2,8 @@
 @section('title', 'جميع المنتجات - Vetora')
 
 @section('content')
-<div class="bg-white dark:bg-gray-950">
-    <div class="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
+<div class="bg-transparent">
+    <div class="border-b border-white/40 bg-white/60 backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
         <div class="page-shell py-3">
             <nav class="page-breadcrumb">
                 <a href="{{ route('home') }}" class="hover:text-brand-600 dark:hover:text-brand-400">{{ __('nav.home') }}</a>
@@ -41,7 +41,7 @@
             <div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton hidden h-80 rounded-2xl xl:block"></div>
         </div>
         <div id="grid" class="responsive-shop-grid"></div>
-        <div id="empty" class="hidden py-20 text-center">
+        <div id="empty" class="empty-state hidden py-20">
             <svg class="mx-auto h-16 w-16 text-gray-200 dark:text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5"/></svg>
             <p class="mt-4 font-bold text-gray-600 dark:text-gray-400" id="empty-message">لا توجد منتجات</p>
         </div>

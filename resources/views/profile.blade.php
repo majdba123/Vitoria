@@ -3,8 +3,8 @@
 @section('title', __('profile.my_profile') . ' — ' . __('Vetora'))
 
 @section('content')
-<div class="bg-white dark:bg-gray-950">
-    <div class="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
+<div class="bg-transparent">
+    <div class="border-b border-white/40 bg-white/60 backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
         <div class="page-shell py-3">
             <nav class="page-breadcrumb">
                 <a href="{{ route('home') }}" class="hover:text-brand-600 dark:hover:text-brand-400">{{ __('profile.home') }}</a>
@@ -22,7 +22,7 @@
         </div>
 
         {{-- Not Authenticated --}}
-        <div id="profile-guest" class="hidden py-20 text-center">
+        <div id="profile-guest" class="empty-state hidden py-20">
             <svg class="mx-auto h-16 w-16 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
             <p class="mt-4 text-base font-bold text-gray-900 dark:text-white">{{ __('profile.sign_in_to_view') }}</p>
             <a href="{{ route('login') }}" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-sm font-bold text-white hover:bg-brand-600">{{ __('auth.sign_in') }}</a>

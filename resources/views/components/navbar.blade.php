@@ -1,6 +1,6 @@
 {{-- ═══ Navbar ═══ --}}
 <header class="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
-    <nav class="glass-panel mx-auto max-w-screen-2xl rounded-[28px] border border-white/40 px-3 dark:border-white/10">
+    <nav class="glass-panel mx-auto max-w-screen-2xl rounded-[30px] border border-white/50 px-3 shadow-[0_24px_55px_-34px_rgba(5,150,105,0.35)] dark:border-white/10">
         <div class="flex h-[74px] items-center gap-3 px-2 sm:px-3 lg:px-4">
             {{-- Logo --}}
             <a href="{{ url('/') }}" class="flex shrink-0 items-center gap-3 text-xl font-black tracking-tight text-gray-900 dark:text-white">
@@ -20,7 +20,7 @@
                     {{ __('nav.categories') }}
                     <svg class="h-3.5 w-3.5 text-gray-400 transition-transform duration-200" id="mega-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
                 </button>
-                <div id="mega-panel" class="absolute left-0 top-full z-50 mt-3 hidden w-[780px] overflow-hidden rounded-[28px] border border-white/40 bg-white/90 shadow-2xl shadow-gray-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/92 dark:shadow-black/40" style="animation:fadeIn .15s ease-out;">
+                <div id="mega-panel" class="dropdown-panel absolute left-0 top-full z-50 mt-3 hidden w-[780px]" style="animation:fadeIn .15s ease-out;">
                     <div class="flex" style="min-height:340px;">
                         <div id="mega-cats" class="w-64 shrink-0 overflow-y-auto border-r border-gray-100/80 bg-gray-50/70 py-2 dark:border-gray-800 dark:bg-gray-900/40">
                             <div class="px-5 py-8 text-center text-xs text-gray-400">{{ __('nav.loading_categories') }}</div>
@@ -62,7 +62,7 @@
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
                         <span id="notification-badge" class="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold leading-none text-white shadow hidden">0</span>
                     </button>
-                    <div id="notification-dropdown" class="absolute right-0 top-full z-50 mt-2 hidden flex max-h-[min(32rem,75vh)] w-[min(420px,95vw)] flex-col overflow-hidden rounded-[26px] border border-white/40 bg-white/92 shadow-2xl shadow-gray-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/94 dark:shadow-black/40" style="animation:fadeIn .15s ease-out;">
+                    <div id="notification-dropdown" class="dropdown-panel absolute right-0 top-full z-50 mt-2 hidden flex max-h-[min(32rem,75vh)] w-[min(420px,95vw)] flex-col" style="animation:fadeIn .15s ease-out;">
                         <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800 shrink-0">
                             <span class="text-[13px] font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('nav.notifications') }}</span>
                             <button type="button" id="notification-mark-all-read" class="text-[11px] font-medium uppercase tracking-wider text-brand-600 hover:text-brand-700 dark:text-brand-400">{{ __('nav.mark_all_read') }}</button>
@@ -99,7 +99,7 @@
                     </button>
 
                     {{-- Dropdown --}}
-                    <div id="profile-dropdown" class="absolute right-0 top-full z-50 mt-2 hidden w-72 overflow-hidden rounded-[26px] border border-white/40 bg-white/92 shadow-2xl shadow-gray-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/94 dark:shadow-black/40" style="animation:fadeIn .12s ease-out;">
+                    <div id="profile-dropdown" class="dropdown-panel absolute right-0 top-full z-50 mt-2 hidden w-72" style="animation:fadeIn .12s ease-out;">
                         {{-- User Info Header --}}
                         <div class="border-b border-gray-100 bg-gray-50/80 px-5 py-4 dark:border-gray-800 dark:bg-gray-800/50">
                             <div class="flex items-center gap-3">

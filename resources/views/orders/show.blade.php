@@ -3,10 +3,10 @@
 @section('title', 'Order Details — Vetora')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-gray-950 dark:to-gray-950">
-    <div class="border-b border-gray-200/80 bg-white/80 backdrop-blur dark:border-gray-800 dark:bg-gray-900/80">
-        <div class="mx-auto max-w-screen-2xl px-4 py-3 sm:px-6 lg:px-8">
-            <nav class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+<div class="min-h-screen bg-transparent">
+    <div class="border-b border-white/40 bg-white/60 backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
+        <div class="page-shell py-3">
+            <nav class="page-breadcrumb">
                 <a href="{{ route('home') }}" class="hover:text-brand-600 dark:hover:text-brand-400">Home</a>
                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                 <a href="{{ route('profile') }}" class="hover:text-brand-600 dark:hover:text-brand-400">Profile</a>
@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="page-shell">
         <div id="order-loading" class="py-16 text-center">
             <div class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500 dark:border-gray-700"></div>
             <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Loading order...</p>

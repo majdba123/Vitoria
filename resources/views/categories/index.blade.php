@@ -2,10 +2,10 @@
 @section('title', __('categories.page_title') . ' ' . __('site.meta_title_separator') . ' ' . __('site.meta_title_suffix'))
 
 @section('content')
-<div class="bg-white dark:bg-gray-950">
-    <div class="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
-        <div class="mx-auto max-w-screen-2xl px-4 py-3 sm:px-6 lg:px-8">
-            <nav class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+<div class="bg-transparent">
+    <div class="border-b border-white/40 bg-white/60 backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
+        <div class="page-shell py-3">
+            <nav class="page-breadcrumb">
                 <a href="{{ route('home') }}" class="hover:text-brand-600 dark:hover:text-brand-400">{{ __('nav.home') }}</a>
                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                 <span class="font-medium text-gray-900 dark:text-white">{{ __('categories.page_heading') }}</span>
@@ -13,10 +13,10 @@
         </div>
     </div>
 
-    <div class="mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="page-shell">
         <h1 class="text-2xl font-black text-gray-900 sm:text-3xl dark:text-white">{{ __('categories.page_heading') }}</h1>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('categories.page_subtitle') }}</p>
-        <div class="mt-5 flex flex-wrap gap-2">
+        <div class="filter-panel mt-5 flex flex-wrap gap-2">
             <button type="button" data-type-filter="" class="category-type-filter rounded-xl border border-brand-500 bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-sm">الكل</button>
             <button type="button" data-type-filter="agriculture" class="category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">زراعي</button>
             <button type="button" data-type-filter="veterinary" class="category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">بيطري</button>
