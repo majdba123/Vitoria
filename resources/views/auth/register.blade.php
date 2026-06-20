@@ -183,6 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
     loadCities();
     loadMerchantCategories();
     syncAccountTypeFields();
+    bindFieldErrorReset();
 
     document.querySelectorAll('input[name="account_type"]').forEach(input => {
         input.addEventListener('change', syncAccountTypeFields);
@@ -354,6 +355,44 @@ document.addEventListener('DOMContentLoaded', function () {
             el.classList.add('hidden');
             el.textContent = '';
         });
+        form.querySelectorAll('.has-error').forEach(el => el.classList.remove('has-error'));
+    }
+
+    function bindFieldErrorReset() {
+        form.querySelectorAll('input, select, textarea').forEach(element => {
+            const eventName = element.tagName === 'SELECT' || element.type === 'file' || element.type === 'checkbox' || element.type === 'radio'
+                ? 'change'
+                : 'input';
+
+            element.addEventListener(eventName, function () {
+                clearFieldError(element.name || element.id);
+            });
+        });
+    }
+
+    function clearFieldError(fieldName) {
+        if (!fieldName) {
+            return;
+        }
+
+        const normalizedFieldName = fieldName.replace(/\[\]$/, '');
+        const candidateFields = [
+            fieldName,
+            normalizedFieldName,
+            normalizedFieldName.replace(/\./g, '_'),
+        ];
+
+        candidateFields.forEach(name => {
+            const errorElement = document.getElementById(name + '-error');
+            if (errorElement) {
+                errorElement.classList.add('hidden');
+                errorElement.textContent = '';
+            }
+        });
+
+        form.querySelectorAll(`[name="${fieldName}"], [name="${normalizedFieldName}"], [name="${normalizedFieldName}[]"], #${normalizedFieldName}`).forEach(element => {
+            element.classList.remove('has-error');
+        });
     }
 
     function syncAccountTypeFields() {
@@ -399,18 +438,40 @@ document.addEventListener('DOMContentLoaded', function () {
             ? window.ApiErrors.parse(error)
             : { generalMessage: registerI18n.unexpected || '', fieldErrors: {} };
 
-        window.ApiErrors?.showFieldErrors?.(parsed.fieldErrors, {
-            commercial_register: ['commercial_register_file'],
-            business_type: ['business_type'],
-            category_id: ['category_ids'],
-            'category_ids.0': ['category_ids'],
-        });
+        showFieldErrors(parsed.fieldErrors || {});
 
         showAlert('register-alert', parsed.generalMessage || registerI18n.unexpected || '');
 
         if (parsed.fieldErrors?.commercial_register_file || parsed.fieldErrors?.commercial_register) {
             field('commercial_register_file').value = '';
         }
+    }
+
+    function showFieldErrors(fieldErrors) {
+        const aliases = {
+            commercial_register: ['commercial_register_file'],
+            business_type: ['business_type'],
+            category_id: ['category_ids'],
+            'category_ids.0': ['category_ids'],
+        };
+
+        Object.entries(fieldErrors).forEach(([fieldName, message]) => {
+            const candidateFields = [fieldName, fieldName.replace(/\./g, '_'), ...(aliases[fieldName] || [])];
+            const errorElement = candidateFields
+                .map(name => document.getElementById(name + '-error'))
+                .find(Boolean);
+
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+            }
+
+            candidateFields.forEach(name => {
+                form.querySelectorAll(`[name="${name}"], [name="${name}[]"], #${name}`).forEach(element => {
+                    element.classList.add('has-error');
+                });
+            });
+        });
     }
 });
 </script>

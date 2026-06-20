@@ -388,6 +388,24 @@
         @apply mt-2 hidden text-xs font-semibold text-rose-500;
     }
 
+    .form-input.has-error,
+    .form-select.has-error,
+    .form-textarea.has-error {
+        border-color: rgba(244, 63, 94, 0.5);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.7),
+            0 0 0 4px rgba(244, 63, 94, 0.12);
+    }
+
+    .dark .form-input.has-error,
+    .dark .form-select.has-error,
+    .dark .form-textarea.has-error {
+        border-color: rgba(251, 113, 133, 0.55);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.02),
+            0 0 0 4px rgba(251, 113, 133, 0.14);
+    }
+
     .btn-primary,
     .btn-secondary,
     .btn-danger,
