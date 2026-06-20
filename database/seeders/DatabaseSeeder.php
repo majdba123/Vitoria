@@ -29,8 +29,8 @@ class DatabaseSeeder extends Seeder
             ],
         );
 
-        $this->call([
+      /*  $this->call([
             ArabicDemoDatabaseSeeder::class,
-        ]);
+        ]);*/
     }
 }
