@@ -19,20 +19,20 @@
     {{-- Search --}}
     <div class="card">
         <div class="card-body">
-            <div class="flex gap-2">
-                <input type="text" id="search-input" placeholder="Search categories by name..." class="form-input flex-1">
-                <select id="type-filter" class="form-select max-w-48">
+            <div class="flex flex-col gap-2 lg:flex-row">
+                <input type="text" id="search-input" placeholder="Search categories by name..." class="form-input flex-1 min-w-0">
+                <select id="type-filter" class="form-select w-full lg:max-w-48">
                     <option value="">All types</option>
                     <option value="agriculture">Agriculture</option>
                     <option value="veterinary">Veterinary</option>
                 </select>
-                <button id="search-btn" class="btn-primary btn-sm">
+                <button id="search-btn" class="btn-primary btn-sm w-full lg:w-auto">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
                     </svg>
                     Search
                 </button>
-                <button id="clear-search" class="btn-secondary btn-sm hidden">
+                <button id="clear-search" class="btn-secondary btn-sm hidden w-full lg:w-auto">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -139,12 +139,14 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 clearSearch.classList.add('hidden');
             }
-            if (typeFilter.value) {
-                params.append('type', typeFilter.value);
-            }
+            params.append('type', typeFilter.value || '');
 
             const url = '/api/admin/categories' + (params.toString() ? '?' + params.toString() : '');
-            window.history.replaceState({}, '', params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location.pathname);
+            const browserParams = new URLSearchParams(params);
+            if (!typeFilter.value) {
+                browserParams.delete('type');
+            }
+            window.history.replaceState({}, '', browserParams.toString() ? `${window.location.pathname}?${browserParams.toString()}` : window.location.pathname);
             const res = await window.axios.get(url);
             const categories = res.data.data || [];
 
@@ -168,9 +170,24 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initial load
     loadCategories();
 
-    function categoryListThumb(category) {
+    function categoryImageUrl(category) {
         if (category.image_url) {
-            return `<img src="${esc(category.image_url)}" alt="${esc(category.name)}" class="h-16 w-16 rounded-lg object-cover">`;
+            return category.image_url;
+        }
+        if (category.logo) {
+            return `/storage/${category.logo}`;
+        }
+        if (category.icon) {
+            return `/storage/${category.icon}`;
+        }
+
+        return '';
+    }
+
+    function categoryListThumb(category) {
+        const imageUrl = categoryImageUrl(category);
+        if (imageUrl) {
+            return `<img src="${esc(imageUrl)}" alt="${esc(category.name)}" class="h-16 w-16 rounded-lg object-cover">`;
         }
         return `
                             <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-100">

@@ -42,8 +42,27 @@
 <script>
 const catPageI18n = @json($categoriesIndexScriptI18n);
 document.addEventListener('DOMContentLoaded', async function() {
-    let selectedType = new URLSearchParams(window.location.search).get('type') || @json(auth()->user()?->preferred_product_type ?? session('preferred_product_type', request()->cookie('preferred_product_type', '')));
+    const initialType = new URLSearchParams(window.location.search).get('type');
+    let selectedType = initialType !== null
+        ? initialType
+        : @json(auth()->user()?->preferred_product_type ?? session('preferred_product_type', request()->cookie('preferred_product_type', '')));
     function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+    function categoryImageUrl(cat) {
+        if (cat.image_url) {
+            return cat.image_url;
+        }
+        if (cat.logo) {
+            return '/storage/' + cat.logo;
+        }
+        if (cat.icon) {
+            return '/storage/' + cat.icon;
+        }
+
+        return '';
+    }
+    function subcategoryImageUrl(subcategory) {
+        return subcategory.image_url || (subcategory.image ? '/storage/' + subcategory.image : '');
+    }
     function setActiveTypeButton() {
         document.querySelectorAll('.category-type-filter').forEach(button => {
             const active = button.dataset.typeFilter === selectedType;
@@ -53,14 +72,16 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
     function categoryThumbInner(cat) {
-        if (cat.image_url) {
-            return `<img src="${esc(cat.image_url)}" class="h-full w-full rounded-2xl object-cover" alt="">`;
+        const imageUrl = categoryImageUrl(cat);
+        if (imageUrl) {
+            return `<img src="${esc(imageUrl)}" class="h-full w-full rounded-2xl object-cover" alt="">`;
         }
         return `<svg class="h-8 w-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581"/></svg>`;
     }
     function subListLeading(s) {
-        if (s.image_url) {
-            return `<img src="${esc(s.image_url)}" class="h-4 w-4 rounded object-cover" alt="">`;
+        const imageUrl = subcategoryImageUrl(s);
+        if (imageUrl) {
+            return `<img src="${esc(imageUrl)}" class="h-4 w-4 rounded object-cover" alt="">`;
         }
         return '';
     }
@@ -77,7 +98,18 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('grid').innerHTML = '';
         setActiveTypeButton();
         const params = new URLSearchParams({ per_page: '100' });
-        if (selectedType) params.set('type', selectedType);
+        if (selectedType) {
+            params.set('type', selectedType);
+        } else {
+            params.set('type', '');
+        }
+        const nextUrl = new URL(window.location.href);
+        if (selectedType) {
+            nextUrl.searchParams.set('type', selectedType);
+        } else {
+            nextUrl.searchParams.delete('type');
+        }
+        window.history.replaceState({}, '', nextUrl.pathname + nextUrl.search);
         const res = await axios.get('/api/categories?' + params.toString());
         const cats = res.data.data || [];
         document.getElementById('loading').classList.add('hidden');

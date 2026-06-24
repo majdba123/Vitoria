@@ -137,6 +137,22 @@ const selectedHomeType = @json($selectedHomeType);
 document.addEventListener('DOMContentLoaded', async function () {
     const $ = id => document.getElementById(id);
     function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function categoryImageUrl(category) {
+        if (category.image_url) {
+            return category.image_url;
+        }
+        if (category.logo) {
+            return '/storage/' + category.logo;
+        }
+        if (category.icon) {
+            return '/storage/' + category.icon;
+        }
+
+        return '';
+    }
+    function subcategoryImageUrl(subcategory) {
+        return subcategory.image_url || (subcategory.image ? '/storage/' + subcategory.image : '');
+    }
     function typedUrl(url, key = 'type') {
         if (!selectedHomeType) {
             return url;
@@ -148,20 +164,23 @@ document.addEventListener('DOMContentLoaded', async function () {
         return parsed.pathname + parsed.search;
     }
     function categoryThumbInner(cat) {
-        if (cat.image_url) {
-            return `<img src="${esc(cat.image_url)}" alt="" class="h-full w-full rounded-2xl object-cover">`;
+        const imageUrl = categoryImageUrl(cat);
+        if (imageUrl) {
+            return `<img src="${esc(imageUrl)}" alt="" class="h-full w-full rounded-2xl object-cover">`;
         }
         return `<svg class="h-8 w-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/></svg>`;
     }
     function subChipLeading(s) {
-        if (s.image_url) {
-            return `<img src="${esc(s.image_url)}" class="h-3.5 w-3.5 rounded object-cover" alt="">`;
+        const imageUrl = subcategoryImageUrl(s);
+        if (imageUrl) {
+            return `<img src="${esc(imageUrl)}" class="h-3.5 w-3.5 rounded object-cover" alt="">`;
         }
         return '';
     }
     function subCarouselThumbInner(s) {
-        if (s.image_url) {
-            return `<img src="${esc(s.image_url)}" class="h-full w-full object-cover" alt="">`;
+        const imageUrl = subcategoryImageUrl(s);
+        if (imageUrl) {
+            return `<img src="${esc(imageUrl)}" class="h-full w-full object-cover" alt="">`;
         }
         return `<svg class="h-6 w-6 text-gray-300 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg>`;
     }

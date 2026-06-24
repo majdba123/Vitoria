@@ -108,6 +108,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     loadCategory();
 
+    function categoryImageUrl(category) {
+        if (category.image_url) {
+            return category.image_url;
+        }
+        if (category.logo) {
+            return `/storage/${category.logo}`;
+        }
+        if (category.icon) {
+            return `/storage/${category.icon}`;
+        }
+
+        return '';
+    }
+
+    function subcategoryImageUrl(subcategory) {
+        return subcategory.image_url || (subcategory.image ? `/storage/${subcategory.image}` : '');
+    }
+
     async function loadCategory() {
         try {
             const res = await window.axios.get(`/api/admin/categories/${categoryId}`);
@@ -122,8 +140,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Display logo + icon
             const logoContainer = document.getElementById('category-logo');
-            if (category.image_url) {
-                logoContainer.innerHTML = `<img src="${esc(category.image_url)}" alt="${esc(category.name)}" class="mx-auto h-32 w-32 rounded-lg object-cover">`;
+            const imageUrl = categoryImageUrl(category);
+            if (imageUrl) {
+                logoContainer.innerHTML = `<img src="${esc(imageUrl)}" alt="${esc(category.name)}" class="mx-auto h-32 w-32 rounded-lg object-cover">`;
             }
 
             // Load subcategories
@@ -165,8 +184,8 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="card">
                 <div class="card-body">
                     <div class="flex items-start gap-4">
-                        ${sub.image_url ? `
-                            <img src="${esc(sub.image_url)}" alt="${esc(sub.name)}" class="h-16 w-16 rounded-lg object-cover flex-shrink-0">
+                        ${subcategoryImageUrl(sub) ? `
+                            <img src="${esc(subcategoryImageUrl(sub))}" alt="${esc(sub.name)}" class="h-16 w-16 rounded-lg object-cover flex-shrink-0">
                         ` : `
                             <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-100 flex-shrink-0">
                                 <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

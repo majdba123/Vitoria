@@ -111,3 +111,32 @@ test('admin subcategory crud uses image only and returns image url', function ()
     Storage::disk('public')->assertMissing($oldImage);
     Storage::disk('public')->assertExists($subcategory->image);
 });
+
+test('empty category type filter returns all categories for admin and public endpoints', function () {
+    actingAsAdminForCategoryCrud();
+
+    $agricultureCategory = Category::query()->create([
+        'name' => 'All Filter Agriculture',
+        'type' => Category::TYPE_AGRICULTURE,
+        'commission' => 5,
+    ]);
+
+    $veterinaryCategory = Category::query()->create([
+        'name' => 'All Filter Veterinary',
+        'type' => Category::TYPE_VETERINARY,
+        'commission' => 6,
+    ]);
+
+    $adminIds = collect($this->getJson('/api/admin/categories?per_page=100&type=')
+        ->assertOk()
+        ->json('data'))
+        ->pluck('id');
+
+    $publicIds = collect($this->getJson('/api/categories?per_page=100&type=')
+        ->assertOk()
+        ->json('data'))
+        ->pluck('id');
+
+    expect($adminIds)->toContain($agricultureCategory->id, $veterinaryCategory->id)
+        ->and($publicIds)->toContain($agricultureCategory->id, $veterinaryCategory->id);
+});

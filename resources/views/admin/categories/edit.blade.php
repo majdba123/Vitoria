@@ -67,6 +67,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const currentLogo = document.getElementById('current-logo');
     loadCategory();
 
+    function categoryImageUrl(category) {
+        if (category.image_url) {
+            return category.image_url;
+        }
+        if (category.logo) {
+            return `/storage/${category.logo}`;
+        }
+        if (category.icon) {
+            return `/storage/${category.icon}`;
+        }
+
+        return '';
+    }
+
     async function loadCategory() {
         try {
             const res = await window.axios.get(`/api/admin/categories/${categoryId}`);
@@ -76,8 +90,9 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('type').value = category.type || '';
             document.getElementById('commission').value = category.commission ?? 0;
             currentLogo.innerHTML = '';
-            if (category.image_url) {
-                currentLogo.innerHTML = `<img src="${category.image_url}" alt="${category.name}" class="h-24 w-24 rounded-lg object-cover">`;
+            const imageUrl = categoryImageUrl(category);
+            if (imageUrl) {
+                currentLogo.innerHTML = `<img src="${imageUrl}" alt="${category.name}" class="h-24 w-24 rounded-lg object-cover">`;
             }
 
             loading.classList.add('hidden');

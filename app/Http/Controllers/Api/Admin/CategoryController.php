@@ -26,7 +26,7 @@ class CategoryController extends Controller
     public function index(Request $request): JsonResponse
     {
         $search = $request->input('search');
-        $type = $request->input('type') ?: $this->preferredCategoryType($request);
+        $type = $this->resolvedCategoryTypeFilter($request);
         $perPage = min(max((int) $request->input('per_page', 24), 1), 100);
 
         $cacheKey = $search ? null : 'categories:list:'.sha1(json_encode([
@@ -155,6 +155,19 @@ class CategoryController extends Controller
     protected function preferredCategoryType(Request $request): ?string
     {
         return $this->selectedProductTypeService->resolve($request);
+    }
+
+    protected function resolvedCategoryTypeFilter(Request $request): ?string
+    {
+        if ($request->has('type')) {
+            $type = trim((string) $request->input('type'));
+
+            return in_array($type, [Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY], true)
+                ? $type
+                : null;
+        }
+
+        return $this->preferredCategoryType($request);
     }
 
     protected function deleteCategoryImages(Category $category): void

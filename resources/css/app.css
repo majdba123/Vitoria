@@ -584,6 +584,8 @@
         background: radial-gradient(circle at top, rgba(16, 185, 129, 0.2), transparent 28%), var(--dashboard-shell);
         border-inline-end: 1px solid rgba(148, 163, 184, 0.12);
         box-shadow: 30px 0 80px -45px rgba(5, 150, 105, 0.55);
+        min-height: 100dvh;
+        max-height: 100dvh;
     }
 
     .dashboard-sidebar-link {
@@ -607,6 +609,12 @@
     .dashboard-sidebar-link.is-active .dashboard-sidebar-bullet {
         @apply bg-brand-300;
         box-shadow: 0 0 0 6px rgba(110, 231, 183, 0.12);
+    }
+
+    @media (max-width: 1023px) {
+        .dashboard-sidebar {
+            width: min(20rem, calc(100vw - 1rem));
+        }
     }
 
     .dashboard-topbar {

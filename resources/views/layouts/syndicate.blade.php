@@ -62,7 +62,7 @@
                     <p class="mt-2 text-sm leading-6 text-white/75">Track type-specific network performance, category coverage, and sales intelligence from one secure view.</p>
                 </div>
             </div>
-            <nav class="flex-1 overflow-y-auto px-4 py-5">
+            <nav class="min-h-0 flex-1 overflow-y-auto px-4 py-5">
                 <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-white/35">Workspace</p>
                 @foreach ($links as $link)
                     @php

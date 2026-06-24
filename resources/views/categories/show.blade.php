@@ -52,15 +52,33 @@ document.addEventListener('DOMContentLoaded', async function() {
     let page = 1;
     const withSelectedType = (url) => selectedType ? `${url}${url.includes('?') ? '&' : '?'}type=${encodeURIComponent(selectedType)}` : url;
     function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+    function categoryImageUrl(category) {
+        if (category.image_url) {
+            return category.image_url;
+        }
+        if (category.logo) {
+            return '/storage/' + category.logo;
+        }
+        if (category.icon) {
+            return '/storage/' + category.icon;
+        }
+
+        return '';
+    }
+    function subcategoryImageUrl(subcategory) {
+        return subcategory.image_url || (subcategory.image ? '/storage/' + subcategory.image : '');
+    }
     function categoryHeroInner(cat) {
-        if (cat.image_url) {
-            return `<img src="${esc(cat.image_url)}" class="h-full w-full rounded-2xl object-cover" alt="">`;
+        const imageUrl = categoryImageUrl(cat);
+        if (imageUrl) {
+            return `<img src="${esc(imageUrl)}" class="h-full w-full rounded-2xl object-cover" alt="">`;
         }
         return `<svg class="h-7 w-7 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581"/></svg>`;
     }
     function subGridThumbInner(s) {
-        if (s.image_url) {
-            return `<img src="${esc(s.image_url)}" class="h-full w-full object-cover" alt="">`;
+        const imageUrl = subcategoryImageUrl(s);
+        if (imageUrl) {
+            return `<img src="${esc(imageUrl)}" class="h-full w-full object-cover" alt="">`;
         }
         return `<svg class="h-6 w-6 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg>`;
     }
