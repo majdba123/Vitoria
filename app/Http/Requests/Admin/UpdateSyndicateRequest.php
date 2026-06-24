@@ -5,13 +5,16 @@ namespace App\Http\Requests\Admin;
 use App\Models\Category;
 use App\Models\Syndicate;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 
 class UpdateSyndicateRequest extends FormRequest
 {
     protected function prepareForValidation(): void
     {
-        if (! $this->hasFile('logo')) {
+        $logo = $this->file('logo');
+
+        if (! $logo instanceof UploadedFile || ! $logo->isValid()) {
             $this->files->remove('logo');
             $this->request->remove('logo');
         }
