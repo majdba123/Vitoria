@@ -307,6 +307,20 @@ test('syndicate and admin pages render with Vetora Arabic branding', function ()
         ->and(__('Vetora'))->toBe('Vetora');
 });
 
+test('admin syndicate details page renders cleanly', function () {
+    $admin = syndicateAdmin();
+    $syndicate = Syndicate::factory()->agriculture()->create([
+        'name' => 'Details Agriculture Syndicate',
+    ]);
+
+    $this->actingAs($admin)
+        ->get('/admin/syndicates/'.$syndicate->id)
+        ->assertOk()
+        ->assertSee('Syndicate Details')
+        ->assertSee('Loading syndicate details...')
+        ->assertSee('const syndicateId = "'.$syndicate->id.'";', false);
+});
+
 test('syndicate dashboard page renders the professional workspace shell', function () {
     $user = syndicateUser(Category::TYPE_AGRICULTURE);
 
