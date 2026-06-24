@@ -19,15 +19,15 @@
                 <h1 class="text-2xl font-black text-gray-900 sm:text-3xl dark:text-white">جميع المنتجات</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400" id="result-count"></p>
             </div>
-            <div class="filter-panel flex w-full flex-wrap items-center gap-3">
-                <select id="f-category-type" class="form-select">
+            <div class="filter-panel grid w-full gap-3 md:grid-cols-2 xl:grid-cols-[repeat(4,minmax(0,1fr))_auto_auto] xl:items-center">
+                <select id="f-category-type" class="form-select min-w-0">
                     <option value="">كل الأنواع</option>
                     <option value="agriculture">زراعي</option>
                     <option value="veterinary">بيطري</option>
                 </select>
-                <select id="f-category" class="form-select"><option value="">كل التصنيفات</option></select>
-                <select id="f-subcategory" class="form-select"><option value="">كل التصنيفات الفرعية</option></select>
-                <select id="f-discount" class="form-select">
+                <select id="f-category" class="form-select min-w-0"><option value="">كل التصنيفات</option></select>
+                <select id="f-subcategory" class="form-select min-w-0"><option value="">كل التصنيفات الفرعية</option></select>
+                <select id="f-discount" class="form-select min-w-0">
                     <option value="">كل الخصومات</option>
                     <option value="1">عليه خصم</option>
                     <option value="0">بدون خصم</option>

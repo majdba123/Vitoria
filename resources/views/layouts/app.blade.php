@@ -76,7 +76,7 @@
                     <div id="startup-timezone-step" class="hidden space-y-4">
                         <div>
                             <label for="startup-timezone" class="mb-1.5 block text-sm font-bold text-gray-800 dark:text-gray-200">المنطقة الزمنية</label>
-                            <select id="startup-timezone" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"></select>
+                            <select id="startup-timezone" class="form-select"></select>
                         </div>
                     </div>
                     <p id="startup-error" class="mt-4 hidden rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300"></p>

@@ -151,6 +151,27 @@ test('guests can choose product type through the dedicated selection links witho
         ->assertOk();
 });
 
+test('homepage and product type selection page render the shared themed cards', function () {
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertSee('surface-card', false)
+        ->assertSee('workspace-hero', false);
+
+    $this->get(route('product-type.select'))
+        ->assertOk()
+        ->assertSee('surface-card', false)
+        ->assertSee('workspace-hero', false);
+});
+
+test('products catalog page renders shared filter selects', function () {
+    $this->withCookie('preferred_product_type', Category::TYPE_AGRICULTURE)
+        ->get(route('products.index', ['type' => Category::TYPE_AGRICULTURE]))
+        ->assertOk()
+        ->assertSee('form-select', false)
+        ->assertSee('btn-apply', false)
+        ->assertSee('btn-clear', false);
+});
+
 test('selected user product type filters categories and public products on backend', function () {
     $agriculture = repairCategorySet(Category::TYPE_AGRICULTURE, 'اختبار زراعي');
     $veterinary = repairCategorySet(Category::TYPE_VETERINARY, 'اختبار بيطري');

@@ -66,9 +66,9 @@
         radial-gradient(circle at top left, rgba(16, 185, 129, 0.12), transparent 24%),
         radial-gradient(circle at top right, rgba(14, 165, 233, 0.08), transparent 24%),
         linear-gradient(180deg, #07110f 0%, #091613 50%, #08100f 100%);
-    --site-surface: rgba(9, 18, 19, 0.82);
-    --site-surface-strong: rgba(11, 23, 24, 0.94);
-    --site-border: rgba(148, 163, 184, 0.16);
+    --site-surface: rgba(10, 21, 23, 0.92);
+    --site-surface-strong: rgba(12, 25, 27, 0.98);
+    --site-border: rgba(148, 163, 184, 0.24);
     --site-shadow: 0 26px 70px -28px rgba(0, 0, 0, 0.55);
     --site-shadow-soft: 0 18px 42px -22px rgba(0, 0, 0, 0.44);
     --dashboard-bg:
@@ -275,11 +275,23 @@
         backdrop-filter: blur(18px);
     }
 
+    .dark .surface-card {
+        box-shadow:
+            0 26px 72px -34px rgba(0, 0, 0, 0.72),
+            inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
     .surface-card-muted {
         @apply rounded-[24px];
         background: var(--site-surface);
         border: 1px solid var(--site-border);
         box-shadow: var(--site-shadow-soft);
+    }
+
+    .dark .surface-card-muted {
+        box-shadow:
+            0 22px 52px -34px rgba(0, 0, 0, 0.66),
+            inset 0 1px 0 rgba(255, 255, 255, 0.03);
     }
 
     .card {
@@ -376,7 +388,11 @@
     }
 
     .form-select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
         appearance: none;
+        cursor: pointer;
+        line-height: 1.5;
         padding-inline-end: 2.75rem;
         background-image:
             linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0)),
@@ -384,6 +400,8 @@
         background-position: center, right 1rem center;
         background-repeat: no-repeat;
         background-size: auto, 1.1rem 1.1rem;
+        background-origin: border-box;
+        background-clip: padding-box, border-box;
         color-scheme: light;
     }
 
@@ -392,6 +410,14 @@
             linear-gradient(to bottom, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0)),
             url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.6' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
         color-scheme: dark;
+    }
+
+    [dir='rtl'] .form-select {
+        background-position: center, left 1rem center;
+    }
+
+    .form-select::-ms-expand {
+        display: none;
     }
 
     .form-select option,
@@ -586,6 +612,8 @@
         box-shadow: 30px 0 80px -45px rgba(5, 150, 105, 0.55);
         min-height: 100dvh;
         max-height: 100dvh;
+        overflow-y: auto;
+        overscroll-behavior: contain;
     }
 
     .dashboard-sidebar-link {
@@ -646,9 +674,9 @@
     .workspace-hero {
         @apply relative overflow-hidden rounded-[34px] p-6 sm:p-8;
         background:
-            radial-gradient(circle at top right, rgba(52, 211, 153, 0.32), transparent 28%),
-            radial-gradient(circle at bottom left, rgba(14, 165, 233, 0.22), transparent 30%),
-            linear-gradient(135deg, #08231d 0%, #0b3029 50%, #0c1728 100%);
+            radial-gradient(circle at top right, rgba(52, 211, 153, 0.24), transparent 28%),
+            radial-gradient(circle at bottom left, rgba(14, 165, 233, 0.16), transparent 30%),
+            linear-gradient(135deg, #08211b 0%, #0d2f28 46%, #0f2237 100%);
         border: 1px solid rgba(255, 255, 255, 0.08);
         box-shadow: 0 26px 56px -28px rgba(8, 35, 29, 0.65);
     }

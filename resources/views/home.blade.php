@@ -48,7 +48,7 @@
                     @endphp
                     <a
                         href="{{ route('product-type.select', ['preferred_product_type' => $value, 'redirect_to' => 'home']) }}"
-                        class="group surface-card block h-full p-6 text-start transition duration-300 hover:-translate-y-1 hover:border-brand-300 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-brand-500/20 {{ $isSelected ? 'border-brand-500 bg-white/95 shadow-[0_28px_70px_-42px_rgba(229,93,34,0.68)] dark:bg-brand-500/10' : 'border-white/10 bg-white/92 dark:border-slate-700/70 dark:bg-slate-950/75 dark:hover:border-brand-500' }}"
+                        class="group surface-card block h-full p-6 text-start transition duration-300 hover:-translate-y-1 hover:border-brand-300 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-brand-500/20 {{ $isSelected ? 'border-brand-500 bg-white shadow-[0_28px_70px_-42px_rgba(5,150,105,0.45)] dark:bg-brand-500/12 dark:ring-1 dark:ring-brand-400/20' : 'border-white/20 bg-white/96 dark:border-slate-700/90 dark:bg-slate-950/90 dark:hover:border-brand-500' }}"
                     >
                         <span class="flex items-start gap-4">
                             <span class="icon-chip h-14 w-14 shrink-0 rounded-2xl">
@@ -61,7 +61,7 @@
                                         {{ $isSelected ? 'محدد الآن' : 'اختيار' }}
                                     </span>
                                 </span>
-                                <span class="mt-2 block text-sm leading-6 text-gray-500 dark:text-slate-300">{{ $type['description'] }}</span>
+                                <span class="mt-2 block text-sm leading-6 text-gray-600 dark:text-slate-200">{{ $type['description'] }}</span>
                                 <span class="btn-primary mt-4 inline-flex px-4 py-2 text-xs">
                                     {{ $type['button'] }}
                                 </span>
@@ -83,7 +83,7 @@
     <div id="sz-main-store" class="{{ $homeCategoryId ? '' : 'hidden' }}">
         <section id="sz-category-bar" class="page-shell pt-0">
             <div class="surface-card-muted flex flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-6">
-                <p class="text-sm text-gray-600 dark:text-gray-400">
+                <p class="text-sm text-gray-700 dark:text-slate-200">
                     {{ __('home.browsing_prefix') }}
                     <span id="sz-category-bar-name" class="font-bold text-gray-900 dark:text-white">—</span>
                 </p>

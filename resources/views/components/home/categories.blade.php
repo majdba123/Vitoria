@@ -1,5 +1,5 @@
 {{-- ═══ Categories Section — Full grid with subcategories ═══ --}}
-<section id="categories" class="scroll-mt-20 bg-white py-14 dark:bg-gray-950 sm:py-20">
+<section id="categories" class="scroll-mt-20 bg-transparent py-14 sm:py-20">
     <div class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
         {{-- Header --}}
         <div class="mb-10 text-center">
