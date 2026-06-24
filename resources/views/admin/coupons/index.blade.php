@@ -95,12 +95,12 @@
                     <input id="discount_value" type="number" step="0.01" class="form-input" placeholder="10">
                 </div>
                 <div>
-                    <label class="form-label">Start Date</label>
-                    <input id="starts_at" type="datetime-local" class="form-input">
+                    <label class="form-label">Start Date & Time</label>
+                    <input id="starts_at" type="datetime-local" step="60" class="form-input">
                 </div>
                 <div>
-                    <label class="form-label">End Date</label>
-                    <input id="ends_at" type="datetime-local" class="form-input">
+                    <label class="form-label">End Date & Time</label>
+                    <input id="ends_at" type="datetime-local" step="60" class="form-input">
                 </div>
                 <div>
                     <label class="form-label">Usage Limit</label>
@@ -233,8 +233,8 @@ document.addEventListener('DOMContentLoaded', function () {
             description: $('description').value.trim() || null,
             discount_type: $('discount_type').value,
             discount_value: $('discount_value').value,
-            starts_at: $('starts_at').value || null,
-            ends_at: $('ends_at').value || null,
+            starts_at: normalizeDateTimeValue($('starts_at').value, 'start'),
+            ends_at: normalizeDateTimeValue($('ends_at').value, 'end'),
             usage_limit: $('usage_limit').value || null,
             is_active: $('is_active').checked,
         };
@@ -291,9 +291,26 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!value) {
             return '';
         }
+        const normalized = String(value).replace(' ', 'T');
+        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(normalized)) {
+            return normalized.slice(0, 16);
+        }
+
         const date = new Date(value);
         const pad = n => String(n).padStart(2, '0');
         return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    function normalizeDateTimeValue(value, mode) {
+        if (!value) {
+            return null;
+        }
+
+        if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+            return mode === 'end' ? `${value}T23:59` : `${value}T00:00`;
+        }
+
+        return value;
     }
 
     function statusBadge(status) {

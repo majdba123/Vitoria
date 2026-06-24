@@ -2,10 +2,18 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Http\Requests\Admin\Concerns\NormalizesDateTimeInputs;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreCouponRequest extends FormRequest
 {
+    use NormalizesDateTimeInputs;
+
+    protected function prepareForValidation(): void
+    {
+        $this->normalizeDateTimeInputs(['starts_at', 'ends_at']);
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
