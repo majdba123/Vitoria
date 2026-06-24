@@ -266,19 +266,14 @@ test('admin can create syndicate when an empty logo value is submitted by the br
         ->assertJsonPath('data.logo_url', asset('images/syndicate-placeholder.svg'));
 });
 
-test('admin can upload supported syndicate logo image formats', function (string $extension) {
+test('admin can upload supported syndicate logo image formats', function (string $extension, string $phone) {
     Storage::fake('public');
     repairAdmin();
 
     $response = $this->postJson('/api/admin/syndicates', [
         'name' => 'Logo Format '.$extension,
         'email' => 'logo-format-'.$extension.'@example.com',
-        'phone' => match ($extension) {
-            'jpg' => '0998000020',
-            'jpeg' => '0998000021',
-            'png' => '0998000022',
-            'webp' => '0998000023',
-        },
+        'phone' => $phone,
         'password' => 'password',
         'password_confirmation' => 'password',
         'type' => Category::TYPE_VETERINARY,
@@ -288,7 +283,13 @@ test('admin can upload supported syndicate logo image formats', function (string
 
     $response->assertCreated();
     expect($response->json('data.logo'))->toStartWith('syndicates/logos/');
-})->with(['jpg', 'jpeg', 'png', 'webp']);
+})->with([
+    ['jpg', '0998000020'],
+    ['jpeg', '0998000021'],
+    ['png', '0998000022'],
+    ['webp', '0998000023'],
+    ['gif', '0998000024'],
+]);
 
 test('admin syndicate logo upload rejects invalid files and details include aggregate fields', function () {
     Storage::fake('public');

@@ -51,7 +51,7 @@
             </div>
             <div>
                 <label class="form-label">الشعار <span class="text-xs font-normal text-gray-400">(اختياري)</span></label>
-                <input name="logo" type="file" accept="image/jpeg,image/png,image/webp" class="form-input">
+                <input name="logo" type="file" accept="image/*" class="form-input">
                 <div id="logo-preview" class="mt-2 hidden items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-900/60">
                     <img id="logo-preview-img" src="" alt="" class="h-12 w-12 rounded-lg object-cover">
                     <p class="text-xs font-semibold text-gray-500">الشعار الحالي</p>

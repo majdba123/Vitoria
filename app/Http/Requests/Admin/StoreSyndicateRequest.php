@@ -13,20 +13,16 @@ class StoreSyndicateRequest extends FormRequest
     {
         if (! $this->hasFile('logo')) {
             $this->files->remove('logo');
+            $this->request->remove('logo');
         }
     }
 
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
@@ -38,7 +34,7 @@ class StoreSyndicateRequest extends FormRequest
             'password' => ['required', 'string', 'min:6', 'confirmed'],
             'type' => ['required', Rule::in([Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY])],
             'status' => ['required', Rule::in([Syndicate::STATUS_ACTIVE, Syndicate::STATUS_INACTIVE])],
-            'logo' => ['sometimes', 'nullable', 'file', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'logo' => ['sometimes', 'nullable', 'image', 'max:4096'],
         ];
     }
 
@@ -48,9 +44,8 @@ class StoreSyndicateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'logo.image' => 'يجب أن يكون الشعار صورة صالحة.',
-            'logo.mimes' => 'يجب أن يكون الشعار من نوع jpg أو jpeg أو png أو webp.',
-            'logo.max' => 'يجب ألا يتجاوز حجم الشعار 2 ميجابايت.',
+            'logo.image' => 'The logo must be a valid image.',
+            'logo.max' => 'The logo may not be greater than 4 MB.',
         ];
     }
 }

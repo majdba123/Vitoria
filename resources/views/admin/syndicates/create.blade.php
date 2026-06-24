@@ -51,7 +51,7 @@
             </div>
             <div>
                 <label class="form-label">الشعار <span class="text-xs font-normal text-gray-400">(اختياري)</span></label>
-                <input name="logo" type="file" accept="image/jpeg,image/png,image/webp" class="form-input">
+                <input name="logo" type="file" accept="image/*" class="form-input">
                 <p class="mt-1 text-xs text-gray-500">JPG أو PNG أو WebP بحد أقصى 2MB.</p>
                 <p id="logo-error" class="form-error"></p>
             </div>
