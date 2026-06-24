@@ -51,8 +51,8 @@
             </div>
             <div>
                 <label class="form-label">Image <span class="text-xs font-normal text-gray-400">(optional)</span></label>
-                <input name="logo" type="file" class="form-input">
-                <p class="mt-1 text-xs text-gray-500">Any uploaded file is accepted up to 10MB.</p>
+                <input name="logo" type="file" accept="image/*" class="form-input">
+                <p class="mt-1 text-xs text-gray-500">Upload one image for this syndicate. Max size: 4MB.</p>
                 <p id="logo-error" class="form-error"></p>
             </div>
         </div>
@@ -75,7 +75,10 @@ document.getElementById('syndicate-form').addEventListener('submit', async funct
     button.textContent = 'Saving...';
 
     try {
-        const response = await window.axios.post('/api/admin/syndicates', syndicateFormData(form), { silent: true });
+        const response = await window.axios.post('/api/admin/syndicates', syndicateFormData(form), {
+            silent: true,
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
         window.location.href = '/admin/syndicates/' + response.data.data.id;
     } catch (error) {
         const parsed = window.showApiError ? window.showApiError(error) : window.ApiErrors.parse(error);

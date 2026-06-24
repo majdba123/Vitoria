@@ -5,21 +5,10 @@ namespace App\Http\Requests\Admin;
 use App\Models\Category;
 use App\Models\Syndicate;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 
 class StoreSyndicateRequest extends FormRequest
 {
-    protected function prepareForValidation(): void
-    {
-        $logo = $this->file('logo');
-
-        if (! $logo instanceof UploadedFile || ! $logo->isValid()) {
-            $this->files->remove('logo');
-            $this->request->remove('logo');
-        }
-    }
-
     public function authorize(): bool
     {
         return true;
@@ -37,7 +26,7 @@ class StoreSyndicateRequest extends FormRequest
             'password' => ['required', 'string', 'min:6', 'confirmed'],
             'type' => ['required', Rule::in([Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY])],
             'status' => ['required', Rule::in([Syndicate::STATUS_ACTIVE, Syndicate::STATUS_INACTIVE])],
-            'logo' => ['sometimes', 'nullable', 'file', 'max:10240'],
+            'logo' => ['nullable', 'image', 'max:4096'],
         ];
     }
 
@@ -47,8 +36,8 @@ class StoreSyndicateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'logo.file' => 'The uploaded file is invalid.',
-            'logo.max' => 'The uploaded file may not be greater than 10 MB.',
+            'logo.image' => 'The syndicate image must be a valid image file.',
+            'logo.max' => 'The syndicate image may not be greater than 4 MB.',
         ];
     }
 }

@@ -291,11 +291,11 @@ test('admin can upload supported syndicate logo image formats', function (string
     ['gif', '0998000024'],
 ]);
 
-test('admin syndicate upload accepts non-image files and details include aggregate fields', function () {
+test('admin syndicate logo upload rejects invalid files and details include aggregate fields', function () {
     Storage::fake('public');
     repairAdmin();
 
-    $response = $this->postJson('/api/admin/syndicates', [
+    $this->postJson('/api/admin/syndicates', [
         'name' => 'نقابة ملف خاطئ',
         'email' => 'bad-logo-syndicate@example.com',
         'phone' => '0998000004',
@@ -304,10 +304,9 @@ test('admin syndicate upload accepts non-image files and details include aggrega
         'type' => Category::TYPE_AGRICULTURE,
         'status' => Syndicate::STATUS_ACTIVE,
         'logo' => UploadedFile::fake()->create('logo.pdf', 10, 'application/pdf'),
-    ])->assertCreated();
-
-    expect($response->json('data.logo'))->toStartWith('syndicates/logos/');
-    Storage::disk('public')->assertExists($response->json('data.logo'));
+    ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['logo']);
 
     $syndicate = Syndicate::factory()->agriculture()->create();
 

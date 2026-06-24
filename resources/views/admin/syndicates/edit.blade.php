@@ -51,7 +51,7 @@
             </div>
             <div>
                 <label class="form-label">Image <span class="text-xs font-normal text-gray-400">(optional)</span></label>
-                <input name="logo" type="file" class="form-input">
+                <input name="logo" type="file" accept="image/*" class="form-input">
                 <div id="logo-preview" class="mt-2 hidden items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-900/60">
                     <img id="logo-preview-img" src="" alt="" class="h-12 w-12 rounded-lg object-cover">
                     <p class="text-xs font-semibold text-gray-500">Current file</p>
@@ -109,7 +109,10 @@ form.addEventListener('submit', async function (event) {
     }
 
     try {
-        await window.axios.post('/api/admin/syndicates/' + syndicateId, formData, { silent: true });
+        await window.axios.post('/api/admin/syndicates/' + syndicateId, formData, {
+            silent: true,
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
         window.location.href = '/admin/syndicates/' + syndicateId;
     } catch (error) {
         const parsed = window.showApiError ? window.showApiError(error) : window.ApiErrors.parse(error);
