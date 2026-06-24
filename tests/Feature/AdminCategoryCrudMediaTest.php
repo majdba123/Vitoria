@@ -140,3 +140,34 @@ test('empty category type filter returns all categories for admin and public end
     expect($adminIds)->toContain($agricultureCategory->id, $veterinaryCategory->id)
         ->and($publicIds)->toContain($agricultureCategory->id, $veterinaryCategory->id);
 });
+
+test('admin can open and list veterinary categories without storefront type restrictions', function () {
+    actingAsAdminForCategoryCrud();
+
+    $agricultureCategory = Category::query()->create([
+        'name' => 'Admin Agriculture Category',
+        'type' => Category::TYPE_AGRICULTURE,
+        'commission' => 5,
+    ]);
+
+    $veterinaryCategory = Category::query()->create([
+        'name' => 'Admin Veterinary Category',
+        'type' => Category::TYPE_VETERINARY,
+        'commission' => 6,
+    ]);
+
+    $this->getJson('/api/admin/categories?per_page=100')
+        ->assertOk()
+        ->assertJsonPath('meta.total', 2);
+
+    $this->getJson('/api/admin/categories/'.$veterinaryCategory->id.'?type='.Category::TYPE_AGRICULTURE)
+        ->assertOk()
+        ->assertJsonPath('data.id', $veterinaryCategory->id);
+
+    $categoryIds = collect($this->getJson('/api/admin/categories?per_page=100')
+        ->assertOk()
+        ->json('data'))
+        ->pluck('id');
+
+    expect($categoryIds)->toContain($agricultureCategory->id, $veterinaryCategory->id);
+});

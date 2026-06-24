@@ -69,7 +69,9 @@ class CategoryController extends Controller
      */
     public function show(Request $request, Category $category): JsonResponse
     {
-        $this->selectedProductTypeService->abortIfTypeMismatch($request, $category->type);
+        if (! $this->isAdminRequest($request)) {
+            $this->selectedProductTypeService->abortIfTypeMismatch($request, $category->type);
+        }
 
         $cacheKey = "category:{$category->id}";
 
@@ -152,22 +154,30 @@ class CategoryController extends Controller
         ]);
     }
 
-    protected function preferredCategoryType(Request $request): ?string
-    {
-        return $this->selectedProductTypeService->resolve($request);
-    }
-
     protected function resolvedCategoryTypeFilter(Request $request): ?string
     {
-        if ($request->has('type')) {
-            $type = trim((string) $request->input('type'));
+        if (! $this->isAdminRequest($request)) {
+            if ($request->has('type')) {
+                $type = trim((string) $request->input('type'));
 
-            return in_array($type, [Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY], true)
-                ? $type
-                : null;
+                return in_array($type, [Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY], true)
+                    ? $type
+                    : null;
+            }
+
+            return $this->selectedProductTypeService->resolve($request);
         }
 
-        return $this->preferredCategoryType($request);
+        $type = trim((string) $request->input('type'));
+
+        return in_array($type, [Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY], true)
+            ? $type
+            : null;
+    }
+
+    protected function isAdminRequest(Request $request): bool
+    {
+        return $request->is('api/admin/*');
     }
 
     protected function deleteCategoryImages(Category $category): void
