@@ -36,8 +36,6 @@ test('existing admin add vendor flow still creates an active admin vendor', func
         'store_name' => 'Admin Store',
         'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
         'city_id' => $city->id,
-        'latitude' => 36.2021,
-        'longitude' => 37.1343,
         'category_ids' => [$category->id],
     ]);
 
@@ -110,8 +108,6 @@ test('admin vendor creation rejects categories outside business type', function 
         'store_name' => 'Mismatch Vendor Store',
         'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
         'city_id' => $city->id,
-        'latitude' => 35.1318,
-        'longitude' => 36.7578,
         'category_ids' => [$veterinaryCategory->id],
     ])
         ->assertUnprocessable()

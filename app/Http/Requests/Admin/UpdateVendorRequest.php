@@ -49,8 +49,6 @@ class UpdateVendorRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:1000'],
             'address' => ['nullable', 'string', 'max:255'],
             'city_id' => ['sometimes', 'integer', 'exists:cities,id'],
-            'latitude' => ['sometimes', 'numeric', 'between:-90,90'],
-            'longitude' => ['sometimes', 'numeric', 'between:-180,180'],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],
             'logo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],
             'is_active' => ['sometimes', 'boolean'],

@@ -130,6 +130,13 @@
                             </select>
                             <p class="form-error" id="business_type-error"></p>
                         </div>
+                        <div class="sm:col-span-2">
+                            <label for="city_id" class="form-label">City <span class="text-red-500">*</span></label>
+                            <select id="city_id" name="city_id" required class="form-select">
+                                <option value="">Select store city</option>
+                            </select>
+                            <p class="form-error" id="city_id-error"></p>
+                        </div>
                     </div>
                     <div class="mt-4">
                         <label for="description" class="form-label">Description</label>
@@ -176,6 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let avatarFile = null;
     let logoFile = null;
     let allCategories = [];
+    let allCities = [];
     let vendorCategoryIds = [];
 
     document.getElementById('business_type').addEventListener('change', renderCategories);
@@ -237,13 +245,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function loadVendor() {
         try {
-            const [vendorRes, catsRes] = await Promise.all([
+            const [vendorRes, catsRes, citiesRes] = await Promise.all([
                 window.axios.get('/api/admin/vendors/' + vendorId),
                 window.axios.get('/api/admin/categories'),
+                window.axios.get('/api/cities'),
             ]);
             const vendor = vendorRes.data.data;
             allCategories = catsRes.data.data || [];
+            allCities = citiesRes.data.data || [];
             vendorCategoryIds = vendor.category_ids || [];
+            populateCities(vendor.city_id);
 
             form.name.value = vendor.user?.name || '';
             form.phone_number.value = vendor.user?.phone_number || '';
@@ -273,6 +284,19 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (error) {
             document.getElementById('edit-loading').innerHTML = '<p class="text-sm text-red-600">Failed to load vendor details.</p>';
         }
+    }
+
+    function populateCities(selectedCityId) {
+        const citySelect = document.getElementById('city_id');
+        citySelect.innerHTML = '<option value="">Select store city</option>';
+
+        allCities.forEach(function (city) {
+            const option = document.createElement('option');
+            option.value = city.id;
+            option.textContent = city.name;
+            option.selected = Number(selectedCityId) === Number(city.id);
+            citySelect.appendChild(option);
+        });
     }
 
     function renderCategories() {
@@ -330,6 +354,7 @@ document.addEventListener('DOMContentLoaded', function () {
         formData.append('national_id', form.national_id.value.trim());
         formData.append('store_name', form.store_name.value.trim());
         formData.append('business_type', form.business_type.value);
+        formData.append('city_id', form.city_id.value);
         formData.append('is_active', isActive ? '1' : '0');
 
         if (form.email.value.trim()) formData.append('email', form.email.value.trim());

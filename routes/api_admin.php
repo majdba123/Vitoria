@@ -39,6 +39,7 @@ Route::patch('products/{product}/status', [ProductController::class, 'updateStat
 Route::patch('products/{product}/photos/{photo}/set-primary', [ProductController::class, 'setPrimaryPhoto'])->name('products.set-primary-photo');
 Route::apiResource('categories', \App\Http\Controllers\Api\Admin\CategoryController::class);
 Route::apiResource('subcategories', \App\Http\Controllers\Api\Admin\SubcategoryController::class);
+Route::apiResource('cities', \App\Http\Controllers\Api\Admin\CityController::class);
 Route::apiResource('coupons', \App\Http\Controllers\Api\Admin\CouponController::class);
 Route::get('orders', [\App\Http\Controllers\Api\Admin\OrderController::class, 'index'])->name('orders.index');
 Route::get('orders/{orderId}', [\App\Http\Controllers\Api\Admin\OrderController::class, 'show'])->name('orders.show');

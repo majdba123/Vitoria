@@ -302,4 +302,10 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(funct
     Route::get('/subcategories/create', [\App\Http\Controllers\Admin\SubcategoryController::class, 'create'])->name('subcategories.create');
     Route::get('/subcategories/{id}', [\App\Http\Controllers\Admin\SubcategoryController::class, 'show'])->name('subcategories.show');
     Route::get('/subcategories/{id}/edit', [\App\Http\Controllers\Admin\SubcategoryController::class, 'edit'])->name('subcategories.edit');
+
+    // City Management
+    Route::get('/cities', [\App\Http\Controllers\Admin\CityController::class, 'index'])->name('cities.index');
+    Route::get('/cities/create', [\App\Http\Controllers\Admin\CityController::class, 'create'])->name('cities.create');
+    Route::get('/cities/{id}', [\App\Http\Controllers\Admin\CityController::class, 'show'])->name('cities.show');
+    Route::get('/cities/{id}/edit', [\App\Http\Controllers\Admin\CityController::class, 'edit'])->name('cities.edit');
 });

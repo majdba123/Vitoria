@@ -64,20 +64,6 @@
                             </select>
                             <p class="form-error" id="city_id-error"></p>
                         </div>
-                        <div class="sm:col-span-2">
-                            <label class="form-label">Store location on map <span class="text-red-500">*</span></label>
-                            <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Search for a location or click on the map to set the store location (Syria).</p>
-                            <div class="mb-2 flex gap-2">
-                                <input type="text" id="vendor-location-search" placeholder="Search location in Syria..." class="form-input flex-1" autocomplete="off">
-                                <button type="button" id="vendor-location-search-btn" class="btn-primary btn-sm shrink-0">Search</button>
-                            </div>
-                            <p id="vendor-location-search-status" class="mb-2 hidden text-xs"></p>
-                            <div id="vendor-map" class="h-56 w-full rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800"></div>
-                            <input type="hidden" id="latitude" name="latitude" value="">
-                            <input type="hidden" id="longitude" name="longitude" value="">
-                            <p class="form-error" id="latitude-error"></p>
-                            <p class="form-error" id="longitude-error"></p>
-                        </div>
                     </div>
                     <div class="mt-4">
                         <label for="description" class="form-label">{{ __('admin.vendors_description') }}</label>
@@ -111,25 +97,13 @@
 </div>
 @endsection
 
-@push('styles')
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-@endpush
-
 @push('scripts')
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('create-vendor-form');
     let allCategories = [];
-    const SYRIA_CENTER = [35.0, 38.5];
-    const DEFAULT_ZOOM = 6;
 
     loadCities();
-    try {
-        initVendorMap();
-    } catch (e) {
-        console.warn('Map init failed:', e);
-    }
 
     async function loadCities() {
         try {
@@ -145,76 +119,6 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (e) {
             document.getElementById('city_id-error').textContent = 'Could not load cities.';
             document.getElementById('city_id-error').classList.remove('hidden');
-        }
-    }
-
-    function initVendorMap() {
-        if (!document.getElementById('vendor-map') || typeof L === 'undefined') return;
-        const map = L.map('vendor-map').setView(SYRIA_CENTER, DEFAULT_ZOOM);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
-        const marker = L.marker(SYRIA_CENTER, { draggable: true }).addTo(map);
-        document.getElementById('latitude').value = SYRIA_CENTER[0];
-        document.getElementById('longitude').value = SYRIA_CENTER[1];
-        function updateFromLatLng(lat, lng) {
-            marker.setLatLng([lat, lng]);
-            document.getElementById('latitude').value = lat;
-            document.getElementById('longitude').value = lng;
-        }
-        map.on('click', function (e) {
-            updateFromLatLng(e.latlng.lat, e.latlng.lng);
-        });
-        marker.on('dragend', function () {
-            const latlng = marker.getLatLng();
-            document.getElementById('latitude').value = latlng.lat;
-            document.getElementById('longitude').value = latlng.lng;
-        });
-
-        var lastSearchAt = 0;
-        var searchBtn = document.getElementById('vendor-location-search-btn');
-        var searchInput = document.getElementById('vendor-location-search');
-        if (searchBtn && searchInput) {
-            searchBtn.addEventListener('click', doVendorSearch);
-            searchInput.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') { e.preventDefault(); doVendorSearch(); }
-            });
-        }
-        function doVendorSearch() {
-            var searchInput = document.getElementById('vendor-location-search');
-            var statusEl = document.getElementById('vendor-location-search-status');
-            if (!searchInput || !statusEl) return;
-            var q = searchInput.value.trim();
-            if (!q) return;
-            statusEl.textContent = 'Searching...';
-            statusEl.classList.remove('hidden', 'text-red-500', 'text-emerald-600');
-            statusEl.classList.add('text-gray-500');
-            var now = Date.now();
-            var wait = Math.max(0, 1000 - (now - lastSearchAt));
-            setTimeout(function () {
-                lastSearchAt = Date.now();
-                fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(q) + '&format=json&limit=1&countrycodes=sy', {
-                    headers: { 'Accept': 'application/json', 'User-Agent': 'Vetora/1.0' }
-                }).then(function (r) { return r.json(); }).then(function (results) {
-                    if (results && results[0]) {
-                        var lat = parseFloat(results[0].lat);
-                        var lon = parseFloat(results[0].lon);
-                        map.setView([lat, lon], 17);
-                        updateFromLatLng(lat, lon);
-                        statusEl.textContent = 'Found: ' + (results[0].display_name || '');
-                        statusEl.classList.remove('text-red-500', 'text-gray-500');
-                        statusEl.classList.add('text-emerald-600');
-                    } else {
-                        statusEl.textContent = 'No results found in Syria. Try another search or click on the map.';
-                        statusEl.classList.remove('text-emerald-600', 'text-gray-500');
-                        statusEl.classList.add('text-red-500');
-                    }
-                }).catch(function () {
-                    statusEl.textContent = 'Search failed. Try again or set location on the map.';
-                    statusEl.classList.remove('text-emerald-600', 'text-gray-500');
-                    statusEl.classList.add('text-red-500');
-                });
-            }, wait);
         }
     }
 
@@ -289,8 +193,6 @@ document.addEventListener('DOMContentLoaded', function () {
             store_name: form.store_name.value.trim(),
             business_type: form.business_type.value,
             city_id: parseInt(form.city_id.value, 10) || null,
-            latitude: parseFloat(form.latitude.value) || null,
-            longitude: parseFloat(form.longitude.value) || null,
             category_ids: selectedCategories,
         };
         if (form.email.value.trim()) payload.email = form.email.value.trim();

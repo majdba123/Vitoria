@@ -42,8 +42,6 @@ class StoreVendorRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:1000'],
             'address' => ['nullable', 'string', 'max:255'],
             'city_id' => ['required', 'integer', 'exists:cities,id'],
-            'latitude' => ['required', 'numeric', 'between:-90,90'],
-            'longitude' => ['required', 'numeric', 'between:-180,180'],
             'logo' => ['nullable', 'string', 'max:255'],
 
             // Allowed categories
