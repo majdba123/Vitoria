@@ -22,10 +22,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const syndicateId = @json($syndicateId);
     const detailsCard = document.getElementById('details-card');
     const editLink = document.getElementById('edit-link');
+    let hasLoaded = false;
 
-    loadSyndicateDetails();
+    document.addEventListener('admin-ready', loadSyndicateDetails, { once: true });
+
+    if (!document.getElementById('admin-app')?.classList.contains('hidden')) {
+        loadSyndicateDetails();
+    }
 
     async function loadSyndicateDetails() {
+        if (hasLoaded) {
+            return;
+        }
+
+        hasLoaded = true;
+
         try {
             const response = await window.axios.get('/api/admin/syndicates/' + syndicateId, { silent: true });
             const syndicate = response.data.data;
