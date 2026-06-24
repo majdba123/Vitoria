@@ -34,7 +34,7 @@ class StoreSyndicateRequest extends FormRequest
             'password' => ['required', 'string', 'min:6', 'confirmed'],
             'type' => ['required', Rule::in([Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY])],
             'status' => ['required', Rule::in([Syndicate::STATUS_ACTIVE, Syndicate::STATUS_INACTIVE])],
-            'logo' => ['sometimes', 'nullable', 'image', 'max:4096'],
+            'logo' => ['sometimes', 'nullable', 'file', 'max:10240'],
         ];
     }
 
@@ -44,8 +44,8 @@ class StoreSyndicateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'logo.image' => 'The logo must be a valid image.',
-            'logo.max' => 'The logo may not be greater than 4 MB.',
+            'logo.file' => 'The uploaded file is invalid.',
+            'logo.max' => 'The uploaded file may not be greater than 10 MB.',
         ];
     }
 }

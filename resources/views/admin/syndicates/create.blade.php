@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'إضافة وكيل نقابة - Vetora')
-@section('page-title', 'إضافة وكيل نقابة')
+@section('title', 'Create Syndicate - Vetora')
+@section('page-title', 'Create Syndicate')
 
 @section('content')
 <div class="mx-auto max-w-3xl">
@@ -9,56 +9,56 @@
     <form id="syndicate-form" enctype="multipart/form-data" class="card card-body space-y-5">
         <div class="grid gap-4 sm:grid-cols-2">
             <div>
-                <label class="form-label">الاسم</label>
+                <label class="form-label">Name</label>
                 <input name="name" class="form-input" required>
                 <p id="name-error" class="form-error"></p>
             </div>
             <div>
-                <label class="form-label">البريد الإلكتروني</label>
+                <label class="form-label">Email</label>
                 <input name="email" type="email" class="form-input" required>
                 <p id="email-error" class="form-error"></p>
             </div>
             <div>
-                <label class="form-label">الهاتف</label>
+                <label class="form-label">Phone</label>
                 <input name="phone" class="form-input" required>
                 <p id="phone-error" class="form-error"></p>
             </div>
             <div>
-                <label class="form-label">النوع</label>
+                <label class="form-label">Type</label>
                 <select name="type" class="form-input" required>
-                    <option value="agriculture">زراعي</option>
-                    <option value="veterinary">بيطري</option>
+                    <option value="agriculture">Agriculture</option>
+                    <option value="veterinary">Veterinary</option>
                 </select>
                 <p id="type-error" class="form-error"></p>
             </div>
             <div>
-                <label class="form-label">كلمة المرور</label>
+                <label class="form-label">Password</label>
                 <input name="password" type="password" class="form-input" required autocomplete="new-password">
                 <p id="password-error" class="form-error"></p>
             </div>
             <div>
-                <label class="form-label">تأكيد كلمة المرور</label>
+                <label class="form-label">Confirm Password</label>
                 <input name="password_confirmation" type="password" class="form-input" required autocomplete="new-password">
                 <p id="password_confirmation-error" class="form-error"></p>
             </div>
             <div>
-                <label class="form-label">الحالة</label>
+                <label class="form-label">Status</label>
                 <select name="status" class="form-input" required>
-                    <option value="active">نشط</option>
-                    <option value="inactive">غير نشط</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
                 </select>
                 <p id="status-error" class="form-error"></p>
             </div>
             <div>
-                <label class="form-label">الشعار <span class="text-xs font-normal text-gray-400">(اختياري)</span></label>
-                <input name="logo" type="file" accept="image/*" class="form-input">
-                <p class="mt-1 text-xs text-gray-500">JPG أو PNG أو WebP بحد أقصى 2MB.</p>
+                <label class="form-label">Image <span class="text-xs font-normal text-gray-400">(optional)</span></label>
+                <input name="logo" type="file" class="form-input">
+                <p class="mt-1 text-xs text-gray-500">Any uploaded file is accepted up to 10MB.</p>
                 <p id="logo-error" class="form-error"></p>
             </div>
         </div>
         <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-            <a href="{{ route('admin.syndicates.index') }}" class="btn-secondary">إلغاء</a>
-            <button id="submit-btn" class="btn-primary">إنشاء وكيل النقابة</button>
+            <a href="{{ route('admin.syndicates.index') }}" class="btn-secondary">Cancel</a>
+            <button id="submit-btn" class="btn-primary">Create Syndicate</button>
         </div>
     </form>
 </div>
@@ -72,18 +72,18 @@ document.getElementById('syndicate-form').addEventListener('submit', async funct
     const button = document.getElementById('submit-btn');
     clearErrors();
     button.disabled = true;
-    button.textContent = 'جاري الحفظ...';
+    button.textContent = 'Saving...';
 
     try {
-        const res = await window.axios.post('/api/admin/syndicates', syndicateFormData(form), { silent: true });
-        window.location.href = '/admin/syndicates/' + res.data.data.id;
+        const response = await window.axios.post('/api/admin/syndicates', syndicateFormData(form), { silent: true });
+        window.location.href = '/admin/syndicates/' + response.data.data.id;
     } catch (error) {
         const parsed = window.showApiError ? window.showApiError(error) : window.ApiErrors.parse(error);
         window.ApiErrors.showFieldErrors(parsed.fieldErrors);
         showAlert(parsed.generalMessage, 'error');
     } finally {
         button.disabled = false;
-        button.textContent = 'إنشاء وكيل النقابة';
+        button.textContent = 'Create Syndicate';
     }
 });
 
@@ -98,7 +98,10 @@ function syndicateFormData(form) {
 }
 
 function clearErrors() {
-    document.querySelectorAll('.form-error').forEach(el => { el.textContent = ''; el.classList.add('hidden'); });
+    document.querySelectorAll('.form-error').forEach(function (element) {
+        element.textContent = '';
+        element.classList.add('hidden');
+    });
     document.getElementById('form-alert').classList.add('hidden');
 }
 
