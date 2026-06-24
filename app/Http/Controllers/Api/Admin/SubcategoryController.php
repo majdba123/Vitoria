@@ -55,6 +55,7 @@ class SubcategoryController extends Controller
     public function store(StoreSubcategoryRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $data['icon_class'] = null;
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('subcategories', 'public');
@@ -76,15 +77,15 @@ class SubcategoryController extends Controller
     public function update(UpdateSubcategoryRequest $request, Subcategory $subcategory): JsonResponse
     {
         $data = $request->validated();
+        $data['icon_class'] = null;
 
         if ($request->hasFile('image')) {
-            // Delete old image if exists
+            $newImagePath = $request->file('image')->store('subcategories', 'public');
             if ($subcategory->image) {
                 Storage::disk('public')->delete($subcategory->image);
             }
-            $data['image'] = $request->file('image')->store('subcategories', 'public');
+            $data['image'] = $newImagePath;
         } else {
-            // Remove image from data if not being updated
             unset($data['image']);
         }
 
@@ -103,7 +104,6 @@ class SubcategoryController extends Controller
      */
     public function destroy(Subcategory $subcategory): JsonResponse
     {
-        // Delete image if exists
         if ($subcategory->image) {
             Storage::disk('public')->delete($subcategory->image);
         }
@@ -123,7 +123,6 @@ class SubcategoryController extends Controller
         try {
             Cache::tags(['categories'])->flush();
         } catch (\Exception $e) {
-            // Silently fail if cache driver doesn't support tags
         }
     }
 }

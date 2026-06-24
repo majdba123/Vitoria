@@ -53,21 +53,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
     function categoryThumbInner(cat) {
-        if (cat.icon_class) {
-            return `<i class="${esc(cat.icon_class)} text-3xl leading-none text-brand-500 dark:text-brand-400" aria-hidden="true"></i>`;
-        }
-        const thumb = cat.icon || cat.logo;
-        if (thumb) {
-            return `<img src="${esc('/storage/' + thumb)}" class="h-full w-full rounded-2xl object-cover" alt="">`;
+        if (cat.image_url) {
+            return `<img src="${esc(cat.image_url)}" class="h-full w-full rounded-2xl object-cover" alt="">`;
         }
         return `<svg class="h-8 w-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581"/></svg>`;
     }
     function subListLeading(s) {
-        if (s.icon_class) {
-            return `<i class="${esc(s.icon_class)} text-sm leading-none text-brand-600 dark:text-brand-400" aria-hidden="true"></i>`;
-        }
-        if (s.image) {
-            return `<img src="/storage/${esc(s.image)}" class="h-4 w-4 rounded object-cover" alt="">`;
+        if (s.image_url) {
+            return `<img src="${esc(s.image_url)}" class="h-4 w-4 rounded object-cover" alt="">`;
         }
         return '';
     }

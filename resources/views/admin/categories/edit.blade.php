@@ -36,23 +36,10 @@
                         </div>
 
                         <div>
-                            <label for="logo" class="form-label">Logo (banner)</label>
+                            <label for="logo" class="form-label">Category Image</label>
                             <div id="current-logo" class="mb-2"></div>
                             <input type="file" id="logo" name="logo" accept="image/*" class="form-input">
-                            <p class="mt-1 text-xs text-gray-500">Accepted formats: JPEG, PNG, GIF, WebP. Max size: 2MB</p>
-                        </div>
-
-                        <div>
-                            <label for="icon" class="form-label">Icon (thumbnail)</label>
-                            <div id="current-icon" class="mb-2"></div>
-                            <input type="file" id="icon" name="icon" accept="image/*" class="form-input">
-                            <p class="mt-1 text-xs text-gray-500">Smaller image for menus and lists. Same formats, max 2MB.</p>
-                        </div>
-
-                        <div>
-                            <label for="icon_class" class="form-label">Font Awesome icon classes</label>
-                            <input type="text" id="icon_class" name="icon_class" class="form-input" placeholder="e.g. fa-solid fa-seedling" maxlength="191">
-                            <p class="mt-1 text-xs text-gray-500">Optional. When set, storefront menus prefer this over image thumbnails.</p>
+                            <p class="mt-1 text-xs text-gray-500">Upload one image that will be used everywhere for this category. Max size: 4MB.</p>
                         </div>
 
                         <div class="flex gap-2 pt-4">
@@ -78,8 +65,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const loading = document.getElementById('category-loading');
     const alert = document.getElementById('category-alert');
     const currentLogo = document.getElementById('current-logo');
-    const currentIcon = document.getElementById('current-icon');
-
     loadCategory();
 
     async function loadCategory() {
@@ -90,19 +75,9 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('name').value = category.name || '';
             document.getElementById('type').value = category.type || '';
             document.getElementById('commission').value = category.commission ?? 0;
-            document.getElementById('icon_class').value = category.icon_class || '';
-            if (category.logo) {
-                currentLogo.innerHTML = `<img src="/storage/${category.logo}" alt="${category.name}" class="h-20 w-20 rounded-lg object-cover">`;
-            }
-            currentIcon.innerHTML = '';
-            if (category.icon) {
-                currentIcon.innerHTML = `<img src="/storage/${category.icon}" alt="" class="h-16 w-16 rounded-lg object-cover ring-1 ring-gray-200">`;
-            }
-            if (category.icon_class) {
-                const wrap = document.createElement('div');
-                wrap.className = 'mt-2 flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 ring-1 ring-gray-100';
-                wrap.innerHTML = '<span class="text-xs font-medium text-gray-500">Preview</span><i class="' + category.icon_class + '" aria-hidden="true"></i>';
-                currentIcon.appendChild(wrap);
+            currentLogo.innerHTML = '';
+            if (category.image_url) {
+                currentLogo.innerHTML = `<img src="${category.image_url}" alt="${category.name}" class="h-24 w-24 rounded-lg object-cover">`;
             }
 
             loading.classList.add('hidden');

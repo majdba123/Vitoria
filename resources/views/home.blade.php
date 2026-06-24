@@ -148,30 +148,20 @@ document.addEventListener('DOMContentLoaded', async function () {
         return parsed.pathname + parsed.search;
     }
     function categoryThumbInner(cat) {
-        if (cat.icon_class) {
-            return `<i class="${esc(cat.icon_class)} text-2xl sm:text-3xl leading-none text-brand-500 dark:text-brand-400" aria-hidden="true"></i>`;
-        }
-        const thumb = cat.icon || cat.logo;
-        if (thumb) {
-            return `<img src="${esc('/storage/' + thumb)}" alt="" class="h-full w-full rounded-2xl object-cover">`;
+        if (cat.image_url) {
+            return `<img src="${esc(cat.image_url)}" alt="" class="h-full w-full rounded-2xl object-cover">`;
         }
         return `<svg class="h-8 w-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/></svg>`;
     }
     function subChipLeading(s) {
-        if (s.icon_class) {
-            return `<i class="${esc(s.icon_class)} text-[13px] leading-none text-brand-600 dark:text-brand-400" aria-hidden="true"></i>`;
-        }
-        if (s.image) {
-            return `<img src="/storage/${esc(s.image)}" class="h-3.5 w-3.5 rounded object-cover" alt="">`;
+        if (s.image_url) {
+            return `<img src="${esc(s.image_url)}" class="h-3.5 w-3.5 rounded object-cover" alt="">`;
         }
         return '';
     }
     function subCarouselThumbInner(s) {
-        if (s.icon_class) {
-            return `<i class="${esc(s.icon_class)} text-xl leading-none text-brand-500 dark:text-gray-400" aria-hidden="true"></i>`;
-        }
-        if (s.image) {
-            return `<img src="/storage/${esc(s.image)}" class="h-full w-full object-cover" alt="">`;
+        if (s.image_url) {
+            return `<img src="${esc(s.image_url)}" class="h-full w-full object-cover" alt="">`;
         }
         return `<svg class="h-6 w-6 text-gray-300 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg>`;
     }

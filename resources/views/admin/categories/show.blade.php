@@ -66,7 +66,7 @@
                         <h3 class="text-lg font-semibold text-gray-900">Subcategories</h3>
                         <p id="subcategories-count" class="mt-1 text-sm text-gray-500">0 subcategories</p>
                     </div>
-                    <a href="{{ route('admin.subcategories.create') }}" class="btn-primary btn-sm">
+                    <a href="{{ route('admin.subcategories.create', ['category_id' => $categoryId]) }}" class="btn-primary btn-sm">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                         </svg>
@@ -122,18 +122,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Display logo + icon
             const logoContainer = document.getElementById('category-logo');
-            const assetParts = [];
-            if (category.icon_class) {
-                assetParts.push(`<div class="text-center"><p class="mb-1 text-xs font-medium text-gray-500">Icon (Font Awesome)</p><div class="mx-auto flex h-28 w-28 items-center justify-center rounded-lg bg-gray-50 ring-1 ring-gray-200"><i class="${esc(category.icon_class)} text-4xl text-brand-600" aria-hidden="true"></i></div><p class="mt-1 max-w-[12rem] break-all text-[10px] text-gray-400">${esc(category.icon_class)}</p></div>`);
-            }
-            if (category.logo) {
-                assetParts.push(`<div class="text-center"><p class="mb-1 text-xs font-medium text-gray-500">Logo</p><img src="/storage/${esc(category.logo)}" alt="${esc(category.name)}" class="mx-auto h-28 w-28 rounded-lg object-cover"></div>`);
-            }
-            if (category.icon) {
-                assetParts.push(`<div class="text-center"><p class="mb-1 text-xs font-medium text-gray-500">Icon</p><img src="/storage/${esc(category.icon)}" alt="" class="mx-auto h-20 w-20 rounded-lg object-cover ring-1 ring-gray-200"></div>`);
-            }
-            if (assetParts.length) {
-                logoContainer.innerHTML = `<div class="flex flex-wrap items-end justify-center gap-8">${assetParts.join('')}</div>`;
+            if (category.image_url) {
+                logoContainer.innerHTML = `<img src="${esc(category.image_url)}" alt="${esc(category.name)}" class="mx-auto h-32 w-32 rounded-lg object-cover">`;
             }
 
             // Load subcategories
@@ -175,10 +165,8 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="card">
                 <div class="card-body">
                     <div class="flex items-start gap-4">
-                        ${sub.icon_class ? `
-                            <div class="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg bg-gray-50 ring-1 ring-gray-200"><i class="${esc(sub.icon_class)} text-2xl text-brand-600" aria-hidden="true"></i></div>
-                        ` : sub.image ? `
-                            <img src="/storage/${sub.image}" alt="${esc(sub.name)}" class="h-16 w-16 rounded-lg object-cover flex-shrink-0">
+                        ${sub.image_url ? `
+                            <img src="${esc(sub.image_url)}" alt="${esc(sub.name)}" class="h-16 w-16 rounded-lg object-cover flex-shrink-0">
                         ` : `
                             <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-100 flex-shrink-0">
                                 <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,4 +196,3 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
-

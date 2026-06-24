@@ -38,14 +38,14 @@ class CategoryController extends Controller
         if ($cacheKey) {
             $categories = $this->cacheService->remember($cacheKey, 1800, function () use ($type, $perPage) {
                 return Category::query()
-                    ->with('subcategories:id,name,image,category_id,icon_class')
+                    ->with('subcategories:id,name,image,category_id')
                     ->when($type, fn ($query) => $query->where('type', $type))
                     ->latest()
                     ->paginate($perPage);
             }, ['categories']);
         } else {
             $categories = Category::query()
-                ->with('subcategories:id,name,image,category_id,icon_class')
+                ->with('subcategories:id,name,image,category_id')
                 ->when($type, fn ($query) => $query->where('type', $type))
                 ->when($search, fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
                 ->latest()
@@ -75,12 +75,12 @@ class CategoryController extends Controller
 
         try {
             $data = $this->cacheService->remember($cacheKey, 1800, function () use ($category) {
-                $category->load('subcategories:id,name,image,category_id,icon_class');
+                $category->load('subcategories:id,name,image,category_id');
 
                 return $category;
             }, ['categories']);
         } catch (\Exception $e) {
-            $category->load('subcategories:id,name,image,category_id,icon_class');
+            $category->load('subcategories:id,name,image,category_id');
             $data = $category;
         }
 
@@ -96,11 +96,10 @@ class CategoryController extends Controller
 
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('categories', 'public');
+            $data['icon'] = $data['logo'];
         }
 
-        if ($request->hasFile('icon')) {
-            $data['icon'] = $request->file('icon')->store('categories', 'public');
-        }
+        $data['icon_class'] = null;
 
         $category = DB::transaction(fn () => Category::create($data));
         $category->load('subcategories');
@@ -116,22 +115,16 @@ class CategoryController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('logo')) {
-            if ($category->logo) {
-                Storage::disk('public')->delete($category->logo);
-            }
-            $data['logo'] = $request->file('logo')->store('categories', 'public');
+            $newImagePath = $request->file('logo')->store('categories', 'public');
+            $this->deleteCategoryImages($category);
+            $data['logo'] = $newImagePath;
+            $data['icon'] = $data['logo'];
         } else {
             unset($data['logo']);
-        }
-
-        if ($request->hasFile('icon')) {
-            if ($category->icon) {
-                Storage::disk('public')->delete($category->icon);
-            }
-            $data['icon'] = $request->file('icon')->store('categories', 'public');
-        } else {
             unset($data['icon']);
         }
+
+        $data['icon_class'] = null;
 
         DB::transaction(function () use ($category, $data): void {
             $category->fill($data);
@@ -150,13 +143,7 @@ class CategoryController extends Controller
 
     public function destroy(Category $category): JsonResponse
     {
-        if ($category->logo) {
-            Storage::disk('public')->delete($category->logo);
-        }
-
-        if ($category->icon) {
-            Storage::disk('public')->delete($category->icon);
-        }
+        $this->deleteCategoryImages($category);
 
         DB::transaction(fn () => $category->delete());
 
@@ -168,5 +155,13 @@ class CategoryController extends Controller
     protected function preferredCategoryType(Request $request): ?string
     {
         return $this->selectedProductTypeService->resolve($request);
+    }
+
+    protected function deleteCategoryImages(Category $category): void
+    {
+        collect([$category->logo, $category->icon])
+            ->filter()
+            ->unique()
+            ->each(fn (string $path) => Storage::disk('public')->delete($path));
     }
 }

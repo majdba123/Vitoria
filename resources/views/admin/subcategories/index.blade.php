@@ -152,11 +152,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function subListThumb(sub) {
-        if (sub.icon_class) {
-            return `<div class="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-50 ring-1 ring-gray-200"><i class="${esc(sub.icon_class)} text-2xl text-brand-600" aria-hidden="true"></i></div>`;
-        }
-        if (sub.image) {
-            return `<img src="/storage/${sub.image}" alt="${esc(sub.name)}" class="h-16 w-16 rounded-lg object-cover">`;
+        if (sub.image_url) {
+            return `<img src="${esc(sub.image_url)}" alt="${esc(sub.name)}" class="h-16 w-16 rounded-lg object-cover">`;
         }
         return `
                             <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-100">
@@ -227,4 +224,3 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
-

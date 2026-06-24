@@ -24,8 +24,18 @@ class StoreSubcategoryRequest extends FormRequest
         return [
             'category_id' => ['required', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:255'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],
-            'icon_class' => ['nullable', 'string', 'max:191', 'regex:/^fa[a-z0-9\-_\s]+$/i'],
+            'image' => ['nullable', 'image', 'max:4096'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'category_id.required' => 'Please select a category.',
+            'category_id.exists' => 'The selected category is invalid.',
+            'name.required' => 'Subcategory name is required.',
+            'image.image' => 'The subcategory image must be a valid image file.',
+            'image.max' => 'The subcategory image may not be greater than 4 MB.',
         ];
     }
 }

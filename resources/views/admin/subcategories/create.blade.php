@@ -22,15 +22,9 @@
                     </div>
 
                     <div>
-                        <label for="image" class="form-label">Image</label>
+                        <label for="image" class="form-label">Subcategory Image</label>
                         <input type="file" id="image" name="image" accept="image/*" class="form-input">
-                        <p class="mt-1 text-xs text-gray-500">Accepted formats: JPEG, PNG, GIF, WebP. Max size: 2MB</p>
-                    </div>
-
-                    <div>
-                        <label for="icon_class" class="form-label">Font Awesome icon classes</label>
-                        <input type="text" id="icon_class" name="icon_class" class="form-input" placeholder="e.g. fa-solid fa-leaf" maxlength="191">
-                        <p class="mt-1 text-xs text-gray-500">Optional. Menus use this when set instead of the uploaded image.</p>
+                        <p class="mt-1 text-xs text-gray-500">Upload one image that will be used everywhere for this subcategory. Max size: 4MB.</p>
                     </div>
 
                     <div class="flex gap-2 pt-4">
@@ -52,15 +46,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('subcategory-form');
     const alert = document.getElementById('subcategory-alert');
     const categorySelect = document.getElementById('category_id');
+    const initialCategoryId = new URLSearchParams(window.location.search).get('category_id') || '';
 
     loadCategories();
 
     async function loadCategories() {
         try {
-            const res = await window.axios.get('/api/admin/categories');
+            const res = await window.axios.get('/api/admin/categories?per_page=100');
             const categories = res.data.data || [];
             categorySelect.innerHTML = '<option value="">Select a category</option>' +
                 categories.map(cat => `<option value="${cat.id}">${esc(cat.name)}</option>`).join('');
+            if (initialCategoryId) {
+                categorySelect.value = initialCategoryId;
+            }
         } catch (e) {
             console.error('Failed to load categories:', e);
         }
@@ -89,4 +87,3 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
-

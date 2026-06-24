@@ -30,21 +30,9 @@
                     </div>
 
                     <div>
-                        <label for="logo" class="form-label">Logo (banner)</label>
+                        <label for="logo" class="form-label">Category Image</label>
                         <input type="file" id="logo" name="logo" accept="image/*" class="form-input">
-                        <p class="mt-1 text-xs text-gray-500">Accepted formats: JPEG, PNG, GIF, WebP. Max size: 2MB</p>
-                    </div>
-
-                    <div>
-                        <label for="icon" class="form-label">Icon (thumbnail)</label>
-                        <input type="file" id="icon" name="icon" accept="image/*" class="form-input">
-                        <p class="mt-1 text-xs text-gray-500">Smaller image for menus and lists. Same formats, max 2MB.</p>
-                    </div>
-
-                    <div>
-                        <label for="icon_class" class="form-label">Font Awesome icon classes</label>
-                        <input type="text" id="icon_class" name="icon_class" class="form-input" placeholder="e.g. fa-solid fa-seedling" maxlength="191">
-                        <p class="mt-1 text-xs text-gray-500">Optional. When set, menus use this instead of uploaded images. Use Font Awesome 6 class names (see <a href="https://fontawesome.com/search?o=r&m=free" class="text-brand-600 hover:underline" target="_blank" rel="noopener">icons</a>).</p>
+                        <p class="mt-1 text-xs text-gray-500">Upload one image that will be used everywhere for this category. Max size: 4MB.</p>
                     </div>
 
                     <div class="flex gap-2 pt-4">

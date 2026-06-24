@@ -201,13 +201,9 @@
 <script>
 function _esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
 function categoryThumbHtml(c, mobile) {
-    if (c.icon_class) {
-        const sz = mobile ? 'text-sm' : 'text-[15px]';
-        return '<i class="' + _esc(c.icon_class) + ' ' + sz + ' leading-none text-brand-600 dark:text-brand-400" aria-hidden="true"></i>';
-    }
-    if (c.icon || c.logo) {
+    if (c.image_url) {
         const imgCls = mobile ? 'h-full w-full rounded-lg object-cover' : 'h-full w-full object-cover';
-        return '<img src="/storage/' + _esc(c.icon || c.logo) + '" class="' + imgCls + '" alt="">';
+        return '<img src="' + _esc(c.image_url) + '" class="' + imgCls + '" alt="">';
     }
     if (mobile) {
         return '<svg class="h-3.5 w-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581"/></svg>';
@@ -215,11 +211,8 @@ function categoryThumbHtml(c, mobile) {
     return '<svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/></svg>';
 }
 function subThumbHtml(s) {
-    if (s.icon_class) {
-        return '<i class="' + _esc(s.icon_class) + ' text-lg leading-none text-brand-600 dark:text-brand-400" aria-hidden="true"></i>';
-    }
-    if (s.image) {
-        return '<img src="/storage/' + _esc(s.image) + '" class="h-full w-full object-cover" alt="">';
+    if (s.image_url) {
+        return '<img src="' + _esc(s.image_url) + '" class="h-full w-full object-cover" alt="">';
     }
     return '<svg class="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a2.25 2.25 0 002.25-2.25V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"/></svg>';
 }

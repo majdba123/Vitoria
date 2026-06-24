@@ -15,6 +15,13 @@ class Subcategory extends Model
     /**
      * @var list<string>
      */
+    protected $appends = [
+        'image_url',
+    ];
+
+    /**
+     * @var list<string>
+     */
     protected $fillable = [
         'category_id',
         'name',
@@ -45,5 +52,10 @@ class Subcategory extends Model
         }
 
         return $query->whereHas('category', fn (Builder $categoryQuery) => $categoryQuery->where('type', $type));
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image ? asset('storage/'.$this->image) : null;
     }
 }

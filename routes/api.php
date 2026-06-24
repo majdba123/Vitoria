@@ -58,7 +58,7 @@ Route::middleware(['web', 'cache.response:120'])->group(function () {
             $subs = \Illuminate\Support\Facades\Cache::tags(['categories'])->remember(
                 "cat:{$category->id}:subs:".($selectedProductTypeService->resolve($request) ?? 'all'),
                 1800,
-                fn () => $category->subcategories()->select('id', 'name', 'image', 'category_id', 'icon_class')->get()
+                fn () => $category->subcategories()->select('id', 'name', 'image', 'category_id')->get()
             );
 
             return response()->json(['data' => $subs]);

@@ -119,7 +119,7 @@ class ProductService
             ->with([
                 'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(1),
                 'subcategory:id,name,category_id',
-                'subcategory.category:id,name,type,logo,icon,icon_class',
+                'subcategory.category:id,name,type,logo,icon',
                 'vendor:id,store_name,user_id,logo,is_active,status',
             ]);
 

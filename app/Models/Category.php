@@ -19,6 +19,14 @@ class Category extends Model
     /**
      * @var list<string>
      */
+    protected $appends = [
+        'image_path',
+        'image_url',
+    ];
+
+    /**
+     * @var list<string>
+     */
     protected $fillable = [
         'name',
         'type',
@@ -92,5 +100,17 @@ class Category extends Model
     public function isVeterinary(): bool
     {
         return $this->type === self::TYPE_VETERINARY;
+    }
+
+    public function getImagePathAttribute(): ?string
+    {
+        return $this->logo ?: $this->icon;
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        $imagePath = $this->image_path;
+
+        return $imagePath ? asset('storage/'.$imagePath) : null;
     }
 }

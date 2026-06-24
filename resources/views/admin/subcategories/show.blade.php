@@ -117,10 +117,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Display image / Font Awesome icon
             const imageContainer = document.getElementById('subcategory-image');
-            if (subcategory.icon_class) {
-                imageContainer.innerHTML = `<div class="flex h-32 w-32 items-center justify-center rounded-lg bg-gray-50 ring-1 ring-gray-200"><i class="${esc(subcategory.icon_class)} text-5xl text-brand-600" aria-hidden="true"></i></div><p class="mt-2 max-w-xs break-all text-center text-[10px] text-gray-400">${esc(subcategory.icon_class)}</p>`;
-            } else if (subcategory.image) {
-                imageContainer.innerHTML = `<img src="/storage/${subcategory.image}" alt="${esc(subcategory.name)}" class="h-32 w-32 rounded-lg object-cover">`;
+            if (subcategory.image_url) {
+                imageContainer.innerHTML = `<img src="${esc(subcategory.image_url)}" alt="${esc(subcategory.name)}" class="h-32 w-32 rounded-lg object-cover">`;
             }
 
             // Load products
@@ -237,4 +235,3 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
-

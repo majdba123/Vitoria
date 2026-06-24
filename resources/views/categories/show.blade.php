@@ -53,21 +53,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     const withSelectedType = (url) => selectedType ? `${url}${url.includes('?') ? '&' : '?'}type=${encodeURIComponent(selectedType)}` : url;
     function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
     function categoryHeroInner(cat) {
-        if (cat.icon_class) {
-            return `<i class="${esc(cat.icon_class)} text-3xl leading-none text-brand-500 dark:text-brand-400" aria-hidden="true"></i>`;
-        }
-        const catHero = cat.logo || cat.icon;
-        if (catHero) {
-            return `<img src="/storage/${esc(catHero)}" class="h-full w-full rounded-2xl object-cover" alt="">`;
+        if (cat.image_url) {
+            return `<img src="${esc(cat.image_url)}" class="h-full w-full rounded-2xl object-cover" alt="">`;
         }
         return `<svg class="h-7 w-7 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581"/></svg>`;
     }
     function subGridThumbInner(s) {
-        if (s.icon_class) {
-            return `<i class="${esc(s.icon_class)} text-xl leading-none text-brand-500 dark:text-gray-400" aria-hidden="true"></i>`;
-        }
-        if (s.image) {
-            return `<img src="/storage/${esc(s.image)}" class="h-full w-full object-cover" alt="">`;
+        if (s.image_url) {
+            return `<img src="${esc(s.image_url)}" class="h-full w-full object-cover" alt="">`;
         }
         return `<svg class="h-6 w-6 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg>`;
     }

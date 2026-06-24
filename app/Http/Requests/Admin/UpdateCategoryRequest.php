@@ -26,10 +26,22 @@ class UpdateCategoryRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', Rule::in([Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY])],
-            'logo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],
-            'icon' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],
-            'icon_class' => ['nullable', 'string', 'max:191', 'regex:/^fa[a-z0-9\-_\s]+$/i'],
+            'logo' => ['nullable', 'image', 'max:4096'],
             'commission' => ['nullable', 'numeric', 'min:0', 'max:100'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Category name is required.',
+            'type.required' => 'Category type is required.',
+            'type.in' => 'Please select a valid category type.',
+            'logo.image' => 'The category image must be a valid image file.',
+            'logo.max' => 'The category image may not be greater than 4 MB.',
+            'commission.numeric' => 'Commission must be a valid number.',
+            'commission.min' => 'Commission cannot be less than 0%.',
+            'commission.max' => 'Commission cannot be greater than 100%.',
         ];
     }
 }

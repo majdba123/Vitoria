@@ -169,11 +169,8 @@ document.addEventListener('DOMContentLoaded', function () {
     loadCategories();
 
     function categoryListThumb(category) {
-        if (category.icon_class) {
-            return `<div class="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-50 ring-1 ring-gray-200"><i class="${esc(category.icon_class)} text-2xl text-brand-600" aria-hidden="true"></i></div>`;
-        }
-        if (category.icon || category.logo) {
-            return `<img src="/storage/${esc(category.icon || category.logo)}" alt="${esc(category.name)}" class="h-16 w-16 rounded-lg object-cover">`;
+        if (category.image_url) {
+            return `<img src="${esc(category.image_url)}" alt="${esc(category.name)}" class="h-16 w-16 rounded-lg object-cover">`;
         }
         return `
                             <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-100">
