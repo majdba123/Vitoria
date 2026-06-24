@@ -10,8 +10,8 @@
         ['group' => __('admin.management'), 'route' => 'admin.products.index', 'label' => __('admin.products'), 'icon' => 'fa-solid fa-box-open'],
         ['group' => __('admin.management'), 'route' => 'admin.coupons.index', 'label' => __('admin.coupons'), 'icon' => 'fa-solid fa-ticket'],
         ['group' => __('admin.management'), 'route' => 'admin.orders.index', 'label' => __('admin.orders'), 'icon' => 'fa-solid fa-bag-shopping'],
-        ['group' => 'Catalog', 'route' => 'admin.categories.index', 'label' => __('admin.categories'), 'icon' => 'fa-solid fa-layer-group'],
-        ['group' => 'Catalog', 'route' => 'admin.subcategories.index', 'label' => 'Subcategories', 'icon' => 'fa-regular fa-folder-open'],
+        ['group' => 'catalog', 'route' => 'admin.categories.index', 'label' => __('admin.categories'), 'icon' => 'fa-solid fa-layer-group'],
+        ['group' => 'catalog', 'route' => 'admin.subcategories.index', 'label' => 'Subcategories', 'icon' => 'fa-regular fa-folder-open'],
         ['group' => __('admin.management'), 'route' => 'admin.users.index', 'label' => __('admin.users'), 'icon' => 'fa-solid fa-users'],
         ['group' => __('admin.management'), 'route' => 'admin.notifications.index', 'label' => __('admin.notifications_log'), 'icon' => 'fa-regular fa-bell'],
         ['group' => __('admin.management'), 'route' => 'admin.contact-messages.index', 'label' => __('admin.contact_messages'), 'icon' => 'fa-regular fa-envelope'],
@@ -43,15 +43,33 @@
         </div>
     </div>
 
+    <div class="px-6 pt-4">
+        <div class="rounded-[24px] border border-brand-400/25 bg-gradient-to-br from-brand-500/20 via-brand-500/10 to-transparent p-4 text-white shadow-lg shadow-brand-900/10">
+            <div class="flex items-start gap-3">
+                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-500/20 text-brand-100 ring-1 ring-brand-300/20">
+                    <i class="fa-solid fa-shapes text-sm"></i>
+                </span>
+                <div class="min-w-0">
+                    <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-brand-100/80">Catalog CRUD</p>
+                    <p class="mt-2 text-sm leading-6 text-white/80">Manage category and subcategory records from their own section in the sidebar.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <nav class="hide-scrollbar flex-1 overflow-y-auto px-4 py-5">
         @foreach ($groupedLinks as $group => $items)
-            <div class="mb-6">
-                <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-white/35">{{ $group }}</p>
+            @php
+                $isCatalogGroup = $group === 'catalog';
+                $groupTitle = $isCatalogGroup ? 'Catalog Management' : $group;
+            @endphp
+            <div class="mb-6 {{ $isCatalogGroup ? 'rounded-[26px] border border-brand-400/20 bg-white/5 p-3 shadow-inner shadow-brand-950/5' : '' }}">
+                <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.24em] {{ $isCatalogGroup ? 'text-brand-200' : 'text-white/35' }}">{{ $groupTitle }}</p>
                 @foreach ($items as $item)
                     @php
                         $isActive = str_starts_with($currentRoute, str_replace('.index', '', $item['route']));
                     @endphp
-                    <a href="{{ route($item['route']) }}" class="dashboard-sidebar-link {{ $isActive ? 'is-active' : '' }}">
+                    <a href="{{ route($item['route']) }}" class="dashboard-sidebar-link {{ $isActive ? 'is-active' : '' }} {{ $isCatalogGroup ? 'border border-transparent hover:border-brand-300/20 hover:bg-brand-400/10' : '' }}">
                         <span class="dashboard-sidebar-bullet h-2.5 w-2.5 rounded-full bg-white/20"></span>
                         <i class="{{ $item['icon'] }} w-4 text-center text-[13px]"></i>
                         <span class="flex-1">{{ $item['label'] }}</span>
