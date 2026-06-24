@@ -388,36 +388,19 @@
     }
 
     .form-select {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
+        -webkit-appearance: auto;
+        -moz-appearance: auto;
+        appearance: auto;
         cursor: pointer;
         line-height: 1.5;
-        padding-inline-end: 2.75rem;
-        background-image:
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0)),
-            url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2366748f' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.6' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-        background-position: center, right 1rem center;
-        background-repeat: no-repeat;
-        background-size: auto, 1.1rem 1.1rem;
-        background-origin: border-box;
-        background-clip: padding-box, border-box;
+        padding-inline-end: 1rem;
+        background-image: none;
         color-scheme: light;
     }
 
     .dark .form-select {
-        background-image:
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0)),
-            url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.6' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-image: none;
         color-scheme: dark;
-    }
-
-    [dir='rtl'] .form-select {
-        background-position: center, left 1rem center;
-    }
-
-    .form-select::-ms-expand {
-        display: none;
     }
 
     .form-select option,
