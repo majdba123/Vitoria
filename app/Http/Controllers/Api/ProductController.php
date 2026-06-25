@@ -75,7 +75,9 @@ class ProductController extends Controller
         $filters = $request->only(['category_id', 'category_type', 'subcategory_id', 'has_discount', 'per_page', 'sort']);
         $perPage = min((int) ($filters['per_page'] ?? 15), 50);
         $filters['per_page'] = $perPage;
-        $filters['category_type'] = $filters['category_type'] ?? $this->preferredCategoryType($request);
+        $filters['category_type'] = $request->has('category_type')
+            ? trim((string) $request->input('category_type')) ?: null
+            : $this->preferredCategoryType($request);
 
         $products = $this->productService->listPublic($perPage, $filters);
 

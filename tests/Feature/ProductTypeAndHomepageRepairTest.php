@@ -172,6 +172,39 @@ test('products catalog page renders shared filter selects', function () {
         ->assertSee('btn-clear', false);
 });
 
+test('public products api allows explicit all types filter', function () {
+    $agriculture = repairCategorySet(Category::TYPE_AGRICULTURE, 'Agriculture Filter Test');
+    $veterinary = repairCategorySet(Category::TYPE_VETERINARY, 'Veterinary Filter Test');
+
+    $user = User::factory()->create([
+        'type' => User::TYPE_USER,
+        'preferred_product_type' => Category::TYPE_VETERINARY,
+    ]);
+
+    $this->actingAs($user);
+
+    $productIds = collect(
+        $this->getJson('/api/products?per_page=100&category_type=')
+            ->assertOk()
+            ->json('data')
+    )->pluck('id');
+
+    expect($productIds)->toContain($agriculture['product']->id)
+        ->and($productIds)->toContain($veterinary['product']->id);
+});
+
+test('category page preserves selected type in view all link', function () {
+    $set = repairCategorySet(Category::TYPE_AGRICULTURE, 'Linked Category');
+
+    $this->get(route('categories.show', [
+        'id' => $set['category']->id,
+        'type' => Category::TYPE_AGRICULTURE,
+    ]))
+        ->assertOk()
+        ->assertSee('category_id='.$set['category']->id, false)
+        ->assertSee('type=agriculture', false);
+});
+
 test('selected user product type filters categories and public products on backend', function () {
     $agriculture = repairCategorySet(Category::TYPE_AGRICULTURE, 'اختبار زراعي');
     $veterinary = repairCategorySet(Category::TYPE_VETERINARY, 'اختبار بيطري');

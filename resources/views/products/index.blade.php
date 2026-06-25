@@ -98,10 +98,18 @@ document.addEventListener('DOMContentLoaded', async function() {
         $('empty').classList.add('hidden');
         $('pagination').innerHTML = '';
         const p = new URLSearchParams({ page });
-        if (ct) p.append('category_type', ct);
+        p.append('category_type', ct);
         if (sId) p.append('subcategory_id', sId);
         else if (cId) p.append('category_id', cId);
         if (dFilter !== '') p.append('has_discount', dFilter);
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set('category_type', ct);
+        nextUrl.searchParams.delete('type');
+        cId ? nextUrl.searchParams.set('category_id', cId) : nextUrl.searchParams.delete('category_id');
+        sId ? nextUrl.searchParams.set('subcategory_id', sId) : nextUrl.searchParams.delete('subcategory_id');
+        dFilter !== '' ? nextUrl.searchParams.set('has_discount', dFilter) : nextUrl.searchParams.delete('has_discount');
+        page > 1 ? nextUrl.searchParams.set('page', String(page)) : nextUrl.searchParams.delete('page');
+        window.history.replaceState({}, '', nextUrl.pathname + nextUrl.search);
 
         try {
             const res = await axios.get('/api/products?' + p.toString());

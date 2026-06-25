@@ -63,6 +63,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     function subcategoryImageUrl(subcategory) {
         return subcategory.image_url || (subcategory.image ? '/storage/' + subcategory.image : '');
     }
+    function typedPageHref(path) {
+        const parsed = new URL(path, window.location.origin);
+        if (selectedType !== null) {
+            parsed.searchParams.set('type', selectedType);
+        }
+
+        return parsed.pathname + parsed.search;
+    }
     function setActiveTypeButton() {
         document.querySelectorAll('.category-type-filter').forEach(button => {
             const active = button.dataset.typeFilter === selectedType;
@@ -117,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             const subs = cat.subcategories || [];
             return `
             <div class="cat-card overflow-hidden rounded-2xl border border-gray-200/80 bg-white dark:border-gray-800 dark:bg-gray-900">
-                <a href="/categories/${cat.id}" class="flex items-center gap-4 p-5">
+                <a href="${typedPageHref('/categories/' + cat.id)}" class="flex h-full items-center gap-4 p-5 focus:outline-none focus:ring-4 focus:ring-brand-500/15">
                     <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-50 to-brand-100 ring-1 ring-brand-200/50 dark:from-brand-500/10 dark:to-brand-500/5 dark:ring-brand-500/20">
                         ${categoryThumbInner(cat)}
                     </div>
@@ -128,7 +136,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     <svg class="h-5 w-5 shrink-0 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                 </a>
                 ${subs.length ? `<div class="border-t border-gray-100 bg-gray-50/50 px-5 py-3 dark:border-gray-800 dark:bg-gray-800/30">
-                    <div class="flex flex-wrap gap-2">${subs.map(s => `<a href="/subcategories/${s.id}" class="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-gray-600 ring-1 ring-gray-200/80 transition-all hover:ring-brand-300 hover:text-brand-600 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:ring-brand-500 dark:hover:text-brand-400">${subListLeading(s)} ${esc(s.name)}</a>`).join('')}</div>
+                    <div class="flex flex-wrap gap-2">${subs.map(s => `<a href="${typedPageHref('/subcategories/' + s.id)}" class="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-gray-600 ring-1 ring-gray-200/80 transition-all hover:ring-brand-300 hover:text-brand-600 focus:outline-none focus:ring-4 focus:ring-brand-500/15 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:ring-brand-500 dark:hover:text-brand-400">${subListLeading(s)} ${esc(s.name)}</a>`).join('')}</div>
                 </div>` : ''}
             </div>`;
         }).join('');

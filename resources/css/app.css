@@ -574,6 +574,10 @@
     .product-card,
     .cat-card,
     .vendor-card {
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+        will-change: transform;
         transition:
             transform 220ms ease,
             box-shadow 220ms ease,
