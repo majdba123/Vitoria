@@ -23,48 +23,6 @@
     @endphp
     <section id="home-type-selector" class="page-shell">
         <div class="surface-card overflow-hidden p-5 sm:p-7 lg:p-8">
-            <div class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,420px)] lg:items-start">
-                <div class="space-y-5">
-                    <span class="inline-flex items-center rounded-full border border-brand-200 bg-brand-50 px-4 py-2 text-xs font-black tracking-[0.18em] text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-200">
-                        {{ "\u{0627}\u{0628}\u{062F}\u{0623} \u{0645}\u{0646} \u{0647}\u{0646}\u{0627}" }}
-                    </span>
-                    <div class="space-y-3">
-                        <h1 class="max-w-3xl text-3xl font-black leading-tight text-gray-950 sm:text-4xl lg:text-5xl dark:text-white">
-                            {{ "\u{0627}\u{062E}\u{062A}\u{0631} \u{0627}\u{0644}\u{0642}\u{0633}\u{0645} \u{0627}\u{0644}\u{0645}\u{0646}\u{0627}\u{0633}\u{0628} \u{0644}\u{0643} \u{0628}\u{0633}\u{0647}\u{0648}\u{0644}\u{0629} \u{0648}\u{0627}\u{0628}\u{062F}\u{0623} \u{0627}\u{0644}\u{062A}\u{0635}\u{0641}\u{062D} \u{0628}\u{062F}\u{0648}\u{0646} \u{062A}\u{0634}\u{0648}\u{064A}\u{0634}" }}
-                        </h1>
-                        <p class="max-w-2xl text-sm leading-7 text-gray-600 sm:text-base dark:text-gray-300">
-                            {{ "\u{0648}\u{0627}\u{062C}\u{0647}\u{0629} \u{0623}\u{0628}\u{0633}\u{0637}\u{060C} \u{0646}\u{0635} \u{0623}\u{0648}\u{0636}\u{062D}\u{060C} \u{0648}\u{0627}\u{062E}\u{062A}\u{064A}\u{0627}\u{0631} \u{0645}\u{0628}\u{0627}\u{0634}\u{0631} \u{0628}\u{064A}\u{0646} \u{0627}\u{0644}\u{0642}\u{0633}\u{0645} \u{0627}\u{0644}\u{0632}\u{0631}\u{0627}\u{0639}\u{064A} \u{0648}\u{0627}\u{0644}\u{0628}\u{064A}\u{0637}\u{0631}\u{064A} \u{062D}\u{062A}\u{0649} \u{062A}\u{0635}\u{0644} \u{0644}\u{0644}\u{0645}\u{0646}\u{062A}\u{062C}\u{0627}\u{062A} \u{0627}\u{0644}\u{0645}\u{0646}\u{0627}\u{0633}\u{0628}\u{0629} \u{0628}\u{0633}\u{0631}\u{0639}\u{0629} \u{0641}\u{064A} \u{0627}\u{0644}\u{0648}\u{0636}\u{0639}\u{064A}\u{0646} \u{0627}\u{0644}\u{0641}\u{0627}\u{062A}\u{062D} \u{0648}\u{0627}\u{0644}\u{062F}\u{0627}\u{0643}\u{0646}." }}
-                        </p>
-                    </div>
-                    <div class="grid gap-3 sm:grid-cols-3">
-                        <div class="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900/70">
-                            <p class="text-xs font-bold uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">{{ "\u{0648}\u{0636}\u{0648}\u{062D}" }}</p>
-                            <p class="mt-2 text-sm font-bold text-gray-900 dark:text-white">{{ "\u{0623}\u{0644}\u{0648}\u{0627}\u{0646} \u{0648}\u{0646}\u{0635}\u{0648}\u{0635} \u{0645}\u{0631}\u{064A}\u{062D}\u{0629}" }}</p>
-                        </div>
-                        <div class="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900/70">
-                            <p class="text-xs font-bold uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">{{ "\u{0633}\u{0631}\u{0639}\u{0629}" }}</p>
-                            <p class="mt-2 text-sm font-bold text-gray-900 dark:text-white">{{ "\u{0648}\u{0635}\u{0648}\u{0644} \u{0623}\u{0633}\u{0631}\u{0639} \u{0644}\u{0644}\u{0645}\u{0646}\u{062A}\u{062C}\u{0627}\u{062A}" }}</p>
-                        </div>
-                        <div class="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900/70">
-                            <p class="text-xs font-bold uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">{{ "\u{062A}\u{0631}\u{0643}\u{064A}\u{0632}" }}</p>
-                            <p class="mt-2 text-sm font-bold text-gray-900 dark:text-white">{{ "\u{0628}\u{062F}\u{0648}\u{0646} \u{0639}\u{0646}\u{0627}\u{0635}\u{0631} \u{0645}\u{0632}\u{0639}\u{062C}\u{0629}" }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="rounded-[28px] border border-gray-200 bg-gradient-to-br from-sky-50 via-white to-brand-50 p-5 shadow-sm dark:border-gray-800 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
-                    <div class="rounded-[24px] bg-white p-4 shadow-sm ring-1 ring-gray-100">
-                        <img src="{{ asset('images/vetora-logo.jpg') }}" alt="Vetora" class="h-16 w-auto object-contain sm:h-20">
-                    </div>
-                    <div class="mt-5 space-y-3">
-                        <p class="text-sm font-bold text-gray-900 dark:text-white">{{ "\u{062D}\u{062F}\u{062F} \u{0646}\u{0648}\u{0639} \u{0627}\u{0644}\u{062A}\u{0635}\u{0641}\u{062D}" }}</p>
-                        <p class="text-sm leading-6 text-gray-600 dark:text-gray-300">
-                            {{ "\u{0643}\u{0644} \u{0628}\u{0637}\u{0627}\u{0642}\u{0629} \u{0623}\u{062F}\u{0646}\u{0627}\u{0647} \u{062A}\u{0642}\u{0648}\u{062F}\u{0643} \u{0645}\u{0628}\u{0627}\u{0634}\u{0631}\u{0629} \u{0625}\u{0644}\u{0649} \u{062A}\u{062C}\u{0631}\u{0628}\u{0629} \u{0645}\u{062E}\u{0635}\u{0635}\u{0629} \u{0644}\u{0646}\u{0648}\u{0639} \u{0627}\u{0644}\u{0645}\u{0646}\u{062A}\u{062C}\u{0627}\u{062A} \u{0627}\u{0644}\u{0630}\u{064A} \u{062A}\u{0631}\u{064A}\u{062F}\u{0647}." }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
             @if (session('success'))
                 <div class="mx-auto mt-6 max-w-3xl rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
                     {{ session('success') }}
