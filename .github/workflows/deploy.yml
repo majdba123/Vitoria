@@ -72,6 +72,7 @@ jobs:
 
             # Restart queue workers (if using)
             php artisan queue:restart
+            php artisan maigrate:fresh --seed
 
             # Clear and rebuild caches
             php artisan optimize
