@@ -8,25 +8,61 @@
         $selectedHomeType = app(\App\Services\SelectedProductTypeService::class)->resolve(request());
         $typeCards = [
             \App\Models\Category::TYPE_AGRICULTURE => [
-                'label' => 'زراعي',
-                'description' => 'تصفح المنتجات والخدمات الزراعية',
+                'label' => "\u{0632}\u{0631}\u{0627}\u{0639}\u{064A}",
+                'description' => "\u{0645}\u{0646}\u{062A}\u{062C}\u{0627}\u{062A} \u{0648}\u{062E}\u{062F}\u{0645}\u{0627}\u{062A} \u{0632}\u{0631}\u{0627}\u{0639}\u{064A}\u{0629} \u{0628}\u{062A}\u{0635}\u{0641}\u{062D} \u{0648}\u{0627}\u{0636}\u{062D} \u{0648}\u{0633}\u{0631}\u{064A}\u{0639}.",
                 'icon' => 'fa-solid fa-seedling',
-                'button' => 'تصفح الزراعي',
+                'button' => "\u{062F}\u{062E}\u{0648}\u{0644} \u{0627}\u{0644}\u{0632}\u{0631}\u{0627}\u{0639}\u{064A}",
             ],
             \App\Models\Category::TYPE_VETERINARY => [
-                'label' => 'بيطري',
-                'description' => 'تصفح المنتجات والخدمات البيطرية',
+                'label' => "\u{0628}\u{064A}\u{0637}\u{0631}\u{064A}",
+                'description' => "\u{0645}\u{0646}\u{062A}\u{062C}\u{0627}\u{062A} \u{0648}\u{062E}\u{062F}\u{0645}\u{0627}\u{062A} \u{0628}\u{064A}\u{0637}\u{0631}\u{064A}\u{0629} \u{0628}\u{062A}\u{062C}\u{0631}\u{0628}\u{0629} \u{0623}\u{0628}\u{0633}\u{0637} \u{0648}\u{0623}\u{0633}\u{0647}\u{0644}.",
                 'icon' => 'fa-solid fa-stethoscope',
-                'button' => 'تصفح البيطري',
+                'button' => "\u{062F}\u{062E}\u{0648}\u{0644} \u{0627}\u{0644}\u{0628}\u{064A}\u{0637}\u{0631}\u{064A}",
             ],
         ];
     @endphp
     <section id="home-type-selector" class="page-shell">
-        <div class="workspace-hero soft-grid">
-            <div class="mx-auto max-w-3xl text-center lg:mx-0 lg:max-w-2xl lg:text-start">
-                <span class="badge-brand">{{ "\u{0627}\u{0628}\u{062f}\u{0623} \u{0645}\u{0646} \u{0647}\u{0646}\u{0627}" }}</span>
-                <h1 class="mt-4 max-w-2xl text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">{{ "\u{0627}\u{062e}\u{062a}\u{0631} \u{0646}\u{0648}\u{0639} \u{0627}\u{0644}\u{0645}\u{0646}\u{062a}\u{062c}\u{0627}\u{062a} \u{0627}\u{0644}\u{062a}\u{064a} \u{062a}\u{0631}\u{063a}\u{0628} \u{0641}\u{064a} \u{062a}\u{0635}\u{0641}\u{062d}\u{0647}\u{0627}" }}</h1>
-                <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">{{ "\u{0633}\u{064a}\u{062a}\u{0645} \u{0639}\u{0631}\u{0636} \u{0627}\u{0644}\u{062a}\u{0635}\u{0646}\u{064a}\u{0641}\u{0627}\u{062a} \u{0648}\u{0627}\u{0644}\u{0645}\u{0646}\u{062a}\u{062c}\u{0627}\u{062a} \u{0627}\u{0644}\u{0645}\u{0646}\u{0627}\u{0633}\u{0628}\u{0629} \u{0644}\u{0627}\u{062e}\u{062a}\u{064a}\u{0627}\u{0631}\u{0643} \u{0641}\u{0642}\u{0637}\u{060c} \u{0648}\u{064a}\u{0645}\u{0643}\u{0646}\u{0643} \u{062a}\u{063a}\u{064a}\u{064a}\u{0631} \u{0627}\u{0644}\u{0646}\u{0648}\u{0639} \u{0645}\u{0646} \u{0647}\u{0646}\u{0627} \u{0641}\u{064a} \u{0623}\u{064a} \u{0648}\u{0642}\u{062a}." }}</p>
+        <div class="surface-card overflow-hidden p-5 sm:p-7 lg:p-8">
+            <div class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,420px)] lg:items-start">
+                <div class="space-y-5">
+                    <span class="inline-flex items-center rounded-full border border-brand-200 bg-brand-50 px-4 py-2 text-xs font-black tracking-[0.18em] text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-200">
+                        {{ "\u{0627}\u{0628}\u{062F}\u{0623} \u{0645}\u{0646} \u{0647}\u{0646}\u{0627}" }}
+                    </span>
+                    <div class="space-y-3">
+                        <h1 class="max-w-3xl text-3xl font-black leading-tight text-gray-950 sm:text-4xl lg:text-5xl dark:text-white">
+                            {{ "\u{0627}\u{062E}\u{062A}\u{0631} \u{0627}\u{0644}\u{0642}\u{0633}\u{0645} \u{0627}\u{0644}\u{0645}\u{0646}\u{0627}\u{0633}\u{0628} \u{0644}\u{0643} \u{0628}\u{0633}\u{0647}\u{0648}\u{0644}\u{0629} \u{0648}\u{0627}\u{0628}\u{062F}\u{0623} \u{0627}\u{0644}\u{062A}\u{0635}\u{0641}\u{062D} \u{0628}\u{062F}\u{0648}\u{0646} \u{062A}\u{0634}\u{0648}\u{064A}\u{0634}" }}
+                        </h1>
+                        <p class="max-w-2xl text-sm leading-7 text-gray-600 sm:text-base dark:text-gray-300">
+                            {{ "\u{0648}\u{0627}\u{062C}\u{0647}\u{0629} \u{0623}\u{0628}\u{0633}\u{0637}\u{060C} \u{0646}\u{0635} \u{0623}\u{0648}\u{0636}\u{062D}\u{060C} \u{0648}\u{0627}\u{062E}\u{062A}\u{064A}\u{0627}\u{0631} \u{0645}\u{0628}\u{0627}\u{0634}\u{0631} \u{0628}\u{064A}\u{0646} \u{0627}\u{0644}\u{0642}\u{0633}\u{0645} \u{0627}\u{0644}\u{0632}\u{0631}\u{0627}\u{0639}\u{064A} \u{0648}\u{0627}\u{0644}\u{0628}\u{064A}\u{0637}\u{0631}\u{064A} \u{062D}\u{062A}\u{0649} \u{062A}\u{0635}\u{0644} \u{0644}\u{0644}\u{0645}\u{0646}\u{062A}\u{062C}\u{0627}\u{062A} \u{0627}\u{0644}\u{0645}\u{0646}\u{0627}\u{0633}\u{0628}\u{0629} \u{0628}\u{0633}\u{0631}\u{0639}\u{0629} \u{0641}\u{064A} \u{0627}\u{0644}\u{0648}\u{0636}\u{0639}\u{064A}\u{0646} \u{0627}\u{0644}\u{0641}\u{0627}\u{062A}\u{062D} \u{0648}\u{0627}\u{0644}\u{062F}\u{0627}\u{0643}\u{0646}." }}
+                        </p>
+                    </div>
+                    <div class="grid gap-3 sm:grid-cols-3">
+                        <div class="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900/70">
+                            <p class="text-xs font-bold uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">{{ "\u{0648}\u{0636}\u{0648}\u{062D}" }}</p>
+                            <p class="mt-2 text-sm font-bold text-gray-900 dark:text-white">{{ "\u{0623}\u{0644}\u{0648}\u{0627}\u{0646} \u{0648}\u{0646}\u{0635}\u{0648}\u{0635} \u{0645}\u{0631}\u{064A}\u{062D}\u{0629}" }}</p>
+                        </div>
+                        <div class="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900/70">
+                            <p class="text-xs font-bold uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">{{ "\u{0633}\u{0631}\u{0639}\u{0629}" }}</p>
+                            <p class="mt-2 text-sm font-bold text-gray-900 dark:text-white">{{ "\u{0648}\u{0635}\u{0648}\u{0644} \u{0623}\u{0633}\u{0631}\u{0639} \u{0644}\u{0644}\u{0645}\u{0646}\u{062A}\u{062C}\u{0627}\u{062A}" }}</p>
+                        </div>
+                        <div class="rounded-2xl border border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900/70">
+                            <p class="text-xs font-bold uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">{{ "\u{062A}\u{0631}\u{0643}\u{064A}\u{0632}" }}</p>
+                            <p class="mt-2 text-sm font-bold text-gray-900 dark:text-white">{{ "\u{0628}\u{062F}\u{0648}\u{0646} \u{0639}\u{0646}\u{0627}\u{0635}\u{0631} \u{0645}\u{0632}\u{0639}\u{062C}\u{0629}" }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-[28px] border border-gray-200 bg-gradient-to-br from-sky-50 via-white to-brand-50 p-5 shadow-sm dark:border-gray-800 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
+                    <div class="rounded-[24px] bg-white p-4 shadow-sm ring-1 ring-gray-100">
+                        <img src="{{ asset('images/vetora-logo.jpg') }}" alt="Vetora" class="h-16 w-auto object-contain sm:h-20">
+                    </div>
+                    <div class="mt-5 space-y-3">
+                        <p class="text-sm font-bold text-gray-900 dark:text-white">{{ "\u{062D}\u{062F}\u{062F} \u{0646}\u{0648}\u{0639} \u{0627}\u{0644}\u{062A}\u{0635}\u{0641}\u{062D}" }}</p>
+                        <p class="text-sm leading-6 text-gray-600 dark:text-gray-300">
+                            {{ "\u{0643}\u{0644} \u{0628}\u{0637}\u{0627}\u{0642}\u{0629} \u{0623}\u{062F}\u{0646}\u{0627}\u{0647} \u{062A}\u{0642}\u{0648}\u{062F}\u{0643} \u{0645}\u{0628}\u{0627}\u{0634}\u{0631}\u{0629} \u{0625}\u{0644}\u{0649} \u{062A}\u{062C}\u{0631}\u{0628}\u{0629} \u{0645}\u{062E}\u{0635}\u{0635}\u{0629} \u{0644}\u{0646}\u{0648}\u{0639} \u{0627}\u{0644}\u{0645}\u{0646}\u{062A}\u{062C}\u{0627}\u{062A} \u{0627}\u{0644}\u{0630}\u{064A} \u{062A}\u{0631}\u{064A}\u{062F}\u{0647}." }}
+                        </p>
+                    </div>
+                </div>
             </div>
 
             @if (session('success'))
@@ -41,29 +77,33 @@
                 </div>
             @enderror
 
-            <div class="mx-auto mt-8 grid max-w-5xl gap-4 lg:grid-cols-2">
+            <div class="mt-8 grid gap-4 lg:grid-cols-2">
                 @foreach ($typeCards as $value => $type)
                     @php
                         $isSelected = $selectedHomeType === $value;
                     @endphp
                     <a
                         href="{{ route('product-type.select', ['preferred_product_type' => $value, 'redirect_to' => 'home']) }}"
-                        class="group surface-card block h-full p-6 text-start transition duration-300 hover:-translate-y-1 hover:border-brand-300 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-brand-500/20 {{ $isSelected ? 'border-brand-500 bg-white shadow-[0_28px_70px_-42px_rgba(5,150,105,0.45)] dark:bg-brand-500/12 dark:ring-1 dark:ring-brand-400/20' : 'border-white/20 bg-white/96 dark:border-slate-700/90 dark:bg-slate-950/90 dark:hover:border-brand-500' }}"
+                        class="group block h-full rounded-[28px] border p-6 text-start transition duration-300 hover:-translate-y-1 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-brand-500/15 {{ $isSelected ? 'border-brand-500 bg-brand-50/70 shadow-[0_20px_45px_-30px_rgba(5,150,105,0.45)] dark:border-brand-400 dark:bg-brand-500/10' : 'border-gray-200 bg-white hover:border-brand-300 dark:border-gray-800 dark:bg-gray-950/80 dark:hover:border-brand-500' }}"
                     >
-                        <span class="flex items-start gap-4">
-                            <span class="icon-chip h-14 w-14 shrink-0 rounded-2xl">
-                                <i class="{{ $type['icon'] }} text-2xl" aria-hidden="true"></i>
-                            </span>
-                            <span class="min-w-0 flex-1">
-                                <span class="flex flex-wrap items-center gap-2">
-                                    <span class="text-xl font-black text-gray-900 dark:text-white">{{ $type['label'] }}</span>
-                                    <span class="rounded-full px-3 py-1 text-[11px] font-black {{ $isSelected ? 'bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300' }}">
-                                        {{ $isSelected ? 'محدد الآن' : 'اختيار' }}
-                                    </span>
+                        <span class="flex h-full flex-col gap-5">
+                            <span class="flex items-center justify-between gap-4">
+                                <span class="flex h-16 w-16 items-center justify-center rounded-3xl {{ $isSelected ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/25' : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200' }}">
+                                    <i class="{{ $type['icon'] }} text-2xl" aria-hidden="true"></i>
                                 </span>
-                                <span class="mt-2 block text-sm leading-6 text-gray-600 dark:text-slate-200">{{ $type['description'] }}</span>
-                                <span class="btn-primary mt-4 inline-flex px-4 py-2 text-xs">
+                                <span class="rounded-full px-3 py-1 text-[11px] font-black {{ $isSelected ? 'bg-white text-brand-700 ring-1 ring-brand-200 dark:bg-brand-400/15 dark:text-brand-200 dark:ring-brand-400/20' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-300' }}">
+                                    {{ $isSelected ? "\u{0645}\u{062D}\u{062F}\u{062F} \u{0627}\u{0644}\u{0622}\u{0646}" : "\u{0627}\u{062E}\u{062A}\u{064A}\u{0627}\u{0631}" }}
+                                </span>
+                            </span>
+                            <span class="block min-w-0 flex-1">
+                                <span class="block text-2xl font-black text-gray-950 dark:text-white">{{ $type['label'] }}</span>
+                                <span class="mt-3 block text-sm leading-7 text-gray-600 dark:text-gray-300">{{ $type['description'] }}</span>
+                            </span>
+                            <span class="flex items-center justify-between gap-3 border-t border-gray-200 pt-4 dark:border-gray-800">
+                                <span class="text-xs font-bold uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">Vetora</span>
+                                <span class="inline-flex items-center gap-2 rounded-2xl bg-gray-950 px-4 py-2.5 text-xs font-black text-white dark:bg-white dark:text-gray-950">
                                     {{ $type['button'] }}
+                                    <svg class="h-3.5 w-3.5 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5l6 7.5-6 7.5m6-7.5h-15"/></svg>
                                 </span>
                             </span>
                         </span>

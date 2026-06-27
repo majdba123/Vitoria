@@ -3,14 +3,14 @@
     <nav class="glass-panel mx-auto max-w-screen-2xl rounded-[30px] border border-white/50 px-3 shadow-[0_24px_55px_-34px_rgba(5,150,105,0.35)] dark:border-white/10">
         <div class="flex h-[74px] items-center gap-3 px-2 sm:px-3 lg:px-4">
             {{-- Logo --}}
-            <a href="{{ url('/') }}" class="flex shrink-0 items-center gap-3 text-xl font-black tracking-tight text-gray-900 dark:text-white">
-                <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 shadow-lg shadow-brand-500/25">
-                    <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72"/></svg>
+            <a href="{{ url('/') }}" class="flex shrink-0 items-center">
+                <div class="rounded-[22px] bg-white px-3 py-2 shadow-sm ring-1 ring-gray-200 dark:ring-white/10">
+                    <img
+                        src="{{ asset('images/vetora-logo.jpg') }}"
+                        alt="Vetora"
+                        class="h-10 w-auto object-contain sm:h-12"
+                    >
                 </div>
-                <span class="hidden sm:block">
-                    <span class="block font-display text-xl font-extrabold leading-none">Vetora</span>
-                    <span class="mt-1 block text-[10px] font-extrabold uppercase tracking-[0.26em] text-brand-600 dark:text-brand-300">Marketplace OS</span>
-                </span>
             </a>
 
             {{-- Desktop Category Button --}}
