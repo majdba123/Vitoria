@@ -17,9 +17,9 @@
         <h1 class="text-2xl font-black text-gray-900 sm:text-3xl dark:text-white">{{ __('categories.page_heading') }}</h1>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('categories.page_subtitle') }}</p>
         <div class="filter-panel mt-5 flex flex-wrap gap-2">
-            <button type="button" data-type-filter="" class="category-type-filter rounded-xl border border-brand-500 bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-sm">Ø§Ù„ÙƒÙ„</button>
-            <button type="button" data-type-filter="agriculture" class="category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">Ø²Ø±Ø§Ø¹ÙŠ</button>
-            <button type="button" data-type-filter="veterinary" class="category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">Ø¨ÙŠØ·Ø±ÙŠ</button>
+            <button type="button" data-type-filter="" class="category-type-filter rounded-xl border border-brand-500 bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-sm">الكل</button>
+            <button type="button" data-type-filter="agriculture" class="category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">زراعي</button>
+            <button type="button" data-type-filter="veterinary" class="category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">بيطري</button>
         </div>
 
         <div id="loading" class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
