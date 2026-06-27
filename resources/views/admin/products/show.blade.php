@@ -100,6 +100,7 @@
                     </div>
                     <div>
                         <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Subcategory</p>
+                        <p class="mt-1 text-sm font-semibold text-gray-900" id="product-subcategory">—</p>
                     </div>
                     <div>
                         <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Commission</p>
@@ -172,6 +173,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('product-description').textContent = p.description || 'No description provided.';
         document.getElementById('product-created').textContent = p.created_at ? new Date(p.created_at).toLocaleDateString() : '—';
         document.getElementById('product-category').textContent = p.category?.name || 'Unassigned';
+        document.getElementById('product-subcategory').textContent = p.subcategory?.name || 'Unassigned';
         document.getElementById('product-commission').textContent = p.category?.commission ? parseFloat(p.category.commission).toFixed(2) + '%' : '—';
         document.getElementById('product-discount-value').textContent = p.discount_percentage ? parseFloat(p.discount_percentage).toFixed(2) + '%' : 'No discount';
         document.getElementById('product-discount-start').textContent = formatDateOnly(p.discount_starts_at);

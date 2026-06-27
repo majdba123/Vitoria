@@ -56,7 +56,7 @@ class SyndicateDashboardService
         return $this->categoryQuery($syndicate->type)
             ->withCount([
                 'vendors',
-                'products',
+                'subcategories as products_count' => fn ($query) => $query->join('products', 'products.subcategory_id', '=', 'subcategories.id'),
             ])
             ->latest()
             ->paginate($perPage);
@@ -74,7 +74,7 @@ class SyndicateDashboardService
     public function products(Syndicate $syndicate, int $perPage = 15): LengthAwarePaginator
     {
         return $this->productQuery($syndicate->type)
-            ->with(['vendor:id,store_name,business_type', 'category:id,name,type'])
+            ->with(['vendor:id,store_name,business_type', 'subcategory.category:id,name,type'])
             ->latest()
             ->paginate($perPage);
     }
@@ -86,8 +86,9 @@ class SyndicateDashboardService
                 'user:id,name,email',
                 'vendor:id,store_name',
                 'items:id,order_id,product_id,product_name,quantity,line_total,unit_price',
-                'items.product:id,category_id,vendor_id',
-                'items.product.category:id,name,type,commission',
+                'items.product:id,subcategory_id,vendor_id',
+                'items.product.subcategory:id,name,category_id',
+                'items.product.subcategory.category:id,name,type,commission',
             ])
             ->latest()
             ->paginate($perPage);
@@ -139,13 +140,13 @@ class SyndicateDashboardService
     public function productQuery(string $type): Builder
     {
         return Product::query()
-            ->whereHas('category', fn (Builder $query) => $query->where('type', $type));
+            ->whereHas('subcategory.category', fn (Builder $query) => $query->where('type', $type));
     }
 
     public function orderQuery(string $type): Builder
     {
         return Order::query()
-            ->whereHas('items.product.category', fn (Builder $query) => $query->where('type', $type));
+            ->whereHas('items.product.subcategory.category', fn (Builder $query) => $query->where('type', $type));
     }
 
     /**
@@ -235,8 +236,8 @@ class SyndicateDashboardService
     {
         return [
             'total_categories' => (int) $this->categoryQuery($type)->count(),
-            'categories_with_products' => (int) $this->categoryQuery($type)->whereHas('products')->count(),
-            'categories_without_products' => (int) $this->categoryQuery($type)->whereDoesntHave('products')->count(),
+            'categories_with_products' => (int) $this->categoryQuery($type)->whereHas('subcategories.products')->count(),
+            'categories_without_products' => (int) $this->categoryQuery($type)->whereDoesntHave('subcategories.products')->count(),
             'categories_with_merchants' => (int) $this->categoryQuery($type)->whereHas('vendors')->count(),
             'categories_without_merchants' => (int) $this->categoryQuery($type)->whereDoesntHave('vendors')->count(),
             'top_by_products' => $this->topCategoriesByProducts($type),
@@ -284,7 +285,8 @@ class SyndicateDashboardService
         return DB::table('order_items')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
             ->join('products', 'products.id', '=', 'order_items.product_id')
-            ->join('categories', 'categories.id', '=', 'products.category_id')
+            ->join('subcategories', 'subcategories.id', '=', 'products.subcategory_id')
+            ->join('categories', 'categories.id', '=', 'subcategories.category_id')
             ->where('categories.type', $type);
     }
 
@@ -314,7 +316,7 @@ class SyndicateDashboardService
     protected function recentProducts(string $type): Collection
     {
         return $this->productQuery($type)
-            ->with(['vendor:id,store_name', 'category:id,name,type'])
+            ->with(['vendor:id,store_name', 'subcategory.category:id,name,type'])
             ->latest()
             ->limit(8)
             ->get()
@@ -322,7 +324,7 @@ class SyndicateDashboardService
                 'id' => $product->id,
                 'name' => $product->name,
                 'merchant' => $product->vendor?->store_name,
-                'category' => $product->category?->name,
+                'category' => $product->subcategory?->category?->name,
                 'is_active' => $product->is_active,
                 'created_at' => $product->created_at,
             ]);
@@ -359,7 +361,8 @@ class SyndicateDashboardService
             DB::table('orders')
                 ->join('order_items', 'order_items.order_id', '=', 'orders.id')
                 ->join('products', 'products.id', '=', 'order_items.product_id')
-                ->join('categories', 'categories.id', '=', 'products.category_id')
+                ->join('subcategories', 'subcategories.id', '=', 'products.subcategory_id')
+                ->join('categories', 'categories.id', '=', 'subcategories.category_id')
                 ->where('categories.type', $type),
             'orders.created_at',
         )
@@ -371,7 +374,8 @@ class SyndicateDashboardService
     protected function productsByCategory(string $type): Collection
     {
         return DB::table('categories')
-            ->leftJoin('products', 'products.category_id', '=', 'categories.id')
+            ->leftJoin('subcategories', 'subcategories.category_id', '=', 'categories.id')
+            ->leftJoin('products', 'products.subcategory_id', '=', 'subcategories.id')
             ->where('categories.type', $type)
             ->selectRaw('categories.id, categories.name, categories.type, count(products.id) as products_count')
             ->groupBy('categories.id', 'categories.name', 'categories.type')

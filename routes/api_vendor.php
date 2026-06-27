@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\CategoryController;
+use App\Http\Controllers\Api\Admin\SubcategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProductPhotoController;
 use App\Http\Controllers\Api\ProductReviewController;
@@ -25,6 +26,7 @@ Route::get('allowed-categories', [\App\Http\Controllers\Api\Vendor\VendorCategor
 // Vendor profile
 Route::get('profile', [\App\Http\Controllers\Api\Vendor\VendorProfileController::class, 'show'])->name('profile.show');
 Route::post('profile', [\App\Http\Controllers\Api\Vendor\VendorProfileController::class, 'update'])->name('profile.update');
+Route::get('subcategories', [SubcategoryController::class, 'index'])->name('subcategories.index');
 Route::get('orders', [\App\Http\Controllers\Api\Vendor\OrderController::class, 'index'])->name('orders.index');
 Route::get('orders/{orderId}', [\App\Http\Controllers\Api\Vendor\OrderController::class, 'show'])->name('orders.show');
 Route::patch('orders/{orderId}/cancel', [\App\Http\Controllers\Api\Vendor\OrderController::class, 'cancel'])->name('orders.cancel');

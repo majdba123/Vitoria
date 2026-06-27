@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Category;
 use App\Models\Vendor;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,7 +19,6 @@ class ProductFactory extends Factory
     {
         return [
             'vendor_id' => Vendor::factory(),
-            'category_id' => Category::factory(),
             'name' => fake()->words(3, true),
             'description' => fake()->sentence(),
             'icon' => null,

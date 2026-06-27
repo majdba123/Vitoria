@@ -28,8 +28,9 @@ class VendorCommissionController extends Controller
             ->whereIn('status', [Order::STATUS_CONFIRMED, 'completed'])
             ->with([
                 'items:id,order_id,product_id,line_total',
-                'items.product:id,category_id',
-                'items.product.category:id,name,commission',
+                'items.product:id,subcategory_id',
+                'items.product.subcategory:id,category_id',
+                'items.product.subcategory.category:id,name,commission',
             ])
             ->get();
 
@@ -47,7 +48,7 @@ class VendorCommissionController extends Controller
 
             foreach ($order->items as $item) {
                 /** @var OrderItem $item */
-                $category = $item->product?->category;
+                $category = $item->product?->subcategory?->category;
                 $categoryId = $category?->id ?? 0;
                 $categoryName = $category?->name ?? 'Unknown';
                 $commissionRate = (float) ($category?->commission ?? 0);

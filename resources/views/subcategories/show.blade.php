@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Category — Vetora')
+@section('title', 'Subcategory — Vetora')
 
 @section('content')
 @php
@@ -13,35 +13,23 @@
                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                 <a href="{{ route('categories.index', array_filter(['type' => $pageSelectedType])) }}" class="hover:text-brand-600">Categories</a>
                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-                <span id="bc-name" class="font-medium text-gray-900 dark:text-white"></span>
+                <a id="bc-cat" href="#" class="hover:text-brand-600"></a>
+                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                <span id="bc-sub" class="font-medium text-gray-900 dark:text-white"></span>
             </nav>
         </div>
     </div>
 
     <div class="page-shell">
-        {{-- Category Header --}}
-        <div id="cat-header" class="surface-card mb-8 flex items-center gap-4 p-5 sm:p-6">
-            <div id="cat-logo" class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-50 dark:bg-brand-500/10"></div>
-            <div><h1 id="cat-name" class="text-2xl font-black text-gray-900 sm:text-3xl dark:text-white"></h1><p id="cat-meta" class="mt-0.5 text-sm text-gray-500 dark:text-gray-400"></p></div>
+        <div id="header" class="surface-card mb-8 flex items-center gap-4 p-5 sm:p-6">
+            <div id="sub-img" class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-800"></div>
+            <div><h1 id="sub-name" class="text-2xl font-black text-gray-900 sm:text-3xl dark:text-white"></h1><p id="sub-meta" class="mt-0.5 text-sm text-gray-500 dark:text-gray-400"></p></div>
         </div>
 
-        {{-- Subcategories --}}
-        <div class="mb-10">
-            <h2 class="mb-4 text-lg font-bold text-gray-900 dark:text-white">Subcategories</h2>
-            <div id="subs-grid" class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"></div>
-        </div>
-
-        {{-- Products --}}
-        <div>
-            <div class="mb-4 flex items-center justify-between">
-                <h2 class="text-lg font-bold text-gray-900 dark:text-white">Products in this category</h2>
-                <a href="{{ route('products.index', array_filter(['type' => $pageSelectedType, 'category_id' => $categoryId])) }}" class="text-sm font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400">View All &rarr;</a>
-            </div>
-            <div id="p-loading" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div></div>
-            <div id="p-grid" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"></div>
-            <div id="p-empty" class="hidden py-12 text-center text-sm text-gray-400 dark:text-gray-500">No products in this category yet.</div>
-            <div id="p-pagination" class="mt-8 flex flex-wrap items-center justify-center gap-1.5"></div>
-        </div>
+        <div id="p-loading" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div></div>
+        <div id="p-grid" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"></div>
+        <div id="p-empty" class="empty-state hidden py-20"><svg class="mx-auto h-16 w-16 text-gray-200 dark:text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5"/></svg><p class="mt-4 font-bold text-gray-600 dark:text-gray-400">No products in this subcategory</p></div>
+        <div id="p-pagination" class="mt-8 flex flex-wrap items-center justify-center gap-1.5"></div>
     </div>
 </div>
 @endsection
@@ -49,70 +37,31 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', async function() {
-    const catId = {{ $categoryId }};
+    const subId = {{ $subcategoryId }};
     const selectedType = @json($pageSelectedType);
     const $ = id => document.getElementById(id);
     let page = 1;
     const withSelectedType = (url) => selectedType ? `${url}${url.includes('?') ? '&' : '?'}type=${encodeURIComponent(selectedType)}` : url;
     const typedPageHref = (path) => selectedType ? `${path}${path.includes('?') ? '&' : '?'}type=${encodeURIComponent(selectedType)}` : path;
-    function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-    function categoryImageUrl(category) {
-        if (category.image_url) {
-            return category.image_url;
-        }
-        if (category.logo) {
-            return '/storage/' + category.logo;
-        }
-        if (category.icon) {
-            return '/storage/' + category.icon;
-        }
-
-        return '';
-    }
-    function subcategoryImageUrl(subcategory) {
-        return subcategory.image_url || (subcategory.image ? '/storage/' + subcategory.image : '');
-    }
-    function categoryHeroInner(cat) {
-        const imageUrl = categoryImageUrl(cat);
-        if (imageUrl) {
-            return `<img src="${esc(imageUrl)}" class="h-full w-full rounded-2xl object-cover" alt="">`;
-        }
-        return `<svg class="h-7 w-7 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581"/></svg>`;
-    }
-    function subGridThumbInner(s) {
-        const imageUrl = subcategoryImageUrl(s);
-        if (imageUrl) {
-            return `<img src="${esc(imageUrl)}" class="h-full w-full object-cover" alt="">`;
-        }
-        return `<svg class="h-6 w-6 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg>`;
-    }
 
     try {
-        const res = await axios.get(withSelectedType('/api/categories/' + catId));
-        const cat = res.data.data;
-        document.title = cat.name + ' — Vetora';
-        $('bc-name').textContent = cat.name;
-        $('cat-name').textContent = cat.name;
-        $('cat-meta').textContent = (cat.subcategories||[]).length + ' subcategories · ' + cat.commission + '% commission';
-        $('cat-logo').innerHTML = categoryHeroInner(cat);
-
-        const subs = cat.subcategories || [];
-        $('subs-grid').innerHTML = subs.map(s => `
-            <a href="${typedPageHref('/subcategories/' + s.id)}" class="group flex items-center gap-3 rounded-2xl border border-gray-200/80 bg-white p-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-brand-500/15 dark:border-gray-800 dark:bg-gray-900">
-                <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800">
-                    ${subGridThumbInner(s)}
-                </div>
-                <span class="text-sm font-bold text-gray-700 group-hover:text-brand-600 dark:text-gray-300 dark:group-hover:text-brand-400">${esc(s.name)}</span>
-            </a>
-        `).join('') || '<p class="col-span-full text-sm text-gray-400">No subcategories</p>';
-    } catch(e) { $('cat-name').textContent = 'Category not found'; }
+        const res = await axios.get(withSelectedType('/api/subcategories/' + subId));
+        const sub = res.data.data;
+        const cat = sub.category || {};
+        document.title = sub.name + ' — Vetora';
+        $('bc-cat').textContent = cat.name || 'Category'; $('bc-cat').href = typedPageHref('/categories/' + (cat.id || ''));
+        $('bc-sub').textContent = sub.name;
+        $('sub-name').textContent = sub.name;
+        $('sub-meta').textContent = 'Part of ' + (cat.name || 'Unknown');
+        $('sub-img').innerHTML = (sub.image_url || sub.image) ? `<img src="${sub.image_url || ('/storage/' + sub.image)}" class="h-full w-full object-cover rounded-2xl" alt="">` : `<svg class="h-7 w-7 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg>`;
+    } catch(e) { $('sub-name').textContent = 'Subcategory not found'; }
 
     loadProducts();
 
     async function loadProducts() {
         $('p-loading').classList.remove('hidden'); $('p-grid').innerHTML = ''; $('p-empty').classList.add('hidden'); $('p-pagination').innerHTML = '';
         try {
-            const res = await axios.get(withSelectedType('/api/products?category_id='+catId+'&page='+page));
+            const res = await axios.get(withSelectedType('/api/products?subcategory_id='+subId+'&page='+page));
             const { data, meta } = res.data;
             if (!data.length) { $('p-empty').classList.remove('hidden'); } else { $('p-grid').innerHTML = data.map(p => pCard(p)).join(''); }
             renderPag(meta);
@@ -143,6 +92,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     function getR(c,l){if(l<=7)return Array.from({length:l},(_,i)=>i+1);const p=[1];if(c>3)p.push('...');for(let i=Math.max(2,c-1);i<=Math.min(l-1,c+1);i++)p.push(i);if(c<l-2)p.push('...');p.push(l);return p;}
     window._goP = function(p) { page=p; loadProducts(); window.scrollTo({top:0,behavior:'smooth'}); };
+    function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 });
 </script>
 @endpush

@@ -4,6 +4,7 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Subcategory;
 use App\Models\Syndicate;
 use App\Models\User;
 use App\Models\Vendor;
@@ -44,6 +45,11 @@ function syndicateCategorySet(string $type, string $categoryName): array
         'type' => $type,
     ]);
 
+    $subcategory = Subcategory::query()->create([
+        'category_id' => $category->id,
+        'name' => $categoryName.' Subcategory',
+    ]);
+
     $vendor = Vendor::factory()->create([
         'store_name' => $categoryName.' Vendor',
         'business_type' => $type,
@@ -54,7 +60,7 @@ function syndicateCategorySet(string $type, string $categoryName): array
 
     $product = Product::factory()->for($vendor)->create([
         'name' => $categoryName.' Product',
-        'category_id' => $category->id,
+        'subcategory_id' => $subcategory->id,
         'price' => 100,
         'quantity' => 20,
         'status' => Product::STATUS_APPROVED,
@@ -76,7 +82,7 @@ function syndicateCategorySet(string $type, string $categoryName): array
         'line_total' => 200,
     ]);
 
-    return compact('category', 'vendor', 'product', 'order');
+    return compact('category', 'subcategory', 'vendor', 'product', 'order');
 }
 
 test('admin can create a syndicate agent', function () {

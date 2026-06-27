@@ -92,6 +92,7 @@
                 </a>
             </div>
         </section>
+        <x-home.subcategories />
         <x-home.promo-banner />
         <x-home.products />
         <x-home.best-selling-products />
@@ -114,8 +115,13 @@
 @push('scripts')
 @php
     $homeScriptI18n = [
+        'subIn' => __('home.subcategories_in'),
         'exploreTypes' => __('home.explore_product_types'),
+        'noSubsYet' => __('home.no_subcategories_yet'),
         'couldNotLoad' => __('home.could_not_load'),
+        'oneSub' => __('home.one_subcategory'),
+        'nSubs' => __('home.n_subcategories'),
+        'moreSubs' => __('home.more_subcategories'),
         'soldOut' => __('products.sold_out'),
         'addCart' => __('products.add_to_cart_btn'),
         'revOne' => __('home.review_one'),
@@ -143,6 +149,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
 
         return '';
+    }
+    function subcategoryImageUrl(subcategory) {
+        return subcategory.image_url || (subcategory.image ? '/storage/' + subcategory.image : '');
     }
     function typedUrl(url, key = 'type') {
         if (!selectedHomeType) {
@@ -173,6 +182,25 @@ document.addEventListener('DOMContentLoaded', async function () {
             return `<img src="${esc(imageUrl)}" alt="" class="h-full w-full rounded-2xl object-cover">`;
         }
         return `<svg class="h-8 w-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/></svg>`;
+    }
+    function subChipLeading(s) {
+        const imageUrl = subcategoryImageUrl(s);
+        if (imageUrl) {
+            return `<img src="${esc(imageUrl)}" class="h-3.5 w-3.5 rounded object-cover" alt="">`;
+        }
+        return '';
+    }
+    function subCarouselThumbInner(s) {
+        const imageUrl = subcategoryImageUrl(s);
+        if (imageUrl) {
+            return `<img src="${esc(imageUrl)}" class="h-full w-full object-cover" alt="">`;
+        }
+        return `<svg class="h-6 w-6 text-gray-300 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg>`;
+    }
+    function subCountLabel(n) {
+        const c = parseInt(n, 10) || 0;
+        if (c === 1) return homeI18n.oneSub || '';
+        return (homeI18n.nSubs || '').replace(':count', String(c));
     }
     function revLabel(n) {
         const c = parseInt(n, 10) || 0;
@@ -246,6 +274,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     return;
                 }
                 grid.innerHTML = allCategories.map((cat, i) => {
+                    const subs = cat.subcategories || [];
                     const href = typedPageHref('/', { category_id: cat.id });
 
                     return `
@@ -256,10 +285,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                         </div>
                         <div class="min-w-0 flex-1">
                             <h3 class="text-sm font-bold text-gray-900 group-hover:text-brand-600 sm:text-base dark:text-white dark:group-hover:text-brand-400">${esc(cat.name)}</h3>
-                            <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">${esc(categoryTypeLabel(cat.type))}</p>
+                            <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">${esc(subCountLabel(subs.length))}</p>
                         </div>
                         <svg class="h-5 w-5 shrink-0 text-gray-300 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-brand-500 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                     </div>
+                    ${subs.length ? `<div class="border-t border-gray-100 bg-gray-50/50 px-4 py-3 dark:border-gray-800 dark:bg-gray-800/30"><div class="flex flex-wrap gap-1.5">${subs.slice(0, 4).map(s => `<span class="inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1.5 text-[11px] font-medium text-gray-600 ring-1 ring-gray-200/80 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700">${subChipLeading(s)} ${esc(s.name)}</span>`).join('')}${subs.length > 4 ? `<span class="text-[11px] text-gray-400 px-2 py-1.5">${esc((homeI18n.moreSubs || '').replace(':count', String(subs.length - 4)))}</span>` : ''}</div></div>` : ''}
                 </a>`;
                 }).join('');
                 grid.querySelectorAll('.cat-card').forEach(el => observer.observe(el));
@@ -272,11 +302,51 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (barName) {
                 barName.textContent = cat ? cat.name : ('#' + selectedCategoryId);
             }
+            const desc = $('subs-section-desc');
+            if (desc) {
+                desc.textContent = cat
+                    ? (homeI18n.subIn || '').replace(':name', cat.name)
+                    : (homeI18n.exploreTypes || '');
+            }
+            const subs = (cat?.subcategories || []).map(s => ({ ...s, category_name: cat ? cat.name : '' }));
+            if (subs.length) {
+                renderSubcategories(subs);
+            } else {
+                $('subs-loading')?.classList.add('hidden');
+                const track = $('subs-track');
+                if (track) {
+                    track.innerHTML = '<p class="px-2 py-6 text-sm text-gray-400 dark:text-gray-500">' + esc(homeI18n.noSubsYet || '') + '</p>';
+                }
+            }
         } catch (e) {
             if ($('cats-loading')) {
                 $('cats-loading').innerHTML = '<p class="text-sm text-gray-400">' + esc(homeI18n.couldNotLoad || '') + '</p>';
             }
         }
+    }
+
+    function renderSubcategories(subs) {
+        $('subs-loading')?.classList.add('hidden');
+        const track = $('subs-track');
+        if (!track) {
+            return;
+        }
+        if (!subs.length) {
+            track.innerHTML = '';
+
+            return;
+        }
+        track.innerHTML = subs.map(s => `
+            <a href="${typedPageHref('/subcategories/' + s.id)}" class="group flex w-44 shrink-0 items-center gap-3 rounded-2xl border border-gray-200/80 bg-white p-3.5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-brand-200 focus:outline-none focus:ring-4 focus:ring-brand-500/15 sm:w-48 dark:border-gray-800 dark:bg-gray-800/50 dark:hover:border-brand-500">
+                <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 ring-1 ring-gray-200/50 dark:bg-gray-700 dark:ring-gray-600">
+                    ${subCarouselThumbInner(s)}
+                </div>
+                <div class="min-w-0">
+                    <p class="truncate text-sm font-bold text-gray-700 group-hover:text-brand-600 dark:text-gray-300 dark:group-hover:text-brand-400">${esc(s.name)}</p>
+                    <p class="truncate text-[10px] text-gray-400 dark:text-gray-500">${esc(s.category_name)}</p>
+                </div>
+            </a>
+        `).join('');
     }
 
     async function loadProducts() {

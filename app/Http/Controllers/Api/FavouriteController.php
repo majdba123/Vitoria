@@ -17,9 +17,10 @@ class FavouriteController extends Controller
             ->favouriteProducts()
             ->with([
                 'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(1),
-                'category:id,name',
+                'subcategory:id,name,category_id',
+                'subcategory.category:id,name',
             ])
-            ->select(['products.id', 'products.name', 'products.price', 'products.category_id', 'products.quantity'])
+            ->select(['products.id', 'products.name', 'products.price', 'products.subcategory_id', 'products.quantity'])
             ->latest('favourites.created_at')
             ->get();
 
@@ -32,7 +33,11 @@ class FavouriteController extends Controller
                 'price' => $p->price,
                 'quantity' => $p->quantity,
                 'first_photo_url' => $photo ? asset('storage/'.$photo->path) : null,
-                'category' => $p->category ? ['id' => $p->category->id, 'name' => $p->category->name] : null,
+                'subcategory' => $p->subcategory ? [
+                    'id' => $p->subcategory->id,
+                    'name' => $p->subcategory->name,
+                    'category' => $p->subcategory->category ? ['id' => $p->subcategory->category->id, 'name' => $p->subcategory->category->name] : null,
+                ] : null,
             ];
         });
 

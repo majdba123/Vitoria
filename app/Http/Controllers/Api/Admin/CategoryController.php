@@ -38,12 +38,14 @@ class CategoryController extends Controller
         if ($cacheKey) {
             $categories = $this->cacheService->remember($cacheKey, 1800, function () use ($type, $perPage) {
                 return Category::query()
+                    ->with('subcategories:id,name,image,category_id')
                     ->when($type, fn ($query) => $query->where('type', $type))
                     ->latest()
                     ->paginate($perPage);
             }, ['categories']);
         } else {
             $categories = Category::query()
+                ->with('subcategories:id,name,image,category_id')
                 ->when($type, fn ($query) => $query->where('type', $type))
                 ->when($search, fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
                 ->latest()
@@ -75,9 +77,12 @@ class CategoryController extends Controller
 
         try {
             $data = $this->cacheService->remember($cacheKey, 1800, function () use ($category) {
+                $category->load('subcategories:id,name,image,category_id');
+
                 return $category;
             }, ['categories']);
         } catch (\Exception $e) {
+            $category->load('subcategories:id,name,image,category_id');
             $data = $category;
         }
 
@@ -99,6 +104,7 @@ class CategoryController extends Controller
         $data['icon_class'] = null;
 
         $category = DB::transaction(fn () => Category::create($data));
+        $category->load('subcategories');
 
         return response()->json([
             'message' => __('Category created successfully.'),
@@ -129,6 +135,7 @@ class CategoryController extends Controller
                 $category->save();
             }
         });
+        $category->load('subcategories');
 
         return response()->json([
             'message' => __('Category updated successfully.'),

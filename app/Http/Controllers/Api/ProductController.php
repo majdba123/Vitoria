@@ -11,6 +11,7 @@ use App\Http\Resources\ProductListResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Models\ProductPhoto;
+use App\Models\Subcategory;
 use App\Models\User;
 use App\Models\Vendor;
 use App\Services\NotificationService;
@@ -31,20 +32,27 @@ class ProductController extends Controller
         public SelectedProductTypeService $selectedProductTypeService,
     ) {}
 
+    /**
+     * List products (slim response) with optional filters.
+     * Admin: all products, can filter by vendor_id and is_active.
+     * Vendor: only their products, can filter by is_active.
+     */
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
         $vendor = null;
 
+        // If vendor, scope to their products
         if ($user && $user->type === User::TYPE_VENDOR) {
             $vendor = $user->vendor;
             if (! $vendor) {
                 abort(403, __('Vendor profile not found.'));
             }
-
-            $filters = $request->only(['category_id', 'category_type', 'status', 'is_active', 'has_discount']);
+            // Allow status and is_active filters for vendors
+            $filters = $request->only(['category_id', 'category_type', 'subcategory_id', 'status', 'is_active', 'has_discount']);
         } else {
-            $filters = $request->only(['vendor_id', 'category_id', 'category_type', 'status', 'is_active', 'has_discount']);
+            // Admin: can filter by vendor_id, subcategory_id, status, and is_active
+            $filters = $request->only(['vendor_id', 'category_id', 'category_type', 'subcategory_id', 'status', 'is_active', 'has_discount']);
         }
 
         $perPage = min(max((int) $request->input('per_page', 15), 1), 50);
@@ -64,7 +72,7 @@ class ProductController extends Controller
 
     public function publicIndex(Request $request): JsonResponse
     {
-        $filters = $request->only(['category_id', 'category_type', 'has_discount', 'per_page', 'sort']);
+        $filters = $request->only(['category_id', 'category_type', 'subcategory_id', 'has_discount', 'per_page', 'sort']);
         $perPage = min((int) ($filters['per_page'] ?? 15), 50);
         $filters['per_page'] = $perPage;
         $filters['category_type'] = $request->has('category_type')
@@ -85,6 +93,9 @@ class ProductController extends Controller
         ]);
     }
 
+    /**
+     * Show a public product (for clients/users).
+     */
     public function publicShow(Request $request, Product $product): JsonResponse
     {
         if (! $product->is_active || $product->status !== Product::STATUS_APPROVED || $product->quantity <= 0) {
@@ -95,19 +106,19 @@ class ProductController extends Controller
             abort(404, __('Product not found.'));
         }
 
-        $product->loadMissing('category');
-        $this->selectedProductTypeService->abortIfTypeMismatch($request, $product->category?->type);
+        $product->loadMissing('subcategory.category');
+        $this->selectedProductTypeService->abortIfTypeMismatch($request, $product->subcategory?->category?->type);
 
         $cacheKey = "pub_product:{$product->id}";
         try {
             $productData = Cache::tags(['products'])->remember($cacheKey, 1800, function () use ($product) {
-                $product->load(['photos', 'category']);
+                $product->load(['photos', 'subcategory.category']);
                 $product->loadCount('reviews')->loadAvg('reviews', 'rating');
 
                 return new ProductResource($product);
             });
         } catch (\Exception $e) {
-            $product->load(['photos', 'category']);
+            $product->load(['photos', 'subcategory.category']);
             $product->loadCount('reviews')->loadAvg('reviews', 'rating');
             $productData = new ProductResource($product);
         }
@@ -118,10 +129,16 @@ class ProductController extends Controller
         ]);
     }
 
+    /**
+     * Show a single product.
+     * Admin: can view any product.
+     * Vendor: can only view their own products.
+     */
     public function show(Request $request, Product $product): JsonResponse
     {
         $user = $request->user();
 
+        // Vendor can only view their own products
         if ($user && $user->type === User::TYPE_VENDOR) {
             $vendor = $user->vendor;
             if (! $vendor) {
@@ -130,16 +147,18 @@ class ProductController extends Controller
             if ($product->vendor_id !== $vendor->id) {
                 abort(403, __('You do not own this product.'));
             }
-            $product->load(['photos', 'category']);
+            $product->load(['photos', 'subcategory.category']);
         } else {
-            $product->load(['vendor.user', 'photos', 'category']);
+            // Admin: load vendor relationship
+            $product->load(['vendor.user', 'photos', 'subcategory.category']);
         }
 
+        // Ensure primary photo is set if photos exist but no primary is set
         if ($product->photos->isNotEmpty() && ! $product->photos->where('is_primary', true)->first()) {
             $firstPhoto = $product->photos->first();
             $firstPhoto->update(['is_primary' => true]);
             $product->refresh();
-            $product->load(['photos', 'category']);
+            $product->load(['photos', 'subcategory.category']);
         }
 
         return response()->json([
@@ -148,12 +167,18 @@ class ProductController extends Controller
         ]);
     }
 
+    /**
+     * Create a product with optional photos.
+     * Admin: must provide vendor_id.
+     * Vendor: vendor_id is set automatically.
+     */
     public function store(Request $request): JsonResponse
     {
         $user = $request->user();
         $vendor = null;
         $targetVendor = null;
 
+        // Determine which request class to use and validate
         if ($user && $user->type === User::TYPE_VENDOR) {
             $vendor = $user->vendor;
             if (! $vendor) {
@@ -172,7 +197,12 @@ class ProductController extends Controller
         }
 
         $this->validateCategoryBelongsToVendor($targetVendor, (int) $validated['category_id']);
+        $this->validateSubcategoryBelongsToCategory(
+            (int) $validated['category_id'],
+            (int) $validated['subcategory_id'],
+        );
 
+        // Convert is_active to boolean if present
         if (isset($validated['is_active'])) {
             $validated['is_active'] = filter_var($validated['is_active'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
         }
@@ -238,11 +268,17 @@ class ProductController extends Controller
         ], 201);
     }
 
+    /**
+     * Update a product.
+     * Admin: can update any product.
+     * Vendor: can only update their own products.
+     */
     public function update(Request $request, Product $product): JsonResponse
     {
         $user = $request->user();
         $targetVendor = $product->vendor;
 
+        // Vendor can only update their own products
         if ($user && $user->type === User::TYPE_VENDOR) {
             $vendor = $user->vendor;
             if (! $vendor) {
@@ -257,10 +293,22 @@ class ProductController extends Controller
             $validated = $request->validate((new AdminUpdateProductRequest)->rules());
         }
 
-        if (array_key_exists('category_id', $validated)) {
-            $this->validateCategoryBelongsToVendor($targetVendor, (int) $validated['category_id']);
+        if (array_key_exists('category_id', $validated) || array_key_exists('subcategory_id', $validated)) {
+            $effectiveCategoryId = array_key_exists('category_id', $validated)
+                ? (int) $validated['category_id']
+                : (int) ($product->subcategory?->category_id ?? 0);
+
+            $effectiveSubcategoryId = array_key_exists('subcategory_id', $validated)
+                ? (int) $validated['subcategory_id']
+                : (int) ($product->subcategory_id ?? 0);
+
+            if ($effectiveCategoryId > 0 && $effectiveSubcategoryId > 0) {
+                $this->validateCategoryBelongsToVendor($targetVendor, $effectiveCategoryId);
+                $this->validateSubcategoryBelongsToCategory($effectiveCategoryId, $effectiveSubcategoryId);
+            }
         }
 
+        // Convert is_active to boolean if present
         if (isset($validated['is_active'])) {
             $validated['is_active'] = filter_var($validated['is_active'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
         }
@@ -271,21 +319,28 @@ class ProductController extends Controller
             ? (float) ($validated['discount_percentage'] ?? 0)
             : (float) ($product->discount_percentage ?? 0);
         $validated['discount_is_active'] = $effectiveDiscountPercentage > 0;
-        $validated['discount_status'] = Product::resolveDiscountStatus(
+        $autoDiscountStatus = Product::resolveDiscountStatus(
             $validated['discount_is_active'],
             $effectiveDiscountPercentage,
             $validated['discount_starts_at'] ?? optional($product->discount_starts_at)->toDateTimeString(),
             $validated['discount_ends_at'] ?? optional($product->discount_ends_at)->toDateTimeString(),
         );
+        $validated['discount_status'] = $autoDiscountStatus;
 
-        if (isset($validated['status']) && (! $user || $user->type !== User::TYPE_ADMIN)) {
-            unset($validated['status']);
+        // Only admin can update status
+        if (isset($validated['status'])) {
+            if (! $user || $user->type !== User::TYPE_ADMIN) {
+                unset($validated['status']); // Remove status from validated data for non-admins
+            }
         }
+
+        // Note: Photo updates (remove, upload, set primary) are handled separately via ProductPhotoController::updatePhotos
 
         $hadActiveDiscount = $product->discount_status === Product::DISCOUNT_STATUS_ACTIVE;
         $oldDiscountPct = $product->discount_percentage;
         $oldStarts = $product->discount_starts_at?->toDateTimeString();
         $oldEnds = $product->discount_ends_at?->toDateTimeString();
+
         $oldAssets = [
             'icon' => $product->icon,
             'image' => $product->image,
@@ -316,7 +371,7 @@ class ProductController extends Controller
             }
         }
 
-        $product->load($user && $user->type === User::TYPE_VENDOR ? ['photos', 'category'] : ['vendor.user', 'photos', 'category']);
+        $product->load($user && $user->type === User::TYPE_VENDOR ? ['photos', 'subcategory.category'] : ['vendor.user', 'photos', 'subcategory.category']);
 
         if ($product->discount_status === Product::DISCOUNT_STATUS_ACTIVE) {
             if (! $hadActiveDiscount) {
@@ -337,6 +392,9 @@ class ProductController extends Controller
         ]);
     }
 
+    /**
+     * Toggle product active status (admin only).
+     */
     public function toggleActive(Product $product): JsonResponse
     {
         $product = $this->productService->toggleActive($product);
@@ -349,6 +407,9 @@ class ProductController extends Controller
         ]);
     }
 
+    /**
+     * Update product status (admin only).
+     */
     public function updateStatus(Request $request, Product $product): JsonResponse
     {
         $request->validate([
@@ -357,7 +418,7 @@ class ProductController extends Controller
 
         $product = $this->productService->updateStatus($product, $request->input('status'));
 
-        if ($product->status === Product::STATUS_APPROVED) {
+        if ($product->status === 'approved') {
             $this->notificationService->notifyNewProductApproved($product);
         }
 
@@ -367,20 +428,29 @@ class ProductController extends Controller
         ]);
     }
 
+    /**
+     * Set primary photo for a product.
+     */
     public function setPrimaryPhoto(Request $request, Product $product, ProductPhoto $photo): JsonResponse
     {
         $this->productService->setPrimaryPhoto($product, $photo);
 
         return response()->json([
             'message' => __('Primary photo updated successfully.'),
-            'data' => new ProductResource($product->fresh(['vendor.user', 'photos', 'category'])),
+            'data' => new ProductResource($product->fresh(['vendor.user', 'photos', 'subcategory.category'])),
         ]);
     }
 
+    /**
+     * Delete a product.
+     * Admin: can delete any product.
+     * Vendor: can only delete their own products.
+     */
     public function destroy(Request $request, Product $product): JsonResponse
     {
         $user = $request->user();
 
+        // Vendor can only delete their own products
         if ($user && $user->type === User::TYPE_VENDOR) {
             $vendor = $user->vendor;
             if (! $vendor) {
@@ -396,6 +466,20 @@ class ProductController extends Controller
         return response()->json([
             'message' => __('Product deleted successfully.'),
         ]);
+    }
+
+    protected function validateSubcategoryBelongsToCategory(int $categoryId, int $subcategoryId): void
+    {
+        $belongsToCategory = Subcategory::query()
+            ->where('id', $subcategoryId)
+            ->where('category_id', $categoryId)
+            ->exists();
+
+        if (! $belongsToCategory) {
+            throw ValidationException::withMessages([
+                'subcategory_id' => __('Selected subcategory does not belong to the selected category.'),
+            ]);
+        }
     }
 
     protected function validateCategoryBelongsToVendor(?Vendor $vendor, int $categoryId): void

@@ -32,7 +32,7 @@ class Product extends Model
      */
     protected $fillable = [
         'vendor_id',
-        'category_id',
+        'subcategory_id',
         'name',
         'description',
         'icon',
@@ -89,6 +89,17 @@ class Product extends Model
         return $this->photos()->where('is_primary', true)->first();
     }
 
+    /**
+     * The subcategory that owns this product.
+     */
+    public function subcategory(): BelongsTo
+    {
+        return $this->belongsTo(Subcategory::class);
+    }
+
+    /**
+     * Users who favourited this product.
+     */
     public function favouritedBy(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'favourites')->withTimestamps();
@@ -110,11 +121,6 @@ class Product extends Model
         return $this->hasMany(ProductReview::class)->latest();
     }
 
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(Category::class);
-    }
-
     public function scopeVisible(Builder $query): Builder
     {
         return $query
@@ -130,7 +136,7 @@ class Product extends Model
             return $query;
         }
 
-        return $query->whereHas('category', fn (Builder $categoryQuery) => $categoryQuery->where('type', $type));
+        return $query->whereHas('subcategory.category', fn (Builder $categoryQuery) => $categoryQuery->where('type', $type));
     }
 
     public function hasActiveDiscount(): bool

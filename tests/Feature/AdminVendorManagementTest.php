@@ -3,6 +3,7 @@
 use App\Models\Category;
 use App\Models\City;
 use App\Models\Product;
+use App\Models\Subcategory;
 use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Support\Facades\Cache;
@@ -278,6 +279,15 @@ test('admin dashboard overview includes vendor type category type and recent ven
         'name' => 'Overview Veterinary',
         'type' => Category::TYPE_VETERINARY,
     ]);
+    $agricultureSubcategory = Subcategory::query()->create([
+        'category_id' => $agricultureCategory->id,
+        'name' => 'Overview Seeds',
+    ]);
+    $veterinarySubcategory = Subcategory::query()->create([
+        'category_id' => $veterinaryCategory->id,
+        'name' => 'Overview Vaccines',
+    ]);
+
     $agricultureVendor = Vendor::factory()->create([
         'store_name' => 'Overview Agriculture Vendor',
         'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
@@ -292,13 +302,13 @@ test('admin dashboard overview includes vendor type category type and recent ven
 
     Product::factory()->for($agricultureVendor)->create([
         'name' => 'Overview Agriculture Product',
-        'category_id' => $agricultureCategory->id,
+        'subcategory_id' => $agricultureSubcategory->id,
         'status' => Product::STATUS_APPROVED,
         'is_active' => true,
     ]);
     Product::factory()->for($bothVendor)->inactive()->create([
         'name' => 'Overview Veterinary Product',
-        'category_id' => $veterinaryCategory->id,
+        'subcategory_id' => $veterinarySubcategory->id,
         'status' => Product::STATUS_PENDING,
     ]);
 

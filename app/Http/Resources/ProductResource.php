@@ -34,7 +34,8 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id,
             'vendor_id' => $this->when($this->shouldExposeVendor($request), $this->vendor_id),
-            'category_id' => $this->category_id,
+            'category_id' => $this->subcategory?->category_id,
+            'subcategory_id' => $this->subcategory_id,
             'name' => $this->name,
             'description' => $this->description,
             'icon' => $this->icon,
@@ -53,8 +54,8 @@ class ProductResource extends JsonResource
             'quantity' => $this->quantity,
             'is_active' => $this->is_active,
             'status' => $this->status,
-            'category' => $this->whenLoaded('category', function () use ($request): ?array {
-                $category = $this->category;
+            'category' => $this->whenLoaded('subcategory', function () use ($request): ?array {
+                $category = $this->subcategory?->category;
 
                 if (! $category) {
                     return null;
@@ -71,6 +72,15 @@ class ProductResource extends JsonResource
                 }
 
                 return $data;
+            }),
+            'subcategory' => $this->whenLoaded('subcategory', function (): ?array {
+                $subcategory = $this->subcategory;
+
+                return $subcategory ? [
+                    'id' => $subcategory->id,
+                    'name' => $subcategory->name,
+                    'category_id' => $subcategory->category_id,
+                ] : null;
             }),
             'photos' => ProductPhotoResource::collection($this->whenLoaded('photos')),
             'vendor' => $this->when(

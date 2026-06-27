@@ -23,7 +23,8 @@ class ProductService
 
         $query->with([
             'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(3),
-            'category:id,name,type,commission',
+            'subcategory:id,name,category_id',
+            'subcategory.category:id,name,type,commission',
         ]);
 
         if (! $vendor && ! empty($filters['vendor_id'])) {
@@ -31,11 +32,15 @@ class ProductService
         }
 
         if (! empty($filters['category_id'])) {
-            $query->where('category_id', $filters['category_id']);
+            $query->whereHas('subcategory', fn ($q) => $q->where('category_id', $filters['category_id']));
         }
 
         if (! empty($filters['category_type'])) {
-            $query->whereHas('category', fn ($q) => $q->where('type', $filters['category_type']));
+            $query->whereHas('subcategory.category', fn ($q) => $q->where('type', $filters['category_type']));
+        }
+
+        if (! empty($filters['subcategory_id'])) {
+            $query->where('subcategory_id', $filters['subcategory_id']);
         }
 
         if (isset($filters['status']) && $filters['status'] !== '') {
@@ -81,6 +86,7 @@ class ProductService
     {
         $categoryId = ! empty($filters['category_id']) ? (int) $filters['category_id'] : null;
         $categoryType = ! empty($filters['category_type']) ? (string) $filters['category_type'] : null;
+        $subcategoryId = ! empty($filters['subcategory_id']) ? (int) $filters['subcategory_id'] : null;
         $hasDiscount = isset($filters['has_discount']) && $filters['has_discount'] !== ''
             ? filter_var($filters['has_discount'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)
             : null;
@@ -88,10 +94,10 @@ class ProductService
             ? $filters['sort'] : 'latest';
         $page = (int) request()->get('page', 1);
 
-        $cacheKey = "pub_products:c{$categoryId}:ct{$categoryType}:d{$hasDiscount}:srt{$sort}:pp{$perPage}:p{$page}";
+        $cacheKey = "pub_products:c{$categoryId}:ct{$categoryType}:s{$subcategoryId}:d{$hasDiscount}:srt{$sort}:pp{$perPage}:p{$page}";
 
-        return $this->cachedOrFetch(['products'], $cacheKey, 900, function () use ($perPage, $categoryId, $categoryType, $hasDiscount, $sort) {
-            return $this->fetchPublicProducts($perPage, $categoryId, $categoryType, $hasDiscount, $sort);
+        return $this->cachedOrFetch(['products'], $cacheKey, 900, function () use ($perPage, $categoryId, $categoryType, $subcategoryId, $hasDiscount, $sort) {
+            return $this->fetchPublicProducts($perPage, $categoryId, $categoryType, $subcategoryId, $hasDiscount, $sort);
         });
     }
 
@@ -102,6 +108,7 @@ class ProductService
         int $perPage,
         ?int $categoryId = null,
         ?string $categoryType = null,
+        ?int $subcategoryId = null,
         ?bool $hasDiscount = null,
         string $sort = 'latest'
     ): LengthAwarePaginator {
@@ -111,12 +118,15 @@ class ProductService
             ->withAvg('reviews', 'rating')
             ->with([
                 'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(1),
-                'category:id,name,type,logo,icon',
+                'subcategory:id,name,category_id',
+                'subcategory.category:id,name,type,logo,icon',
                 'vendor:id,store_name,user_id,logo,is_active,status',
             ]);
 
-        if ($categoryId) {
-            $query->where('category_id', $categoryId);
+        if ($subcategoryId) {
+            $query->where('subcategory_id', $subcategoryId);
+        } elseif ($categoryId) {
+            $query->whereHas('subcategory', fn ($q) => $q->where('category_id', $categoryId));
         }
 
         if ($categoryType) {
@@ -177,7 +187,7 @@ class ProductService
 
         $this->flushProductCache();
 
-        return $product->load($vendor ? ['photos', 'category'] : ['vendor.user', 'photos', 'category']);
+        return $product->load($vendor ? ['photos', 'subcategory.category'] : ['vendor.user', 'photos', 'subcategory.category']);
     }
 
     public function update(Product $product, array $data): Product
@@ -185,7 +195,7 @@ class ProductService
         $product->update($data);
         $this->flushProductCache();
 
-        return $product->fresh($product->vendor ? ['vendor.user', 'photos', 'category'] : ['photos', 'category']);
+        return $product->fresh($product->vendor ? ['vendor.user', 'photos', 'subcategory.category'] : ['photos', 'subcategory.category']);
     }
 
     public function delete(Product $product): void
@@ -205,7 +215,7 @@ class ProductService
         $product->update(['is_active' => ! $product->is_active]);
         $this->flushProductCache();
 
-        return $product->fresh(['vendor.user', 'photos', 'category']);
+        return $product->fresh(['vendor.user', 'photos', 'subcategory.category']);
     }
 
     public function updateStatus(Product $product, string $status): Product
@@ -213,7 +223,7 @@ class ProductService
         $product->update(['status' => $status]);
         $this->flushProductCache();
 
-        return $product->fresh(['vendor.user', 'photos', 'category']);
+        return $product->fresh(['vendor.user', 'photos', 'subcategory.category']);
     }
 
     public function setPrimaryPhoto(Product $product, ProductPhoto $photo): Product
@@ -226,7 +236,7 @@ class ProductService
         $photo->update(['is_primary' => true]);
         $this->flushProductCache();
 
-        return $product->fresh(['vendor.user', 'photos', 'category']);
+        return $product->fresh(['vendor.user', 'photos', 'subcategory.category']);
     }
 
     /**

@@ -50,6 +50,12 @@
                     </select>
                 </div>
                 <div>
+                    <label for="filter-subcategory" class="form-label">Filter by Subcategory</label>
+                    <select id="filter-subcategory" class="form-select" disabled>
+                        <option value="">Select category first...</option>
+                    </select>
+                </div>
+                <div>
                     <label for="filter-status" class="form-label">Filter by Active</label>
                     <select id="filter-status" class="form-select">
                         <option value="">All</option>
@@ -136,6 +142,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const productStatusSelect = document.getElementById('filter-product-status');
     const categoryTypeSelect = document.getElementById('filter-category-type');
     const categorySelect = document.getElementById('filter-category');
+    const subcategorySelect = document.getElementById('filter-subcategory');
     const statusSelect = document.getElementById('filter-status');
     const discountSelect = document.getElementById('filter-discount');
     const defaultDiscountOnly = {{ $discountOnly ? 'true' : 'false' }};
@@ -169,9 +176,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         currentPage = 1;
         loadProducts();
     });
-    categorySelect.addEventListener('change', function () {});
+    categorySelect.addEventListener('change', async function () {
+        await loadSubcategories(categorySelect.value);
+    });
     categoryTypeSelect.addEventListener('change', async function () {
         categorySelect.value = '';
+        subcategorySelect.innerHTML = '<option value="">Select category first...</option>';
+        subcategorySelect.disabled = true;
         await loadCategories();
     });
 
@@ -180,6 +191,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         productStatusSelect.value = '';
         categoryTypeSelect.value = '';
         categorySelect.value = '';
+        subcategorySelect.innerHTML = '<option value="">Select category first...</option>';
+        subcategorySelect.disabled = true;
         statusSelect.value = '';
         discountSelect.value = defaultDiscountOnly ? '1' : '';
         currentPage = 1;
@@ -205,6 +218,9 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
             if (categorySelect && categorySelect.value) {
                 params.append('category_id', categorySelect.value);
+            }
+            if (subcategorySelect && subcategorySelect.value) {
+                params.append('subcategory_id', subcategorySelect.value);
             }
             if (statusSelect && statusSelect.value !== '') {
                 params.append('is_active', statusSelect.value);
@@ -388,6 +404,28 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
+    async function loadSubcategories(categoryId) {
+        if (!categoryId) {
+            subcategorySelect.innerHTML = '<option value="">Select category first...</option>';
+            subcategorySelect.disabled = true;
+
+            return;
+        }
+
+        subcategorySelect.disabled = false;
+        subcategorySelect.innerHTML = '<option value="">Loading subcategories...</option>';
+
+        try {
+            const res = await window.axios.get('/api/admin/subcategories?category_id=' + categoryId);
+            const subcategories = res.data.data || [];
+            subcategorySelect.innerHTML = '<option value="">All Subcategories</option>' +
+                subcategories.map(subcategory => `<option value="${subcategory.id}">${esc(subcategory.name)}</option>`).join('');
+        } catch (error) {
+            subcategorySelect.innerHTML = '<option value="">Failed to load subcategories</option>';
+            subcategorySelect.disabled = true;
+            console.error('Failed to load subcategories:', error);
+        }
+    }
 });
 </script>
 @endpush

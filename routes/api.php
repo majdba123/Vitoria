@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\StartupPreferenceController;
+use App\Services\SelectedProductTypeService;
 use Illuminate\Broadcasting\BroadcastController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,39 @@ Route::middleware(['web', 'cache.response:120'])->group(function () {
     Route::prefix('categories')->as('categories.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'index'])->name('public.index');
         Route::get('/{category}', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'show'])->name('public.show');
+        Route::get('/{category}/subcategories', function (Request $request, \App\Models\Category $category, SelectedProductTypeService $selectedProductTypeService) {
+            $selectedProductTypeService->abortIfTypeMismatch($request, $category->type);
+
+            $subs = \Illuminate\Support\Facades\Cache::tags(['categories'])->remember(
+                "cat:{$category->id}:subs:".($selectedProductTypeService->resolve($request) ?? 'all'),
+                1800,
+                fn () => $category->subcategories()->select('id', 'name', 'image', 'category_id')->get()
+            );
+
+            return response()->json(['data' => $subs]);
+        })->name('public.subcategories');
+    });
+
+    Route::prefix('subcategories')->as('subcategories.')->group(function () {
+        Route::get('/{subcategory}', function (Request $request, \App\Models\Subcategory $subcategory, SelectedProductTypeService $selectedProductTypeService) {
+            $subcategory->loadMissing('category:id,name,type');
+            $selectedProductTypeService->abortIfTypeMismatch($request, $subcategory->category?->type);
+
+            $data = \Illuminate\Support\Facades\Cache::tags(['categories'])->remember(
+                "subcategory:{$subcategory->id}:".($selectedProductTypeService->resolve($request) ?? 'all'),
+                1800,
+                function () use ($subcategory) {
+                    $subcategory->load('category:id,name,type');
+
+                    return $subcategory;
+                }
+            );
+
+            return response()->json([
+                'message' => __('Subcategory retrieved successfully.'),
+                'data' => $data,
+            ]);
+        })->name('public.show');
     });
 });
 

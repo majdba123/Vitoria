@@ -39,7 +39,8 @@ class ProductListResource extends JsonResource
         $data = [
             'id' => $this->id,
             'vendor_id' => $this->when($this->shouldExposeVendor($request), $this->vendor_id),
-            'category_id' => $this->category_id,
+            'category_id' => $this->subcategory?->category_id,
+            'subcategory_id' => $this->subcategory_id,
             'name' => $this->name,
             'description' => $this->description,
             'icon' => $this->icon,
@@ -64,13 +65,18 @@ class ProductListResource extends JsonResource
             'review_count' => (int) ($this->reviews_count ?? 0),
         ];
 
-        if ($this->relationLoaded('category')) {
-            $category = $this->category;
+        if ($this->relationLoaded('subcategory')) {
+            $category = $this->subcategory?->category;
             $data['category'] = $category ? [
                 'id' => $category->id,
                 'name' => $category->name,
                 'type' => $category->type,
                 'type_label' => \App\Models\Category::typeLabels()[$category->type] ?? $category->type,
+            ] : null;
+            $data['subcategory'] = $this->subcategory ? [
+                'id' => $this->subcategory->id,
+                'name' => $this->subcategory->name,
+                'category_id' => $this->subcategory->category_id,
             ] : null;
         }
 

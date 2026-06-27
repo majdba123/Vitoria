@@ -2,6 +2,7 @@
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Subcategory;
 use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Http\UploadedFile;
@@ -16,6 +17,10 @@ test('admin product creation stores product image and icon uploads', function ()
         'name' => 'Upload Agriculture',
         'type' => Category::TYPE_AGRICULTURE,
     ]);
+    $subcategory = Subcategory::query()->create([
+        'category_id' => $category->id,
+        'name' => 'Upload Seeds',
+    ]);
     $vendor = Vendor::factory()->create([
         'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
     ]);
@@ -24,6 +29,7 @@ test('admin product creation stores product image and icon uploads', function ()
     $response = $this->post('/api/admin/products', [
         'vendor_id' => $vendor->id,
         'category_id' => $category->id,
+        'subcategory_id' => $subcategory->id,
         'name' => 'Asset Enabled Product',
         'description' => 'A product with a dedicated image and icon.',
         'price' => 125.50,
@@ -57,6 +63,10 @@ test('product asset uploads reject non image files', function () {
         'name' => 'Reject Upload Agriculture',
         'type' => Category::TYPE_AGRICULTURE,
     ]);
+    $subcategory = Subcategory::query()->create([
+        'category_id' => $category->id,
+        'name' => 'Reject Upload Seeds',
+    ]);
     $vendor = Vendor::factory()->create([
         'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
     ]);
@@ -65,6 +75,7 @@ test('product asset uploads reject non image files', function () {
     $this->post('/api/admin/products', [
         'vendor_id' => $vendor->id,
         'category_id' => $category->id,
+        'subcategory_id' => $subcategory->id,
         'name' => 'Invalid Asset Product',
         'price' => 45,
         'quantity' => 8,

@@ -17,9 +17,9 @@
         <h1 class="text-2xl font-black text-gray-900 sm:text-3xl dark:text-white">{{ __('categories.page_heading') }}</h1>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('categories.page_subtitle') }}</p>
         <div class="filter-panel mt-5 flex flex-wrap gap-2">
-            <button type="button" data-type-filter="" class="category-type-filter rounded-xl border border-brand-500 bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-sm">Ø§Ù„ÙƒÙ„</button>
-            <button type="button" data-type-filter="agriculture" class="category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">Ø²Ø±Ø§Ø¹ÙŠ</button>
-            <button type="button" data-type-filter="veterinary" class="category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">Ø¨ÙŠØ·Ø±ÙŠ</button>
+            <button type="button" data-type-filter="" class="category-type-filter rounded-xl border border-brand-500 bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-sm">الكل</button>
+            <button type="button" data-type-filter="agriculture" class="category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">زراعي</button>
+            <button type="button" data-type-filter="veterinary" class="category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">بيطري</button>
         </div>
 
         <div id="loading" class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -33,6 +33,8 @@
 @push('scripts')
 @php
     $categoriesIndexScriptI18n = [
+        'oneSub' => __('home.one_subcategory'),
+        'nSubs' => __('home.n_subcategories'),
         'commission' => __('categories.commission_line'),
         'loadErr' => __('categories.load_error'),
     ];
@@ -44,29 +46,31 @@ document.addEventListener('DOMContentLoaded', async function() {
     let selectedType = initialType !== null
         ? initialType
         : @json(auth()->user()?->preferred_product_type ?? session('preferred_product_type', request()->cookie('preferred_product_type', '')));
-
-    function esc(s) {
-        if (!s) return '';
-        const d = document.createElement('div');
-        d.textContent = s;
-        return d.innerHTML;
-    }
-
+    function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
     function categoryImageUrl(cat) {
-        if (cat.image_url) return cat.image_url;
-        if (cat.logo) return '/storage/' + cat.logo;
-        if (cat.icon) return '/storage/' + cat.icon;
+        if (cat.image_url) {
+            return cat.image_url;
+        }
+        if (cat.logo) {
+            return '/storage/' + cat.logo;
+        }
+        if (cat.icon) {
+            return '/storage/' + cat.icon;
+        }
+
         return '';
     }
-
+    function subcategoryImageUrl(subcategory) {
+        return subcategory.image_url || (subcategory.image ? '/storage/' + subcategory.image : '');
+    }
     function typedPageHref(path) {
         const parsed = new URL(path, window.location.origin);
         if (selectedType !== null) {
             parsed.searchParams.set('type', selectedType);
         }
+
         return parsed.pathname + parsed.search;
     }
-
     function setActiveTypeButton() {
         document.querySelectorAll('.category-type-filter').forEach(button => {
             const active = button.dataset.typeFilter === selectedType;
@@ -75,7 +79,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                 : 'category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300';
         });
     }
-
     function categoryThumbInner(cat) {
         const imageUrl = categoryImageUrl(cat);
         if (imageUrl) {
@@ -83,11 +86,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         return `<svg class="h-8 w-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581"/></svg>`;
     }
-
+    function subListLeading(s) {
+        const imageUrl = subcategoryImageUrl(s);
+        if (imageUrl) {
+            return `<img src="${esc(imageUrl)}" class="h-4 w-4 rounded object-cover" alt="">`;
+        }
+        return '';
+    }
+    function subCountLabel(n) {
+        const c = parseInt(n, 10) || 0;
+        if (c === 1) return catPageI18n.oneSub || '';
+        return (catPageI18n.nSubs || '').replace(':count', String(c));
+    }
     function commissionLine(pct) {
         return (catPageI18n.commission || '').replace(':count', String(pct));
     }
-
     async function loadCategories() {
         document.getElementById('loading').classList.remove('hidden');
         document.getElementById('grid').innerHTML = '';
@@ -95,6 +108,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         const params = new URLSearchParams({ per_page: '100' });
         if (selectedType) {
             params.set('type', selectedType);
+        } else {
+            params.set('type', '');
         }
         const nextUrl = new URL(window.location.href);
         if (selectedType) {
@@ -106,7 +121,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         const res = await axios.get('/api/categories?' + params.toString());
         const cats = res.data.data || [];
         document.getElementById('loading').classList.add('hidden');
-        document.getElementById('grid').innerHTML = cats.map(cat => `
+        document.getElementById('grid').innerHTML = cats.map(cat => {
+            const subs = cat.subcategories || [];
+            return `
             <div class="cat-card overflow-hidden rounded-2xl border border-gray-200/80 bg-white dark:border-gray-800 dark:bg-gray-900">
                 <a href="${typedPageHref('/categories/' + cat.id)}" class="flex h-full items-center gap-4 p-5 focus:outline-none focus:ring-4 focus:ring-brand-500/15">
                     <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-50 to-brand-100 ring-1 ring-brand-200/50 dark:from-brand-500/10 dark:to-brand-500/5 dark:ring-brand-500/20">
@@ -114,11 +131,15 @@ document.addEventListener('DOMContentLoaded', async function() {
                     </div>
                     <div class="min-w-0 flex-1">
                         <h2 class="text-base font-bold text-gray-900 dark:text-white">${esc(cat.name)}</h2>
-                        <p class="mt-0.5 text-xs text-gray-400">${esc(commissionLine(cat.commission))}</p>
+                        <p class="mt-0.5 text-xs text-gray-400">${esc(subCountLabel(subs.length))} &middot; ${esc(commissionLine(cat.commission))}</p>
                     </div>
                     <svg class="h-5 w-5 shrink-0 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                 </a>
-            </div>`).join('');
+                ${subs.length ? `<div class="border-t border-gray-100 bg-gray-50/50 px-5 py-3 dark:border-gray-800 dark:bg-gray-800/30">
+                    <div class="flex flex-wrap gap-2">${subs.map(s => `<a href="${typedPageHref('/subcategories/' + s.id)}" class="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-gray-600 ring-1 ring-gray-200/80 transition-all hover:ring-brand-300 hover:text-brand-600 focus:outline-none focus:ring-4 focus:ring-brand-500/15 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:ring-brand-500 dark:hover:text-brand-400">${subListLeading(s)} ${esc(s.name)}</a>`).join('')}</div>
+                </div>` : ''}
+            </div>`;
+        }).join('');
     }
 
     document.querySelectorAll('.category-type-filter').forEach(button => {
@@ -130,9 +151,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     try {
         await loadCategories();
-    } catch (e) {
-        document.getElementById('loading').innerHTML = '<p class="text-sm text-gray-400">' + esc(catPageI18n.loadErr || '') + '</p>';
-    }
+    } catch(e) { document.getElementById('loading').innerHTML = '<p class="text-sm text-gray-400">' + esc(catPageI18n.loadErr || '') + '</p>'; }
 });
 </script>
 @endpush

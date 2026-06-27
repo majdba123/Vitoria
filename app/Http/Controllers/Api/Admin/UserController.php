@@ -56,9 +56,10 @@ class UserController extends Controller
             ->with([
                 'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(1),
                 'vendor:id,store_name',
-                'category:id,name',
+                'subcategory:id,name,category_id',
+                'subcategory.category:id,name',
             ])
-            ->select(['products.id', 'products.name', 'products.price', 'products.vendor_id', 'products.category_id', 'products.quantity'])
+            ->select(['products.id', 'products.name', 'products.price', 'products.vendor_id', 'products.subcategory_id', 'products.quantity'])
             ->latest('favourites.created_at')
             ->get();
 
@@ -72,7 +73,11 @@ class UserController extends Controller
                 'quantity' => $product->quantity,
                 'first_photo_url' => $photo ? asset('storage/'.$photo->path) : null,
                 'vendor' => $product->vendor ? ['id' => $product->vendor->id, 'store_name' => $product->vendor->store_name] : null,
-                'category' => $product->category ? ['id' => $product->category->id, 'name' => $product->category->name] : null,
+                'subcategory' => $product->subcategory ? [
+                    'id' => $product->subcategory->id,
+                    'name' => $product->subcategory->name,
+                    'category' => $product->subcategory->category ? ['id' => $product->subcategory->category->id, 'name' => $product->subcategory->category->name] : null,
+                ] : null,
             ];
         });
 

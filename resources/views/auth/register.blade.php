@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const meta = document.createElement('span');
         meta.className = 'mt-1 block text-xs text-gray-500 dark:text-gray-400';
-        meta.textContent = category.type || '';
+        meta.textContent = `${category.subcategories?.length || 0} subcategories`;
 
         content.append(name, meta);
         label.append(input, content);

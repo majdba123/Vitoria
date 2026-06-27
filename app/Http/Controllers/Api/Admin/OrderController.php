@@ -25,8 +25,8 @@ class OrderController extends Controller
                 'user:id,name,email',
                 'vendor:id,store_name',
                 'items:id,order_id,product_id,product_name,quantity,line_total',
-                'items.product:id,category_id',
-                'items.product.category:id,name',
+                'items.product:id,subcategory_id',
+                'items.product.subcategory:id,name,category_id',
             ])
             ->latest();
 
@@ -44,8 +44,14 @@ class OrderController extends Controller
 
         if ($request->filled('category_id')) {
             $categoryId = (int) $request->input('category_id');
+            $query->whereHas('items.product.subcategory', function ($builder) use ($categoryId) {
+                $builder->where('category_id', $categoryId);
+            });
+        }
+
+        if ($request->filled('subcategory_id')) {
             $query->whereHas('items.product', function ($builder) use ($request) {
-                $builder->where('category_id', (int) $request->input('category_id'));
+                $builder->where('subcategory_id', (int) $request->input('subcategory_id'));
             });
         }
 
@@ -86,8 +92,9 @@ class OrderController extends Controller
                 'user:id,name,email',
                 'vendor:id,store_name',
                 'items:id,order_id,product_id,product_name,original_unit_price,has_discount,applied_discount_percentage,unit_price,quantity,line_total,discount_amount',
-                'items.product:id,category_id',
-                'items.product.category:id,name',
+                'items.product:id,subcategory_id',
+                'items.product.subcategory:id,name,category_id',
+                'items.product.subcategory.category:id,name',
             ])
             ->findOrFail($orderId);
 
