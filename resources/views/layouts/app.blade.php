@@ -23,7 +23,15 @@
         })();
     </script>
 </head>
-<body class="min-h-screen text-gray-900 antialiased transition-colors duration-300 dark:text-gray-100">
+@php
+    $sessionAuthUser = auth()->check()
+        ? (new \App\Http\Resources\Auth\UserResource(auth()->user()->loadMissing('syndicate')))->resolve(request())
+        : null;
+@endphp
+<body
+    data-session-auth="{{ auth()->check() ? '1' : '0' }}"
+    class="min-h-screen text-gray-900 antialiased transition-colors duration-300 dark:text-gray-100"
+>
     @php
         $appStrings = [
             'fav_added' => __('common.added_to_favourites'),
@@ -38,6 +46,7 @@
         ];
     @endphp
     <script>window.__appStrings = @json($appStrings);</script>
+    <script>window.__sessionAuthUser = @json($sessionAuthUser);</script>
 
     <x-navbar />
 

@@ -25,7 +25,15 @@
         })();
     </script>
 </head>
-<body class="dashboard-body min-h-screen font-sans text-gray-900 antialiased dark:text-gray-100">
+@php
+    $sessionAuthUser = auth()->check()
+        ? (new \App\Http\Resources\Auth\UserResource(auth()->user()->loadMissing('syndicate')))->resolve(request())
+        : null;
+@endphp
+<body
+    data-session-auth="{{ auth()->check() ? '1' : '0' }}"
+    class="dashboard-body min-h-screen font-sans text-gray-900 antialiased dark:text-gray-100"
+>
     <div id="syndicate-app" class="hidden">
         <div id="sidebar-backdrop" class="fixed inset-0 z-40 hidden bg-gray-950/55 backdrop-blur-sm lg:hidden" onclick="closeSidebar()"></div>
         <aside id="syndicate-sidebar" class="dashboard-sidebar fixed inset-y-0 {{ $sidebarEdgeClass }} z-50 flex w-72 {{ $sidebarHiddenClass }} flex-col lg:translate-x-0">
@@ -105,6 +113,7 @@
         </div>
     </div>
     <script>
+        window.__sessionAuthUser = @json($sessionAuthUser);
         const syndicateHiddenClass = @json($sidebarHiddenClass);
         function deleteCookie(name) { document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/'; }
         function syndicateTypeLabel(type) {
@@ -119,8 +128,13 @@
             window.location.replace('{{ route("login") }}?logout=1');
         };
         document.addEventListener('DOMContentLoaded', async function () {
-            if (!window.Auth || !window.Auth.isAuthenticated()) { window.location.href = '{{ route("login") }}'; return; }
+            if (window.__sessionAuthUser && window.Auth?.setUser) {
+                window.Auth.setUser(window.__sessionAuthUser);
+            }
             try {
+                if (window.Auth?.applyToken) {
+                    window.Auth.applyToken();
+                }
                 const response = await window.axios.get('/api/user');
                 const user = response.data.data || response.data;
                 if (user.type !== 3) { window.Auth.removeToken(); window.location.href = '{{ route("login") }}'; return; }
@@ -128,7 +142,12 @@
                 document.getElementById('syndicate-loading').classList.add('hidden');
                 document.getElementById('syndicate-app').classList.remove('hidden');
                 document.dispatchEvent(new CustomEvent('syndicate-ready'));
-            } catch (error) { window.Auth.removeToken(); window.location.href = '{{ route("login") }}'; }
+            } catch (error) {
+                if (window.Auth?.clearAll) {
+                    window.Auth.clearAll();
+                }
+                window.location.href = '{{ route("login") }}';
+            }
         });
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('sidebar-toggle')?.addEventListener('click', function () {

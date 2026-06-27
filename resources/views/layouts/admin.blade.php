@@ -26,7 +26,15 @@
         })();
     </script>
 </head>
-<body class="dashboard-body min-h-screen font-sans text-gray-900 antialiased transition-colors duration-300 dark:text-gray-100">
+@php
+    $sessionAuthUser = auth()->check()
+        ? (new \App\Http\Resources\Auth\UserResource(auth()->user()->loadMissing('syndicate')))->resolve(request())
+        : null;
+@endphp
+<body
+    data-session-auth="{{ auth()->check() ? '1' : '0' }}"
+    class="dashboard-body min-h-screen font-sans text-gray-900 antialiased transition-colors duration-300 dark:text-gray-100"
+>
     <div id="admin-app" class="hidden">
         <div id="sidebar-backdrop" class="fixed inset-0 z-40 hidden bg-gray-950/55 backdrop-blur-sm transition-opacity dark:bg-black/70 lg:hidden" onclick="closeSidebar()"></div>
 
@@ -125,6 +133,7 @@
         ];
     @endphp
     <script>
+        window.__sessionAuthUser = @json($sessionAuthUser);
         window.__adminStrings = @json($adminStrings);
         const adminSidebarHiddenClass = @json($isRtl ? 'translate-x-full' : '-translate-x-full');
         function toggleAdminTheme() {
@@ -181,12 +190,14 @@
                 return;
             }
 
-            if (!window.Auth || !window.Auth.isAuthenticated()) {
-                window.location.href = '{{ route("login") }}';
-                return;
+            if (window.__sessionAuthUser && window.Auth?.setUser) {
+                window.Auth.setUser(window.__sessionAuthUser);
             }
 
             try {
+                if (window.Auth?.applyToken) {
+                    window.Auth.applyToken();
+                }
                 const response = await window.axios.get('/api/user');
                 const user = response.data.data || response.data;
 
@@ -215,7 +226,9 @@
                     loadAdminNotificationDropdown(1);
                 }
             } catch (error) {
-                window.Auth.removeToken();
+                if (window.Auth?.clearAll) {
+                    window.Auth.clearAll();
+                }
                 window.location.href = '{{ route("login") }}';
             }
         });

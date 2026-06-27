@@ -178,7 +178,7 @@ window.Auth = {
     },
 
     isAuthenticated() {
-        return !!this.getToken();
+        return !!this.getToken() || document.body?.dataset?.sessionAuth === '1';
     },
 
     clearAll() {

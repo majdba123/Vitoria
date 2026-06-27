@@ -197,6 +197,16 @@ test('syndicate login redirects to syndicate dashboard and skips user type selec
         ->assertJsonPath('data.redirect_url', route('syndicate.dashboard'));
 });
 
+test('api user endpoint accepts authenticated web sessions without bearer token', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin)
+        ->getJson('/api/user')
+        ->assertOk()
+        ->assertJsonPath('data.id', $admin->id)
+        ->assertJsonPath('data.type', User::TYPE_ADMIN);
+});
+
 test('admin can create syndicate without logo and with valid logo', function () {
     Storage::fake('public');
     repairAdmin();

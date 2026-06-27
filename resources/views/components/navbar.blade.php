@@ -249,8 +249,11 @@ window.__navStrings = @json($navStrings);
 const NAV_ROLE_MAP = @json($navRoleLabels);
 const NAV_ROLE_DEFAULT = @json($navDefaultRole);
 document.addEventListener('DOMContentLoaded', function () {
+    if (window.__sessionAuthUser && window.Auth?.setUser) {
+        window.Auth.setUser(window.__sessionAuthUser);
+    }
     updateNavbar();
-    refreshSessionUserFromApi();
+    refreshSessionUserFromApi(Boolean(window.__sessionAuthUser));
     loadNavCategories();
     initMegaMenu();
     initThemeToggle();
@@ -561,8 +564,8 @@ function initNotificationDropdown() {
     });
 }
 
-async function refreshSessionUserFromApi() {
-    if (!window.Auth || !window.Auth.getToken()) {
+async function refreshSessionUserFromApi(force = false) {
+    if (!force && (!window.Auth || !window.Auth.getToken())) {
         return;
     }
     try {
@@ -573,7 +576,15 @@ async function refreshSessionUserFromApi() {
             updateNavbar();
         }
     } catch (e) {
-        // 401/403: axios interceptor clears session and may redirect
+        if (e?.response?.status === 401 || e?.response?.status === 403) {
+            if (window.Auth?.clearAll) {
+                window.Auth.clearAll();
+            }
+            if (document.body?.dataset) {
+                document.body.dataset.sessionAuth = '0';
+            }
+            updateNavbar();
+        }
     }
 }
 
@@ -584,7 +595,14 @@ async function fetchAndSetUser() {
         window.Auth.setUser(user);
         updateNavbar();
     } catch (e) {
-        // 401: axios interceptor clears session and redirects when a token was sent
+        if (e?.response?.status === 401 || e?.response?.status === 403) {
+            if (window.Auth?.clearAll) {
+                window.Auth.clearAll();
+            }
+            if (document.body?.dataset) {
+                document.body.dataset.sessionAuth = '0';
+            }
+        }
         updateNavbar();
     }
 }
