@@ -24,9 +24,9 @@
     <section id="home-type-selector" class="page-shell">
         <div class="workspace-hero soft-grid">
             <div class="mx-auto max-w-3xl text-center lg:mx-0 lg:max-w-2xl lg:text-start">
-                <span class="badge-brand">ابدأ من هنا</span>
-                <h1 class="mt-4 max-w-2xl text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">اختر نوع المنتجات التي ترغب في تصفحها</h1>
-                <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">سيتم عرض التصنيفات والمنتجات المناسبة لاختيارك فقط، ويمكنك تغيير النوع من هنا في أي وقت.</p>
+                <span class="badge-brand">{{ "\u{0627}\u{0628}\u{062f}\u{0623} \u{0645}\u{0646} \u{0647}\u{0646}\u{0627}" }}</span>
+                <h1 class="mt-4 max-w-2xl text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">{{ "\u{0627}\u{062e}\u{062a}\u{0631} \u{0646}\u{0648}\u{0639} \u{0627}\u{0644}\u{0645}\u{0646}\u{062a}\u{062c}\u{0627}\u{062a} \u{0627}\u{0644}\u{062a}\u{064a} \u{062a}\u{0631}\u{063a}\u{0628} \u{0641}\u{064a} \u{062a}\u{0635}\u{0641}\u{062d}\u{0647}\u{0627}" }}</h1>
+                <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">{{ "\u{0633}\u{064a}\u{062a}\u{0645} \u{0639}\u{0631}\u{0636} \u{0627}\u{0644}\u{062a}\u{0635}\u{0646}\u{064a}\u{0641}\u{0627}\u{062a} \u{0648}\u{0627}\u{0644}\u{0645}\u{0646}\u{062a}\u{062c}\u{0627}\u{062a} \u{0627}\u{0644}\u{0645}\u{0646}\u{0627}\u{0633}\u{0628}\u{0629} \u{0644}\u{0627}\u{062e}\u{062a}\u{064a}\u{0627}\u{0631}\u{0643} \u{0641}\u{0642}\u{0637}\u{060c} \u{0648}\u{064a}\u{0645}\u{0643}\u{0646}\u{0643} \u{062a}\u{063a}\u{064a}\u{064a}\u{0631} \u{0627}\u{0644}\u{0646}\u{0648}\u{0639} \u{0645}\u{0646} \u{0647}\u{0646}\u{0627} \u{0641}\u{064a} \u{0623}\u{064a} \u{0648}\u{0642}\u{062a}." }}</p>
             </div>
 
             @if (session('success'))

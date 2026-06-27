@@ -54,7 +54,7 @@
             <div class="modal-shell w-full">
                 <div class="border-b border-gray-100 px-6 py-5 dark:border-gray-800">
                     <p class="text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400">Vetora</p>
-                    <h2 id="startup-title" class="mt-1 text-xl font-black text-gray-900 dark:text-white">اضبط تفضيلاتك</h2>
+                    <h2 id="startup-title" class="mt-1 text-xl font-black text-gray-900 dark:text-white">{{ "\u{0627}\u{0636}\u{0628}\u{0637} \u{062a}\u{0641}\u{0636}\u{064a}\u{0644}\u{0627}\u{062a}\u{0643}" }}</h2>
                 </div>
                 <div class="px-6 py-5">
                     <div class="mb-5 grid grid-cols-2 gap-2">
@@ -63,8 +63,8 @@
                     </div>
                     <div id="startup-location-step" class="space-y-4">
                         <div>
-                            <label for="startup-location" class="mb-1.5 block text-sm font-bold text-gray-800 dark:text-gray-200">العنوان أو تفضيل الموقع</label>
-                            <input id="startup-location" type="text" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="المدينة، المنطقة، أو تفضيل التوصيل">
+                            <label for="startup-location" class="mb-1.5 block text-sm font-bold text-gray-800 dark:text-gray-200">{{ "\u{0627}\u{0644}\u{0639}\u{0646}\u{0648}\u{0627}\u{0646} \u{0623}\u{0648} \u{062a}\u{0641}\u{0636}\u{064a}\u{0644} \u{0627}\u{0644}\u{0645}\u{0648}\u{0642}\u{0639}" }}</label>
+                            <input id="startup-location" type="text" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="&#1575;&#1604;&#1605;&#1583;&#1610;&#1606;&#1577;&#1548; &#1575;&#1604;&#1605;&#1606;&#1591;&#1602;&#1577;&#1548; &#1571;&#1608; &#1578;&#1601;&#1590;&#1610;&#1604; &#1575;&#1604;&#1578;&#1608;&#1589;&#1610;&#1604;">
                         </div>
                         <button type="button" id="startup-use-browser-location" class="inline-flex items-center gap-2 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-brand-500/10">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
@@ -75,15 +75,15 @@
                     </div>
                     <div id="startup-timezone-step" class="hidden space-y-4">
                         <div>
-                            <label for="startup-timezone" class="mb-1.5 block text-sm font-bold text-gray-800 dark:text-gray-200">المنطقة الزمنية</label>
+                            <label for="startup-timezone" class="mb-1.5 block text-sm font-bold text-gray-800 dark:text-gray-200">{{ "\u{0627}\u{0644}\u{0645}\u{0646}\u{0637}\u{0642}\u{0629} \u{0627}\u{0644}\u{0632}\u{0645}\u{0646}\u{064a}\u{0629}" }}</label>
                             <select id="startup-timezone" class="form-select"></select>
                         </div>
                     </div>
                     <p id="startup-error" class="mt-4 hidden rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300"></p>
                 </div>
                 <div class="flex items-center justify-between gap-3 border-t border-gray-100 px-6 py-4 dark:border-gray-800">
-                    <button type="button" id="startup-back" class="hidden rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800">رجوع</button>
-                    <button type="button" id="startup-next" class="ms-auto rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-black text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">متابعة</button>
+                    <button type="button" id="startup-back" class="hidden rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800">{{ "\u{0631}\u{062c}\u{0648}\u{0639}" }}</button>
+                    <button type="button" id="startup-next" class="ms-auto rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-black text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">{{ "\u{0645}\u{062a}\u{0627}\u{0628}\u{0639}\u{0629}" }}</button>
                 </div>
             </div>
         </div>
@@ -263,8 +263,8 @@
             locationStep.classList.toggle('hidden', isTimezone);
             timezoneStep.classList.toggle('hidden', !isTimezone);
             backBtn.classList.toggle('hidden', !isTimezone);
-            nextBtn.textContent = isTimezone ? 'إنهاء الإعداد' : 'متابعة';
-            titleEl.textContent = isTimezone ? 'اختر المنطقة الزمنية' : 'اضبط تفضيلاتك';
+            nextBtn.textContent = isTimezone ? '\u0625\u0646\u0647\u0627\u0621 \u0627\u0644\u0625\u0639\u062f\u0627\u062f' : '\u0645\u062a\u0627\u0628\u0639\u0629';
+            titleEl.textContent = isTimezone ? '\u0627\u062e\u062a\u0631 \u0627\u0644\u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u0632\u0645\u0646\u064a\u0629' : '\u0627\u0636\u0628\u0637 \u062a\u0641\u0636\u064a\u0644\u0627\u062a\u0643';
             locIndicator.className = 'h-1.5 rounded-full ' + (isTimezone ? 'bg-brand-500/50' : 'bg-brand-500');
             tzIndicator.className = 'h-1.5 rounded-full ' + (isTimezone ? 'bg-brand-500' : 'bg-gray-200 dark:bg-gray-700');
         }
@@ -300,7 +300,7 @@
             navigator.geolocation.getCurrentPosition(function(position) {
                 document.getElementById('startup-latitude').value = position.coords.latitude;
                 document.getElementById('startup-longitude').value = position.coords.longitude;
-                document.getElementById('startup-location').value = 'تم اختيار موقع المتصفح';
+                document.getElementById('startup-location').value = '\u062a\u0645 \u0627\u062e\u062a\u064a\u0627\u0631 \u0645\u0648\u0642\u0639 \u0627\u0644\u0645\u062a\u0635\u0641\u062d';
             }, function() {
                 showError('تعذر قراءة موقع المتصفح. يمكنك كتابة الموقع يدوياً.');
             }, { enableHighAccuracy: false, timeout: 6000 });
@@ -317,7 +317,7 @@
             try {
                 await window.axios.post('/api/startup/preferences', {
                     timezone: timezoneSelect.value,
-                    location_preference: document.getElementById('startup-location').value || null,
+                document.getElementById('startup-location').value = '\u062a\u0645 \u0627\u062e\u062a\u064a\u0627\u0631 \u0645\u0648\u0642\u0639 \u0627\u0644\u0645\u062a\u0635\u0641\u062d';
                     latitude: document.getElementById('startup-latitude').value || null,
                     longitude: document.getElementById('startup-longitude').value || null,
                 });
@@ -325,7 +325,7 @@
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
             } catch (error) {
-                showError(error.response?.data?.message || 'تعذر حفظ التفضيلات.');
+                showError(error.response?.data?.message || '\u062a\u0639\u0630\u0631 \u062d\u0641\u0638 \u0627\u0644\u062a\u0641\u0636\u064a\u0644\u0627\u062a.');
             } finally {
                 nextBtn.disabled = false;
             }
