@@ -34,23 +34,23 @@ class ArabicCategorySeeder extends Seeder
     public static function categories(): array
     {
         return [
-            ['name' => 'Ø§Ù„Ø¨Ø°ÙˆØ±', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-seedling', 'commission' => 4.5],
-            ['name' => 'Ø§Ù„Ø£Ø³Ù…Ø¯Ø©', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-leaf', 'commission' => 5.0],
-            ['name' => 'Ø£Ù†Ø¸Ù…Ø© Ø§Ù„Ø±ÙŠ', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-droplet', 'commission' => 5.5],
-            ['name' => 'Ø§Ù„Ø¨ÙŠÙˆØª Ø§Ù„Ø¨Ù„Ø§Ø³ØªÙŠÙƒÙŠØ©', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-warehouse', 'commission' => 6.0],
-            ['name' => 'Ø§Ù„Ù…Ø¹Ø¯Ø§Øª Ø§Ù„Ø²Ø±Ø§Ø¹ÙŠØ©', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-tractor', 'commission' => 6.5],
-            ['name' => 'Ø§Ù„Ù…Ø¨ÙŠØ¯Ø§Øª Ø§Ù„Ø²Ø±Ø§Ø¹ÙŠØ©', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-spray-can-sparkles', 'commission' => 5.25],
-            ['name' => 'Ø§Ù„ØªØ±Ø¨Ø© ÙˆØ§Ù„Ø³Ù…Ø§Ø¯ Ø§Ù„Ø¹Ø¶ÙˆÙŠ', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-mound', 'commission' => 4.75],
-            ['name' => 'Ø£Ø¯ÙˆØ§Øª Ø§Ù„Ø­ØµØ§Ø¯', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-wheat-awn', 'commission' => 5.75],
-            ['name' => 'Ø§Ù„Ø£Ø¯ÙˆÙŠØ© Ø§Ù„Ø¨ÙŠØ·Ø±ÙŠØ©', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-prescription-bottle-medical', 'commission' => 6.0],
-            ['name' => 'Ø§Ù„Ù„Ù‚Ø§Ø­Ø§Øª', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-syringe', 'commission' => 6.25],
-            ['name' => 'Ù…Ø¹Ø¯Ø§Øª Ø§Ù„Ø¹ÙŠØ§Ø¯Ø§Øª Ø§Ù„Ø¨ÙŠØ·Ø±ÙŠØ©', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-stethoscope', 'commission' => 6.5],
-            ['name' => 'Ù…ÙƒÙ…Ù„Ø§Øª Ø§Ù„Ø£Ø¹Ù„Ø§Ù', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-bowl-food', 'commission' => 5.5],
-            ['name' => 'Ø£Ø¯ÙˆØ§Øª Ø±Ø¹Ø§ÙŠØ© Ø§Ù„Ø­ÙŠÙˆØ§Ù†Ø§Øª', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-hand-holding-medical', 'commission' => 5.75],
-            ['name' => 'Ù…Ø³ØªÙ„Ø²Ù…Ø§Øª Ø§Ù„Ù…ÙˆØ§Ø´ÙŠ', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-cow', 'commission' => 5.25],
-            ['name' => 'Ø§Ù„Ù…Ø·Ù‡Ø±Ø§Øª Ø§Ù„Ø¨ÙŠØ·Ø±ÙŠØ©', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-pump-medical', 'commission' => 5.0],
-            ['name' => 'Ø®Ø¯Ù…Ø§Øª Ø¨ÙŠØ·Ø±ÙŠØ©', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-user-doctor', 'commission' => 7.0],
-        ];
+            ['name' => 'البذور', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-seedling', 'commission' => 4.5],
+            ['name' => 'الأسمدة', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-leaf', 'commission' => 5.0],
+            ['name' => 'أنظمة الري', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-droplet', 'commission' => 5.5],
+            ['name' => 'البيوت البلاستيكية',  'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-warehouse', 'commission' => 6.0],
+            ['name' => 'المعدات الزراعية', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-tractor', 'commission' => 6.5],
+            ['name' => 'المبيدات الزراعية',  'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-spray-can-sparkles', 'commission' => 5.25],
+            ['name' => 'التربة والسماد العضوي','type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-mound', 'commission' => 4.75],
+            ['name' => 'أدوات الحصاد', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-wheat-awn', 'commission' => 5.75],
+            ['name' => 'الأدوية البيطرية','type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-prescription-bottle-medical', 'commission' => 6.0],
+            ['name' => 'اللقاحات', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-syringe', 'commission' => 6.25],
+            ['name' => 'معدات العيادات البيطرية', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-stethoscope', 'commission' => 6.5],
+            ['name' => 'مكملات الأعلاف','type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-bowl-food', 'commission' => 5.5],
+            ['name' => 'أدوات رعاية الحيوانات',  'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-hand-holding-medical', 'commission' => 5.75],
+            ['name' => 'مستلزمات المواشي','type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-cow', 'commission' => 5.25],
+            ['name' => 'المطهرات البيطرية', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-pump-medical', 'commission' => 5.0],
+            ['name' => 'خدمات بيطرية', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-user-doctor', 'commission' => 7.0],
+             ];
     }
 
     private function storeDemoAsset(string $path): string
