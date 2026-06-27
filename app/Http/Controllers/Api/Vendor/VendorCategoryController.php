@@ -26,7 +26,6 @@ class VendorCategoryController extends Controller
         }
 
         $categories = $vendor->categories()
-            ->with('subcategories')
             ->when($request->filled('type'), fn ($query) => $query->where('categories.type', (string) $request->string('type')))
             ->get();
 

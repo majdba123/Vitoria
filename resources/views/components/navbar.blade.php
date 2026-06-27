@@ -213,9 +213,6 @@ function _categoryImageUrl(category) {
 
     return '';
 }
-function _subcategoryImageUrl(subcategory) {
-    return subcategory.image_url || (subcategory.image ? '/storage/' + subcategory.image : '');
-}
 function categoryThumbHtml(c, mobile) {
     const imageUrl = _categoryImageUrl(c);
     if (imageUrl) {
@@ -227,20 +224,11 @@ function categoryThumbHtml(c, mobile) {
     }
     return '<svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/></svg>';
 }
-function subThumbHtml(s) {
-    const imageUrl = _subcategoryImageUrl(s);
-    if (imageUrl) {
-        return '<img src="' + _esc(imageUrl) + '" class="h-full w-full object-cover" alt="">';
-    }
-    return '<svg class="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a2.25 2.25 0 002.25-2.25V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"/></svg>';
-}
 window.szCategoryThumbHtml = categoryThumbHtml;
-window.szSubThumbHtml = subThumbHtml;
 @php
     $navStrings = [
         'loading' => __('common.loading'),
         'no_categories' => __('common.no_categories'),
-        'no_subcategories' => __('common.no_subcategories'),
         'view_all' => __('common.view_all'),
         'failed_notifications' => __('common.failed_notifications'),
         'page' => __('nav.page'),
@@ -623,26 +611,20 @@ async function loadNavCategories() {
                     ${categoryThumbHtml(c, false)}
                 </div>
                 <span class="flex-1 truncate font-medium text-gray-700 group-hover:text-brand-600 dark:text-gray-300 dark:group-hover:text-brand-400">${_esc(c.name)}</span>
-                <span class="text-[10px] font-medium text-gray-400">${c.subcategories ? c.subcategories.length : 0}</span>
                 <svg class="h-3.5 w-3.5 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
             </a>
         `).join('');
 
         mobileCats.innerHTML = cats.map(c => {
-            const subs = c.subcategories || [];
             return `
             <div>
-                <button onclick="this.nextElementSibling.classList.toggle('hidden');this.querySelector('.mob-chev').classList.toggle('rotate-90')" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
+                <a href="/categories/${c.id}" onclick="closeMobileMenu()" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
                     <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
                         ${categoryThumbHtml(c, true)}
                     </div>
                     <span class="flex-1">${_esc(c.name)}</span>
-                    <svg class="mob-chev h-3.5 w-3.5 text-gray-400 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-                </button>
-                <div class="hidden ml-12 space-y-0.5 pb-2 pt-1">
-                    <a href="/categories/${c.id}" onclick="closeMobileMenu()" class="block rounded-lg px-3 py-2 text-xs font-semibold text-brand-600 hover:bg-gray-100 dark:text-brand-400">${window.__navStrings && window.__navStrings.view_all ? window.__navStrings.view_all : 'View All'}</a>
-                    ${subs.map(s => `<a href="/subcategories/${s.id}" onclick="closeMobileMenu()" class="block rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200">${_esc(s.name)}</a>`).join('')}
-                </div>
+                    <svg class="h-3.5 w-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                </a>
             </div>`;
         }).join('');
     } catch(e) {}
@@ -654,9 +636,8 @@ window.showNavSubs = function(catId, btn) {
     btn.style.boxShadow = 'inset 3px 0 0 #f97316';
     const cat = (window._navCats || []).find(c => c.id === catId);
     const panel = document.getElementById('mega-subs');
-    if (!cat || !cat.subcategories || cat.subcategories.length === 0) {
-        const ns = (window.__navStrings && window.__navStrings.no_subcategories) ? window.__navStrings.no_subcategories : '';
-        panel.innerHTML = '<div class="flex h-full items-center justify-center"><p class="text-sm text-gray-400">' + _esc(ns) + '</p></div>';
+    if (!cat) {
+        panel.innerHTML = '<div class="flex h-full items-center justify-center"><p class="text-sm text-gray-400">' + _esc(window.__navStrings.view_all || 'View All') + '</p></div>';
         return;
     }
     panel.innerHTML = `
@@ -664,15 +645,8 @@ window.showNavSubs = function(catId, btn) {
             <h3 class="text-base font-bold text-gray-900 dark:text-white">${_esc(cat.name)}</h3>
             <a href="/categories/${cat.id}" class="text-xs font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400">${window.__navStrings && window.__navStrings.view_all ? window.__navStrings.view_all : 'View All'} &rarr;</a>
         </div>
-        <div class="grid grid-cols-2 gap-2">
-            ${cat.subcategories.map(s => `
-                <a href="/subcategories/${s.id}" class="group flex items-center gap-3 rounded-xl border border-transparent p-3 transition-all hover:border-gray-200 hover:bg-gray-50 dark:hover:border-gray-700 dark:hover:bg-gray-800">
-                    <div class="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 ring-1 ring-gray-200/50 dark:bg-gray-800 dark:ring-gray-700">
-                        ${subThumbHtml(s)}
-                    </div>
-                    <span class="text-sm font-medium text-gray-600 group-hover:text-brand-600 dark:text-gray-400 dark:group-hover:text-brand-400">${_esc(s.name)}</span>
-                </a>
-            `).join('')}
+        <div class="rounded-2xl border border-dashed border-gray-200 p-4 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
+            ${_esc(cat.type || '')}
         </div>`;
 };
 

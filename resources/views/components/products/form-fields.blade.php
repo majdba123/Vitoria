@@ -35,13 +35,6 @@
                 </select>
                 <p class="form-error" id="category_id-error"></p>
             </div>
-            <div>
-                <label for="subcategory_id" class="form-label">Subcategory <span class="text-red-500">*</span></label>
-                <select id="subcategory_id" name="subcategory_id" class="form-select" disabled>
-                    <option value="">Select category first...</option>
-                </select>
-                <p class="form-error" id="subcategory_id-error"></p>
-            </div>
             <div class="sm:col-span-2">
                 <x-form.input name="name" label="Product Name" placeholder="Enter product name" :required="true" />
             </div>
