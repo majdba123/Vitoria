@@ -45,7 +45,7 @@ class DashboardController extends Controller
             $categoryRows = Category::query()
                 ->withCount([
                     'vendors',
-                    'subcategories as products_count' => fn ($query) => $query->join('products', 'products.subcategory_id', '=', 'subcategories.id'),
+                    'products',
                 ])
                 ->orderByDesc('vendors_count')
                 ->orderBy('name')
@@ -65,7 +65,7 @@ class DashboardController extends Controller
                     'type' => $type,
                     'label' => $label,
                     'total' => Product::query()
-                        ->whereHas('subcategory.category', fn ($query) => $query->where('type', $type))
+                        ->whereHas('category', fn ($query) => $query->where('type', $type))
                         ->count(),
                 ])
                 ->values();
@@ -87,7 +87,7 @@ class DashboardController extends Controller
                 ->values();
 
             $recentProducts = Product::query()
-                ->with(['subcategory.category:id,name,type', 'vendor:id,store_name'])
+                ->with(['category:id,name,type', 'vendor:id,store_name'])
                 ->latest()
                 ->limit(8)
                 ->get()
@@ -98,10 +98,10 @@ class DashboardController extends Controller
                     'status' => $product->status,
                     'is_active' => $product->is_active,
                     'created_at' => $product->created_at,
-                    'category' => $product->subcategory?->category ? [
-                        'id' => $product->subcategory->category->id,
-                        'name' => $product->subcategory->category->name,
-                        'type' => $product->subcategory->category->type,
+                    'category' => $product->category ? [
+                        'id' => $product->category->id,
+                        'name' => $product->category->name,
+                        'type' => $product->category->type,
                     ] : null,
                     'vendor' => $product->vendor ? [
                         'id' => $product->vendor->id,

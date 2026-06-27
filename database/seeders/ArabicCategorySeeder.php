@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
-use App\Models\Subcategory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +15,7 @@ class ArabicCategorySeeder extends Seeder
         $veterinaryLogo = $this->storeDemoAsset('demo/categories/veterinary.png');
 
         foreach (self::categories() as $item) {
-            $category = Category::query()->updateOrCreate(
+            Category::query()->updateOrCreate(
                 ['name' => $item['name']],
                 [
                     'type' => $item['type'],
@@ -26,42 +25,31 @@ class ArabicCategorySeeder extends Seeder
                     'commission' => $item['commission'],
                 ],
             );
-
-            Subcategory::query()->updateOrCreate(
-                [
-                    'category_id' => $category->id,
-                    'name' => $item['subcategory'],
-                ],
-                [
-                    'image' => $category->logo,
-                    'icon_class' => $item['icon_class'],
-                ],
-            );
         }
     }
 
     /**
-     * @return list<array{name: string, subcategory: string, type: string, icon_class: string, commission: float}>
+     * @return list<array{name: string, type: string, icon_class: string, commission: float}>
      */
     public static function categories(): array
     {
         return [
-            ['name' => 'البذور', 'subcategory' => 'بذور الحبوب', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-seedling', 'commission' => 4.5],
-            ['name' => 'الأسمدة', 'subcategory' => 'أسمدة عضوية', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-leaf', 'commission' => 5.0],
-            ['name' => 'أنظمة الري', 'subcategory' => 'الري بالتنقيط', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-droplet', 'commission' => 5.5],
-            ['name' => 'البيوت البلاستيكية', 'subcategory' => 'مستلزمات البيوت البلاستيكية', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-warehouse', 'commission' => 6.0],
-            ['name' => 'المعدات الزراعية', 'subcategory' => 'معدات المزارع', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-tractor', 'commission' => 6.5],
-            ['name' => 'المبيدات الزراعية', 'subcategory' => 'مبيدات آمنة', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-spray-can-sparkles', 'commission' => 5.25],
-            ['name' => 'التربة والسماد العضوي', 'subcategory' => 'محسنات التربة', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-mound', 'commission' => 4.75],
-            ['name' => 'أدوات الحصاد', 'subcategory' => 'أدوات يدوية للحصاد', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-wheat-awn', 'commission' => 5.75],
-            ['name' => 'الأدوية البيطرية', 'subcategory' => 'علاجات بيطرية', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-prescription-bottle-medical', 'commission' => 6.0],
-            ['name' => 'اللقاحات', 'subcategory' => 'لقاحات المواشي', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-syringe', 'commission' => 6.25],
-            ['name' => 'معدات العيادات البيطرية', 'subcategory' => 'تجهيزات الفحص', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-stethoscope', 'commission' => 6.5],
-            ['name' => 'مكملات الأعلاف', 'subcategory' => 'مكملات المواشي', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-bowl-food', 'commission' => 5.5],
-            ['name' => 'أدوات رعاية الحيوانات', 'subcategory' => 'أدوات العناية', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-hand-holding-medical', 'commission' => 5.75],
-            ['name' => 'مستلزمات المواشي', 'subcategory' => 'مستلزمات الحظائر', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-cow', 'commission' => 5.25],
-            ['name' => 'المطهرات البيطرية', 'subcategory' => 'مطهرات العيادات', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-pump-medical', 'commission' => 5.0],
-            ['name' => 'خدمات بيطرية', 'subcategory' => 'خدمات الرعاية', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-user-doctor', 'commission' => 7.0],
+            ['name' => 'Ø§Ù„Ø¨Ø°ÙˆØ±', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-seedling', 'commission' => 4.5],
+            ['name' => 'Ø§Ù„Ø£Ø³Ù…Ø¯Ø©', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-leaf', 'commission' => 5.0],
+            ['name' => 'Ø£Ù†Ø¸Ù…Ø© Ø§Ù„Ø±ÙŠ', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-droplet', 'commission' => 5.5],
+            ['name' => 'Ø§Ù„Ø¨ÙŠÙˆØª Ø§Ù„Ø¨Ù„Ø§Ø³ØªÙŠÙƒÙŠØ©', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-warehouse', 'commission' => 6.0],
+            ['name' => 'Ø§Ù„Ù…Ø¹Ø¯Ø§Øª Ø§Ù„Ø²Ø±Ø§Ø¹ÙŠØ©', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-tractor', 'commission' => 6.5],
+            ['name' => 'Ø§Ù„Ù…Ø¨ÙŠØ¯Ø§Øª Ø§Ù„Ø²Ø±Ø§Ø¹ÙŠØ©', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-spray-can-sparkles', 'commission' => 5.25],
+            ['name' => 'Ø§Ù„ØªØ±Ø¨Ø© ÙˆØ§Ù„Ø³Ù…Ø§Ø¯ Ø§Ù„Ø¹Ø¶ÙˆÙŠ', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-mound', 'commission' => 4.75],
+            ['name' => 'Ø£Ø¯ÙˆØ§Øª Ø§Ù„Ø­ØµØ§Ø¯', 'type' => Category::TYPE_AGRICULTURE, 'icon_class' => 'fa-solid fa-wheat-awn', 'commission' => 5.75],
+            ['name' => 'Ø§Ù„Ø£Ø¯ÙˆÙŠØ© Ø§Ù„Ø¨ÙŠØ·Ø±ÙŠØ©', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-prescription-bottle-medical', 'commission' => 6.0],
+            ['name' => 'Ø§Ù„Ù„Ù‚Ø§Ø­Ø§Øª', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-syringe', 'commission' => 6.25],
+            ['name' => 'Ù…Ø¹Ø¯Ø§Øª Ø§Ù„Ø¹ÙŠØ§Ø¯Ø§Øª Ø§Ù„Ø¨ÙŠØ·Ø±ÙŠØ©', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-stethoscope', 'commission' => 6.5],
+            ['name' => 'Ù…ÙƒÙ…Ù„Ø§Øª Ø§Ù„Ø£Ø¹Ù„Ø§Ù', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-bowl-food', 'commission' => 5.5],
+            ['name' => 'Ø£Ø¯ÙˆØ§Øª Ø±Ø¹Ø§ÙŠØ© Ø§Ù„Ø­ÙŠÙˆØ§Ù†Ø§Øª', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-hand-holding-medical', 'commission' => 5.75],
+            ['name' => 'Ù…Ø³ØªÙ„Ø²Ù…Ø§Øª Ø§Ù„Ù…ÙˆØ§Ø´ÙŠ', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-cow', 'commission' => 5.25],
+            ['name' => 'Ø§Ù„Ù…Ø·Ù‡Ø±Ø§Øª Ø§Ù„Ø¨ÙŠØ·Ø±ÙŠØ©', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-pump-medical', 'commission' => 5.0],
+            ['name' => 'Ø®Ø¯Ù…Ø§Øª Ø¨ÙŠØ·Ø±ÙŠØ©', 'type' => Category::TYPE_VETERINARY, 'icon_class' => 'fa-solid fa-user-doctor', 'commission' => 7.0],
         ];
     }
 

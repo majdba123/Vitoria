@@ -33,9 +33,8 @@ class CommissionController extends Controller
             ->whereIn('status', [Order::STATUS_CONFIRMED, Order::STATUS_COMPLETED])
             ->with([
                 'items:id,order_id,product_id,line_total',
-                'items.product:id,subcategory_id',
-                'items.product.subcategory:id,category_id',
-                'items.product.subcategory.category:id,name,commission',
+                'items.product:id,category_id',
+                'items.product.category:id,name,commission',
             ])
             ->get();
 
@@ -53,7 +52,7 @@ class CommissionController extends Controller
 
             foreach ($order->items as $item) {
                 /** @var OrderItem $item */
-                $category = $item->product?->subcategory?->category;
+                $category = $item->product?->category;
                 $categoryId = $category?->id ?? 0;
                 $categoryName = $category?->name ?? 'Unknown';
                 $commissionRate = (float) ($category?->commission ?? 0);

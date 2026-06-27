@@ -8,10 +8,10 @@
     <div class="overflow-hidden rounded-3xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
         <div class="bg-gradient-to-r from-brand-500/10 via-brand-400/5 to-transparent px-5 py-4 dark:from-brand-500/20 dark:via-brand-400/10">
             <h2 class="text-base font-black text-gray-900 dark:text-white">Orders Filters</h2>
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Refine by product, status, vendor, category and subcategory.</p>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Refine by product, status, vendor, user, and category.</p>
         </div>
         <div class="p-4">
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-7">
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
             <input id="f-product" type="text" placeholder="Product name" class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white">
             <select id="f-status" class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                 <option value="">All Statuses</option>
@@ -28,9 +28,6 @@
             </select>
             <select id="f-category" class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                 <option value="">All Categories</option>
-            </select>
-            <select id="f-subcategory" class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white">
-                <option value="">All Subcategories</option>
             </select>
             <button id="f-reset" class="rounded-xl border border-gray-200 px-3 py-2 text-sm font-bold text-gray-700 transition-all hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:text-gray-300 dark:hover:border-brand-500/40 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">Reset</button>
         </div>
@@ -62,7 +59,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const state = { page: 1, categories: [] };
+    const state = { page: 1 };
     const $ = id => document.getElementById(id);
     const urlParams = new URLSearchParams(window.location.search);
     const initialVendorId = urlParams.get('vendor_id');
@@ -71,22 +68,15 @@ document.addEventListener('DOMContentLoaded', function () {
     loadFilterData();
     loadOrders();
 
-    ['f-product', 'f-status', 'f-user', 'f-vendor', 'f-category', 'f-subcategory'].forEach((id) => {
+    ['f-product', 'f-status', 'f-user', 'f-vendor', 'f-category'].forEach((id) => {
         $(id).addEventListener('change', () => { state.page = 1; loadOrders(); });
         if (id === 'f-product') {
             $(id).addEventListener('input', debounce(() => { state.page = 1; loadOrders(); }, 300));
         }
     });
 
-    $('f-category').addEventListener('change', function () {
-        fillSubcategories(this.value);
-        state.page = 1;
-        loadOrders();
-    });
-
     $('f-reset').addEventListener('click', function () {
-        ['f-product', 'f-status', 'f-user', 'f-vendor', 'f-category', 'f-subcategory'].forEach((id) => $(id).value = '');
-        fillSubcategories('');
+        ['f-product', 'f-status', 'f-user', 'f-vendor', 'f-category'].forEach((id) => $(id).value = '');
         state.page = 1;
         loadOrders();
     });
@@ -105,8 +95,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const users = usersRes.data.data || [];
             const vendors = vendorsRes.data.data || [];
             const categories = categoriesRes.data.data || [];
-            state.categories = categories;
-
             $('f-user').innerHTML = '<option value="">All Users</option>' + users.map(u => `<option value="${u.id}">${esc(u.name || ('User #' + u.id))}</option>`).join('');
             $('f-vendor').innerHTML = '<option value="">All Vendors</option>' + vendors.map(v => `<option value="${v.id}">${esc(v.store_name || ('Vendor #' + v.id))}</option>`).join('');
             $('f-category').innerHTML = '<option value="">All Categories</option>' + categories.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
@@ -121,16 +109,6 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (e) {}
     }
 
-    function fillSubcategories(categoryId) {
-        if (!categoryId) {
-            $('f-subcategory').innerHTML = '<option value="">All Subcategories</option>';
-            return;
-        }
-        const category = state.categories.find(c => String(c.id) === String(categoryId));
-        const subs = category?.subcategories || [];
-        $('f-subcategory').innerHTML = '<option value="">All Subcategories</option>' + subs.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
-    }
-
     async function loadOrders() {
         toggleLoading(true);
         try {
@@ -140,13 +118,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const user = $('f-user').value;
             const vendor = $('f-vendor').value;
             const category = $('f-category').value;
-            const subcategory = $('f-subcategory').value;
             if (product) params.set('product', product);
             if (status) params.set('status', status);
             if (user) params.set('user_id', user);
             if (vendor) params.set('vendor_id', vendor);
             if (category) params.set('category_id', category);
-            if (subcategory) params.set('subcategory_id', subcategory);
 
             const response = await window.axios.get('/api/admin/orders?' + params.toString());
             const orders = response.data.data || [];

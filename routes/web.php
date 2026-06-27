@@ -83,10 +83,6 @@ Route::get('/categories/{id}', function (string $id) {
     return view('categories.show', ['categoryId' => $id]);
 })->middleware('product.type.selected')->name('categories.show');
 
-Route::get('/subcategories/{id}', function (string $id) {
-    return view('subcategories.show', ['subcategoryId' => $id]);
-})->middleware('product.type.selected')->name('subcategories.show');
-
 Route::redirect('/vendors', '/', 302)->name('vendors.index');
 
 Route::get('/vendors/{id}', function () {
@@ -296,12 +292,6 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(funct
     Route::get('/categories/create', [\App\Http\Controllers\Admin\CategoryController::class, 'create'])->name('categories.create');
     Route::get('/categories/{id}', [\App\Http\Controllers\Admin\CategoryController::class, 'show'])->name('categories.show');
     Route::get('/categories/{id}/edit', [\App\Http\Controllers\Admin\CategoryController::class, 'edit'])->name('categories.edit');
-
-    // Subcategory Management
-    Route::get('/subcategories', [\App\Http\Controllers\Admin\SubcategoryController::class, 'index'])->name('subcategories.index');
-    Route::get('/subcategories/create', [\App\Http\Controllers\Admin\SubcategoryController::class, 'create'])->name('subcategories.create');
-    Route::get('/subcategories/{id}', [\App\Http\Controllers\Admin\SubcategoryController::class, 'show'])->name('subcategories.show');
-    Route::get('/subcategories/{id}/edit', [\App\Http\Controllers\Admin\SubcategoryController::class, 'edit'])->name('subcategories.edit');
 
     // City Management
     Route::get('/cities', [\App\Http\Controllers\Admin\CityController::class, 'index'])->name('cities.index');

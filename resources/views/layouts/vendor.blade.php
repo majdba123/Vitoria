@@ -349,7 +349,6 @@
                     return;
                 }
                 container.innerHTML = categories.map((category) => {
-                    const subs = category.subcategories || [];
                     const catId = `sidebar-cat-${category.id}`;
                     return `<div class="sidebar-cat-group">
                         <button type="button" onclick="toggleSidebarCat('${catId}')" class="mb-1 flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left text-sm font-semibold text-white/75 transition-all hover:bg-white/6 hover:text-white">

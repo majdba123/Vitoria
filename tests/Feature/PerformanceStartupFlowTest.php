@@ -2,7 +2,6 @@
 
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\Subcategory;
 use App\Models\User;
 use App\Models\Vendor;
 use App\Services\ApplicationCacheService;
@@ -27,10 +26,6 @@ function performanceProductSet(int $quantity = 10): array
         'name' => 'Performance Agriculture',
         'type' => Category::TYPE_AGRICULTURE,
     ]);
-    $subcategory = Subcategory::query()->create([
-        'category_id' => $category->id,
-        'name' => 'Performance Seeds',
-    ]);
     $vendor = Vendor::factory()->create([
         'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
         'is_active' => true,
@@ -38,14 +33,14 @@ function performanceProductSet(int $quantity = 10): array
     ]);
     $vendor->categories()->sync([$category->id]);
     $product = Product::factory()->for($vendor)->create([
-        'subcategory_id' => $subcategory->id,
+        'category_id' => $category->id,
         'status' => Product::STATUS_APPROVED,
         'is_active' => true,
         'quantity' => $quantity,
         'price' => 100,
     ]);
 
-    return compact('category', 'subcategory', 'vendor', 'product');
+    return compact('category', 'vendor', 'product');
 }
 
 test('guest can complete first visit startup timezone flow', function () {
@@ -184,7 +179,6 @@ test('product display image upload is removed when product transaction fails', f
     $this->post('/api/admin/products', [
         'vendor_id' => $set['vendor']->id,
         'category_id' => $set['category']->id,
-        'subcategory_id' => $set['subcategory']->id,
         'name' => 'Rollback Product',
         'price' => 50,
         'quantity' => 5,

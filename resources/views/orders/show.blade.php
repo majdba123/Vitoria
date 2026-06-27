@@ -165,7 +165,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 </div>
                 <div class="mt-3 grid gap-2 text-xs sm:grid-cols-2 lg:grid-cols-3">
                     ${paramCard('Category', item.category_name || '—')}
-                    ${paramCard('Subcategory', item.subcategory_name || '—')}
                     ${paramCard('Original Unit Price', money(item.original_unit_price))}
                     ${paramCard('Applied Unit Price', money(item.unit_price))}
                     ${paramCard('Discount %', item.has_discount ? (Number.parseFloat(item.applied_discount_percentage || 0).toLocaleString() + '%') : '—')}

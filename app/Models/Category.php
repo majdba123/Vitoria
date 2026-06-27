@@ -57,20 +57,14 @@ class Category extends Model
         ];
     }
 
-    /**
-     * Get the subcategories for this category.
-     */
-    public function subcategories(): HasMany
-    {
-        return $this->hasMany(Subcategory::class);
-    }
-
-    /**
-     * Vendors allowed to sell in this category.
-     */
     public function vendors(): BelongsToMany
     {
         return $this->belongsToMany(Vendor::class)->withTimestamps();
+    }
+
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
     }
 
     public function scopeAgriculture(Builder $query): Builder

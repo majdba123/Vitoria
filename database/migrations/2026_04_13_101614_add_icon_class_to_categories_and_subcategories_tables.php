@@ -14,10 +14,6 @@ return new class extends Migration
         Schema::table('categories', function (Blueprint $table) {
             $table->string('icon_class', 191)->nullable()->after('icon');
         });
-
-        Schema::table('subcategories', function (Blueprint $table) {
-            $table->string('icon_class', 191)->nullable()->after('image');
-        });
     }
 
     /**
@@ -26,10 +22,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('categories', function (Blueprint $table) {
-            $table->dropColumn('icon_class');
-        });
-
-        Schema::table('subcategories', function (Blueprint $table) {
             $table->dropColumn('icon_class');
         });
     }

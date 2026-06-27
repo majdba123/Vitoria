@@ -107,9 +107,8 @@ class OrderController extends Controller
         $order = Order::query()
             ->with([
                 'items:id,order_id,product_id,product_name,original_unit_price,has_discount,applied_discount_percentage,unit_price,quantity,line_total,discount_amount',
-                'items.product:id,subcategory_id',
-                'items.product.subcategory:id,name,category_id',
-                'items.product.subcategory.category:id,name',
+                'items.product:id,category_id',
+                'items.product.category:id,name',
             ])
             ->where('user_id', $request->user()->id)
             ->findOrFail($orderId);
@@ -144,8 +143,7 @@ class OrderController extends Controller
                         'has_discount' => $item->has_discount,
                         'applied_discount_percentage' => $item->applied_discount_percentage,
                         'discount_amount' => $item->discount_amount,
-                        'subcategory_name' => $item->product?->subcategory?->name,
-                        'category_name' => $item->product?->subcategory?->category?->name,
+                        'category_name' => $item->product?->category?->name,
                     ];
                 })->values(),
             ],

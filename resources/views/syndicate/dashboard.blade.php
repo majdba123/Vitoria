@@ -275,7 +275,7 @@ document.addEventListener('syndicate-ready', async function () {
         }
 
         if (type === 'products') {
-            return [row.vendor?.store_name, row.subcategory?.category?.name, row.is_active ? 'نشط' : 'غير نشط'].filter(Boolean).join(' · ');
+            return [row.vendor?.store_name, row.category?.name, row.is_active ? 'نشط' : 'غير نشط'].filter(Boolean).join(' · ');
         }
 
         if (type === 'orders') {
