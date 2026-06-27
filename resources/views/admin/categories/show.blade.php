@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Category Details â€” Vetora Admin')
+@section('title', 'Category Details - Vetora Admin')
 @section('page-title', 'Category Details')
 
 @section('content')
@@ -31,11 +31,11 @@
             <div class="card-body grid gap-4 sm:grid-cols-3">
                 <div class="rounded-xl bg-gray-50 p-4">
                     <p class="text-xs font-semibold uppercase text-gray-400">Type</p>
-                    <p id="category-type" class="mt-1 text-sm font-semibold text-gray-900">â€”</p>
+                    <p id="category-type" class="mt-1 text-sm font-semibold text-gray-900">-</p>
                 </div>
                 <div class="rounded-xl bg-gray-50 p-4">
                     <p class="text-xs font-semibold uppercase text-gray-400">Commission</p>
-                    <p id="category-commission" class="mt-1 text-sm font-semibold text-gray-900">â€”</p>
+                    <p id="category-commission" class="mt-1 text-sm font-semibold text-gray-900">-</p>
                 </div>
                 <div class="rounded-xl bg-gray-50 p-4">
                     <p class="text-xs font-semibold uppercase text-gray-400">Products</p>
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const category = response.data.data;
         document.getElementById('category-name').textContent = category.name || 'Category';
         document.getElementById('category-meta').textContent = `Created ${new Date(category.created_at).toLocaleDateString()}`;
-        document.getElementById('category-type').textContent = category.type || 'â€”';
+        document.getElementById('category-type').textContent = category.type || '-';
         document.getElementById('category-commission').textContent = `${category.commission || 0}%`;
         document.getElementById('category-products-count').textContent = category.products_count || 0;
         document.getElementById('category-edit-link').href = `/admin/categories/${category.id}/edit`;

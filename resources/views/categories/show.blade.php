@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Category â€” Vetora')
+@section('title', 'Category - Vetora')
 
 @section('content')
 @php
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     try {
         const res = await axios.get(withSelectedType('/api/categories/' + catId));
         const cat = res.data.data;
-        document.title = cat.name + ' â€” Vetora';
+        document.title = cat.name + ' - Vetora';
         $('bc-name').textContent = cat.name;
         $('cat-name').textContent = cat.name;
         $('cat-meta').textContent = `${cat.products_count || 0} products · ${cat.commission}% commission`;

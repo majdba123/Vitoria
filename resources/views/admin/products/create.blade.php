@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Add Product â€” Vetora Admin')
+@section('title', 'Add Product - Vetora Admin')
 @section('page-title', 'Add Product')
 
 @section('content')
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const res = await window.axios.get('/api/admin/vendors?per_page=100');
         const vendors = res.data.data;
         vendorSelect.innerHTML = '<option value="">Select a vendor...</option>' +
-            vendors.filter(v => v.is_active).map(v => `<option value="${v.id}">${esc(v.store_name)} â€” ${esc(v.user?.name || 'N/A')}</option>`).join('');
+            vendors.filter(v => v.is_active).map(v => `<option value="${v.id}">${esc(v.store_name)} - ${esc(v.user?.name || 'N/A')}</option>`).join('');
         if (savedVendorId && vendorSelect.querySelector(`option[value="${savedVendorId}"]`)) {
             vendorSelect.value = savedVendorId;
         }

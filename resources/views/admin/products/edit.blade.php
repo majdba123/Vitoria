@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Product â€” Vetora Admin')
+@section('title', 'Edit Product - Vetora Admin')
 @section('page-title', 'Edit Product')
 
 @section('content')
@@ -29,7 +29,7 @@
 
                 <div class="mb-5 rounded-lg bg-gray-50 px-4 py-3">
                     <p class="text-xs font-medium uppercase text-gray-500">Vendor</p>
-                    <p id="vendor-info" class="mt-0.5 text-sm font-semibold text-gray-900">â€”</p>
+                    <p id="vendor-info" class="mt-0.5 text-sm font-semibold text-gray-900">-</p>
                 </div>
 
                 <form id="edit-form" class="space-y-6" novalidate>
@@ -285,9 +285,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('discount_starts_at').value = toDateInput(p.discount_starts_at);
         document.getElementById('discount_ends_at').value = toDateInput(p.discount_ends_at);
         existingPhotos = p.photos || [];
-        const vendorName = p.vendor?.store_name || 'â€”';
+        const vendorName = p.vendor?.store_name || '-';
         const ownerName = p.vendor?.user?.name || '';
-        document.getElementById('vendor-info').textContent = vendorName + (ownerName ? ' â€” ' + ownerName : '');
+        document.getElementById('vendor-info').textContent = vendorName + (ownerName ? ' - ' + ownerName : '');
         renderExistingPhotos();
         document.getElementById('edit-loading').classList.add('hidden');
         document.getElementById('edit-content').classList.remove('hidden');

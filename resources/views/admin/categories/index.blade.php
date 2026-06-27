@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Categories â€” Vetora Admin')
+@section('title', 'Categories - Vetora Admin')
 @section('page-title', 'Categories')
 
 @section('content')
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         </div>
                         <div class="min-w-0 flex-1">
                             <h3 class="truncate text-base font-bold text-gray-900">${escapeHtml(category.name)}</h3>
-                            <p class="mt-1 text-sm text-gray-500">${escapeHtml(category.type || 'â€”')} · ${category.commission || 0}% commission</p>
+                            <p class="mt-1 text-sm text-gray-500">${escapeHtml(category.type || '-')} · ${category.commission || 0}% commission</p>
                             <p class="mt-1 text-sm text-gray-500">${category.products_count || 0} products</p>
                         </div>
                     </div>
