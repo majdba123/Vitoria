@@ -1,0 +1,25 @@
+<?php
+
+return array (
+  'shopping_cart' => 'Shopping Cart',
+  'items_count' => ':count item',
+  'items_count_plural' => ':count items',
+  'empty_hint' => 'Add products to see them here',
+  'order_success_title' => 'Order Placed Successfully',
+  'order_success_message' => 'Your order has been created.',
+  'order_success_note' => 'You can review full details from your profile order history.',
+  'continue_shopping' => 'Continue Shopping',
+  'view_orders' => 'View Orders',
+  'coupon_label' => 'Coupon Code (Optional)',
+  'coupon_placeholder' => 'Enter coupon code',
+  'payment_way' => 'Payment way:',
+  'cash_only' => 'Cash only',
+  'subtotal' => 'Subtotal',
+  'proceed_checkout' => 'Proceed to Checkout',
+  'added_to_cart_toast' => 'Added to cart!',
+  'order_created_fallback' => 'Your order has been created.',
+  'checkout_failed' => 'Checkout could not be completed. Please try again.',
+  'checkout_success_fallback' => 'Checkout completed successfully.',
+  'remove_line' => 'Remove',
+  'processing_checkout' => 'Processing…',
+);

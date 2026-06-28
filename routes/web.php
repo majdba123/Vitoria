@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Cookie;
 
 if (! function_exists('redirectAuthenticatedUser')) {
     function redirectAuthenticatedUser(\App\Models\User $user)
@@ -25,6 +26,13 @@ Route::post('/product-type/select', [\App\Http\Controllers\ProductTypePreference
 
 Route::get('/locale/{locale}', function (string $locale) {
     if (in_array($locale, ['ar', 'en'], true)) {
+        session()->put('locale', $locale);
+        Cookie::queue('locale', $locale, 60 * 24 * 365);
+
+        if (auth()->check()) {
+            auth()->user()->update(['locale' => $locale]);
+        }
+
         session()->put('locale', $locale);
     }
 

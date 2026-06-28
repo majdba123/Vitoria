@@ -1,0 +1,25 @@
+<?php
+
+return array (
+  'shopping_cart' => 'سلة التسوق',
+  'items_count' => ':count منتج',
+  'items_count_plural' => ':count منتجات',
+  'empty_hint' => 'أضف منتجات لرؤيتها هنا',
+  'order_success_title' => 'تم إنشاء الطلب بنجاح',
+  'order_success_message' => 'تم إنشاء طلبك.',
+  'order_success_note' => 'يمكنك مراجعة التفاصيل من سجل الطلبات في ملفك.',
+  'continue_shopping' => 'متابعة التسوق',
+  'view_orders' => 'عرض الطلبات',
+  'coupon_label' => 'كود الكوبون (اختياري)',
+  'coupon_placeholder' => 'أدخل رمز الكوبون',
+  'payment_way' => 'طريقة الدفع:',
+  'cash_only' => 'نقداً فقط',
+  'subtotal' => 'المجموع الفرعي',
+  'proceed_checkout' => 'إتمام الطلب',
+  'added_to_cart_toast' => 'تمت الإضافة إلى السلة!',
+  'order_created_fallback' => 'تم إنشاء طلبك.',
+  'checkout_failed' => 'تعذّر إتمام الطلب. يُرجى المحاولة مرة أخرى.',
+  'checkout_success_fallback' => 'تم إتمام الطلب بنجاح.',
+  'remove_line' => 'إزالة',
+  'processing_checkout' => 'جاري المعالجة…',
+);

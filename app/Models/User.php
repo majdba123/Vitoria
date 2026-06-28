@@ -42,6 +42,7 @@ class User extends Authenticatable
         'latitude',
         'longitude',
         'timezone',
+        'locale',
         'preferred_product_type',
         'type',
         'email',
