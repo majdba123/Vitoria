@@ -23,7 +23,7 @@
             <div class="px-8 py-12">
                 <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
                     <div class="flex-shrink-0">
-                        <div id="vendor-logo" class="flex h-32 w-32 items-center justify-center overflow-hidden rounded-2xl bg-white ring-4 ring-white/30 shadow-2xl transition-transform hover:scale-105">
+                        <div id="vendor-logo" class="shop-thumb-box h-32 w-32 bg-white ring-4 ring-white/30 shadow-2xl transition-transform hover:scale-105">
                             <!-- Logo will be inserted here -->
                         </div>
                     </div>
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Set logo
         const logoContainer = document.getElementById('vendor-logo');
         if (vendor.logo) {
-            logoContainer.innerHTML = `<img src="${esc(vendor.logo)}" alt="${esc(vendor.store_name)}" class="h-full w-full object-cover">`;
+            logoContainer.innerHTML = `<img src="${esc(vendor.logo)}" alt="${esc(vendor.store_name)}" class="h-full w-full object-cover" loading="lazy" onerror="this.outerHTML='<span class=&quot;text-4xl font-bold text-brand-600&quot;>${esc(vendor.store_name).charAt(0).toUpperCase()}</span>'">`;
         } else {
             logoContainer.innerHTML = `<span class="text-4xl font-bold text-brand-600">${esc(vendor.store_name).charAt(0).toUpperCase()}</span>`;
         }
@@ -156,11 +156,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                 } else {
                     productsGrid.innerHTML = data.map(product => `
                         <div class="group relative overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-gray-200 transition-all duration-300 hover:shadow-2xl hover:ring-brand-500/50 hover:-translate-y-1">
-                            <div class="relative overflow-hidden">
-                                <img src="${esc(product.first_photo_url || '/images/placeholder.png')}"
+                            <div class="shop-card-media">
+                                <img src="${esc(product.first_photo_url || '/images/product-placeholder.svg')}"
                                      alt="${esc(product.name)}"
-                                     class="h-64 w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                     loading="lazy">
+                                     class="shop-card-media-img"
+                                     loading="lazy"
+                                     onerror="this.onerror=null;this.src='/images/product-placeholder.svg'">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
                                 ${product.quantity <= 0 ? `<div class="absolute top-3 right-3 rounded-full bg-red-500 px-3 py-1.5 text-xs font-bold text-white shadow-xl">Out of Stock</div>` : ''}
                                 ${product.has_active_discount ? `<div class="absolute top-3 left-3 rounded-full bg-red-500 px-3 py-1.5 text-xs font-bold text-white shadow-xl">-${parseFloat(product.discount_percentage || 0).toFixed(0)}%</div>` : ''}

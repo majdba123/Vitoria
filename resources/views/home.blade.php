@@ -168,9 +168,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     function categoryThumbInner(cat) {
         const imageUrl = categoryImageUrl(cat);
         if (imageUrl) {
-            return `<img src="${esc(imageUrl)}" alt="" class="h-full w-full rounded-2xl object-cover">`;
+            return `<img src="${esc(imageUrl)}" alt="" class="h-full w-full object-cover" loading="lazy">`;
         }
-        return `<svg class="h-8 w-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/></svg>`;
+        return `<div class="shop-thumb-fallback"><svg class="h-8 w-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/></svg></div>`;
     }
     function revLabel(n) {
         const c = parseInt(n, 10) || 0;
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     return `
                 <a href="${href}" class="cat-card group overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-brand-500/15 dark:border-gray-800 dark:bg-gray-900" style="opacity:0;transform:translateY(20px);transition:opacity .5s ease ${i * 0.06}s,transform .5s ease ${i * 0.06}s;">
                     <div class="flex items-center gap-4 p-4 sm:p-5">
-                        <div class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-50 to-brand-100 ring-1 ring-brand-200/50 transition-transform duration-300 group-hover:scale-110 sm:h-20 sm:w-20 dark:from-brand-500/10 dark:to-brand-500/5 dark:ring-brand-500/20">
+                        <div class="shop-thumb-box h-16 w-16 ring-1 ring-brand-200/50 transition-transform duration-300 group-hover:scale-110 sm:h-20 sm:w-20 dark:ring-brand-500/20">
                             ${categoryThumbInner(cat)}
                         </div>
                         <div class="min-w-0 flex-1">
@@ -304,8 +304,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     return `
                     <div class="product-card overflow-hidden rounded-2xl border border-gray-200/80 bg-white dark:border-gray-800 dark:bg-gray-900" style="opacity:0;transform:translateY(16px);transition:opacity .4s ease ${i *0.05}s,transform .4s ease ${i * 0.05}s;">
                         <div class="relative">
-                            <a href="${typedPageHref('/products/' + p.id)}"><div class="relative aspect-[4/5] overflow-hidden bg-gray-50 dark:bg-gray-800">
-                                ${photo ? `<img src="${esc(photo)}" alt="${esc(p.name)}" class="h-full w-full object-contain p-4 transition-transform duration-500 hover:scale-105" loading="lazy">` : `<div class="flex h-full items-center justify-center"><svg class="h-12 w-12 text-gray-200 dark:text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg></div>`}
+                            <a href="${typedPageHref('/products/' + p.id)}"><div class="shop-card-media">
+                                ${photo ? `<img src="${esc(photo)}" alt="${esc(p.name)}" class="shop-card-media-img" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}'">` : `<div class="shop-card-media-fallback"><svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg></div>`}
                                 ${!inStock ? '<div class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70"><span class="rounded-full bg-red-100 px-3 py-1 text-[11px] font-bold text-red-600 dark:bg-red-500/10 dark:text-red-400">' + esc(homeI18n.soldOut || '') + '</span></div>' : ''}
                                 ${p.has_active_discount ? `<div class="absolute left-2.5 top-2.5 z-10 rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">-${parseFloat(p.discount_percentage || 0).toFixed(0)}%</div>` : ''}
                             </div></a>
@@ -361,8 +361,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             return `
             <div class="product-card overflow-hidden rounded-2xl border border-gray-200/80 bg-white dark:border-gray-800 dark:bg-gray-900" style="opacity:0;transform:translateY(16px);transition:opacity .4s ease ${(startOpacity + i) * 0.05}s,transform .4s ease ${(startOpacity + i) * 0.05}s;">
                 <div class="relative">
-                    <a href="${typedPageHref('/products/' + p.id)}"><div class="relative aspect-[4/5] overflow-hidden bg-gray-50 dark:bg-gray-800">
-                        ${photo ? `<img src="${esc(photo)}" alt="${esc(p.name)}" class="h-full w-full object-contain p-4 transition-transform duration-500 hover:scale-105" loading="lazy">` : `<div class="flex h-full items-center justify-center"><svg class="h-12 w-12 text-gray-200 dark:text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg></div>`}
+                    <a href="${typedPageHref('/products/' + p.id)}"><div class="shop-card-media">
+                        ${photo ? `<img src="${esc(photo)}" alt="${esc(p.name)}" class="shop-card-media-img" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}'">` : `<div class="shop-card-media-fallback"><svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg></div>`}
                         ${!inStock ? '<div class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70"><span class="rounded-full bg-red-100 px-3 py-1 text-[11px] font-bold text-red-600 dark:bg-red-500/10 dark:text-red-400">' + esc(homeI18n.soldOut || '') + '</span></div>' : ''}
                         ${p.has_active_discount ? `<div class="absolute left-2.5 top-2.5 z-10 rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">-${parseFloat(p.discount_percentage || 0).toFixed(0)}%</div>` : ''}
                     </div></a>

@@ -79,9 +79,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     function categoryThumbInner(cat) {
         const imageUrl = categoryImageUrl(cat);
         if (imageUrl) {
-            return `<img src="${esc(imageUrl)}" class="h-full w-full rounded-2xl object-cover" alt="">`;
+            return `<img src="${esc(imageUrl)}" class="h-full w-full object-cover" alt="" loading="lazy">`;
         }
-        return `<svg class="h-8 w-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581"/></svg>`;
+        return `<div class="shop-thumb-fallback"><svg class="h-8 w-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581"/></svg></div>`;
     }
 
     function commissionLine(pct) {
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('grid').innerHTML = cats.map(cat => `
             <div class="cat-card overflow-hidden rounded-2xl border border-gray-200/80 bg-white dark:border-gray-800 dark:bg-gray-900">
                 <a href="${typedPageHref('/categories/' + cat.id)}" class="flex h-full items-center gap-4 p-5 focus:outline-none focus:ring-4 focus:ring-brand-500/15">
-                    <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-50 to-brand-100 ring-1 ring-brand-200/50 dark:from-brand-500/10 dark:to-brand-500/5 dark:ring-brand-500/20">
+                    <div class="shop-thumb-box h-20 w-20 ring-1 ring-brand-200/50 dark:ring-brand-500/20">
                         ${categoryThumbInner(cat)}
                     </div>
                     <div class="min-w-0 flex-1">

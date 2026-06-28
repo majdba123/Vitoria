@@ -27,13 +27,13 @@
         <div id="order-content" class="hidden space-y-6">
             <div class="overflow-hidden rounded-3xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
                 <div class="bg-gradient-to-r from-brand-500/10 via-brand-400/5 to-transparent px-6 py-5 dark:from-brand-500/20 dark:via-brand-400/10">
-                    <div class="flex flex-wrap items-start justify-between gap-3">
-                        <div>
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div class="min-w-0">
                             <h1 id="order-number" class="inline-flex rounded-xl bg-gray-900 px-3 py-1 text-lg font-black text-white shadow-sm dark:bg-white dark:text-gray-900">—</h1>
                             <p id="order-number-fallback" class="mt-1 text-sm font-bold text-gray-900 dark:text-white">Order Number: —</p>
                             <p id="order-meta" class="mt-1 text-sm text-gray-600 dark:text-gray-300">—</p>
                         </div>
-                        <div class="flex items-center gap-2">
+                        <div class="flex flex-wrap items-center gap-2 sm:justify-end">
                             <span id="order-status" class="rounded-full px-3 py-1 text-xs font-bold">pending</span>
                             <span id="order-payment" class="rounded-full bg-white px-3 py-1 text-xs font-bold text-gray-700 ring-1 ring-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:ring-gray-700">cash</span>
                         </div>
@@ -62,7 +62,7 @@
             <div class="grid gap-6 lg:grid-cols-12">
                 <section class="lg:col-span-8">
                     <div class="rounded-3xl border border-gray-200/80 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                        <div class="mb-4 flex items-center justify-between gap-2">
+                        <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                             <h3 class="text-base font-black text-gray-900 dark:text-white">Order Items</h3>
                             <span class="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300">Detailed View</span>
                         </div>

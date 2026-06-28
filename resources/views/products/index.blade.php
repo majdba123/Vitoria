@@ -91,10 +91,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         ct = this.value;
         cId = '';
         populateCategories();
+        $('f-category').value = '';
+        page = 1;
+        load();
     });
 
     $('f-category').addEventListener('change', function() {
         cId = this.value;
+        page = 1;
+        load();
+    });
+
+    $('f-discount').addEventListener('change', function() {
+        dFilter = this.value;
+        page = 1;
+        load();
     });
 
     async function load() {
@@ -156,8 +167,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         return `<div class="product-card overflow-hidden rounded-2xl border border-gray-200/80 bg-white dark:border-gray-800 dark:bg-gray-900">
             <div class="relative">
-                <a href="/products/${p.id}"><div class="relative aspect-[4/5] overflow-hidden bg-gray-50 dark:bg-gray-800">
-                    <img src="${esc(photo)}" alt="${esc(p.name)}" class="h-full w-full object-contain p-4 transition-transform duration-500 hover:scale-105" loading="lazy" onerror="this.src='{{ asset('images/product-placeholder.svg') }}'">
+                <a href="/products/${p.id}"><div class="shop-card-media">
+                    <img src="${esc(photo)}" alt="${esc(p.name)}" class="shop-card-media-img" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}'">
                     ${!inStock ? '<div class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70"><span class="rounded-full bg-red-100 px-3 py-1 text-[11px] font-bold text-red-600 dark:bg-red-500/10 dark:text-red-400">نفد من المخزون</span></div>' : ''}
                     ${p.has_active_discount ? `<div class="absolute left-2.5 top-2.5 z-10 rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">-${parseFloat(p.discount_percentage || 0).toFixed(0)}%</div>` : ''}
                 </div></a>
