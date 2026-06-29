@@ -18,7 +18,7 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6">
         <div class="stat-tile">
             <div class="card-body flex items-center gap-4">
                 <div class="icon-chip bg-cyan-500/10 text-cyan-700 dark:text-cyan-300">
@@ -27,6 +27,18 @@
                 <div>
                     <p class="text-sm text-gray-500">{{ __('employee.total_products') }}</p>
                     <p class="text-lg font-bold text-gray-900 dark:text-white" id="stat-total-products">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-tile">
+            <div class="card-body flex items-center gap-4">
+                <div class="icon-chip bg-sky-500/10 text-sky-700 dark:text-sky-300">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m6 2.25a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Active Products</p>
+                    <p class="text-lg font-bold text-sky-600" id="stat-active-products">0</p>
                 </div>
             </div>
         </div>
@@ -66,6 +78,54 @@
                 </div>
             </div>
         </div>
+
+        <div class="stat-tile">
+            <div class="card-body flex items-center gap-4">
+                <div class="icon-chip bg-slate-500/10 text-slate-700 dark:text-slate-300">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636A9 9 0 0 1 5.636 18.364M5.636 5.636A9 9 0 0 0 18.364 18.364M5.636 5.636 18.364 18.364"/></svg>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Inactive Products</p>
+                    <p class="text-lg font-bold text-slate-600" id="stat-inactive-products">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 xl:grid-cols-[1.4fr_1fr]">
+        <div class="card">
+            <div class="card-body border-b border-gray-100">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <h3 class="dashboard-section-title">Products by Category</h3>
+                        <p class="dashboard-section-copy">See which categories hold the most products right now.</p>
+                    </div>
+                    <span class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Live mix</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="category-stats" class="space-y-3">
+                    <div class="py-8 text-center text-sm text-gray-400">{{ __('common.loading') }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body border-b border-gray-100">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <h3 class="dashboard-section-title">Products by Type</h3>
+                        <p class="dashboard-section-copy">Track whether agriculture or veterinary products need more attention.</p>
+                    </div>
+                    <span class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Type view</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="type-stats" class="space-y-3">
+                    <div class="py-8 text-center text-sm text-gray-400">{{ __('common.loading') }}</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="card">
@@ -73,7 +133,7 @@
             <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                     <h3 class="dashboard-section-title">{{ __('employee.all_products') }}</h3>
-                    <p class="dashboard-section-copy">{{ __('employee.all_products_copy') }}</p>
+                    <p class="dashboard-section-copy">Filter products, inspect their content, and open the edit form directly from here.</p>
                 </div>
                 <div class="flex flex-col gap-2 sm:flex-row">
                     <select id="status-filter" class="form-select w-full sm:w-52">
@@ -102,6 +162,8 @@ document.addEventListener('employee-ready', function () {
     const productsGrid = document.getElementById('products-grid');
     const productsEmpty = document.getElementById('products-empty');
     const productsAlert = document.getElementById('products-alert');
+    const categoryStats = document.getElementById('category-stats');
+    const typeStats = document.getElementById('type-stats');
     const currentStatus = new URLSearchParams(window.location.search).get('status') || '';
 
     statusFilter.value = currentStatus;
@@ -119,23 +181,38 @@ document.addEventListener('employee-ready', function () {
     loadDashboard();
 
     async function loadDashboard() {
-        await Promise.all([loadStats(), loadProducts()]);
+        await Promise.all([loadStats(), loadProducts(), loadDistribution()]);
     }
 
     async function loadStats() {
         try {
-            const [overview, pending, approved, rejected] = await Promise.all([
+            const [overview, pending, approved, rejected, active, inactive] = await Promise.all([
                 window.axios.get('/api/employee/products?per_page=1'),
                 window.axios.get('/api/employee/products?per_page=1&status=pending'),
                 window.axios.get('/api/employee/products?per_page=1&status=approved'),
                 window.axios.get('/api/employee/products?per_page=1&status=rejected'),
+                window.axios.get('/api/employee/products?per_page=1&is_active=1'),
+                window.axios.get('/api/employee/products?per_page=1&is_active=0'),
             ]);
 
             document.getElementById('stat-total-products').textContent = overview.data.meta?.total ?? 0;
             document.getElementById('stat-pending-products').textContent = pending.data.meta?.total ?? 0;
             document.getElementById('stat-approved-products').textContent = approved.data.meta?.total ?? 0;
             document.getElementById('stat-rejected-products').textContent = rejected.data.meta?.total ?? 0;
+            document.getElementById('stat-active-products').textContent = active.data.meta?.total ?? 0;
+            document.getElementById('stat-inactive-products').textContent = inactive.data.meta?.total ?? 0;
         } catch (error) {}
+    }
+
+    async function loadDistribution() {
+        try {
+            const allProducts = await fetchAllProducts();
+            renderCategoryStats(allProducts);
+            renderTypeStats(allProducts);
+        } catch (error) {
+            categoryStats.innerHTML = '<p class="py-6 text-center text-sm text-red-500">{{ __('common.unexpected_error') }}</p>';
+            typeStats.innerHTML = '<p class="py-6 text-center text-sm text-red-500">{{ __('common.unexpected_error') }}</p>';
+        }
     }
 
     async function loadProducts() {
@@ -185,6 +262,96 @@ document.addEventListener('employee-ready', function () {
             productsAlert.classList.remove('hidden');
             document.getElementById('products-alert-message').textContent = error.response?.data?.message || '{{ __('common.unexpected_error') }}';
         }
+    }
+
+    async function fetchAllProducts() {
+        const products = [];
+        let page = 1;
+        let lastPage = 1;
+
+        do {
+            const response = await window.axios.get('/api/employee/products?per_page=50&page=' + page);
+            const payload = response.data || {};
+            products.push(...(payload.data || []));
+            lastPage = payload.meta?.last_page ?? 1;
+            page++;
+        } while (page <= lastPage);
+
+        return products;
+    }
+
+    function renderCategoryStats(products) {
+        const counts = new Map();
+
+        products.forEach((product) => {
+            const categoryName = product.category?.name || 'Unassigned';
+            counts.set(categoryName, (counts.get(categoryName) || 0) + 1);
+        });
+
+        const rows = [...counts.entries()]
+            .sort((left, right) => right[1] - left[1])
+            .slice(0, 6);
+
+        if (!rows.length) {
+            categoryStats.innerHTML = '<p class="py-8 text-center text-sm text-gray-400">{{ __('employee.no_products') }}</p>';
+            return;
+        }
+
+        const maxValue = rows[0][1];
+        categoryStats.innerHTML = rows.map(([label, value]) => `
+            <div class="rounded-2xl border border-gray-200/80 p-4 dark:border-gray-800">
+                <div class="mb-2 flex items-center justify-between gap-3">
+                    <p class="truncate text-sm font-semibold text-gray-900 dark:text-white">${escapeHtml(label)}</p>
+                    <span class="text-sm font-bold text-cyan-600 dark:text-cyan-300">${value}</span>
+                </div>
+                <div class="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                    <div class="h-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-600" style="width:${Math.max((value / maxValue) * 100, 8)}%"></div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderTypeStats(products) {
+        const counts = new Map();
+
+        products.forEach((product) => {
+            const typeLabel = product.category?.type_label || product.category?.type || 'Unknown';
+            counts.set(typeLabel, (counts.get(typeLabel) || 0) + 1);
+        });
+
+        const rows = [...counts.entries()].sort((left, right) => right[1] - left[1]);
+
+        if (!rows.length) {
+            typeStats.innerHTML = '<p class="py-8 text-center text-sm text-gray-400">{{ __('employee.no_products') }}</p>';
+            return;
+        }
+
+        const total = rows.reduce((sum, row) => sum + row[1], 0);
+        typeStats.innerHTML = rows.map(([label, value], index) => {
+            const colors = [
+                'from-emerald-500 to-green-600',
+                'from-cyan-500 to-blue-600',
+                'from-amber-500 to-orange-500',
+                'from-rose-500 to-pink-600',
+            ];
+            const colorClass = colors[index % colors.length];
+            const percent = total > 0 ? Math.round((value / total) * 100) : 0;
+
+            return `
+                <div class="rounded-[24px] border border-gray-200/80 p-4 dark:border-gray-800">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-900 dark:text-white">${escapeHtml(label)}</p>
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${percent}% of all products</p>
+                        </div>
+                        <span class="inline-flex h-12 min-w-12 items-center justify-center rounded-2xl bg-gray-100 px-3 text-sm font-bold text-gray-900 dark:bg-gray-800 dark:text-white">${value}</span>
+                    </div>
+                    <div class="mt-3 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                        <div class="h-full rounded-full bg-gradient-to-r ${colorClass}" style="width:${Math.max(percent, 8)}%"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 
     function syncQueryString() {
