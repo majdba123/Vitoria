@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreProductRequest as AdminStoreProductRequest;
 use App\Http\Requests\Admin\UpdateProductRequest as AdminUpdateProductRequest;
+use App\Http\Requests\Employee\UpdateProductRequest as EmployeeUpdateProductRequest;
 use App\Http\Requests\Vendor\StoreProductRequest as VendorStoreProductRequest;
 use App\Http\Requests\Vendor\UpdateProductRequest as VendorUpdateProductRequest;
 use App\Http\Resources\ProductListResource;
@@ -253,6 +254,8 @@ class ProductController extends Controller
             }
             $validated = $request->validate((new VendorUpdateProductRequest)->rules());
             $targetVendor = $vendor;
+        } elseif ($user && $user->type === User::TYPE_EMPLOYEE) {
+            $validated = $request->validate((new EmployeeUpdateProductRequest)->rules());
         } else {
             $validated = $request->validate((new AdminUpdateProductRequest)->rules());
         }
@@ -278,8 +281,14 @@ class ProductController extends Controller
             $validated['discount_ends_at'] ?? optional($product->discount_ends_at)->toDateTimeString(),
         );
 
-        if (isset($validated['status']) && (! $user || $user->type !== User::TYPE_ADMIN)) {
+        if (isset($validated['status']) && (! $user || ! in_array($user->type, [User::TYPE_ADMIN, User::TYPE_EMPLOYEE], true))) {
             unset($validated['status']);
+        }
+
+        if (array_key_exists('status', $validated)) {
+            $validated['rejection_reason'] = $validated['status'] === Product::STATUS_REJECTED
+                ? ($validated['rejection_reason'] ?? $product->rejection_reason ?? null)
+                : null;
         }
 
         $hadActiveDiscount = $product->discount_status === Product::DISCOUNT_STATUS_ACTIVE;

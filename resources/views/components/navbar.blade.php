@@ -242,6 +242,7 @@ window.szCategoryThumbHtml = categoryThumbHtml;
         0 => __('nav.customer'),
         1 => __('nav.admin'),
         2 => __('nav.business_account'),
+        4 => __('nav.employee'),
     ];
     $navDefaultRole = __('nav.customer');
 @endphp
@@ -347,6 +348,9 @@ function updateNavbar() {
         } else if (user.type === 2) {
             if (dashLink) { dashLink.href = '{{ url("/vendor/dashboard") }}'; dashLink.classList.remove('hidden'); dashLink.classList.add('flex'); }
             if (mobDash) { mobDash.href = '{{ url("/vendor/dashboard") }}'; mobDash.classList.remove('hidden'); }
+        } else if (user.type === 4) {
+            if (dashLink) { dashLink.href = '{{ url("/employee/dashboard") }}'; dashLink.classList.remove('hidden'); dashLink.classList.add('flex'); }
+            if (mobDash) { mobDash.href = '{{ url("/employee/dashboard") }}'; mobDash.classList.remove('hidden'); }
         }
         el('nav-notifications-wrap')?.classList.remove('hidden');
         updateNotificationBadge();

@@ -23,12 +23,12 @@ class UpdateSyndicateRequest extends FormRequest
         $syndicateUserId = $syndicate instanceof Syndicate ? $syndicate->user_id : null;
 
         return [
-            'name' => ['sometimes', 'required', 'string', 'max:255'],
-            'email' => ['sometimes', 'required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($syndicateUserId)],
-            'phone' => ['sometimes', 'required', 'string', 'max:30', Rule::unique('users', 'phone_number')->ignore($syndicateUserId)],
+            'name' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'email' => ['sometimes', 'nullable', 'email', 'max:255', Rule::unique('users', 'email')->ignore($syndicateUserId)],
+            'phone' => ['sometimes', 'nullable', 'string', 'max:30', Rule::unique('users', 'phone_number')->ignore($syndicateUserId)],
             'password' => ['nullable', 'string', 'min:6', 'confirmed'],
-            'type' => ['sometimes', 'required', Rule::in([Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY])],
-            'status' => ['sometimes', Rule::in([Syndicate::STATUS_ACTIVE, Syndicate::STATUS_INACTIVE])],
+            'type' => ['sometimes', 'nullable', Rule::in([Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY])],
+            'status' => ['sometimes', 'nullable', Rule::in([Syndicate::STATUS_ACTIVE, Syndicate::STATUS_INACTIVE])],
             'logo' => ['nullable', 'image', 'max:4096'],
         ];
     }

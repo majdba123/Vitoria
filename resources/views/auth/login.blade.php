@@ -102,6 +102,11 @@ document.addEventListener('DOMContentLoaded', async function () {
             return;
         }
 
+        if (type === 4) {
+            window.location.href = '{{ route("employee.dashboard") }}';
+            return;
+        }
+
         window.location.href = redirectUrl;
     };
 

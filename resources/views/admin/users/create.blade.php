@@ -40,6 +40,7 @@
                                 <option value="0">User</option>
                                 <option value="1">Admin</option>
                                 <option value="2">Vendor</option>
+                                <option value="4" @selected(request('type') == 4)>Employee</option>
                             </select>
                             <p class="form-error" id="type-error"></p>
                         </div>

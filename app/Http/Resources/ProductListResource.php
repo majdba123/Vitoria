@@ -52,6 +52,7 @@ class ProductListResource extends JsonResource
             'discount_starts_at' => $this->discount_starts_at,
             'discount_ends_at' => $this->discount_ends_at,
             'discount_status' => $this->discount_status,
+            'rejection_reason' => $this->rejection_reason,
             'has_active_discount' => $hasActiveDiscount,
             'discounted_price' => number_format($discountedPrice, 2, '.', ''),
             'discount_amount' => number_format($discountAmount, 2, '.', ''),

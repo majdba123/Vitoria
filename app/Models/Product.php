@@ -46,6 +46,7 @@ class Product extends Model
         'discount_ends_at',
         'discount_status',
         'status',
+        'rejection_reason',
     ];
 
     /**

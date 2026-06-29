@@ -21,6 +21,7 @@ class UserController extends Controller
     {
         $perPage = min((int) request('per_page', 15), 500);
         $users = User::query()
+            ->when(request()->filled('type'), fn ($query) => $query->where('type', (int) request('type')))
             ->latest()
             ->paginate($perPage);
 

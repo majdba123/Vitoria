@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Route;
 
 if (! function_exists('redirectAuthenticatedUser')) {
     function redirectAuthenticatedUser(\App\Models\User $user)
@@ -10,6 +10,7 @@ if (! function_exists('redirectAuthenticatedUser')) {
             \App\Models\User::TYPE_ADMIN => redirect()->route('admin.dashboard'),
             \App\Models\User::TYPE_VENDOR => redirect()->route('vendor.dashboard'),
             \App\Models\User::TYPE_SYNDICATE => redirect()->route('syndicate.dashboard'),
+            \App\Models\User::TYPE_EMPLOYEE => redirect()->route('employee.dashboard'),
             default => $user->preferred_product_type
                 ? redirect()->route('home')
                 : redirect()->route('product-type.select'),
@@ -32,8 +33,6 @@ Route::get('/locale/{locale}', function (string $locale) {
         if (auth()->check()) {
             auth()->user()->update(['locale' => $locale]);
         }
-
-        session()->put('locale', $locale);
     }
 
     return redirect()->back();
@@ -173,6 +172,28 @@ Route::prefix('syndicate')->as('syndicate.')->middleware(['auth', 'syndicate'])-
     }
 });
 
+Route::prefix('employee')->as('employee.')->middleware(['auth', 'employee'])->group(function () {
+    Route::get('/', function () {
+        return redirect()->route('employee.dashboard');
+    });
+
+    Route::get('/dashboard', function () {
+        return view('employee.dashboard');
+    })->name('dashboard');
+
+    Route::get('/products', function () {
+        return view('employee.products.index');
+    })->name('products.index');
+
+    Route::get('/products/{id}', function (string $id) {
+        return view('employee.products.show', ['productId' => $id]);
+    })->name('products.show');
+
+    Route::get('/products/{id}/edit', function (string $id) {
+        return view('employee.products.edit', ['productId' => $id]);
+    })->name('products.edit');
+});
+
 /*
 |--------------------------------------------------------------------------
 | Admin Web Routes
@@ -270,6 +291,10 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(funct
     Route::get('/users', function () {
         return view('admin.users.index');
     })->name('users.index');
+
+    Route::get('/employees', function () {
+        return redirect()->route('admin.users.index', ['type' => \App\Models\User::TYPE_EMPLOYEE]);
+    })->name('employees.index');
 
     Route::get('/users/create', function () {
         return view('admin.users.create');

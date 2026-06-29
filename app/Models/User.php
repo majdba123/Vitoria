@@ -27,6 +27,8 @@ class User extends Authenticatable
 
     public const TYPE_SYNDICATE = 3;
 
+    public const TYPE_EMPLOYEE = 4;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -97,6 +99,14 @@ class User extends Authenticatable
     public function isSyndicate(): bool
     {
         return $this->type === self::TYPE_SYNDICATE;
+    }
+
+    /**
+     * Determine if the user is an employee.
+     */
+    public function isEmployee(): bool
+    {
+        return $this->type === self::TYPE_EMPLOYEE;
     }
 
     /**

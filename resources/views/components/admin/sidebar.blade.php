@@ -8,6 +8,7 @@
         ['group' => __('admin.management'), 'route' => 'admin.vendors.index', 'label' => __('admin.vendors'), 'icon' => 'fa-solid fa-store'],
         ['group' => __('admin.management'), 'route' => 'admin.syndicates.index', 'label' => __('admin.syndicates'), 'icon' => 'fa-solid fa-user-group'],
         ['group' => __('admin.management'), 'route' => 'admin.products.index', 'label' => __('admin.products'), 'icon' => 'fa-solid fa-box-open'],
+        ['group' => __('admin.management'), 'route' => 'admin.employees.index', 'label' => __('Employees'), 'icon' => 'fa-solid fa-user-gear'],
         ['group' => __('admin.management'), 'route' => 'admin.coupons.index', 'label' => __('admin.coupons'), 'icon' => 'fa-solid fa-ticket'],
         ['group' => __('admin.management'), 'route' => 'admin.orders.index', 'label' => __('admin.orders'), 'icon' => 'fa-solid fa-bag-shopping'],
         ['group' => 'catalog', 'route' => 'admin.categories.index', 'label' => __('admin.categories'), 'icon' => 'fa-solid fa-layer-group'],
@@ -69,7 +70,7 @@
                     @php
                         $isActive = str_starts_with($currentRoute, str_replace('.index', '', $item['route']));
                     @endphp
-                    <a href="{{ route($item['route']) }}" class="dashboard-sidebar-link {{ $isActive ? 'is-active' : '' }} {{ $isCatalogGroup ? 'border border-transparent hover:border-brand-300/20 hover:bg-brand-400/10' : '' }}">
+                    <a href="{{ route($item['route'], $item['params'] ?? []) }}" class="dashboard-sidebar-link {{ $isActive ? 'is-active' : '' }} {{ $isCatalogGroup ? 'border border-transparent hover:border-brand-300/20 hover:bg-brand-400/10' : '' }}">
                         <span class="dashboard-sidebar-bullet h-2.5 w-2.5 rounded-full bg-white/20"></span>
                         <i class="{{ $item['icon'] }} w-4 text-center text-[13px]"></i>
                         <span class="flex-1">{{ $item['label'] }}</span>

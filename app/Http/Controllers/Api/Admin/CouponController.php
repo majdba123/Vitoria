@@ -89,7 +89,7 @@ class CouponController extends Controller
         if (array_key_exists('code', $validated)) {
             $code = strtoupper(trim((string) $validated['code']));
             $request->validate([
-                'code' => ['required', 'string', 'max:60', Rule::unique('coupons', 'code')->ignore($coupon->id)],
+                'code' => ['nullable', 'string', 'max:60', Rule::unique('coupons', 'code')->ignore($coupon->id)],
             ]);
             $validated['code'] = $code;
         }

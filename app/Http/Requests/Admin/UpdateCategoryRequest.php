@@ -24,8 +24,8 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'type' => ['required', Rule::in([Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY])],
+            'name' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'type' => ['sometimes', 'nullable', Rule::in([Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY])],
             'logo' => ['nullable', 'image', 'max:4096'],
             'commission' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ];
@@ -34,8 +34,6 @@ class UpdateCategoryRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Category name is required.',
-            'type.required' => 'Category type is required.',
             'type.in' => 'Please select a valid category type.',
             'logo.image' => 'The category image must be a valid image file.',
             'logo.max' => 'The category image may not be greater than 4 MB.',

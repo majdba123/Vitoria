@@ -15,10 +15,23 @@
             <h2 id="product-name" class="text-2xl font-bold text-gray-900"></h2>
             <p id="product-category" class="text-sm text-gray-500"></p>
             <p id="product-description" class="text-sm text-gray-600"></p>
-            <div class="grid gap-4 sm:grid-cols-3">
-                <div class="rounded-xl bg-gray-50 p-4"><p class="text-xs uppercase text-gray-400">Price</p><p id="product-price" class="mt-1 text-sm font-semibold text-gray-900">—</p></div>
-                <div class="rounded-xl bg-gray-50 p-4"><p class="text-xs uppercase text-gray-400">Quantity</p><p id="product-quantity" class="mt-1 text-sm font-semibold text-gray-900">—</p></div>
-                <div class="rounded-xl bg-gray-50 p-4"><p class="text-xs uppercase text-gray-400">Status</p><p id="product-status" class="mt-1 text-sm font-semibold text-gray-900">—</p></div>
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="rounded-xl bg-gray-50 p-4">
+                    <p class="text-xs uppercase text-gray-400">Price</p>
+                    <p id="product-price" class="mt-1 text-sm font-semibold text-gray-900">-</p>
+                </div>
+                <div class="rounded-xl bg-gray-50 p-4">
+                    <p class="text-xs uppercase text-gray-400">Quantity</p>
+                    <p id="product-quantity" class="mt-1 text-sm font-semibold text-gray-900">-</p>
+                </div>
+                <div class="rounded-xl bg-gray-50 p-4">
+                    <p class="text-xs uppercase text-gray-400">Status</p>
+                    <p id="product-status" class="mt-1 text-sm font-semibold text-gray-900">-</p>
+                </div>
+                <div class="rounded-xl bg-gray-50 p-4">
+                    <p class="text-xs uppercase text-gray-400">Rejection Reason</p>
+                    <p id="product-rejection-reason" class="mt-1 text-sm font-semibold text-gray-900">-</p>
+                </div>
             </div>
         </div>
     </div>
@@ -36,7 +49,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('product-description').textContent = p.description || 'No description.';
         document.getElementById('product-price').textContent = `$${parseFloat(p.price || 0).toFixed(2)}`;
         document.getElementById('product-quantity').textContent = p.quantity || 0;
-        document.getElementById('product-status').textContent = p.is_active ? 'Active' : 'Inactive';
+        document.getElementById('product-status').textContent = p.status ? p.status.charAt(0).toUpperCase() + p.status.slice(1) : (p.is_active ? 'Active' : 'Inactive');
+        document.getElementById('product-rejection-reason').textContent = p.rejection_reason || 'No rejection reason.';
         document.getElementById('product-loading').classList.add('hidden');
         document.getElementById('product-content').classList.remove('hidden');
     } catch (error) {

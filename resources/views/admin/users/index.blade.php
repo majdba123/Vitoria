@@ -8,11 +8,12 @@
     {{-- Page Header --}}
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <p class="text-sm text-gray-500">Manage all user accounts.</p>
+            <h2 data-page-title class="text-lg font-bold text-gray-900">{{ request('type') == 4 ? 'Manage employee accounts.' : 'Manage all user accounts.' }}</h2>
+            <p class="mt-1 text-sm text-gray-500">{{ request('type') == 4 ? 'Create, review, and update employee access.' : 'Manage all user accounts.' }}</p>
         </div>
-        <a href="{{ route('admin.users.create') }}" class="btn-primary btn-sm w-full shrink-0 sm:w-auto">
+        <a href="{{ request('type') == 4 ? route('admin.users.create', ['type' => 4]) : route('admin.users.create') }}" class="btn-primary btn-sm w-full shrink-0 sm:w-auto">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
-            Add User
+            {{ request('type') == 4 ? 'Add Employee' : 'Add User' }}
         </a>
     </div>
 
@@ -100,8 +101,14 @@
 document.addEventListener('DOMContentLoaded', function () {
     let currentPage = 1;
     let deleteUserId = null;
-    const typeLabels = { 0: 'User', 1: 'Admin', 2: 'Vendor' };
-    const typeBadge = { 0: 'badge-info', 1: 'badge-purple', 2: 'badge-brand' };
+    const filterType = new URLSearchParams(window.location.search).get('type') || '';
+    const typeLabels = { 0: 'User', 1: 'Admin', 2: 'Vendor', 4: 'Employee' };
+    const typeBadge = { 0: 'badge-info', 1: 'badge-purple', 2: 'badge-brand', 4: 'badge-cyan' };
+    const isEmployeeList = String(filterType) === '4';
+
+    if (isEmployeeList) {
+        document.querySelector('h1[data-page-title]')?.textContent = 'Employees';
+    }
 
     loadUsers();
 
@@ -113,7 +120,9 @@ document.addEventListener('DOMContentLoaded', function () {
     async function loadUsers() {
         showLoading(true);
         try {
-            const response = await window.axios.get('/api/admin/users?page=' + currentPage);
+            const query = new URLSearchParams({ page: currentPage });
+            if (filterType) query.set('type', filterType);
+            const response = await window.axios.get('/api/admin/users?' + query.toString());
             const { data, meta } = response.data;
             renderUsers(data);
             renderPagination(meta);

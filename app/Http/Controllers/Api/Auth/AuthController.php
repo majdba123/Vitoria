@@ -100,6 +100,7 @@ class AuthController extends Controller
             User::TYPE_ADMIN => route('admin.dashboard'),
             User::TYPE_VENDOR => route('vendor.dashboard'),
             User::TYPE_SYNDICATE => route('syndicate.dashboard'),
+            User::TYPE_EMPLOYEE => route('employee.dashboard'),
             default => $user->preferred_product_type
                 ? route('home')
                 : route('product-type.select'),

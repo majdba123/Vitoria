@@ -114,8 +114,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function renderUser(user) {
-        const roleLabel = { 0: 'User', 1: 'Admin', 2: 'Vendor' };
-        const roleBadge = { 0: 'bg-blue-100 text-blue-700', 1: 'bg-purple-100 text-purple-700', 2: 'bg-brand-100 text-brand-700' };
+        const roleLabel = { 0: 'User', 1: 'Admin', 2: 'Vendor', 4: 'Employee' };
+        const roleBadge = { 0: 'bg-blue-100 text-blue-700', 1: 'bg-purple-100 text-purple-700', 2: 'bg-brand-100 text-brand-700', 4: 'bg-cyan-100 text-cyan-700' };
         const name = user.name || '—';
         const email = user.email || '—';
         const role = roleLabel[user.type] || 'User';

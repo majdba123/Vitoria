@@ -36,6 +36,7 @@ class UserResource extends JsonResource
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'timezone' => $this->timezone,
+            'locale' => $this->locale,
             'preferred_product_type' => $this->preferred_product_type,
             'email_verified_at' => $this->email_verified_at,
             'created_at' => $this->created_at,

@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureProductTypeSelected;
 use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\EnsureUserIsEmployee;
 use App\Http\Middleware\EnsureUserIsSyndicate;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
@@ -40,6 +41,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->prefix('api/syndicate')
                 ->as('syndicate.')
                 ->group(base_path('routes/api_syndicate.php'));
+
+            Route::middleware(['api', 'auth:sanctum', 'employee'])
+                ->prefix('api/employee')
+                ->as('employee.')
+                ->group(base_path('routes/api_employee.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
@@ -51,6 +57,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'product.type.selected' => EnsureProductTypeSelected::class,
             'vendor' => \App\Http\Middleware\EnsureUserIsVendor::class,
             'syndicate' => EnsureUserIsSyndicate::class,
+            'employee' => EnsureUserIsEmployee::class,
             'cache.response' => \App\Http\Middleware\CacheResponse::class,
             'timezone' => \App\Http\Middleware\ApplyUserTimezone::class,
         ]);
@@ -79,14 +86,14 @@ return Application::configure(basePath: dirname(__DIR__))
             };
 
             $message = match ($status) {
-                400 => __('حدث خطأ في الطلب. يرجى المحاولة مرة أخرى.'),
-                401 => __('انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى.'),
-                403 => __('لا تملك صلاحية تنفيذ هذا الإجراء.'),
-                404 => __('العنصر المطلوب غير موجود.'),
-                419 => __('انتهت الجلسة، يرجى تحديث الصفحة والمحاولة مرة أخرى.'),
-                422 => __('البيانات المرسلة غير صالحة. يرجى مراجعة الحقول.'),
-                429 => __('تم إرسال طلبات كثيرة. يرجى الانتظار قليلاً.'),
-                default => __('حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.'),
+                400 => __('common.bad_request'),
+                401 => __('common.please_sign_in_again'),
+                403 => __('common.forbidden'),
+                404 => __('common.not_found'),
+                419 => __('common.session_expired'),
+                422 => __('common.invalid_data'),
+                429 => __('common.too_many_requests'),
+                default => __('common.unexpected_error'),
             };
 
             if ($status >= 500) {

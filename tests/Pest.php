@@ -1,5 +1,12 @@
 <?php
 
+putenv('APP_LOCALE=ar');
+putenv('APP_FALLBACK_LOCALE=en');
+$_ENV['APP_LOCALE'] = 'ar';
+$_ENV['APP_FALLBACK_LOCALE'] = 'en';
+$_SERVER['APP_LOCALE'] = 'ar';
+$_SERVER['APP_FALLBACK_LOCALE'] = 'en';
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -14,6 +21,11 @@
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature');
+
+beforeEach(function (): void {
+    config(['app.locale' => 'ar', 'app.fallback_locale' => 'en']);
+    app()->setLocale('ar');
+});
 
 /*
 |--------------------------------------------------------------------------

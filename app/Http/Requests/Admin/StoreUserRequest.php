@@ -31,7 +31,7 @@ class StoreUserRequest extends FormRequest
             'membership_number' => ['required', 'string', 'max:100', 'unique:users,membership_number'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6'],
-            'type' => ['sometimes', 'integer', Rule::in([User::TYPE_USER, User::TYPE_ADMIN, User::TYPE_VENDOR])],
+            'type' => ['sometimes', 'integer', Rule::in([User::TYPE_USER, User::TYPE_ADMIN, User::TYPE_VENDOR, User::TYPE_EMPLOYEE])],
         ];
     }
 

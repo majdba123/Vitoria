@@ -22,6 +22,7 @@ class ProfileController extends Controller
             'email' => ['sometimes', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'phone_number' => ['sometimes', 'string', 'max:20', Rule::unique('users')->ignore($user->id)],
             'timezone' => ['sometimes', 'nullable', 'string', Rule::in(timezone_identifiers_list())],
+            'locale' => ['sometimes', 'nullable', Rule::in(['en', 'ar'])],
             'preferred_product_type' => ['sometimes', 'nullable', Rule::in([Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY])],
             'avatar' => ['sometimes', 'nullable', 'image', 'max:2048'],
         ]);
@@ -58,6 +59,12 @@ class ProfileController extends Controller
 
         if (array_key_exists('preferred_product_type', $validated) && $request->hasSession()) {
             $request->session()->put('preferred_product_type', $user->preferred_product_type);
+        }
+
+        if (array_key_exists('locale', $validated)) {
+            if ($request->hasSession()) {
+                $request->session()->put('locale', $user->locale);
+            }
         }
 
         return response()->json([

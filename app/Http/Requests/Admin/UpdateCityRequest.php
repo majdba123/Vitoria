@@ -25,7 +25,7 @@ class UpdateCityRequest extends FormRequest
         $city = $this->route('city');
 
         return [
-            'name' => ['required', 'string', 'max:255', Rule::unique('cities', 'name')->ignore($city?->id)],
+            'name' => ['sometimes', 'nullable', 'string', 'max:255', Rule::unique('cities', 'name')->ignore($city?->id)],
         ];
     }
 }

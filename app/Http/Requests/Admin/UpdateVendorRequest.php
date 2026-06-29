@@ -33,25 +33,25 @@ class UpdateVendorRequest extends FormRequest
 
         return [
             // User account fields
-            'name' => ['sometimes', 'string', 'max:255'],
+            'name' => ['sometimes', 'nullable', 'string', 'max:255'],
             'email' => ['nullable', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
-            'password' => ['sometimes', 'string', 'min:6'],
-            'phone_number' => ['sometimes', 'string', 'max:20', Rule::unique('users', 'phone_number')->ignore($userId)],
-            'national_id' => ['sometimes', 'string', 'max:50', Rule::unique('users', 'national_id')->ignore($userId)],
+            'password' => ['sometimes', 'nullable', 'string', 'min:6'],
+            'phone_number' => ['sometimes', 'nullable', 'string', 'max:20', Rule::unique('users', 'phone_number')->ignore($userId)],
+            'national_id' => ['sometimes', 'nullable', 'string', 'max:50', Rule::unique('users', 'national_id')->ignore($userId)],
 
             // Vendor profile fields
-            'store_name' => ['sometimes', 'string', 'max:255'],
-            'business_type' => ['sometimes', Rule::in([
+            'store_name' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'business_type' => ['sometimes', 'nullable', Rule::in([
                 Vendor::BUSINESS_TYPE_AGRICULTURE,
                 Vendor::BUSINESS_TYPE_VETERINARY,
                 Vendor::BUSINESS_TYPE_BOTH,
             ])],
             'description' => ['nullable', 'string', 'max:1000'],
             'address' => ['nullable', 'string', 'max:255'],
-            'city_id' => ['sometimes', 'integer', 'exists:cities,id'],
+            'city_id' => ['sometimes', 'nullable', 'integer', 'exists:cities,id'],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],
             'logo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],
-            'is_active' => ['sometimes', 'boolean'],
+            'is_active' => ['sometimes', 'nullable', 'boolean'],
 
             // Allowed categories
             'category_ids' => [
