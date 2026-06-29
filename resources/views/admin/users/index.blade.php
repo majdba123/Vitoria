@@ -1,11 +1,10 @@
 @extends('layouts.admin')
 
-@section('title', 'Users — Vetora Admin')
+@section('title', 'Users - Vetora Admin')
 @section('page-title', 'Users')
 
 @section('content')
 <div class="space-y-4">
-    {{-- Page Header --}}
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h2 data-page-title class="text-lg font-bold text-gray-900">{{ request('type') == 4 ? 'Manage employee accounts.' : 'Manage all user accounts.' }}</h2>
@@ -17,29 +16,27 @@
         </a>
     </div>
 
-    {{-- Alerts --}}
     <x-alert type="error" id="users-alert" />
     <x-alert type="success" id="users-success" />
 
-    {{-- Loading --}}
     <div id="users-loading" class="py-16 text-center">
         <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500"></div>
         <p class="mt-3 text-sm text-gray-500">Loading users...</p>
     </div>
 
-    {{-- Empty --}}
     <div id="users-empty" class="hidden">
         <div class="card py-16 text-center">
             <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
-            <h3 class="mt-3 text-sm font-semibold text-gray-900">No users yet</h3>
-            <p class="mt-1 text-sm text-gray-500">Get started by creating a new user.</p>
+            <h3 class="mt-3 text-sm font-semibold text-gray-900">{{ request('type') == 4 ? 'No employees yet' : 'No users yet' }}</h3>
+            <p class="mt-1 text-sm text-gray-500">{{ request('type') == 4 ? 'Create an employee account to get started.' : 'Get started by creating a new user.' }}</p>
             <div class="mt-5">
-                <a href="{{ route('admin.users.create') }}" class="btn-primary btn-sm">Add User</a>
+                <a href="{{ request('type') == 4 ? route('admin.users.create', ['type' => 4]) : route('admin.users.create') }}" class="btn-primary btn-sm">
+                    {{ request('type') == 4 ? 'Add Employee' : 'Add User' }}
+                </a>
             </div>
         </div>
     </div>
 
-    {{-- Table --}}
     <div id="users-table-wrapper" class="hidden">
         <div class="card overflow-hidden">
             <div class="overflow-x-auto">
@@ -58,7 +55,6 @@
                 </table>
             </div>
 
-            {{-- Pagination --}}
             <div class="flex flex-col items-center gap-3 border-t border-gray-100 px-4 py-3 sm:flex-row sm:justify-between">
                 <p id="users-info" class="text-xs text-gray-500"></p>
                 <div class="flex gap-2">
@@ -76,8 +72,7 @@
     </div>
 </div>
 
-{{-- Delete Modal --}}
-<div id="delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4">
+<div id="delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm">
     <div class="w-full max-w-sm rounded-xl bg-white p-6 shadow-2xl">
         <div class="flex items-center gap-3">
             <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100">
@@ -98,56 +93,86 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+function initAdminUsersPage() {
+    if (window.__adminUsersPageInitialized) {
+        return;
+    }
+
+    window.__adminUsersPageInitialized = true;
+
     let currentPage = 1;
     let deleteUserId = null;
     const filterType = new URLSearchParams(window.location.search).get('type') || '';
     const typeLabels = { 0: 'User', 1: 'Admin', 2: 'Vendor', 4: 'Employee' };
     const typeBadge = { 0: 'badge-info', 1: 'badge-purple', 2: 'badge-brand', 4: 'badge-cyan' };
-    const isEmployeeList = String(filterType) === '4';
+    const usersLoading = document.getElementById('users-loading');
+    const usersEmpty = document.getElementById('users-empty');
+    const usersTableWrapper = document.getElementById('users-table-wrapper');
+    const usersTbody = document.getElementById('users-tbody');
+    const usersInfo = document.getElementById('users-info');
+    const prevPageButton = document.getElementById('prev-page');
+    const nextPageButton = document.getElementById('next-page');
 
-    if (isEmployeeList) {
-        document.querySelector('h1[data-page-title]')?.textContent = 'Employees';
+    if (String(filterType) === '4') {
+        document.querySelector('[data-page-title]')?.replaceChildren(document.createTextNode('Manage employee accounts.'));
     }
 
-    loadUsers();
+    prevPageButton.addEventListener('click', () => {
+        if (currentPage <= 1) {
+            return;
+        }
 
-    document.getElementById('prev-page').addEventListener('click', () => { currentPage--; loadUsers(); });
-    document.getElementById('next-page').addEventListener('click', () => { currentPage++; loadUsers(); });
+        currentPage--;
+        loadUsers();
+    });
+
+    nextPageButton.addEventListener('click', () => {
+        currentPage++;
+        loadUsers();
+    });
+
     document.getElementById('delete-cancel').addEventListener('click', closeDeleteModal);
     document.getElementById('delete-confirm').addEventListener('click', confirmDelete);
 
+    loadUsers();
+
     async function loadUsers() {
-        showLoading(true);
+        toggleLoading(true);
+
         try {
             const query = new URLSearchParams({ page: currentPage });
-            if (filterType) query.set('type', filterType);
+            if (filterType) {
+                query.set('type', filterType);
+            }
+
             const response = await window.axios.get('/api/admin/users?' + query.toString());
-            const { data, meta } = response.data;
-            renderUsers(data);
-            renderPagination(meta);
+            const payload = response.data || {};
+            const users = Array.isArray(payload.data) ? payload.data : [];
+
+            renderUsers(users);
+            renderPagination(payload.meta || null);
         } catch (error) {
+            usersTableWrapper.classList.add('hidden');
+            usersEmpty.classList.add('hidden');
             showAlert('users-alert', error.response?.data?.message || 'Failed to load users.');
         } finally {
-            showLoading(false);
+            toggleLoading(false);
         }
     }
 
     function renderUsers(users) {
-        const tbody = document.getElementById('users-tbody');
-        const tableWrapper = document.getElementById('users-table-wrapper');
-        const emptyState = document.getElementById('users-empty');
+        usersTbody.innerHTML = '';
 
-        if (!users || users.length === 0) {
-            tableWrapper.classList.add('hidden');
-            emptyState.classList.remove('hidden');
+        if (!users.length) {
+            usersTableWrapper.classList.add('hidden');
+            usersEmpty.classList.remove('hidden');
             return;
         }
 
-        emptyState.classList.add('hidden');
-        tableWrapper.classList.remove('hidden');
+        usersEmpty.classList.add('hidden');
+        usersTableWrapper.classList.remove('hidden');
 
-        tbody.innerHTML = users.map(user => `
+        usersTbody.innerHTML = users.map((user) => `
             <tr>
                 <td class="font-medium text-gray-400">${user.id}</td>
                 <td>
@@ -156,17 +181,17 @@ document.addEventListener('DOMContentLoaded', function () {
                             ${escapeHtml((user.name || '?').charAt(0).toUpperCase())}
                         </div>
                         <div class="min-w-0">
-                            <p class="truncate text-sm font-semibold text-gray-900">${escapeHtml(user.name)}</p>
-                            <p class="truncate text-xs text-gray-500">${escapeHtml(user.email || '—')}</p>
+                            <p class="truncate text-sm font-semibold text-gray-900">${escapeHtml(user.name || '')}</p>
+                            <p class="truncate text-xs text-gray-500">${escapeHtml(user.email || '-')}</p>
                             <p class="truncate text-xs text-gray-400 md:hidden">${escapeHtml(user.phone_number || '')}</p>
                         </div>
                     </div>
                 </td>
                 <td class="hidden md:table-cell">
-                    <span class="font-mono text-sm text-gray-600">${escapeHtml(user.phone_number)}</span>
+                    <span class="font-mono text-sm text-gray-600">${escapeHtml(user.phone_number || '-')}</span>
                 </td>
                 <td class="hidden lg:table-cell">
-                    <span class="font-mono text-xs text-gray-500">${escapeHtml(user.national_id)}</span>
+                    <span class="font-mono text-xs text-gray-500">${escapeHtml(user.national_id || '-')}</span>
                 </td>
                 <td class="hidden sm:table-cell">
                     <span class="badge ${typeBadge[user.type] || typeBadge[0]}">
@@ -194,9 +219,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function renderPagination(meta) {
-        document.getElementById('users-info').textContent = `Showing page ${meta.current_page} of ${meta.last_page} · ${meta.total} total`;
-        document.getElementById('prev-page').disabled = meta.current_page <= 1;
-        document.getElementById('next-page').disabled = meta.current_page >= meta.last_page;
+        if (!meta) {
+            usersInfo.textContent = '';
+            prevPageButton.disabled = true;
+            nextPageButton.disabled = true;
+            return;
+        }
+
+        usersInfo.textContent = `Showing page ${meta.current_page} of ${meta.last_page} - ${meta.total} total`;
+        prevPageButton.disabled = meta.current_page <= 1;
+        nextPageButton.disabled = meta.current_page >= meta.last_page;
     }
 
     window.openDeleteModal = function (id) {
@@ -214,7 +246,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function confirmDelete() {
-        if (!deleteUserId) return;
+        if (!deleteUserId) {
+            return;
+        }
+
         try {
             await window.axios.delete('/api/admin/users/' + deleteUserId);
             closeDeleteModal();
@@ -226,7 +261,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function showLoading(show) { document.getElementById('users-loading').classList.toggle('hidden', !show); }
+    function toggleLoading(show) {
+        usersLoading.classList.toggle('hidden', !show);
+    }
 
     function showAlert(id, message) {
         const box = document.getElementById(id);
@@ -236,11 +273,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function escapeHtml(text) {
-        if (!text) return '';
-        const d = document.createElement('div');
-        d.textContent = text;
-        return d.innerHTML;
+        if (!text) {
+            return '';
+        }
+
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
-});
+}
+
+document.addEventListener('admin-ready', initAdminUsersPage, { once: true });
+
+if (document.getElementById('admin-app') && !document.getElementById('admin-app').classList.contains('hidden')) {
+    initAdminUsersPage();
+}
 </script>
 @endpush
