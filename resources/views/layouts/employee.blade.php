@@ -27,7 +27,7 @@
 </head>
 @php
     $sessionAuthUser = auth()->check()
-        ? (new \App\Http\Resources\Auth\UserResource(auth()->user()->loadMissing()))->resolve(request())
+        ? (new \App\Http\Resources\Auth\UserResource(auth()->user()->loadMissing(['syndicate', 'city'])))->resolve(request())
         : null;
 @endphp
 <body class="dashboard-body min-h-screen font-sans text-gray-900 antialiased transition-colors duration-300 dark:text-gray-100">

@@ -182,7 +182,7 @@ Route::prefix('employee')->as('employee.')->middleware(['auth', 'employee'])->gr
     })->name('dashboard');
 
     Route::get('/products', function () {
-        return view('employee.products.index');
+        return redirect()->route('employee.dashboard', request()->query());
     })->name('products.index');
 
     Route::get('/products/{id}', function (string $id) {

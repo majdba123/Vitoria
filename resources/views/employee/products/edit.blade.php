@@ -56,17 +56,10 @@
                     <p class="form-error" id="description-error"></p>
                 </div>
 
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                        <label for="icon" class="form-label">{{ __('employee.icon') }}</label>
-                        <input id="icon" name="icon" type="file" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" class="form-input">
-                        <p class="form-error" id="icon-error"></p>
-                    </div>
-                    <div>
-                        <label for="image" class="form-label">{{ __('employee.photo') }}</label>
-                        <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/gif,image/webp" class="form-input">
-                        <p class="form-error" id="image-error"></p>
-                    </div>
+                <div>
+                    <label for="image" class="form-label">{{ __('employee.photo') }}</label>
+                    <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/gif,image/webp" class="form-input">
+                    <p class="form-error" id="image-error"></p>
                 </div>
 
                 <div>
@@ -86,7 +79,7 @@
                 </div>
 
                 <div class="flex flex-col-reverse gap-2 border-t border-gray-100 pt-5 sm:flex-row sm:justify-end">
-                    <a href="{{ route('employee.products.index') }}" class="btn-secondary">{{ __('common.cancel') }}</a>
+                    <a href="{{ route('employee.dashboard') }}" class="btn-secondary">{{ __('common.cancel') }}</a>
                     <button type="submit" id="edit-btn" class="btn-primary">
                         <span id="edit-btn-text">{{ __('common.save') }}</span>
                         <svg id="edit-spinner" class="hidden h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
@@ -156,7 +149,6 @@ document.addEventListener('employee-ready', async function () {
         if (name) formData.append('name', name);
         if (description) formData.append('description', description);
         if (statusSelect.value) formData.append('status', statusSelect.value);
-        if (form.icon.files[0]) formData.append('icon', form.icon.files[0]);
         if (form.image.files[0]) formData.append('image', form.image.files[0]);
         if (statusSelect.value === 'rejected') {
             const reason = document.getElementById('rejection_reason').value.trim();

@@ -6,21 +6,19 @@
 @section('content')
 <div class="space-y-6">
     <div class="workspace-hero">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
                 <span class="eyebrow bg-white/10 text-white ring-1 ring-inset ring-white/10">{{ __('employee.workspace') }}</span>
                 <h2 class="mt-4 text-2xl font-black sm:text-3xl">{{ __('employee.dashboard_title') }}</h2>
-                <p class="mt-2 max-w-2xl text-sm leading-7 text-slate-300">{{ __('employee.dashboard_copy') }}</p>
+                <p class="mt-2 max-w-3xl text-sm leading-7 text-slate-300">{{ __('employee.dashboard_copy') }}</p>
             </div>
-            <div class="flex shrink-0 gap-2">
-                <a href="{{ route('employee.products.index') }}" class="btn-primary btn-sm">
-                    {{ __('employee.view_products') }}
-                </a>
+            <div class="flex flex-wrap gap-2">
+                <button id="reload-dashboard-btn" class="btn-secondary btn-sm">Refresh</button>
             </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div class="stat-tile">
             <div class="card-body flex items-center gap-4">
                 <div class="icon-chip bg-cyan-500/10 text-cyan-700 dark:text-cyan-300">
@@ -28,7 +26,7 @@
                 </div>
                 <div>
                     <p class="text-sm text-gray-500">{{ __('employee.total_products') }}</p>
-                    <p class="text-lg font-bold text-gray-900" id="stat-total-products">0</p>
+                    <p class="text-lg font-bold text-gray-900 dark:text-white" id="stat-total-products">0</p>
                 </div>
             </div>
         </div>
@@ -72,21 +70,26 @@
 
     <div class="card">
         <div class="card-body border-b border-gray-100">
-            <div class="flex items-center justify-between gap-3">
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                    <h3 class="dashboard-section-title">{{ __('employee.recent_products') }}</h3>
-                    <p class="dashboard-section-copy">{{ __('employee.recent_products_copy') }}</p>
+                    <h3 class="dashboard-section-title">{{ __('employee.all_products') }}</h3>
+                    <p class="dashboard-section-copy">{{ __('employee.all_products_copy') }}</p>
                 </div>
-                <a href="{{ route('employee.products.index') }}" class="btn-secondary btn-xs">{{ __('employee.view_all') }}</a>
+                <div class="flex flex-col gap-2 sm:flex-row">
+                    <select id="status-filter" class="form-select w-full sm:w-52">
+                        <option value="">{{ __('employee.all_statuses') }}</option>
+                        <option value="pending">{{ __('employee.pending') }}</option>
+                        <option value="approved">{{ __('employee.approved') }}</option>
+                        <option value="rejected">{{ __('employee.rejected') }}</option>
+                    </select>
+                    <button id="apply-filter-btn" class="btn-primary btn-sm">{{ __('employee.view_products') }}</button>
+                </div>
             </div>
         </div>
         <div class="card-body">
-            <div id="recent-products" class="space-y-3">
-                <div class="py-8 text-center">
-                    <div class="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-cyan-500"></div>
-                    <p class="mt-2 text-sm text-gray-500">{{ __('common.loading') }}</p>
-                </div>
-            </div>
+            <x-alert type="error" id="products-alert" />
+            <div id="products-grid" class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
+            <div id="products-empty" class="hidden py-16 text-center text-sm text-gray-400">{{ __('employee.no_products') }}</div>
         </div>
     </div>
 </div>
@@ -94,49 +97,113 @@
 
 @push('scripts')
 <script>
-document.addEventListener('employee-ready', async function () {
-    try {
-        const [overview, pending, approved, rejected] = await Promise.all([
-            window.axios.get('/api/employee/products?per_page=5'),
-            window.axios.get('/api/employee/products?per_page=1&status=pending'),
-            window.axios.get('/api/employee/products?per_page=1&status=approved'),
-            window.axios.get('/api/employee/products?per_page=1&status=rejected'),
-        ]);
+document.addEventListener('employee-ready', function () {
+    const statusFilter = document.getElementById('status-filter');
+    const productsGrid = document.getElementById('products-grid');
+    const productsEmpty = document.getElementById('products-empty');
+    const productsAlert = document.getElementById('products-alert');
+    const currentStatus = new URLSearchParams(window.location.search).get('status') || '';
 
-        document.getElementById('stat-total-products').textContent = overview.data.meta?.total ?? 0;
-        document.getElementById('stat-pending-products').textContent = pending.data.meta?.total ?? 0;
-        document.getElementById('stat-approved-products').textContent = approved.data.meta?.total ?? 0;
-        document.getElementById('stat-rejected-products').textContent = rejected.data.meta?.total ?? 0;
+    statusFilter.value = currentStatus;
 
-        const products = overview.data.data || [];
-        const container = document.getElementById('recent-products');
+    document.getElementById('reload-dashboard-btn').addEventListener('click', loadDashboard);
+    document.getElementById('apply-filter-btn').addEventListener('click', function () {
+        syncQueryString();
+        loadProducts();
+    });
+    statusFilter.addEventListener('change', function () {
+        syncQueryString();
+        loadProducts();
+    });
 
-        if (products.length === 0) {
-            container.innerHTML = '<p class="py-10 text-center text-sm text-gray-400">{{ __('employee.no_products') }}</p>';
-            return;
+    loadDashboard();
+
+    async function loadDashboard() {
+        await Promise.all([loadStats(), loadProducts()]);
+    }
+
+    async function loadStats() {
+        try {
+            const [overview, pending, approved, rejected] = await Promise.all([
+                window.axios.get('/api/employee/products?per_page=1'),
+                window.axios.get('/api/employee/products?per_page=1&status=pending'),
+                window.axios.get('/api/employee/products?per_page=1&status=approved'),
+                window.axios.get('/api/employee/products?per_page=1&status=rejected'),
+            ]);
+
+            document.getElementById('stat-total-products').textContent = overview.data.meta?.total ?? 0;
+            document.getElementById('stat-pending-products').textContent = pending.data.meta?.total ?? 0;
+            document.getElementById('stat-approved-products').textContent = approved.data.meta?.total ?? 0;
+            document.getElementById('stat-rejected-products').textContent = rejected.data.meta?.total ?? 0;
+        } catch (error) {}
+    }
+
+    async function loadProducts() {
+        try {
+            productsAlert.classList.add('hidden');
+            productsEmpty.classList.add('hidden');
+            productsGrid.innerHTML = '<div class="col-span-full py-10 text-center text-sm text-gray-400">{{ __('common.loading') }}</div>';
+
+            const params = new URLSearchParams({ per_page: '100' });
+            if (statusFilter.value) {
+                params.set('status', statusFilter.value);
+            }
+
+            const response = await window.axios.get('/api/employee/products?' + params.toString());
+            const products = response.data.data || [];
+
+            if (!products.length) {
+                productsGrid.innerHTML = '';
+                productsEmpty.classList.remove('hidden');
+                return;
+            }
+
+            productsGrid.innerHTML = products.map((product) => `
+                <div class="group overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-xl dark:border-gray-800 dark:bg-gray-950/70">
+                    <div class="aspect-[4/3] overflow-hidden bg-gray-100">
+                        <img src="${product.first_photo_url || product.image_url || product.icon_url || '/images/product-placeholder.svg'}" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" alt="">
+                    </div>
+                    <div class="space-y-3 p-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <p class="truncate text-sm font-bold text-gray-900 dark:text-white">${escapeHtml(product.name || '')}</p>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${escapeHtml(product.category?.name || '')}</p>
+                            </div>
+                            <span class="badge ${badgeClass(product.status)}">${escapeHtml(product.status || '')}</span>
+                        </div>
+                        <p class="line-clamp-2 text-sm text-gray-600 dark:text-gray-300">${escapeHtml(product.description || '')}</p>
+                        ${product.status === 'rejected' && product.rejection_reason ? `<div class="rounded-2xl bg-rose-50 px-3 py-2 text-xs text-rose-700 dark:bg-rose-500/10 dark:text-rose-300">${escapeHtml(product.rejection_reason)}</div>` : ''}
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-xs text-gray-400 dark:text-gray-500">${escapeHtml(product.price || '')}</span>
+                            <a href="{{ url('/employee/products') }}/${product.id}/edit" class="btn-primary btn-sm">{{ __('employee.review_product') }}</a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } catch (error) {
+            productsGrid.innerHTML = '';
+            productsAlert.classList.remove('hidden');
+            document.getElementById('products-alert-message').textContent = error.response?.data?.message || '{{ __('common.unexpected_error') }}';
         }
+    }
 
-        container.innerHTML = products.map((product) => `
-            <a href="{{ url('/employee/products') }}/${product.id}/edit" class="group flex items-center gap-4 rounded-2xl border border-gray-200 p-4 transition-colors hover:border-cyan-300 hover:bg-cyan-50/40 dark:border-gray-800 dark:hover:border-cyan-500/20 dark:hover:bg-cyan-500/5">
-                <div class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
-                    <img src="${product.first_photo_url || product.image_url || product.icon_url || '/images/product-placeholder.svg'}" class="h-full w-full object-cover" alt="">
-                </div>
-                <div class="min-w-0 flex-1">
-                    <p class="truncate text-sm font-semibold text-gray-900 dark:text-white">${escapeHtml(product.name || '')}</p>
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${escapeHtml(product.category?.name || '')}</p>
-                </div>
-                <span class="badge ${badgeClass(product.status)}">${escapeHtml(product.status || '')}</span>
-                <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-            </a>
-        `).join('');
-    } catch (error) {
-        const container = document.getElementById('recent-products');
-        container.innerHTML = '<p class="py-8 text-center text-sm text-red-500">{{ __('common.unexpected_error') }}</p>';
+    function syncQueryString() {
+        const url = new URL(window.location.href);
+        if (statusFilter.value) {
+            url.searchParams.set('status', statusFilter.value);
+        } else {
+            url.searchParams.delete('status');
+        }
+        window.history.replaceState({}, '', url.toString());
     }
 
     function badgeClass(status) {
-        if (status === 'approved') return 'badge-success';
-        if (status === 'rejected') return 'badge-danger';
+        if (status === 'approved') {
+            return 'badge-success';
+        }
+        if (status === 'rejected') {
+            return 'badge-danger';
+        }
         return 'badge-warning';
     }
 
