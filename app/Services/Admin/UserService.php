@@ -9,7 +9,7 @@ class UserService
     /**
      * Create a new user.
      *
-     * @param  array{name: string, phone_number: string, national_id: string, age: int, membership_number: string, email: string, password: string, type?: int}  $data
+     * @param  array{name: string, phone_number: string, national_id: string, age?: int|null, membership_number?: string|null, email: string, password: string, type?: int}  $data
      */
     public function create(array $data): User
     {
@@ -17,8 +17,8 @@ class UserService
             'name' => $data['name'],
             'phone_number' => $data['phone_number'],
             'national_id' => $data['national_id'],
-            'age' => $data['age'],
-            'membership_number' => $data['membership_number'],
+            'age' => $data['age'] ?? null,
+            'membership_number' => $data['membership_number'] ?? null,
             'email' => $data['email'],
             'password' => $data['password'],
             'type' => $data['type'] ?? User::TYPE_USER,
