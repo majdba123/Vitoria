@@ -140,6 +140,31 @@
             const isDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('sz_theme', isDark ? 'dark' : 'light');
         }
+
+        function hydrateAdminDashboard(user) {
+            if (!user) {
+                return;
+            }
+
+            window.Auth?.setUser?.(user);
+            document.getElementById('admin-name').textContent = user.name;
+            document.getElementById('admin-avatar').textContent = (user.name || 'A').charAt(0).toUpperCase();
+            document.getElementById('admin-loading').classList.add('hidden');
+            document.getElementById('admin-app').classList.remove('hidden');
+            if (window.Auth && window.Auth.applyToken) {
+                window.Auth.applyToken();
+            }
+            document.dispatchEvent(new CustomEvent('admin-ready'));
+            if (typeof adminNotificationBadge === 'function') {
+                adminNotificationBadge();
+            }
+            if (typeof initAdminNotificationDropdown === 'function') {
+                initAdminNotificationDropdown();
+            }
+            if (typeof loadAdminNotificationDropdown === 'function') {
+                loadAdminNotificationDropdown(1);
+            }
+        }
     </script>
     <script>
         function deleteCookie(name, path = '/', domain = '') {
@@ -207,28 +232,19 @@
                     return;
                 }
 
-                window.Auth.setUser(user);
-                document.getElementById('admin-name').textContent = user.name;
-                document.getElementById('admin-avatar').textContent = (user.name || 'A').charAt(0).toUpperCase();
-                document.getElementById('admin-loading').classList.add('hidden');
-                document.getElementById('admin-app').classList.remove('hidden');
-                if (window.Auth && window.Auth.applyToken) {
-                    window.Auth.applyToken();
-                }
-                document.dispatchEvent(new CustomEvent('admin-ready'));
-                if (typeof adminNotificationBadge === 'function') {
-                    adminNotificationBadge();
-                }
-                if (typeof initAdminNotificationDropdown === 'function') {
-                    initAdminNotificationDropdown();
-                }
-                if (typeof loadAdminNotificationDropdown === 'function') {
-                    loadAdminNotificationDropdown(1);
-                }
+                hydrateAdminDashboard(user);
             } catch (error) {
+                const sessionUser = window.__sessionAuthUser;
+                if (document.body?.dataset?.sessionAuth === '1' && sessionUser?.type === 1) {
+                    window.Auth?.clearTokenOnly?.();
+                    hydrateAdminDashboard(sessionUser);
+                    return;
+                }
+
                 if (window.Auth?.clearAll) {
                     window.Auth.clearAll();
                 }
+
                 window.location.href = '{{ route("login") }}';
             }
         });

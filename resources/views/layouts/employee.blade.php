@@ -30,7 +30,10 @@
         ? (new \App\Http\Resources\Auth\UserResource(auth()->user()->loadMissing(['syndicate', 'city'])))->resolve(request())
         : null;
 @endphp
-<body class="dashboard-body min-h-screen font-sans text-gray-900 antialiased transition-colors duration-300 dark:text-gray-100">
+<body
+    data-session-auth="{{ auth()->check() ? '1' : '0' }}"
+    class="dashboard-body min-h-screen font-sans text-gray-900 antialiased transition-colors duration-300 dark:text-gray-100"
+>
     <div id="employee-app" class="hidden">
         <div id="sidebar-backdrop" class="fixed inset-0 z-40 hidden bg-gray-950/55 backdrop-blur-sm transition-opacity dark:bg-black/70 lg:hidden" onclick="closeSidebar()"></div>
 
@@ -92,6 +95,18 @@
             const isDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('sz_theme', isDark ? 'dark' : 'light');
         }
+
+        function hydrateEmployeeDashboard(user) {
+            if (!user) {
+                return;
+            }
+
+            window.Auth?.setUser?.(user);
+            document.getElementById('employee-loading').classList.add('hidden');
+            document.getElementById('employee-app').classList.remove('hidden');
+            document.dispatchEvent(new CustomEvent('employee-ready'));
+        }
+
         async function employeeLogout() {
             try {
                 await window.axios.post('/api/auth/logout');
@@ -120,11 +135,15 @@
                     return;
                 }
 
-                window.Auth.setUser(user);
-                document.getElementById('employee-loading').classList.add('hidden');
-                document.getElementById('employee-app').classList.remove('hidden');
-                document.dispatchEvent(new CustomEvent('employee-ready'));
+                hydrateEmployeeDashboard(user);
             } catch (error) {
+                const sessionUser = window.__sessionAuthUser;
+                if (document.body?.dataset?.sessionAuth === '1' && sessionUser?.type === 4) {
+                    window.Auth?.clearTokenOnly?.();
+                    hydrateEmployeeDashboard(sessionUser);
+                    return;
+                }
+
                 window.Auth?.clearAll?.();
                 window.location.href = '{{ route("login") }}';
             }

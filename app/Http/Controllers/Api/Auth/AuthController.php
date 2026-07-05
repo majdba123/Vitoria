@@ -28,6 +28,9 @@ class AuthController extends Controller
 
         // Establish web session alongside the API token
         Auth::login($result['user']);
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
         $this->persistLocale($request, $result['user']->locale);
 
         return response()->json([
@@ -49,6 +52,9 @@ class AuthController extends Controller
 
         // Establish web session alongside the API token
         Auth::login($result['user']);
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
         $this->persistLocale($request, $result['user']->locale);
 
         return response()->json([

@@ -141,6 +141,32 @@
             const isDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('sz_theme', isDark ? 'dark' : 'light');
         }
+
+        function hydrateVendorDashboard(user) {
+            if (!user) {
+                return;
+            }
+
+            window.Auth?.setUser?.(user);
+            document.getElementById('vendor-name').textContent = user.name;
+            const avatarEl = document.getElementById('vendor-avatar');
+            if (user.avatar_url) {
+                avatarEl.innerHTML = `<img src="${user.avatar_url}" alt="" class="h-full w-full rounded-full object-cover">`;
+            } else if (user.avatar) {
+                avatarEl.innerHTML = `<img src="/storage/${user.avatar}" alt="" class="h-full w-full rounded-full object-cover">`;
+            } else {
+                avatarEl.textContent = (user.name || 'V').charAt(0).toUpperCase();
+            }
+            document.getElementById('vendor-loading').classList.add('hidden');
+            document.getElementById('vendor-app').classList.remove('hidden');
+
+            loadSidebarCategories();
+            vendorNotificationBadge();
+            initVendorNotificationDropdown();
+            if (typeof loadVendorNotificationDropdown === 'function') {
+                loadVendorNotificationDropdown(1);
+            }
+        }
     </script>
     <script>
         function deleteCookie(name, path = '/', domain = '') {
@@ -208,29 +234,19 @@
                     return;
                 }
 
-                window.Auth.setUser(user);
-                document.getElementById('vendor-name').textContent = user.name;
-                const avatarEl = document.getElementById('vendor-avatar');
-                if (user.avatar_url) {
-                    avatarEl.innerHTML = `<img src="${user.avatar_url}" alt="" class="h-full w-full rounded-full object-cover">`;
-                } else if (user.avatar) {
-                    avatarEl.innerHTML = `<img src="/storage/${user.avatar}" alt="" class="h-full w-full rounded-full object-cover">`;
-                } else {
-                    avatarEl.textContent = (user.name || 'V').charAt(0).toUpperCase();
-                }
-                document.getElementById('vendor-loading').classList.add('hidden');
-                document.getElementById('vendor-app').classList.remove('hidden');
-
-                loadSidebarCategories();
-                vendorNotificationBadge();
-                initVendorNotificationDropdown();
-                if (typeof loadVendorNotificationDropdown === 'function') {
-                    loadVendorNotificationDropdown(1);
-                }
+                hydrateVendorDashboard(user);
             } catch (error) {
+                const sessionUser = window.__sessionAuthUser;
+                if (document.body?.dataset?.sessionAuth === '1' && sessionUser?.type === 2) {
+                    window.Auth?.clearTokenOnly?.();
+                    hydrateVendorDashboard(sessionUser);
+                    return;
+                }
+
                 if (window.Auth?.clearAll) {
                     window.Auth.clearAll();
                 }
+
                 window.location.href = '{{ route("login") }}';
             }
         });

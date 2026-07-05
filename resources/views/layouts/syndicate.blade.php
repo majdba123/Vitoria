@@ -121,6 +121,17 @@
             if (type === 'veterinary') return 'بيطري';
             return 'نقابة';
         }
+        function hydrateSyndicateDashboard(user) {
+            if (!user) {
+                return;
+            }
+
+            window.Auth?.setUser?.(user);
+            document.getElementById('syndicate-type-badge').textContent = syndicateTypeLabel(user.syndicate?.type);
+            document.getElementById('syndicate-loading').classList.add('hidden');
+            document.getElementById('syndicate-app').classList.remove('hidden');
+            document.dispatchEvent(new CustomEvent('syndicate-ready'));
+        }
         window.syndicateLogout = async function() {
             try { await window.axios.post('/api/auth/logout'); } catch (error) {}
             if (window.Auth?.clearAll) window.Auth.clearAll(); else localStorage.clear();
@@ -138,11 +149,15 @@
                 const response = await window.axios.get('/api/user');
                 const user = response.data.data || response.data;
                 if (user.type !== 3) { window.Auth.removeToken(); window.location.href = '{{ route("login") }}'; return; }
-                document.getElementById('syndicate-type-badge').textContent = syndicateTypeLabel(user.syndicate?.type);
-                document.getElementById('syndicate-loading').classList.add('hidden');
-                document.getElementById('syndicate-app').classList.remove('hidden');
-                document.dispatchEvent(new CustomEvent('syndicate-ready'));
+                hydrateSyndicateDashboard(user);
             } catch (error) {
+                const sessionUser = window.__sessionAuthUser;
+                if (document.body?.dataset?.sessionAuth === '1' && sessionUser?.type === 3) {
+                    window.Auth?.clearTokenOnly?.();
+                    hydrateSyndicateDashboard(sessionUser);
+                    return;
+                }
+
                 if (window.Auth?.clearAll) {
                     window.Auth.clearAll();
                 }
