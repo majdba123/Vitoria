@@ -6,7 +6,6 @@
     $currentStatus = (string) request('status', '');
     $links = [
         ['group' => __('nav.dashboard'), 'route' => 'employee.dashboard', 'label' => __('nav.dashboard'), 'icon' => 'fa-solid fa-grip'],
-        ['group' => __('employee.workspace'), 'route' => 'employee.products.index', 'label' => __('employee.products'), 'icon' => 'fa-solid fa-box-open'],
         ['group' => __('employee.workspace'), 'route' => 'employee.products.index', 'label' => __('employee.active_products_tab'), 'icon' => 'fa-solid fa-circle-check', 'params' => ['status' => 'approved']],
         ['group' => __('employee.workspace'), 'route' => 'employee.products.index', 'label' => __('employee.pending_products'), 'icon' => 'fa-solid fa-hourglass-half', 'params' => ['status' => 'pending']],
         ['group' => __('employee.workspace'), 'route' => 'employee.products.index', 'label' => __('employee.rejected_products'), 'icon' => 'fa-solid fa-circle-xmark', 'params' => ['status' => 'rejected']],

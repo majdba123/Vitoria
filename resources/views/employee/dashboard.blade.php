@@ -211,8 +211,8 @@ document.addEventListener('employee-ready', function () {
             renderCategoryStats(allProducts);
             renderTypeStats(allProducts);
         } catch (error) {
-            categoryStats.innerHTML = '<p class="py-6 text-center text-sm text-red-500">{{ __('common.unexpected_error') }}</p>';
-            typeStats.innerHTML = '<p class="py-6 text-center text-sm text-red-500">{{ __('common.unexpected_error') }}</p>';
+            categoryStats.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">{{ __('employee.no_products') }}</p>';
+            typeStats.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">{{ __('employee.no_products') }}</p>';
         }
     }
 
@@ -224,7 +224,8 @@ document.addEventListener('employee-ready', function () {
         do {
             const response = await window.axios.get('/api/employee/products?per_page=50&page=' + page);
             const payload = response.data || {};
-            products.push(...(payload.data || []));
+            const pageItems = Array.isArray(payload.data) ? payload.data : [];
+            products.push(...pageItems);
             lastPage = payload.meta?.last_page ?? 1;
             page++;
         } while (page <= lastPage);
@@ -236,7 +237,7 @@ document.addEventListener('employee-ready', function () {
         const counts = new Map();
 
         products.forEach((product) => {
-            const categoryName = product.category?.name || 'Unassigned';
+            const categoryName = product?.category?.name || '{{ __('common.not_found') }}';
             counts.set(categoryName, (counts.get(categoryName) || 0) + 1);
         });
 
@@ -267,7 +268,8 @@ document.addEventListener('employee-ready', function () {
         const counts = new Map();
 
         products.forEach((product) => {
-            const typeLabel = product.category?.type_label || product.category?.type || 'Unknown';
+            const rawType = product?.category?.type_label || product?.category?.type || '';
+            const typeLabel = rawType || '{{ __('common.not_found') }}';
             counts.set(typeLabel, (counts.get(typeLabel) || 0) + 1);
         });
 
