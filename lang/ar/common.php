@@ -28,6 +28,7 @@ return [
     'view_all' => 'عرض الكل',
     'no_categories' => 'لا توجد تصنيفات',
     'no_subcategories' => 'لا توجد تصنيفات فرعية',
+    'failed_load_categories' => 'تعذر تحميل الفئات.',
     'failed_notifications' => 'فشل تحميل الإشعارات.',
     'saving' => 'جاري الحفظ...',
     'failed_save' => 'فشل الحفظ.',

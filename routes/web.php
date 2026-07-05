@@ -29,6 +29,7 @@ Route::get('/locale/{locale}', function (string $locale) {
     if (in_array($locale, ['ar', 'en'], true)) {
         session()->put('locale', $locale);
         Cookie::queue('locale', $locale, 60 * 24 * 365);
+        Cookie::queue('sz_locale', $locale, 60 * 24 * 365);
 
         if (auth()->check()) {
             auth()->user()->update(['locale' => $locale]);

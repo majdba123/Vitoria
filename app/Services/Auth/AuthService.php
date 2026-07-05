@@ -26,6 +26,7 @@ class AuthService
                 'city_id' => $data['city_id'],
                 'latitude' => $data['latitude'] ?? null,
                 'longitude' => $data['longitude'] ?? null,
+                'locale' => app()->getLocale(),
                 'type' => $accountType === 'vendor' ? User::TYPE_VENDOR : User::TYPE_USER,
                 'email' => $data['email'],
                 'password' => $data['password'] ?? null,

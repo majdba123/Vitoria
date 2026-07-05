@@ -10,22 +10,22 @@
             <div class="absolute -left-10 top-10 h-36 w-36 rounded-full bg-brand-400/25 blur-3xl"></div>
             <div class="absolute bottom-0 right-0 h-44 w-44 rounded-full bg-blue-400/15 blur-3xl"></div>
             <div class="relative">
-                <span class="eyebrow bg-white/10 text-brand-100">Vetora access</span>
-                <h1 class="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl">A refined workspace for every buyer, seller, and partner.</h1>
-                <p class="mt-5 max-w-xl text-base leading-8 text-white/72">Sign in to move from discovery into action with a smoother storefront, cleaner dashboards, and a single product language across the platform.</p>
+                <span class="eyebrow bg-white/10 text-brand-100">{{ __('auth.vetora_access') }}</span>
+                <h1 class="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl">{{ __('auth.workspace_title') }}</h1>
+                <p class="mt-5 max-w-xl text-base leading-8 text-white/72">{{ __('auth.workspace_copy') }}</p>
 
                 <div class="mt-8 grid gap-4 sm:grid-cols-3">
                     <div class="rounded-[24px] border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
-                        <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-white/45">Customers</p>
-                        <p class="mt-2 text-sm text-white/75">Track favorites, orders, and saved preferences from one calm interface.</p>
+                        <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-white/45">{{ __('auth.workspace_customers') }}</p>
+                        <p class="mt-2 text-sm text-white/75">{{ __('auth.workspace_customers_copy') }}</p>
                     </div>
                     <div class="rounded-[24px] border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
-                        <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-white/45">Vendors</p>
-                        <p class="mt-2 text-sm text-white/75">Manage listings, pricing, and store operations with clarity.</p>
+                        <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-white/45">{{ __('auth.workspace_vendors') }}</p>
+                        <p class="mt-2 text-sm text-white/75">{{ __('auth.workspace_vendors_copy') }}</p>
                     </div>
                     <div class="rounded-[24px] border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
-                        <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-white/45">Syndicates</p>
-                        <p class="mt-2 text-sm text-white/75">Monitor network performance and category health in real time.</p>
+                        <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-white/45">{{ __('auth.workspace_syndicates') }}</p>
+                        <p class="mt-2 text-sm text-white/75">{{ __('auth.workspace_syndicates_copy') }}</p>
                     </div>
                 </div>
             </div>
@@ -33,7 +33,7 @@
 
         <div class="auth-shell">
             <div class="relative">
-                <span class="eyebrow">Secure sign in</span>
+                <span class="eyebrow">{{ __('auth.secure_sign_in') }}</span>
                 <h2 class="mt-5 font-display text-3xl font-extrabold tracking-tight text-ink-900 dark:text-white">{{ __('auth.welcome_back') }}</h2>
                 <p class="mt-2 text-sm leading-7 text-ink-500 dark:text-slate-400">{{ __('auth.sign_in_to_account') }}</p>
             </div>

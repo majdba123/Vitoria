@@ -6,22 +6,22 @@
 <section class="workspace-shell workspace-section">
     <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
         <aside class="surface-card overflow-hidden p-8 sm:p-10">
-            <span class="eyebrow">Create your account</span>
+            <span class="eyebrow">{{ __('auth.register_intro_eyebrow') }}</span>
             <h1 class="mt-6 font-display text-4xl font-extrabold tracking-tight text-ink-900 dark:text-white">{{ __('auth.create_account_title') }}</h1>
             <p class="mt-4 text-base leading-8 text-ink-500 dark:text-slate-400">{{ __('auth.join_today') }}</p>
 
             <div class="mt-8 grid gap-4">
                 <div class="surface-card-muted p-5">
-                    <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-brand-600 dark:text-brand-300">Customer account</p>
-                    <p class="mt-2 text-sm leading-7 text-ink-500 dark:text-slate-400">Discover products, save favorites, and manage orders from a polished personal workspace.</p>
+                    <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-brand-600 dark:text-brand-300">{{ __('auth.register_customer_title') }}</p>
+                    <p class="mt-2 text-sm leading-7 text-ink-500 dark:text-slate-400">{{ __('auth.register_customer_copy') }}</p>
                 </div>
                 <div class="surface-card-muted p-5">
-                    <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-emerald-600 dark:text-emerald-300">Merchant account</p>
-                    <p class="mt-2 text-sm leading-7 text-ink-500 dark:text-slate-400">Launch your storefront, request approval, and sell across the categories your business serves.</p>
+                    <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-emerald-600 dark:text-emerald-300">{{ __('auth.register_vendor_title') }}</p>
+                    <p class="mt-2 text-sm leading-7 text-ink-500 dark:text-slate-400">{{ __('auth.register_vendor_copy') }}</p>
                 </div>
                 <div class="surface-card-muted p-5">
-                    <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-cyan-600 dark:text-cyan-300">Unified platform</p>
-                    <p class="mt-2 text-sm leading-7 text-ink-500 dark:text-slate-400">One identity, one system, and a smoother handoff from public website to operational dashboard.</p>
+                    <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-cyan-600 dark:text-cyan-300">{{ __('auth.register_platform_title') }}</p>
+                    <p class="mt-2 text-sm leading-7 text-ink-500 dark:text-slate-400">{{ __('auth.register_platform_copy') }}</p>
                 </div>
             </div>
         </aside>
@@ -29,8 +29,8 @@
         <section class="auth-shell">
             <div class="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-6 dark:border-gray-800">
                 <div>
-                    <span class="eyebrow">Application form</span>
-                    <h2 class="mt-4 font-display text-3xl font-extrabold tracking-tight text-ink-900 dark:text-white">Set up your Vetora profile.</h2>
+                    <span class="eyebrow">{{ __('auth.register_form_eyebrow') }}</span>
+                    <h2 class="mt-4 font-display text-3xl font-extrabold tracking-tight text-ink-900 dark:text-white">{{ __('auth.register_form_title') }}</h2>
                 </div>
                 <a href="{{ route('login') }}" class="btn-secondary btn-sm">{{ __('nav.sign_in') }}</a>
             </div>
@@ -41,20 +41,20 @@
 
                 <form id="register-form" class="space-y-6" enctype="multipart/form-data" novalidate data-creating="{{ __('auth.creating_account') }}" data-btn-text="{{ __('nav.register') }}" data-success-msg="{{ __('auth.account_created_redirect') }}">
                     <div>
-                        <label class="form-label">Account type <span class="text-red-500">*</span></label>
+                        <label class="form-label">{{ __('auth.account_type') }} <span class="text-red-500">*</span></label>
                         <div class="grid gap-3 sm:grid-cols-2">
                             <label class="account-type-option surface-card-muted flex cursor-pointer items-start gap-3 p-4">
                                 <input type="radio" name="account_type" value="user" class="mt-1 h-4 w-4 border-gray-300 text-brand-600 focus:ring-brand-500" checked>
                                 <span>
-                                    <span class="block text-sm font-bold text-gray-900 dark:text-white">Normal user</span>
-                                    <span class="mt-1 block text-xs text-gray-500 dark:text-gray-400">Buy and track orders</span>
+                                    <span class="block text-sm font-bold text-gray-900 dark:text-white">{{ __('auth.account_type_user') }}</span>
+                                    <span class="mt-1 block text-xs text-gray-500 dark:text-gray-400">{{ __('auth.account_type_user_copy') }}</span>
                                 </span>
                             </label>
                             <label class="account-type-option surface-card-muted flex cursor-pointer items-start gap-3 p-4">
                                 <input type="radio" name="account_type" value="vendor" class="mt-1 h-4 w-4 border-gray-300 text-brand-600 focus:ring-brand-500">
                                 <span>
-                                    <span class="block text-sm font-bold text-gray-900 dark:text-white">Merchant / Vendor</span>
-                                    <span class="mt-1 block text-xs text-gray-500 dark:text-gray-400">Sell across multiple categories</span>
+                                    <span class="block text-sm font-bold text-gray-900 dark:text-white">{{ __('auth.account_type_vendor') }}</span>
+                                    <span class="mt-1 block text-xs text-gray-500 dark:text-gray-400">{{ __('auth.account_type_vendor_copy') }}</span>
                                 </span>
                             </label>
                         </div>
@@ -80,49 +80,49 @@
                     <div id="merchant-fields" class="hidden surface-card-muted p-5">
                         <div class="mb-5 flex items-start justify-between gap-4">
                             <div>
-                                <h2 class="text-base font-bold text-gray-950 dark:text-white">Merchant details</h2>
-                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Admin approval is required before vendor access is enabled.</p>
+                                <h2 class="text-base font-bold text-gray-950 dark:text-white">{{ __('auth.merchant_details') }}</h2>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('auth.merchant_details_copy') }}</p>
                             </div>
-                            <span class="badge badge-warning shrink-0">Review</span>
+                            <span class="badge badge-warning shrink-0">{{ __('auth.review_badge') }}</span>
                         </div>
 
                         <div class="grid gap-5 md:grid-cols-2">
-                            <x-form.input name="store_name" label="Store name" placeholder="Store display name" />
+                            <x-form.input name="store_name" :label="__('auth.store_name')" :placeholder="__('auth.store_name_placeholder')" />
 
                             <div>
-                                <label for="business_type" class="form-label">Business type <span class="text-red-500">*</span></label>
+                                <label for="business_type" class="form-label">{{ __('auth.business_type') }} <span class="text-red-500">*</span></label>
                                 <select id="business_type" name="business_type" class="form-select">
-                                    <option value="">Select business type</option>
-                                    <option value="agriculture">Agriculture</option>
-                                    <option value="veterinary">Veterinary</option>
-                                    <option value="both">Both</option>
+                                    <option value="">{{ __('auth.select_business_type') }}</option>
+                                    <option value="agriculture">{{ __('auth.business_type_agriculture') }}</option>
+                                    <option value="veterinary">{{ __('auth.business_type_veterinary') }}</option>
+                                    <option value="both">{{ __('auth.business_type_both') }}</option>
                                 </select>
                                 <p class="form-error" id="business_type-error"></p>
                             </div>
 
                             <div>
-                                <label for="commercial_register_file" class="form-label">Commercial registration document <span class="text-red-500">*</span></label>
+                                <label for="commercial_register_file" class="form-label">{{ __('auth.commercial_register_document') }} <span class="text-red-500">*</span></label>
                                 <input type="file" id="commercial_register_file" name="commercial_register_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg,image/png" class="form-input">
-                                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">PDF, DOC, DOCX, JPG, JPEG, or PNG. Max 5 MB.</p>
+                                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">{{ __('auth.commercial_register_hint') }}</p>
                                 <p class="form-error" id="commercial_register_file-error"></p>
                             </div>
 
                             <div class="md:col-span-2">
-                                <label class="form-label">Merchant categories <span class="text-red-500">*</span></label>
+                                <label class="form-label">{{ __('auth.merchant_categories') }} <span class="text-red-500">*</span></label>
                                 <div id="category-options" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
-                                <p id="category-loading" class="rounded-2xl border border-dashed border-gray-300 bg-white/70 px-4 py-3 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-900/60 dark:text-gray-400">Loading categories...</p>
+                                <p id="category-loading" class="rounded-2xl border border-dashed border-gray-300 bg-white/70 px-4 py-3 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-900/60 dark:text-gray-400">{{ __('auth.merchant_categories_loading') }}</p>
                                 <p class="form-error" id="category_ids-error"></p>
                             </div>
 
                             <div>
-                                <label for="address" class="form-label">Store address</label>
-                                <input type="text" id="address" name="address" placeholder="Store address (optional)" class="form-input">
+                                <label for="address" class="form-label">{{ __('auth.store_address') }}</label>
+                                <input type="text" id="address" name="address" placeholder="{{ __('auth.store_address_placeholder') }}" class="form-input">
                                 <p class="form-error" id="address-error"></p>
                             </div>
 
                             <div>
-                                <label for="description" class="form-label">Store description</label>
-                                <textarea id="description" name="description" rows="3" placeholder="Briefly describe your store (optional)" class="form-textarea"></textarea>
+                                <label for="description" class="form-label">{{ __('auth.store_description') }}</label>
+                                <textarea id="description" name="description" rows="3" placeholder="{{ __('auth.store_description_placeholder') }}" class="form-textarea"></textarea>
                                 <p class="form-error" id="description-error"></p>
                             </div>
                         </div>
@@ -162,6 +162,10 @@
         'account_created' => __('auth.js_account_created_success'),
         'creating_fallback' => __('auth.creating_account'),
         'register_fallback' => __('nav.register'),
+        'could_not_load_categories' => __('common.failed_load_categories'),
+        'merchant_categories_prompt' => __('auth.merchant_categories_prompt'),
+        'merchant_categories_group_agriculture' => __('auth.merchant_categories_group_agriculture'),
+        'merchant_categories_group_veterinary' => __('auth.merchant_categories_group_veterinary'),
     ];
 @endphp
 <script>
@@ -213,8 +217,8 @@ document.addEventListener('DOMContentLoaded', function () {
             renderMerchantCategories();
             categoryLoading.classList.add('hidden');
         } catch (e) {
-            const parsed = window.ApiErrors?.parse ? window.ApiErrors.parse(e) : { generalMessage: 'Could not load categories.' };
-            categoryLoading.textContent = parsed.generalMessage || 'Could not load categories.';
+            const parsed = window.ApiErrors?.parse ? window.ApiErrors.parse(e) : { generalMessage: registerI18n.could_not_load_categories || '' };
+            categoryLoading.textContent = parsed.generalMessage || registerI18n.could_not_load_categories || '';
             document.getElementById('category_ids-error').classList.remove('hidden');
         }
     }
@@ -224,13 +228,13 @@ document.addEventListener('DOMContentLoaded', function () {
         categoryOptions.innerHTML = '';
 
         if (!selectedType) {
-            categoryOptions.innerHTML = '<p class="rounded-2xl border border-dashed border-gray-300 bg-white/70 px-4 py-3 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-900/60 dark:text-gray-400 sm:col-span-2 lg:col-span-3">Select a business type to choose categories.</p>';
+            categoryOptions.innerHTML = '<p class="rounded-2xl border border-dashed border-gray-300 bg-white/70 px-4 py-3 text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-900/60 dark:text-gray-400 sm:col-span-2 lg:col-span-3">' + (registerI18n.merchant_categories_prompt || '') + '</p>';
             return;
         }
 
         if (selectedType === 'both') {
-            categoryOptions.appendChild(createCategoryGroup('Agriculture Categories', allCategories.filter(category => category.type === 'agriculture')));
-            categoryOptions.appendChild(createCategoryGroup('Veterinary Categories', allCategories.filter(category => category.type === 'veterinary')));
+            categoryOptions.appendChild(createCategoryGroup(registerI18n.merchant_categories_group_agriculture || '', allCategories.filter(category => category.type === 'agriculture')));
+            categoryOptions.appendChild(createCategoryGroup(registerI18n.merchant_categories_group_veterinary || '', allCategories.filter(category => category.type === 'veterinary')));
             return;
         }
 

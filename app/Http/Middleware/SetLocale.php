@@ -26,20 +26,43 @@ class SetLocale
 
     protected function resolveLocale(Request $request): string
     {
-        $candidates = [
-            $request->user()?->locale,
-            $request->session()->get('locale'),
+        $sessionLocale = $request->hasSession()
+            ? $request->session()->get('locale')
+            : null;
+
+        $explicitLocaleCandidates = [
+            $sessionLocale,
             $request->cookie('locale'),
             $request->cookie('sz_locale'),
-            $request->getPreferredLanguage(['ar', 'en']),
-            config('app.locale'),
         ];
 
-        foreach ($candidates as $candidate) {
+        foreach ($explicitLocaleCandidates as $candidate) {
             $locale = $this->normalizeLocale($candidate);
             if ($locale !== null) {
                 return $locale;
             }
+        }
+
+        if ($request->expectsJson() || $request->is('api/*')) {
+            $headerLocale = $this->normalizeLocale($request->header('Accept-Language'));
+            if ($headerLocale !== null) {
+                return $headerLocale;
+            }
+        }
+
+        $userLocale = $this->normalizeLocale($request->user()?->locale);
+        if ($userLocale !== null) {
+            return $userLocale;
+        }
+
+        $preferredLocale = $this->normalizeLocale($request->getPreferredLanguage(['ar', 'en']));
+        if ($preferredLocale !== null) {
+            return $preferredLocale;
+        }
+
+        $configuredLocale = $this->normalizeLocale(config('app.locale'));
+        if ($configuredLocale !== null) {
+            return $configuredLocale;
         }
 
         return 'en';

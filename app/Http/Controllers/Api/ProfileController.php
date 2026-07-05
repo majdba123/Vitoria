@@ -7,6 +7,7 @@ use App\Http\Resources\Auth\UserResource;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -65,6 +66,9 @@ class ProfileController extends Controller
             if ($request->hasSession()) {
                 $request->session()->put('locale', $user->locale);
             }
+
+            Cookie::queue('locale', $user->locale, 60 * 24 * 365);
+            Cookie::queue('sz_locale', $user->locale, 60 * 24 * 365);
         }
 
         return response()->json([

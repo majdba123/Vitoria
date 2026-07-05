@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Vendor - Vetora')</title>
+    <title>@yield('title', __('vendor.workspace') . ' - Vetora')</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|sora:600,700,800|ibm-plex-sans-arabic:400,500,600,700&display=swap" rel="stylesheet" />
@@ -49,8 +49,8 @@
                     <div class="h-5 w-px bg-gray-200 dark:bg-gray-700 lg:hidden" aria-hidden="true"></div>
 
                     <div class="min-w-0 flex-1">
-                        <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-emerald-600 dark:text-emerald-300">Vendor workspace</p>
-                        <h1 class="mt-1 truncate text-lg font-black text-gray-900 dark:text-white sm:text-xl">@yield('page-title', 'Dashboard')</h1>
+                        <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-emerald-600 dark:text-emerald-300">{{ __('vendor.workspace') }}</p>
+                        <h1 class="mt-1 truncate text-lg font-black text-gray-900 dark:text-white sm:text-xl">@yield('page-title', __('vendor.dashboard'))</h1>
                     </div>
 
                     <div class="flex items-center gap-x-3">
@@ -65,20 +65,20 @@
                             </button>
                             <div id="vendor-notif-dropdown" class="dropdown-panel absolute right-0 top-full z-50 mt-2 hidden w-[min(420px,95vw)] max-h-[min(32rem,75vh)]">
                                 <div class="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-gray-800">
-                                    <a href="{{ route('vendor.notifications.index') }}" class="text-[13px] font-medium uppercase tracking-wider text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">Notifications</a>
+                                    <a href="{{ route('vendor.notifications.index') }}" class="text-[13px] font-medium uppercase tracking-wider text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">{{ __('vendor.notifications') }}</a>
                                     <div class="flex items-center gap-2">
-                                        <button type="button" id="vendor-notif-mark-all" class="text-[11px] font-medium uppercase tracking-wider text-brand-600 hover:text-brand-700 dark:text-brand-400">Mark all read</button>
-                                        <a href="{{ route('vendor.notifications.index') }}" class="text-[11px] font-medium uppercase tracking-wider text-brand-600 hover:text-brand-700 dark:text-brand-400">View all</a>
+                                        <button type="button" id="vendor-notif-mark-all" class="text-[11px] font-medium uppercase tracking-wider text-brand-600 hover:text-brand-700 dark:text-brand-400">{{ __('vendor.mark_all_read') }}</button>
+                                        <a href="{{ route('vendor.notifications.index') }}" class="text-[11px] font-medium uppercase tracking-wider text-brand-600 hover:text-brand-700 dark:text-brand-400">{{ __('vendor.view_all') }}</a>
                                     </div>
                                 </div>
                                 <div id="vendor-notif-list" class="max-h-[min(24rem,55vh)] overflow-y-auto">
-                                    <p class="px-4 py-10 text-center text-[13px] text-gray-400 dark:text-gray-500">Loading...</p>
+                                    <p class="px-4 py-10 text-center text-[13px] text-gray-400 dark:text-gray-500">{{ __('common.loading') }}</p>
                                 </div>
-                                <div id="vendor-notif-empty" class="hidden px-4 py-12 text-center text-[13px] text-gray-400 dark:text-gray-500">No notifications.</div>
+                                <div id="vendor-notif-empty" class="hidden px-4 py-12 text-center text-[13px] text-gray-400 dark:text-gray-500">{{ __('vendor.no_notifications') }}</div>
                                 <div id="vendor-notif-pagination" class="hidden items-center justify-between gap-2 border-t border-gray-100 bg-gray-50/60 px-3 py-2 dark:border-gray-800 dark:bg-gray-800/30">
-                                    <button type="button" id="vendor-notif-prev" class="rounded-xl px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 disabled:pointer-events-none disabled:opacity-50">Prev</button>
-                                    <span id="vendor-notif-page-info" class="text-[11px] text-gray-500 dark:text-gray-400">Page 1 of 1</span>
-                                    <button type="button" id="vendor-notif-next" class="rounded-xl px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 disabled:pointer-events-none disabled:opacity-50">Next</button>
+                                    <button type="button" id="vendor-notif-prev" class="rounded-xl px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 disabled:pointer-events-none disabled:opacity-50">{{ __('nav.prev') }}</button>
+                                    <span id="vendor-notif-page-info" class="text-[11px] text-gray-500 dark:text-gray-400">{{ __('nav.page') }} 1 {{ __('nav.of') }} 1</span>
+                                    <button type="button" id="vendor-notif-next" class="rounded-xl px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 disabled:pointer-events-none disabled:opacity-50">{{ __('nav.next') }}</button>
                                 </div>
                             </div>
                         </div>
@@ -91,14 +91,14 @@
                         <div class="hidden items-center gap-3 rounded-2xl border border-white/40 bg-white/65 px-3 py-2 shadow-sm dark:border-white/10 dark:bg-white/5 sm:flex">
                             <div class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-emerald-100 text-xs font-bold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400" id="vendor-avatar">V</div>
                             <div>
-                                <p class="text-[11px] font-extrabold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Seller</p>
+                                <p class="text-[11px] font-extrabold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">{{ __('vendor.seller') }}</p>
                                 <span id="vendor-name" class="text-sm font-bold text-gray-700 dark:text-gray-300"></span>
                             </div>
                         </div>
 
-                        <button onclick="vendorLogout()" class="flex items-center gap-1.5 rounded-2xl px-3 py-2 text-sm font-semibold text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-500/10 dark:hover:text-red-400" title="Sign Out">
+                        <button onclick="vendorLogout()" class="flex items-center gap-1.5 rounded-2xl px-3 py-2 text-sm font-semibold text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-500/10 dark:hover:text-red-400" title="{{ __('vendor.sign_out') }}">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
-                            <span class="hidden sm:inline">Sign Out</span>
+                            <span class="hidden sm:inline">{{ __('vendor.sign_out') }}</span>
                         </button>
                     </div>
                 </div>
@@ -115,12 +115,27 @@
             <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-white/70 shadow-lg shadow-gray-900/5 backdrop-blur-md dark:bg-white/5 dark:shadow-black/20">
                 <div class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-emerald-500 dark:border-gray-700"></div>
             </div>
-            <p class="mt-4 text-sm font-semibold text-gray-500 dark:text-gray-400">Loading your store...</p>
+            <p class="mt-4 text-sm font-semibold text-gray-500 dark:text-gray-400">{{ __('vendor.loading_store') }}</p>
         </div>
     </div>
 
+    @php
+        $vendorStrings = [
+            'loading' => __('common.loading'),
+            'notifications_empty' => __('vendor.no_notifications'),
+            'mark_one_read' => __('vendor.mark_one_read'),
+            'failed_notifications' => __('vendor.failed_notifications'),
+            'assigned_categories_empty' => __('vendor.assigned_categories_empty'),
+            'failed_categories' => __('vendor.failed_categories'),
+            'group_agriculture' => __('vendor.group_agriculture'),
+            'group_veterinary' => __('vendor.group_veterinary'),
+            'page' => __('nav.page'),
+            'of' => __('nav.of'),
+        ];
+    @endphp
     <script>
         window.__sessionAuthUser = @json($sessionAuthUser);
+        window.__vendorStrings = @json($vendorStrings);
         const vendorSidebarHiddenClass = @json($isRtl ? 'translate-x-full' : '-translate-x-full');
         function toggleVendorTheme() {
             const isDark = document.documentElement.classList.toggle('dark');
@@ -257,7 +272,7 @@
             const prevBtn = document.getElementById('vendor-notif-prev');
             const nextBtn = document.getElementById('vendor-notif-next');
             if (!listEl) return;
-            listEl.innerHTML = '<p class="px-4 py-10 text-center text-[13px] text-gray-400 dark:text-gray-500">Loading...</p>';
+            listEl.innerHTML = '<p class="px-4 py-10 text-center text-[13px] text-gray-400 dark:text-gray-500">' + (window.__vendorStrings?.loading || '') + '</p>';
             emptyEl && emptyEl.classList.add('hidden');
             paginationEl && paginationEl.classList.add('hidden');
             if (window.Auth && window.Auth.applyToken) window.Auth.applyToken();
@@ -307,7 +322,7 @@
                             '<div class="min-w-0 flex-1 px-4 py-3.5 ' + (isUnread ? 'pl-3.5' : 'pl-4') + '">' +
                             '<p class="text-[14px] leading-relaxed text-gray-800 dark:text-gray-100">' + body + '</p>' +
                             '<p class="mt-1.5 text-[11px] text-gray-400 dark:text-gray-500">' + time + (sender ? ' - ' + sender : '') + '</p>' +
-                            (isUnread ? '<button type="button" class="vendor-mark-one mt-2 text-[11px] font-medium text-brand-600 hover:underline dark:text-brand-400" data-id="' + id + '">Mark as read</button>' : '') +
+                            (isUnread ? '<button type="button" class="vendor-mark-one mt-2 text-[11px] font-medium text-brand-600 hover:underline dark:text-brand-400" data-id="' + id + '">' + (window.__vendorStrings?.mark_one_read || '') + '</button>' : '') +
                             '</div></div>';
                     }).join('');
                     document.querySelectorAll('#vendor-notif-list [data-nid][data-href]').forEach(function (row) {
@@ -318,7 +333,7 @@
                         });
                     });
                     if (lastPage > 1 && paginationEl && pageInfoEl && prevBtn && nextBtn) {
-                        pageInfoEl.textContent = 'Page ' + currentPage + ' of ' + lastPage + (total ? ' (' + total + ')' : '');
+                        pageInfoEl.textContent = (window.__vendorStrings?.page || '') + ' ' + currentPage + ' ' + (window.__vendorStrings?.of || '') + ' ' + lastPage + (total ? ' (' + total + ')' : '');
                         prevBtn.disabled = currentPage <= 1;
                         nextBtn.disabled = currentPage >= lastPage;
                         prevBtn.onclick = function () { if (currentPage > 1) loadVendorNotificationDropdown(currentPage - 1); };
@@ -333,10 +348,10 @@
                     });
                 } catch (error) {
                     console.error('Vendor notifications render error:', error);
-                    listEl.innerHTML = '<p class="px-4 py-6 text-center text-sm text-red-500">Failed to load notifications.</p>';
+                    listEl.innerHTML = '<p class="px-4 py-6 text-center text-sm text-red-500">' + (window.__vendorStrings?.failed_notifications || '') + '</p>';
                 }
             }).catch(function (error) {
-                var message = (error.response && error.response.status === 401) ? 'Please sign in again.' : (error.response && error.response.data && error.response.data.message) ? error.response.data.message : 'Failed to load notifications.';
+                var message = (error.response && error.response.status === 401) ? '{{ __('common.please_sign_in_again') }}' : (error.response && error.response.data && error.response.data.message) ? error.response.data.message : (window.__vendorStrings?.failed_notifications || '');
                 listEl.innerHTML = '<p class="px-4 py-6 text-center text-sm text-red-500">' + message + '</p>';
             });
         }
@@ -358,11 +373,15 @@
                 const response = await window.axios.get('/api/vendor/allowed-categories');
                 const categories = response.data.data || [];
                 if (categories.length === 0) {
-                    container.innerHTML = '<p class="rounded-2xl border border-white/8 bg-white/5 px-3 py-3 text-xs text-white/50 italic">No categories assigned yet.</p>';
+                    container.innerHTML = '<p class="rounded-2xl border border-white/8 bg-white/5 px-3 py-3 text-xs text-white/50 italic">' + (window.__vendorStrings?.assigned_categories_empty || '') + '</p>';
                     return;
                 }
                 container.innerHTML = categories.map((category) => {
                     const catId = `sidebar-cat-${category.id}`;
+                    const subs = Array.isArray(category.subcategories) ? category.subcategories : [];
+                    const groupLabel = category.type === 'veterinary'
+                        ? (window.__vendorStrings?.group_veterinary || '')
+                        : (window.__vendorStrings?.group_agriculture || '');
                     return `<div class="sidebar-cat-group">
                         <button type="button" onclick="toggleSidebarCat('${catId}')" class="mb-1 flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left text-sm font-semibold text-white/75 transition-all hover:bg-white/6 hover:text-white">
                             <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-white/8 text-emerald-200"><i class="fa-solid fa-layer-group text-sm"></i></span>
@@ -370,6 +389,7 @@
                             <span class="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.18em] text-emerald-300">${parseFloat(category.commission || 0).toFixed(0)}%</span>
                             <svg class="sidebar-cat-chevron h-4 w-4 shrink-0 transition-transform duration-200" id="${catId}-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
                         </button>
+                        <p class="mb-2 px-3 text-[11px] font-semibold text-white/40">${esc(groupLabel)}</p>
                         ${subs.length > 0 ? `<div id="${catId}" class="hidden ml-4 space-y-1 border-l border-white/10 pl-3 pb-2">
                             ${subs.map((sub) => `
                                 <div class="flex items-center gap-2 rounded-xl px-2 py-2 text-xs text-white/55 transition-colors hover:bg-white/5 hover:text-white/80">
@@ -381,7 +401,7 @@
                     </div>`;
                 }).join('');
             } catch (error) {
-                container.innerHTML = '<p class="rounded-2xl border border-red-500/20 bg-red-500/10 px-3 py-3 text-xs text-red-300">Failed to load categories.</p>';
+                container.innerHTML = '<p class="rounded-2xl border border-red-500/20 bg-red-500/10 px-3 py-3 text-xs text-red-300">' + (window.__vendorStrings?.failed_categories || '') + '</p>';
             }
         }
 

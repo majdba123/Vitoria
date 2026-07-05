@@ -28,6 +28,7 @@ return [
     'view_all' => 'View All',
     'no_categories' => 'No categories',
     'no_subcategories' => 'No subcategories',
+    'failed_load_categories' => 'Could not load categories.',
     'failed_notifications' => 'Failed to show notifications.',
     'saving' => 'Saving...',
     'saved' => 'Saved successfully.',

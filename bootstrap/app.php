@@ -49,7 +49,6 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->appendToGroup('web', [\App\Http\Middleware\SetLocale::class]);
         $middleware->statefulApi();
         $middleware->validateCsrfTokens(except: ['api/*']);
         $middleware->alias([
@@ -61,8 +60,14 @@ return Application::configure(basePath: dirname(__DIR__))
             'cache.response' => \App\Http\Middleware\CacheResponse::class,
             'timezone' => \App\Http\Middleware\ApplyUserTimezone::class,
         ]);
-        $middleware->appendToGroup('web', [\App\Http\Middleware\ApplyUserTimezone::class]);
-        $middleware->appendToGroup('api', [\App\Http\Middleware\ApplyUserTimezone::class]);
+        $middleware->appendToGroup('web', [
+            \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\ApplyUserTimezone::class,
+        ]);
+        $middleware->appendToGroup('api', [
+            \App\Http\Middleware\SetLocale::class,
+            \App\Http\Middleware\ApplyUserTimezone::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (Throwable $exception, \Illuminate\Http\Request $request) {

@@ -11,6 +11,7 @@ use App\Services\Auth\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 
 class AuthController extends Controller
 {
@@ -27,6 +28,7 @@ class AuthController extends Controller
 
         // Establish web session alongside the API token
         Auth::login($result['user']);
+        $this->persistLocale($request, $result['user']->locale);
 
         return response()->json([
             'message' => __('User registered successfully.'),
@@ -47,6 +49,7 @@ class AuthController extends Controller
 
         // Establish web session alongside the API token
         Auth::login($result['user']);
+        $this->persistLocale($request, $result['user']->locale);
 
         return response()->json([
             'message' => __('Logged in successfully.'),
@@ -105,5 +108,19 @@ class AuthController extends Controller
                 ? route('home')
                 : route('product-type.select'),
         };
+    }
+
+    protected function persistLocale(Request $request, ?string $locale): void
+    {
+        $resolvedLocale = in_array($locale, ['ar', 'en'], true)
+            ? $locale
+            : app()->getLocale();
+
+        if ($request->hasSession()) {
+            $request->session()->put('locale', $resolvedLocale);
+        }
+
+        Cookie::queue('locale', $resolvedLocale, 60 * 24 * 365);
+        Cookie::queue('sz_locale', $resolvedLocale, 60 * 24 * 365);
     }
 }
