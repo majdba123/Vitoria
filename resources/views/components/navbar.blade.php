@@ -581,6 +581,15 @@ async function refreshSessionUserFromApi(force = false) {
         }
     } catch (e) {
         if (e?.response?.status === 401 || e?.response?.status === 403) {
+            if (document.body?.dataset?.sessionAuth === '1' && window.__sessionAuthUser) {
+                if (window.Auth?.clearTokenOnly) {
+                    window.Auth.clearTokenOnly();
+                }
+                window.Auth?.setUser?.(window.__sessionAuthUser);
+                updateNavbar();
+                return;
+            }
+
             if (window.Auth?.clearAll) {
                 window.Auth.clearAll();
             }
@@ -600,6 +609,15 @@ async function fetchAndSetUser() {
         updateNavbar();
     } catch (e) {
         if (e?.response?.status === 401 || e?.response?.status === 403) {
+            if (document.body?.dataset?.sessionAuth === '1' && window.__sessionAuthUser) {
+                if (window.Auth?.clearTokenOnly) {
+                    window.Auth.clearTokenOnly();
+                }
+                window.Auth?.setUser?.(window.__sessionAuthUser);
+                updateNavbar();
+                return;
+            }
+
             if (window.Auth?.clearAll) {
                 window.Auth.clearAll();
             }

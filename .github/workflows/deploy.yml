@@ -74,8 +74,7 @@ jobs:
             php artisan queue:restart
 
             # Clear and rebuild caches
-            php artisan optimize
-
+            php artisan optimize:clear
             # Fix permissions
             chown -R www-data:www-data .
             chmod -R 775 storage

@@ -219,6 +219,12 @@
                 window.Auth.setUser(window.__sessionAuthUser);
             }
 
+            if (document.body?.dataset?.sessionAuth === '1' && window.__sessionAuthUser?.type === 1) {
+                window.Auth?.clearTokenOnly?.();
+                hydrateAdminDashboard(window.__sessionAuthUser);
+                return;
+            }
+
             try {
                 if (window.Auth?.applyToken) {
                     window.Auth.applyToken();

@@ -142,6 +142,11 @@
             if (window.__sessionAuthUser && window.Auth?.setUser) {
                 window.Auth.setUser(window.__sessionAuthUser);
             }
+            if (document.body?.dataset?.sessionAuth === '1' && window.__sessionAuthUser?.type === 3) {
+                window.Auth?.clearTokenOnly?.();
+                hydrateSyndicateDashboard(window.__sessionAuthUser);
+                return;
+            }
             try {
                 if (window.Auth?.applyToken) {
                     window.Auth.applyToken();
