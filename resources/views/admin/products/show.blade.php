@@ -124,6 +124,10 @@
                 </div>
 
                 <div class="mt-6 border-t border-gray-100 pt-6">
+                    <div id="product-rejection-wrap" class="mb-6 hidden rounded-xl border border-rose-200 bg-rose-50 px-4 py-4">
+                        <p class="text-xs font-medium uppercase tracking-wider text-rose-500">Rejection Reason</p>
+                        <p class="mt-2 text-sm font-semibold text-rose-700" id="product-rejection-reason">â€”</p>
+                    </div>
                     <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Description</p>
                     <p class="mt-2 text-sm text-gray-700" id="product-description">—</p>
                 </div>
@@ -177,6 +181,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('product-discount-start').textContent = formatDateOnly(p.discount_starts_at);
         document.getElementById('product-discount-end').textContent = formatDateOnly(p.discount_ends_at);
         updateDiscountStatusDisplay(p.discount_status);
+        syncRejectionReason(p.status, p.rejection_reason);
 
         const vendorName = p.vendor?.store_name || '—';
         const ownerName = p.vendor?.user?.name || '';
@@ -245,6 +250,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 
                 // Update display
                 updateStatusDisplay(newStatus);
+                syncRejectionReason(newStatus, res.data.data?.rejection_reason || p.rejection_reason || '');
                 document.getElementById('cancel-status-btn').click(); // Hide edit controls
                 showAlert('edit-success', res.data.message || 'Status updated successfully.');
             } catch (e) {
@@ -266,6 +272,23 @@ document.addEventListener('DOMContentLoaded', async function () {
                 approvalStatusBadge = '<span class="badge badge-warning"><span class="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-yellow-500"></span>Pending</span>';
             }
             document.getElementById('product-approval-status').innerHTML = approvalStatusBadge;
+        }
+
+        function syncRejectionReason(status, reason) {
+            const wrap = document.getElementById('product-rejection-wrap');
+            const reasonEl = document.getElementById('product-rejection-reason');
+            if (!wrap || !reasonEl) {
+                return;
+            }
+
+            if (status === 'rejected') {
+                reasonEl.textContent = reason || 'No rejection reason.';
+                wrap.classList.remove('hidden');
+                return;
+            }
+
+            wrap.classList.add('hidden');
+            reasonEl.textContent = 'â€”';
         }
 
         function updateDiscountStatusDisplay(status) {
