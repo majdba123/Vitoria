@@ -8,6 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
@@ -15,49 +16,59 @@ class AuthService
 {
     public function register(array $data): array
     {
-        $user = DB::transaction(function () use ($data) {
-            $accountType = $data['account_type'] ?? 'user';
-            $user = User::query()->create([
-                'name' => $data['name'],
-                'phone_number' => $data['phone_number'],
-                'national_id' => $data['national_id'],
-                'age' => $data['age'],
-                'membership_number' => $data['membership_number'],
-                'city_id' => $data['city_id'],
-                'latitude' => $data['latitude'] ?? null,
-                'longitude' => $data['longitude'] ?? null,
-                'locale' => app()->getLocale(),
-                'type' => $accountType === 'vendor' ? User::TYPE_VENDOR : User::TYPE_USER,
-                'email' => $data['email'],
-                'password' => $data['password'] ?? null,
-            ]);
+        $commercialRegisterPath = null;
 
-            if ($accountType === 'vendor') {
-                $commercialRegisterFile = $data['commercial_register_file'] ?? null;
-                $commercialRegisterPath = $commercialRegisterFile instanceof UploadedFile
-                    ? Storage::disk('local')->putFile('commercial-registers', $commercialRegisterFile)
-                    : null;
-
-                $vendor = Vendor::query()->create([
-                    'user_id' => $user->id,
-                    'store_name' => $data['store_name'],
-                    'business_type' => $data['business_type'],
-                    'description' => $data['description'] ?? null,
-                    'address' => $data['address'] ?? null,
+        try {
+            $user = DB::transaction(function () use ($data, &$commercialRegisterPath) {
+                $accountType = $data['account_type'] ?? 'user';
+                $user = User::query()->create([
+                    'name' => $data['name'],
+                    'phone_number' => $data['phone_number'],
+                    'national_id' => $data['national_id'],
+                    'age' => $data['age'],
+                    'membership_number' => $data['membership_number'],
                     'city_id' => $data['city_id'],
                     'latitude' => $data['latitude'] ?? null,
                     'longitude' => $data['longitude'] ?? null,
-                    'is_active' => false,
-                    'status' => Vendor::STATUS_PENDING,
-                    'registration_source' => Vendor::REGISTRATION_SOURCE_SELF,
-                    'commercial_register_file' => $commercialRegisterPath,
+                    'locale' => app()->getLocale(),
+                    'type' => $accountType === 'vendor' ? User::TYPE_VENDOR : User::TYPE_USER,
+                    'email' => $data['email'],
+                    'password' => $data['password'] ?? null,
                 ]);
 
-                $vendor->categories()->sync(array_map('intval', $data['category_ids']));
+                if ($accountType === 'vendor') {
+                    $commercialRegisterFile = $data['commercial_register_file'] ?? null;
+                    $commercialRegisterPath = $commercialRegisterFile instanceof UploadedFile
+                        ? Storage::disk('local')->putFile('commercial-registers', $commercialRegisterFile)
+                        : null;
+
+                    $vendor = Vendor::query()->create([
+                        'user_id' => $user->id,
+                        'store_name' => $data['store_name'],
+                        'business_type' => $data['business_type'],
+                        'description' => $data['description'] ?? null,
+                        'address' => $data['address'] ?? null,
+                        'city_id' => $data['city_id'],
+                        'latitude' => $data['latitude'] ?? null,
+                        'longitude' => $data['longitude'] ?? null,
+                        'is_active' => false,
+                        'status' => Vendor::STATUS_PENDING,
+                        'registration_source' => Vendor::REGISTRATION_SOURCE_SELF,
+                        'commercial_register_file' => $commercialRegisterPath,
+                    ]);
+
+                    $vendor->categories()->sync(array_map('intval', $data['category_ids']));
+                }
+
+                return $user;
+            });
+        } catch (\Throwable $exception) {
+            if ($commercialRegisterPath) {
+                Storage::disk('local')->delete($commercialRegisterPath);
             }
 
-            return $user;
-        });
+            throw $exception;
+        }
 
         Cache::forget('admin_dashboard_overview');
 
@@ -84,12 +95,21 @@ class AuthService
             ->first();
 
         if (! $user) {
+            Log::warning('Failed login attempt: unknown phone number.', [
+                'phone_number' => $credentials['phone_number'],
+            ]);
+
             throw ValidationException::withMessages([
                 'phone_number' => [__('The provided credentials are incorrect.')],
             ]);
         }
 
         if (! $user->password || ! Hash::check($credentials['password'], $user->password)) {
+            Log::warning('Failed login attempt: invalid password.', [
+                'user_id' => $user->id,
+                'phone_number' => $credentials['phone_number'],
+            ]);
+
             throw ValidationException::withMessages([
                 'password' => [__('The provided password is incorrect.')],
             ]);

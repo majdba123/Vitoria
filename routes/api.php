@@ -40,7 +40,7 @@ Route::middleware('web')->prefix('products')->as('products.')->group(function ()
 */
 Route::post('/contact', [\App\Http\Controllers\Api\ContactMessageController::class, 'store'])->middleware('throttle:auth.strict')->name('contact.store');
 
-Route::get('/cities', [\App\Http\Controllers\Api\CityController::class, 'index'])->name('cities.index');
+Route::get('/cities', [\App\Http\Controllers\Api\CityController::class, 'index'])->middleware('throttle:public.browse')->name('cities.index');
 
 Route::middleware(['web', 'cache.response:120'])->group(function () {
     Route::prefix('vendors')->as('vendors.')->group(function () {
@@ -59,11 +59,11 @@ Route::middleware(['web', 'cache.response:120'])->group(function () {
 | Authenticated Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('products/{product}/reviews', [\App\Http\Controllers\Api\ProductReviewController::class, 'store'])->name('products.reviews.store');
-    Route::delete('products/{product}/reviews/{review}', [\App\Http\Controllers\Api\ProductReviewController::class, 'destroy'])->name('products.reviews.destroy');
+Route::middleware(['auth:sanctum', 'throttle:api.authenticated'])->group(function () {
+    Route::post('products/{product}/reviews', [\App\Http\Controllers\Api\ProductReviewController::class, 'store'])->middleware('throttle:api.write')->name('products.reviews.store');
+    Route::delete('products/{product}/reviews/{review}', [\App\Http\Controllers\Api\ProductReviewController::class, 'destroy'])->middleware('throttle:api.write')->name('products.reviews.destroy');
 
-    Route::post('broadcasting/auth', [BroadcastController::class, 'authenticate'])->name('broadcasting.auth');
+    Route::post('broadcasting/auth', [BroadcastController::class, 'authenticate'])->middleware('throttle:api.write')->name('broadcasting.auth');
 
     Route::get('/user', function (Request $request) {
         $user = $request->user();
@@ -72,23 +72,23 @@ Route::middleware('auth:sanctum')->group(function () {
         return new \App\Http\Resources\Auth\UserResource($user);
     })->name('user');
 
-    Route::post('/profile', [\App\Http\Controllers\Api\ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile', [\App\Http\Controllers\Api\ProfileController::class, 'update'])->middleware(['throttle:api.write', 'throttle:uploads'])->name('profile.update');
 
     Route::prefix('favourites')->as('favourites.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\FavouriteController::class, 'index'])->name('index');
         Route::get('/ids', [\App\Http\Controllers\Api\FavouriteController::class, 'ids'])->name('ids');
-        Route::post('/{product}', [\App\Http\Controllers\Api\FavouriteController::class, 'toggle'])->name('toggle');
-        Route::delete('/{product}', [\App\Http\Controllers\Api\FavouriteController::class, 'destroy'])->name('destroy');
+        Route::post('/{product}', [\App\Http\Controllers\Api\FavouriteController::class, 'toggle'])->middleware('throttle:api.write')->name('toggle');
+        Route::delete('/{product}', [\App\Http\Controllers\Api\FavouriteController::class, 'destroy'])->middleware('throttle:api.write')->name('destroy');
     });
 
     Route::get('/orders', [\App\Http\Controllers\Api\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{orderId}', [\App\Http\Controllers\Api\OrderController::class, 'show'])->name('orders.show');
-    Route::patch('/orders/{orderId}/cancel', [\App\Http\Controllers\Api\OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::patch('/orders/{orderId}/cancel', [\App\Http\Controllers\Api\OrderController::class, 'cancel'])->middleware('throttle:api.write')->name('orders.cancel');
     Route::post('/orders/checkout', [\App\Http\Controllers\Api\OrderController::class, 'store'])->middleware('throttle:orders.write')->name('orders.checkout');
 
     Route::get('/notifications', [\App\Http\Controllers\Api\NotificationController::class, 'index'])->name('notifications.index');
-    Route::patch('/notifications/{notification}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markRead'])->name('notifications.read');
-    Route::post('/notifications/mark-all-read', [\App\Http\Controllers\Api\NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
+    Route::patch('/notifications/{notification}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markRead'])->middleware('throttle:notifications.write')->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [\App\Http\Controllers\Api\NotificationController::class, 'markAllRead'])->middleware('throttle:notifications.write')->name('notifications.mark-all-read');
 
     Route::get('/contact-messages', [\App\Http\Controllers\Api\ContactMessageController::class, 'index'])->name('contact-messages.index');
 });

@@ -20,41 +20,49 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('dashboard/vendor-category-stats', [DashboardController::class, 'vendorCategoryStats'])->middleware('throttle:dashboard.stats')->name('dashboard.vendor-category-stats');
-Route::get('dashboard/overview', [DashboardController::class, 'overview'])->middleware('throttle:dashboard.stats')->name('dashboard.overview');
-Route::patch('syndicates/{syndicate}/toggle-active', [SyndicateController::class, 'toggleActive'])->name('syndicates.toggle-active');
-Route::apiResource('syndicates', SyndicateController::class);
-Route::apiResource('vendors', VendorController::class);
-Route::get('vendors/{vendor}/commission-stats', [VendorCommissionController::class, 'show'])->name('vendors.commission-stats');
-Route::post('vendors/{vendor}/commission-paid', [VendorCommissionController::class, 'updatePaidAmount'])->name('vendors.commission-paid');
-Route::get('vendors/{vendor}/commercial-register', [VendorController::class, 'downloadCommercialRegister'])->name('vendors.commercial-register');
-Route::patch('vendors/{vendor}/approve', [VendorController::class, 'approve'])->name('vendors.approve');
-Route::patch('vendors/{vendor}/toggle-active', [VendorController::class, 'toggleActive'])->name('vendors.toggle-active');
-Route::apiResource('users', UserController::class);
-Route::get('users/{user}/favourites', [UserController::class, 'favourites'])->name('users.favourites');
-Route::get('products/{product}/reviews', [ProductReviewController::class, 'indexForAdmin'])->name('products.reviews.index');
-Route::apiResource('products', ProductController::class);
-Route::patch('products/{product}/toggle-active', [ProductController::class, 'toggleActive'])->name('products.toggle-active');
-Route::patch('products/{product}/status', [ProductController::class, 'updateStatus'])->name('products.update-status');
-Route::patch('products/{product}/photos/{photo}/set-primary', [ProductController::class, 'setPrimaryPhoto'])->name('products.set-primary-photo');
-Route::apiResource('categories', \App\Http\Controllers\Api\Admin\CategoryController::class);
-Route::apiResource('cities', \App\Http\Controllers\Api\Admin\CityController::class);
-Route::apiResource('coupons', \App\Http\Controllers\Api\Admin\CouponController::class);
-Route::get('orders', [\App\Http\Controllers\Api\Admin\OrderController::class, 'index'])->name('orders.index');
-Route::get('orders/{orderId}', [\App\Http\Controllers\Api\Admin\OrderController::class, 'show'])->name('orders.show');
-Route::patch('orders/{orderId}/complete', [\App\Http\Controllers\Api\Admin\OrderController::class, 'markCompleted'])->name('orders.complete');
-Route::post('notifications/send', [\App\Http\Controllers\Api\Admin\NotificationController::class, 'send'])->name('notifications.send');
+Route::middleware('throttle:api.authenticated')->group(function () {
+    Route::get('dashboard/vendor-category-stats', [DashboardController::class, 'vendorCategoryStats'])->middleware('throttle:dashboard.stats')->name('dashboard.vendor-category-stats');
+    Route::get('dashboard/overview', [DashboardController::class, 'overview'])->middleware('throttle:dashboard.stats')->name('dashboard.overview');
+    Route::patch('syndicates/{syndicate}/toggle-active', [SyndicateController::class, 'toggleActive'])->middleware('throttle:api.write')->name('syndicates.toggle-active');
+    Route::apiResource('syndicates', SyndicateController::class)->except(['index', 'show'])->middleware('throttle:api.write');
+    Route::apiResource('syndicates', SyndicateController::class)->only(['index', 'show']);
+    Route::apiResource('vendors', VendorController::class)->except(['index', 'show'])->middleware('throttle:api.write');
+    Route::apiResource('vendors', VendorController::class)->only(['index', 'show']);
+    Route::get('vendors/{vendor}/commission-stats', [VendorCommissionController::class, 'show'])->name('vendors.commission-stats');
+    Route::post('vendors/{vendor}/commission-paid', [VendorCommissionController::class, 'updatePaidAmount'])->middleware('throttle:api.write')->name('vendors.commission-paid');
+    Route::get('vendors/{vendor}/commercial-register', [VendorController::class, 'downloadCommercialRegister'])->name('vendors.commercial-register');
+    Route::patch('vendors/{vendor}/approve', [VendorController::class, 'approve'])->middleware('throttle:api.write')->name('vendors.approve');
+    Route::patch('vendors/{vendor}/toggle-active', [VendorController::class, 'toggleActive'])->middleware('throttle:api.write')->name('vendors.toggle-active');
+    Route::apiResource('users', UserController::class)->except(['index', 'show'])->middleware('throttle:api.write');
+    Route::apiResource('users', UserController::class)->only(['index', 'show']);
+    Route::get('users/{user}/favourites', [UserController::class, 'favourites'])->name('users.favourites');
+    Route::get('products/{product}/reviews', [ProductReviewController::class, 'indexForAdmin'])->name('products.reviews.index');
+    Route::apiResource('products', ProductController::class)->except(['index', 'show'])->middleware(['throttle:api.write', 'throttle:uploads']);
+    Route::apiResource('products', ProductController::class)->only(['index', 'show']);
+    Route::patch('products/{product}/toggle-active', [ProductController::class, 'toggleActive'])->middleware('throttle:api.write')->name('products.toggle-active');
+    Route::patch('products/{product}/status', [ProductController::class, 'updateStatus'])->middleware('throttle:api.write')->name('products.update-status');
+    Route::patch('products/{product}/photos/{photo}/set-primary', [ProductController::class, 'setPrimaryPhoto'])->middleware('throttle:api.write')->name('products.set-primary-photo');
+    Route::apiResource('categories', \App\Http\Controllers\Api\Admin\CategoryController::class)->except(['index', 'show'])->middleware(['throttle:api.write', 'throttle:uploads']);
+    Route::apiResource('categories', \App\Http\Controllers\Api\Admin\CategoryController::class)->only(['index', 'show']);
+    Route::apiResource('cities', \App\Http\Controllers\Api\Admin\CityController::class)->except(['index', 'show'])->middleware('throttle:api.write');
+    Route::apiResource('cities', \App\Http\Controllers\Api\Admin\CityController::class)->only(['index', 'show']);
+    Route::apiResource('coupons', \App\Http\Controllers\Api\Admin\CouponController::class)->except(['index', 'show'])->middleware('throttle:api.write');
+    Route::apiResource('coupons', \App\Http\Controllers\Api\Admin\CouponController::class)->only(['index', 'show']);
+    Route::get('orders', [\App\Http\Controllers\Api\Admin\OrderController::class, 'index'])->name('orders.index');
+    Route::get('orders/{orderId}', [\App\Http\Controllers\Api\Admin\OrderController::class, 'show'])->name('orders.show');
+    Route::patch('orders/{orderId}/complete', [\App\Http\Controllers\Api\Admin\OrderController::class, 'markCompleted'])->middleware('throttle:api.write')->name('orders.complete');
+    Route::post('notifications/send', [\App\Http\Controllers\Api\Admin\NotificationController::class, 'send'])->middleware('throttle:notifications.write')->name('notifications.send');
 
-Route::get('contact-messages', [\App\Http\Controllers\Api\Admin\ContactMessageController::class, 'index'])->name('contact-messages.index');
-Route::get('contact-messages/{contactMessage}', [\App\Http\Controllers\Api\Admin\ContactMessageController::class, 'show'])->name('contact-messages.show');
-Route::patch('contact-messages/{contactMessage}/reply', [\App\Http\Controllers\Api\Admin\ContactMessageController::class, 'reply'])->name('contact-messages.reply');
+    Route::get('contact-messages', [\App\Http\Controllers\Api\Admin\ContactMessageController::class, 'index'])->name('contact-messages.index');
+    Route::get('contact-messages/{contactMessage}', [\App\Http\Controllers\Api\Admin\ContactMessageController::class, 'show'])->name('contact-messages.show');
+    Route::patch('contact-messages/{contactMessage}/reply', [\App\Http\Controllers\Api\Admin\ContactMessageController::class, 'reply'])->middleware('throttle:api.write')->name('contact-messages.reply');
 
-Route::get('footer-settings', [\App\Http\Controllers\Api\Admin\FooterSettingController::class, 'show'])->name('footer-settings.show');
-Route::put('footer-settings', [\App\Http\Controllers\Api\Admin\FooterSettingController::class, 'update'])->name('footer-settings.update');
+    Route::get('footer-settings', [\App\Http\Controllers\Api\Admin\FooterSettingController::class, 'show'])->name('footer-settings.show');
+    Route::put('footer-settings', [\App\Http\Controllers\Api\Admin\FooterSettingController::class, 'update'])->middleware('throttle:api.write')->name('footer-settings.update');
 
-// Product Photos (separate API)
-Route::get('products/{product}/photos', [ProductPhotoController::class, 'index'])->name('products.photos.index');
-Route::post('products/{product}/photos', [ProductPhotoController::class, 'store'])->name('products.photos.store');
-Route::post('products/{product}/photos/update', [ProductPhotoController::class, 'updatePhotos'])->name('products.photos.update');
-Route::delete('products/{product}/photos/{photo}', [ProductPhotoController::class, 'destroy'])->name('products.photos.destroy');
-Route::delete('products/{product}/photos', [ProductPhotoController::class, 'bulkDestroy'])->name('products.photos.bulk-destroy');
+    Route::get('products/{product}/photos', [ProductPhotoController::class, 'index'])->name('products.photos.index');
+    Route::post('products/{product}/photos', [ProductPhotoController::class, 'store'])->middleware('throttle:uploads')->name('products.photos.store');
+    Route::post('products/{product}/photos/update', [ProductPhotoController::class, 'updatePhotos'])->middleware('throttle:uploads')->name('products.photos.update');
+    Route::delete('products/{product}/photos/{photo}', [ProductPhotoController::class, 'destroy'])->middleware('throttle:api.write')->name('products.photos.destroy');
+    Route::delete('products/{product}/photos', [ProductPhotoController::class, 'bulkDestroy'])->middleware('throttle:api.write')->name('products.photos.bulk-destroy');
+});

@@ -17,6 +17,7 @@ use App\Observers\VendorObserver;
 use App\Services\ApplicationCacheService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
@@ -60,24 +61,48 @@ class AppServiceProvider extends ServiceProvider
 
     protected function configureRateLimiters(): void
     {
-        RateLimiter::for('auth.strict', fn (Request $request) => Limit::perMinute(5)->by($request->ip())->response(
-            fn () => response()->json(['message' => __('Too many attempts. Please try again soon.')], 429)
-        ));
+        RateLimiter::for('auth.strict', fn (Request $request) => Limit::perMinute(5)->by(
+            strtolower(trim((string) $request->input('phone_number', 'guest'))).'|'.$request->ip()
+        )->response(fn () => $this->throttleResponse(__('common.too_many_requests'))));
 
         RateLimiter::for('public.browse', fn (Request $request) => Limit::perMinute(120)->by($request->ip())->response(
-            fn () => response()->json(['message' => __('Too many requests. Please slow down.')], 429)
+            fn () => $this->throttleResponse(__('common.too_many_requests'))
         ));
 
         RateLimiter::for('search.filters', fn (Request $request) => Limit::perMinute(45)->by($request->ip())->response(
-            fn () => response()->json(['message' => __('Too many searches. Please wait a moment.')], 429)
+            fn () => $this->throttleResponse(__('common.too_many_requests'))
         ));
 
         RateLimiter::for('orders.write', fn (Request $request) => Limit::perMinute(10)->by((string) ($request->user()?->id ?? $request->ip()))->response(
-            fn () => response()->json(['message' => __('Too many order attempts. Please try again later.')], 429)
+            fn () => $this->throttleResponse(__('common.too_many_requests'))
         ));
 
         RateLimiter::for('dashboard.stats', fn (Request $request) => Limit::perMinute(60)->by((string) ($request->user()?->id ?? $request->ip()))->response(
-            fn () => response()->json(['message' => __('Dashboard is receiving too many requests. Please wait a moment.')], 429)
+            fn () => $this->throttleResponse(__('common.too_many_requests'))
         ));
+
+        RateLimiter::for('api.authenticated', fn (Request $request) => Limit::perMinute(180)->by(
+            (string) ($request->user()?->id ?? $request->ip())
+        )->response(fn () => $this->throttleResponse(__('common.too_many_requests'))));
+
+        RateLimiter::for('api.write', fn (Request $request) => Limit::perMinute(30)->by(
+            (string) ($request->user()?->id ?? $request->ip())
+        )->response(fn () => $this->throttleResponse(__('common.too_many_requests'))));
+
+        RateLimiter::for('uploads', fn (Request $request) => Limit::perMinute(10)->by(
+            (string) ($request->user()?->id ?? $request->ip())
+        )->response(fn () => $this->throttleResponse(__('common.too_many_requests'))));
+
+        RateLimiter::for('notifications.write', fn (Request $request) => Limit::perMinute(20)->by(
+            (string) ($request->user()?->id ?? $request->ip())
+        )->response(fn () => $this->throttleResponse(__('common.too_many_requests'))));
+    }
+
+    protected function throttleResponse(string $message): JsonResponse
+    {
+        return response()->json([
+            'message' => $message,
+            'status' => 429,
+        ], 429);
     }
 }

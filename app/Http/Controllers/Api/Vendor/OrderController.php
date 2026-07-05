@@ -8,6 +8,7 @@ use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -127,11 +128,14 @@ class OrderController extends Controller
             ]);
         }
 
-        $order->update([
-            'status' => Order::STATUS_CANCELLED,
-        ]);
+        DB::transaction(function () use ($order): void {
+            $order->update([
+                'status' => Order::STATUS_CANCELLED,
+            ]);
 
-        $this->restoreOrderQuantities($order);
+            $this->restoreOrderQuantities($order);
+        });
+
         try {
             Cache::tags(['products'])->flush();
         } catch (\Exception $e) {

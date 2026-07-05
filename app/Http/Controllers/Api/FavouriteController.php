@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -45,6 +46,7 @@ class FavouriteController extends Controller
     public function toggle(Request $request, int $product): JsonResponse
     {
         $user = $request->user();
+        Product::query()->findOrFail($product);
 
         $exists = $user->favouriteProducts()
             ->where('favourites.product_id', $product)
@@ -54,7 +56,7 @@ class FavouriteController extends Controller
             $user->favouriteProducts()->detach($product);
 
             return response()->json([
-                'message' => 'Removed from favourites.',
+                'message' => __('common.removed_from_favourites'),
                 'favourited' => false,
             ]);
         }
@@ -62,7 +64,7 @@ class FavouriteController extends Controller
         $user->favouriteProducts()->attach($product);
 
         return response()->json([
-            'message' => 'Added to favourites.',
+            'message' => __('common.added_to_favourites'),
             'favourited' => true,
         ]);
     }
@@ -72,9 +74,10 @@ class FavouriteController extends Controller
      */
     public function destroy(Request $request, int $product): JsonResponse
     {
+        Product::query()->findOrFail($product);
         $request->user()->favouriteProducts()->detach($product);
 
-        return response()->json(['message' => 'Removed from favourites.']);
+        return response()->json(['message' => __('common.removed_from_favourites')]);
     }
 
     /**
