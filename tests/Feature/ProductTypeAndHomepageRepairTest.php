@@ -232,6 +232,14 @@ test('broadcasting auth accepts authenticated web sessions even when bearer toke
         ->assertOk();
 });
 
+test('admin can switch homepage product type without being redirected to dashboard', function () {
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin)
+        ->get('/product-type/select?preferred_product_type=agriculture&redirect_to=home')
+        ->assertRedirect(route('home', ['type' => Category::TYPE_AGRICULTURE]));
+});
+
 test('admin can create syndicate without logo and with valid logo', function () {
     Storage::fake('public');
     repairAdmin();

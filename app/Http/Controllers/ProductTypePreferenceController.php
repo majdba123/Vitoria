@@ -16,14 +16,14 @@ class ProductTypePreferenceController extends Controller
 
     public function show(Request $request): View|RedirectResponse
     {
+        if ($request->filled('preferred_product_type')) {
+            return $this->storeFromRequest($request);
+        }
+
         $user = $request->user();
 
         if ($user && $user->type !== User::TYPE_USER) {
             return redirect()->to($this->dashboardPathFor($user));
-        }
-
-        if ($request->filled('preferred_product_type')) {
-            return $this->storeFromRequest($request);
         }
 
         return view('preferences.product-type', [
