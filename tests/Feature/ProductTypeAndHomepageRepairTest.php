@@ -207,6 +207,31 @@ test('api user endpoint accepts authenticated web sessions without bearer token'
         ->assertJsonPath('data.type', User::TYPE_ADMIN);
 });
 
+test('api user endpoint prefers authenticated web sessions over invalid bearer tokens', function () {
+    $vendor = Vendor::factory()->create();
+    $user = $vendor->user;
+
+    $this->actingAs($user)
+        ->withHeader('Authorization', 'Bearer invalid-or-expired-token')
+        ->getJson('/api/user')
+        ->assertOk()
+        ->assertJsonPath('data.id', $user->id)
+        ->assertJsonPath('data.type', User::TYPE_VENDOR);
+});
+
+test('broadcasting auth accepts authenticated web sessions even when bearer token is invalid', function () {
+    $vendor = Vendor::factory()->create();
+    $user = $vendor->user;
+
+    $this->actingAs($user)
+        ->withHeader('Authorization', 'Bearer invalid-or-expired-token')
+        ->postJson('/api/broadcasting/auth', [
+            'channel_name' => 'private-App.Models.User.'.$user->id,
+            'socket_id' => '1234.5678',
+        ])
+        ->assertOk();
+});
+
 test('admin can create syndicate without logo and with valid logo', function () {
     Storage::fake('public');
     repairAdmin();

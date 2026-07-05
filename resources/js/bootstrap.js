@@ -150,6 +150,14 @@ window.Auth = {
         return localStorage.getItem('auth_token');
     },
 
+    hasSessionAuth() {
+        return document.body?.dataset?.sessionAuth === '1';
+    },
+
+    shouldUseSessionAuth() {
+        return this.hasSessionAuth();
+    },
+
     setToken(token) {
         localStorage.setItem('auth_token', token);
         this.applyToken();
@@ -171,14 +179,23 @@ window.Auth = {
     },
 
     applyToken() {
+        if (this.shouldUseSessionAuth()) {
+            delete window.axios.defaults.headers.common['Authorization'];
+
+            return;
+        }
+
         const token = this.getToken();
         if (token) {
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            return;
         }
+
+        delete window.axios.defaults.headers.common['Authorization'];
     },
 
     isAuthenticated() {
-        return !!this.getToken() || document.body?.dataset?.sessionAuth === '1';
+        return !!this.getToken() || this.hasSessionAuth();
     },
 
     clearAll() {
@@ -188,6 +205,11 @@ window.Auth = {
         sessionStorage.clear();
     },
 
+    clearTokenOnly() {
+        localStorage.removeItem('auth_token');
+        delete window.axios.defaults.headers.common['Authorization'];
+    },
+
     /**
      * Bearer token rejected by API (expired or revoked). Clears client state and redirects shoppers to login.
      */
@@ -195,6 +217,14 @@ window.Auth = {
         if (!localStorage.getItem('auth_token')) {
             return;
         }
+
+        if (this.hasSessionAuth()) {
+            this.clearTokenOnly();
+            window.dispatchEvent(new CustomEvent('sz:auth:token-expired'));
+
+            return;
+        }
+
         this.clearAll();
         window.dispatchEvent(new CustomEvent('sz:auth:expired'));
         const path = window.location.pathname || '';

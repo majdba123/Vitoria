@@ -27,6 +27,10 @@ if (hasReverb) {
             auth: {
                 headers: {
                     get Authorization() {
+                        if (typeof window !== 'undefined' && window.Auth?.shouldUseSessionAuth?.()) {
+                            return '';
+                        }
+
                         const t = typeof window !== 'undefined' && window.Auth?.getToken?.();
                         return t ? `Bearer ${t}` : '';
                     },
