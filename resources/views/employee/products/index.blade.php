@@ -1,7 +1,23 @@
 @extends('layouts.employee')
 
-@section('title', 'Products - Vetora')
-@section('page-title', 'Products')
+@php
+    $employeeStatus = request('status');
+    $employeePageTitle = match ($employeeStatus) {
+        'approved' => __('employee.active_products_tab'),
+        'pending' => __('employee.pending_products'),
+        'rejected' => __('employee.rejected_products'),
+        default => __('employee.all_products'),
+    };
+    $employeePageCopy = match ($employeeStatus) {
+        'approved' => __('employee.all_products_copy'),
+        'pending' => __('employee.all_products_copy'),
+        'rejected' => __('employee.all_products_copy'),
+        default => __('employee.products_copy'),
+    };
+@endphp
+
+@section('title', $employeePageTitle . ' - Vetora')
+@section('page-title', $employeePageTitle)
 
 @section('content')
 <div class="space-y-6">
@@ -9,8 +25,8 @@
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <span class="eyebrow bg-white/10 text-white ring-1 ring-inset ring-white/10">{{ __('employee.workspace') }}</span>
-                <h2 class="mt-4 text-2xl font-black sm:text-3xl">{{ __('employee.products_title') }}</h2>
-                <p class="mt-2 max-w-2xl text-sm leading-7 text-slate-300">{{ __('employee.products_copy') }}</p>
+                <h2 class="mt-4 text-2xl font-black sm:text-3xl">{{ $employeePageTitle }}</h2>
+                <p class="mt-2 max-w-2xl text-sm leading-7 text-slate-300">{{ $employeePageCopy }}</p>
             </div>
             <div class="flex gap-2">
                 <a href="{{ route('employee.dashboard') }}" class="btn-secondary btn-sm">{{ __('employee.back_dashboard') }}</a>
@@ -53,11 +69,17 @@ document.addEventListener('employee-ready', function () {
     const alertBox = document.getElementById('products-alert');
     const statusFilter = document.getElementById('status-filter');
     const reloadBtn = document.getElementById('reload-btn');
+    const currentStatus = new URLSearchParams(window.location.search).get('status') || '';
+
+    statusFilter.value = currentStatus;
 
     loadProducts();
 
     reloadBtn.addEventListener('click', loadProducts);
-    statusFilter.addEventListener('change', loadProducts);
+    statusFilter.addEventListener('change', function () {
+        syncQueryString();
+        loadProducts();
+    });
 
     async function loadProducts() {
         try {
@@ -111,6 +133,16 @@ document.addEventListener('employee-ready', function () {
         if (status === 'approved') return 'badge-success';
         if (status === 'rejected') return 'badge-danger';
         return 'badge-warning';
+    }
+
+    function syncQueryString() {
+        const url = new URL(window.location.href);
+        if (statusFilter.value) {
+            url.searchParams.set('status', statusFilter.value);
+        } else {
+            url.searchParams.delete('status');
+        }
+        window.history.replaceState({}, '', url.toString());
     }
 
     function escapeHtml(value) {

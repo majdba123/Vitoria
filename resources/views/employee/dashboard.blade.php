@@ -1,7 +1,7 @@
 @extends('layouts.employee')
 
-@section('title', 'Employee Dashboard - Vetora')
-@section('page-title', 'Dashboard')
+@section('title', __('employee.dashboard_overview') . ' - Vetora')
+@section('page-title', __('employee.dashboard_overview'))
 
 @section('content')
 <div class="space-y-6">
@@ -13,7 +13,8 @@
                 <p class="mt-2 max-w-3xl text-sm leading-7 text-slate-300">{{ __('employee.dashboard_copy') }}</p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <button id="reload-dashboard-btn" class="btn-secondary btn-sm">Refresh</button>
+                <a href="{{ route('employee.products.index') }}" class="btn-primary btn-sm">{{ __('employee.view_products') }}</a>
+                <button id="reload-dashboard-btn" class="btn-secondary btn-sm">{{ __('employee.refresh') }}</button>
             </div>
         </div>
     </div>
@@ -85,11 +86,50 @@
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636A9 9 0 0 1 5.636 18.364M5.636 5.636A9 9 0 0 0 18.364 18.364M5.636 5.636 18.364 18.364"/></svg>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">Inactive Products</p>
+                    <p class="text-sm text-gray-500">{{ __('employee.inactive_products_label') }}</p>
                     <p class="text-lg font-bold text-slate-600" id="stat-inactive-products">0</p>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 xl:grid-cols-4">
+        <a href="{{ route('employee.products.index') }}" class="card transition-all hover:-translate-y-0.5 hover:shadow-xl">
+            <div class="card-body flex items-center justify-between gap-4">
+                <div>
+                    <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-400">{{ __('employee.status_summary') }}</p>
+                    <h3 class="mt-2 text-lg font-black text-gray-900 dark:text-white">{{ __('employee.all_products') }}</h3>
+                </div>
+                <span class="badge badge-brand">{{ __('employee.open_tab') }}</span>
+            </div>
+        </a>
+        <a href="{{ route('employee.products.index', ['status' => 'approved']) }}" class="card transition-all hover:-translate-y-0.5 hover:shadow-xl">
+            <div class="card-body flex items-center justify-between gap-4">
+                <div>
+                    <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-400">{{ __('employee.status_summary') }}</p>
+                    <h3 class="mt-2 text-lg font-black text-gray-900 dark:text-white">{{ __('employee.active_products_tab') }}</h3>
+                </div>
+                <span class="badge badge-success">{{ __('employee.open_tab') }}</span>
+            </div>
+        </a>
+        <a href="{{ route('employee.products.index', ['status' => 'pending']) }}" class="card transition-all hover:-translate-y-0.5 hover:shadow-xl">
+            <div class="card-body flex items-center justify-between gap-4">
+                <div>
+                    <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-400">{{ __('employee.status_summary') }}</p>
+                    <h3 class="mt-2 text-lg font-black text-gray-900 dark:text-white">{{ __('employee.pending_products') }}</h3>
+                </div>
+                <span class="badge badge-warning">{{ __('employee.open_tab') }}</span>
+            </div>
+        </a>
+        <a href="{{ route('employee.products.index', ['status' => 'rejected']) }}" class="card transition-all hover:-translate-y-0.5 hover:shadow-xl">
+            <div class="card-body flex items-center justify-between gap-4">
+                <div>
+                    <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-400">{{ __('employee.status_summary') }}</p>
+                    <h3 class="mt-2 text-lg font-black text-gray-900 dark:text-white">{{ __('employee.rejected_products') }}</h3>
+                </div>
+                <span class="badge badge-danger">{{ __('employee.open_tab') }}</span>
+            </div>
+        </a>
     </div>
 
     <div class="grid grid-cols-1 gap-6 xl:grid-cols-[1.4fr_1fr]">
@@ -97,10 +137,10 @@
             <div class="card-body border-b border-gray-100">
                 <div class="flex items-center justify-between gap-3">
                     <div>
-                        <h3 class="dashboard-section-title">Products by Category</h3>
-                        <p class="dashboard-section-copy">See which categories hold the most products right now.</p>
+                        <h3 class="dashboard-section-title">{{ __('employee.products_by_category') }}</h3>
+                        <p class="dashboard-section-copy">{{ __('employee.products_by_category_copy') }}</p>
                     </div>
-                    <span class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Live mix</span>
+                    <span class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">{{ __('employee.live_mix') }}</span>
                 </div>
             </div>
             <div class="card-body">
@@ -114,10 +154,10 @@
             <div class="card-body border-b border-gray-100">
                 <div class="flex items-center justify-between gap-3">
                     <div>
-                        <h3 class="dashboard-section-title">Products by Type</h3>
-                        <p class="dashboard-section-copy">Track whether agriculture or veterinary products need more attention.</p>
+                        <h3 class="dashboard-section-title">{{ __('employee.products_by_type') }}</h3>
+                        <p class="dashboard-section-copy">{{ __('employee.products_by_type_copy') }}</p>
                     </div>
-                    <span class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Type view</span>
+                    <span class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">{{ __('employee.type_view') }}</span>
                 </div>
             </div>
             <div class="card-body">
@@ -128,60 +168,21 @@
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-body border-b border-gray-100">
-            <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                    <h3 class="dashboard-section-title">{{ __('employee.all_products') }}</h3>
-                    <p class="dashboard-section-copy">Filter products, inspect their content, and open the edit form directly from here.</p>
-                </div>
-                <div class="flex flex-col gap-2 sm:flex-row">
-                    <select id="status-filter" class="form-select w-full sm:w-52">
-                        <option value="">{{ __('employee.all_statuses') }}</option>
-                        <option value="pending">{{ __('employee.pending') }}</option>
-                        <option value="approved">{{ __('employee.approved') }}</option>
-                        <option value="rejected">{{ __('employee.rejected') }}</option>
-                    </select>
-                    <button id="apply-filter-btn" class="btn-primary btn-sm">{{ __('employee.view_products') }}</button>
-                </div>
-            </div>
-        </div>
-        <div class="card-body">
-            <x-alert type="error" id="products-alert" />
-            <div id="products-grid" class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
-            <div id="products-empty" class="hidden py-16 text-center text-sm text-gray-400">{{ __('employee.no_products') }}</div>
-        </div>
-    </div>
 </div>
 @endsection
 
 @push('scripts')
 <script>
 document.addEventListener('employee-ready', function () {
-    const statusFilter = document.getElementById('status-filter');
-    const productsGrid = document.getElementById('products-grid');
-    const productsEmpty = document.getElementById('products-empty');
-    const productsAlert = document.getElementById('products-alert');
     const categoryStats = document.getElementById('category-stats');
     const typeStats = document.getElementById('type-stats');
-    const currentStatus = new URLSearchParams(window.location.search).get('status') || '';
-
-    statusFilter.value = currentStatus;
 
     document.getElementById('reload-dashboard-btn').addEventListener('click', loadDashboard);
-    document.getElementById('apply-filter-btn').addEventListener('click', function () {
-        syncQueryString();
-        loadProducts();
-    });
-    statusFilter.addEventListener('change', function () {
-        syncQueryString();
-        loadProducts();
-    });
 
     loadDashboard();
 
     async function loadDashboard() {
-        await Promise.all([loadStats(), loadProducts(), loadDistribution()]);
+        await Promise.all([loadStats(), loadDistribution()]);
     }
 
     async function loadStats() {
@@ -212,55 +213,6 @@ document.addEventListener('employee-ready', function () {
         } catch (error) {
             categoryStats.innerHTML = '<p class="py-6 text-center text-sm text-red-500">{{ __('common.unexpected_error') }}</p>';
             typeStats.innerHTML = '<p class="py-6 text-center text-sm text-red-500">{{ __('common.unexpected_error') }}</p>';
-        }
-    }
-
-    async function loadProducts() {
-        try {
-            productsAlert.classList.add('hidden');
-            productsEmpty.classList.add('hidden');
-            productsGrid.innerHTML = '<div class="col-span-full py-10 text-center text-sm text-gray-400">{{ __('common.loading') }}</div>';
-
-            const params = new URLSearchParams({ per_page: '100' });
-            if (statusFilter.value) {
-                params.set('status', statusFilter.value);
-            }
-
-            const response = await window.axios.get('/api/employee/products?' + params.toString());
-            const products = response.data.data || [];
-
-            if (!products.length) {
-                productsGrid.innerHTML = '';
-                productsEmpty.classList.remove('hidden');
-                return;
-            }
-
-            productsGrid.innerHTML = products.map((product) => `
-                <div class="group overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-xl dark:border-gray-800 dark:bg-gray-950/70">
-                    <div class="aspect-[4/3] overflow-hidden bg-gray-100">
-                        <img src="${product.first_photo_url || product.image_url || product.icon_url || '/images/product-placeholder.svg'}" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" alt="">
-                    </div>
-                    <div class="space-y-3 p-4">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="min-w-0">
-                                <p class="truncate text-sm font-bold text-gray-900 dark:text-white">${escapeHtml(product.name || '')}</p>
-                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${escapeHtml(product.category?.name || '')}</p>
-                            </div>
-                            <span class="badge ${badgeClass(product.status)}">${escapeHtml(product.status || '')}</span>
-                        </div>
-                        <p class="line-clamp-2 text-sm text-gray-600 dark:text-gray-300">${escapeHtml(product.description || '')}</p>
-                        ${product.status === 'rejected' && product.rejection_reason ? `<div class="rounded-2xl bg-rose-50 px-3 py-2 text-xs text-rose-700 dark:bg-rose-500/10 dark:text-rose-300">${escapeHtml(product.rejection_reason)}</div>` : ''}
-                        <div class="flex items-center justify-between gap-3">
-                            <span class="text-xs text-gray-400 dark:text-gray-500">${escapeHtml(product.price || '')}</span>
-                            <a href="{{ url('/employee/products') }}/${product.id}/edit" class="btn-primary btn-sm">{{ __('employee.review_product') }}</a>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        } catch (error) {
-            productsGrid.innerHTML = '';
-            productsAlert.classList.remove('hidden');
-            document.getElementById('products-alert-message').textContent = error.response?.data?.message || '{{ __('common.unexpected_error') }}';
         }
     }
 
@@ -354,31 +306,6 @@ document.addEventListener('employee-ready', function () {
         }).join('');
     }
 
-    function syncQueryString() {
-        const url = new URL(window.location.href);
-        if (statusFilter.value) {
-            url.searchParams.set('status', statusFilter.value);
-        } else {
-            url.searchParams.delete('status');
-        }
-        window.history.replaceState({}, '', url.toString());
-    }
-
-    function badgeClass(status) {
-        if (status === 'approved') {
-            return 'badge-success';
-        }
-        if (status === 'rejected') {
-            return 'badge-danger';
-        }
-        return 'badge-warning';
-    }
-
-    function escapeHtml(value) {
-        const div = document.createElement('div');
-        div.textContent = value || '';
-        return div.innerHTML;
-    }
 });
 </script>
 @endpush

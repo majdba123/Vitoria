@@ -3,11 +3,13 @@
     $isRtl = app()->getLocale() === 'ar';
     $sidebarEdgeClass = $isRtl ? 'right-0 translate-x-full lg:translate-x-0' : 'left-0 -translate-x-full lg:translate-x-0';
     $closeMarginClass = $isRtl ? 'mr-auto' : 'ml-auto';
+    $currentStatus = (string) request('status', '');
     $links = [
         ['group' => __('nav.dashboard'), 'route' => 'employee.dashboard', 'label' => __('nav.dashboard'), 'icon' => 'fa-solid fa-grip'],
-        ['group' => __('employee.workspace'), 'route' => 'employee.dashboard', 'label' => __('employee.products'), 'icon' => 'fa-solid fa-box-open'],
-        ['group' => __('employee.workspace'), 'route' => 'employee.dashboard', 'label' => __('employee.pending_products'), 'icon' => 'fa-solid fa-hourglass-half', 'params' => ['status' => 'pending']],
-        ['group' => __('employee.workspace'), 'route' => 'employee.dashboard', 'label' => __('employee.rejected_products'), 'icon' => 'fa-solid fa-circle-xmark', 'params' => ['status' => 'rejected']],
+        ['group' => __('employee.workspace'), 'route' => 'employee.products.index', 'label' => __('employee.products'), 'icon' => 'fa-solid fa-box-open'],
+        ['group' => __('employee.workspace'), 'route' => 'employee.products.index', 'label' => __('employee.active_products_tab'), 'icon' => 'fa-solid fa-circle-check', 'params' => ['status' => 'approved']],
+        ['group' => __('employee.workspace'), 'route' => 'employee.products.index', 'label' => __('employee.pending_products'), 'icon' => 'fa-solid fa-hourglass-half', 'params' => ['status' => 'pending']],
+        ['group' => __('employee.workspace'), 'route' => 'employee.products.index', 'label' => __('employee.rejected_products'), 'icon' => 'fa-solid fa-circle-xmark', 'params' => ['status' => 'rejected']],
     ];
     $groupedLinks = collect($links)->groupBy('group');
 @endphp
@@ -41,7 +43,12 @@
                 <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-white/35">{{ $group }}</p>
                 @foreach ($items as $item)
                     @php
-                        $isActive = str_starts_with($currentRoute, str_replace('.index', '', $item['route'])) && (! isset($item['params']['status']) || request('status') === $item['params']['status']);
+                        $itemStatus = $item['params']['status'] ?? null;
+                        $isActive = $currentRoute === $item['route']
+                            && (
+                                ($itemStatus === null && $currentStatus === '')
+                                || ($itemStatus !== null && $currentStatus === $itemStatus)
+                            );
                     @endphp
                     <a href="{{ route($item['route'], $item['params'] ?? []) }}" class="dashboard-sidebar-link {{ $isActive ? 'is-active' : '' }}">
                         <span class="dashboard-sidebar-bullet h-2.5 w-2.5 rounded-full bg-white/20"></span>
