@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class ExternalProductResource extends JsonResource
+{
+    protected function resolveSpecializedPayload(): array
+    {
+        $productType = $this->category?->type;
+
+        return match ($productType) {
+            'agriculture' => [
+                'type' => 'agriculture',
+                'shared' => $this->sharedPayload(),
+                'agricultural_detail' => $this->sharedDetail?->agriculturalDetail?->toArray(),
+            ],
+            'veterinary' => [
+                'type' => 'veterinary',
+                'shared' => $this->sharedPayload(),
+                'veterinary_detail' => $this->sharedDetail?->veterinaryDetail?->toArray(),
+            ],
+            default => [
+                'type' => $productType,
+                'shared' => $this->sharedPayload(),
+            ],
+        };
+    }
+
+    protected function sharedPayload(): array
+    {
+        $sharedDetail = $this->sharedDetail;
+
+        return [
+            'product_id' => $this->id,
+            'product_type' => $this->category?->type,
+            'name_ar' => $this->name_ar,
+            'name_en' => $this->name_en,
+            'commercial_name' => $sharedDetail?->commercial_name,
+            'aliases' => $sharedDetail?->aliases,
+            'barcode' => $sharedDetail?->barcode,
+            'barcodes' => $sharedDetail?->barcodes,
+            'sku' => $sharedDetail?->sku,
+            'category_id' => $this->category_id,
+            'manufacturer_id' => $sharedDetail?->manufacturer_id,
+            'brand_id' => $sharedDetail?->brand_id,
+            'country_of_origin' => $sharedDetail?->country_of_origin,
+            'registration_number' => $sharedDetail?->registration_number,
+            'registration_status' => $sharedDetail?->registration_status,
+            'package_size' => $sharedDetail?->package_size,
+            'package_unit' => $sharedDetail?->package_unit,
+            'short_description' => $sharedDetail?->short_description,
+            'approved_description' => $sharedDetail?->approved_description,
+            'keywords' => $sharedDetail?->keywords,
+            'status' => $this->status,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
+    }
+
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return array_merge([
+            'id' => $this->id,
+            'name' => $this->resource->getLocalizedName(app()->getLocale()),
+            'price' => $this->price,
+            'quantity' => $this->quantity,
+            'description' => $this->description,
+            'category' => $this->whenLoaded('category', fn (): ?array => $this->category ? [
+                'id' => $this->category->id,
+                'name' => $this->category->name,
+                'type' => $this->category->type,
+            ] : null),
+        ], $this->resolveSpecializedPayload());
+    }
+}

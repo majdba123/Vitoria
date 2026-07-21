@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductPhoto;
+use App\Models\SharedProductDetail;
 use App\Models\Vendor;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
@@ -24,6 +26,8 @@ class ProductService
         $query->with([
             'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(3),
             'category:id,name,type,commission',
+            'sharedDetail.agriculturalDetail',
+            'sharedDetail.veterinaryDetail',
         ]);
 
         if (! $vendor && ! empty($filters['vendor_id'])) {
@@ -113,6 +117,8 @@ class ProductService
                 'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(1),
                 'category:id,name,type,logo,icon',
                 'vendor:id,store_name,user_id,logo,is_active,status',
+                'sharedDetail.agriculturalDetail',
+                'sharedDetail.veterinaryDetail',
             ]);
 
         if ($categoryId) {
@@ -167,6 +173,9 @@ class ProductService
 
     public function create(?Vendor $vendor, array $data): Product
     {
+        $detailPayload = $this->extractDetailPayload($data);
+        $data['name'] = $data['name_ar'] ?? $data['name_en'] ?? $data['name'] ?? null;
+
         if (! isset($data['status'])) {
             $data['status'] = Product::STATUS_PENDING;
         }
@@ -175,17 +184,23 @@ class ProductService
             ? $vendor->products()->create($data)
             : Product::query()->create($data);
 
+        $this->syncProductDetails($product, $detailPayload);
+
         $this->flushProductCache();
 
-        return $product->load($vendor ? ['photos', 'category'] : ['vendor.user', 'photos', 'category']);
+        return $product->load($vendor ? ['photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail'] : ['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
     }
 
     public function update(Product $product, array $data): Product
     {
+        $detailPayload = $this->extractDetailPayload($data);
+        $data['name'] = $data['name_ar'] ?? $data['name_en'] ?? $data['name'] ?? $product->getRawOriginal('name');
+
         $product->update($data);
+        $this->syncProductDetails($product, $detailPayload);
         $this->flushProductCache();
 
-        return $product->fresh($product->vendor ? ['vendor.user', 'photos', 'category'] : ['photos', 'category']);
+        return $product->fresh($product->vendor ? ['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail'] : ['photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
     }
 
     public function delete(Product $product): void
@@ -205,7 +220,7 @@ class ProductService
         $product->update(['is_active' => ! $product->is_active]);
         $this->flushProductCache();
 
-        return $product->fresh(['vendor.user', 'photos', 'category']);
+        return $product->fresh(['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
     }
 
     public function updateStatus(Product $product, string $status): Product
@@ -213,7 +228,7 @@ class ProductService
         $product->update(['status' => $status]);
         $this->flushProductCache();
 
-        return $product->fresh(['vendor.user', 'photos', 'category']);
+        return $product->fresh(['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
     }
 
     public function setPrimaryPhoto(Product $product, ProductPhoto $photo): Product
@@ -226,7 +241,7 @@ class ProductService
         $photo->update(['is_primary' => true]);
         $this->flushProductCache();
 
-        return $product->fresh(['vendor.user', 'photos', 'category']);
+        return $product->fresh(['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
     }
 
     /**
@@ -347,5 +362,90 @@ class ProductService
         } catch (\Exception $e) {
             return $callback();
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array{shared_detail: array<string, mixed>, agricultural_detail: array<string, mixed>, veterinary_detail: array<string, mixed>}
+     */
+    protected function extractDetailPayload(array &$data): array
+    {
+        $payload = [
+            'shared_detail' => (array) ($data['shared_detail'] ?? []),
+            'agricultural_detail' => (array) ($data['agricultural_detail'] ?? []),
+            'veterinary_detail' => (array) ($data['veterinary_detail'] ?? []),
+        ];
+
+        unset($data['shared_detail'], $data['agricultural_detail'], $data['veterinary_detail']);
+
+        return $payload;
+    }
+
+    /**
+     * @param  array{shared_detail: array<string, mixed>, agricultural_detail: array<string, mixed>, veterinary_detail: array<string, mixed>}  $detailPayload
+     */
+    protected function syncProductDetails(Product $product, array $detailPayload): void
+    {
+        $sharedAttributes = $this->filterNullValues($detailPayload['shared_detail']);
+        $agriculturalAttributes = $this->filterNullValues($detailPayload['agricultural_detail']);
+        $veterinaryAttributes = $this->filterNullValues($detailPayload['veterinary_detail']);
+
+        if ($sharedAttributes === [] && $agriculturalAttributes === [] && $veterinaryAttributes === []) {
+            return;
+        }
+
+        /** @var SharedProductDetail $sharedDetail */
+        $sharedDetail = $product->sharedDetail()->updateOrCreate(
+            ['product_id' => $product->id],
+            $sharedAttributes
+        );
+
+        $categoryType = $product->category?->type
+            ?? Category::query()->whereKey($product->category_id)->value('type');
+
+        if ($categoryType === Category::TYPE_AGRICULTURE) {
+            $sharedDetail->agriculturalDetail()->updateOrCreate(
+                ['shared_product_detail_id' => $sharedDetail->id],
+                $agriculturalAttributes
+            );
+
+            if ($sharedDetail->veterinaryDetail) {
+                $sharedDetail->veterinaryDetail()->delete();
+            }
+        }
+
+        if ($categoryType === Category::TYPE_VETERINARY) {
+            $sharedDetail->veterinaryDetail()->updateOrCreate(
+                ['shared_product_detail_id' => $sharedDetail->id],
+                $veterinaryAttributes
+            );
+
+            if ($sharedDetail->agriculturalDetail) {
+                $sharedDetail->agriculturalDetail()->delete();
+            }
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     * @return array<string, mixed>
+     */
+    protected function filterNullValues(array $attributes): array
+    {
+        return array_filter($attributes, function (mixed $value): bool {
+            if ($value === null) {
+                return false;
+            }
+
+            if (is_string($value) && trim($value) === '') {
+                return false;
+            }
+
+            if (is_array($value) && $value === []) {
+                return false;
+            }
+
+            return true;
+        });
     }
 }

@@ -36,10 +36,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     const form = document.getElementById('create-form');
     const vendorSelect = document.getElementById('vendor_id');
     const categorySelect = document.getElementById('category_id');
+    const agricultureSection = document.querySelector('[data-detail-section="agriculture"]');
+    const veterinarySection = document.querySelector('[data-detail-section="veterinary"]');
     const STORAGE_KEY = 'admin_product_create_form';
     const baseApiPath = '/api/admin';
     let savedVendorId = '';
     let savedCategoryId = '';
+
+    initArrayLists();
 
     try {
         const saved = localStorage.getItem(STORAGE_KEY);
@@ -47,7 +51,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             const data = JSON.parse(saved);
             savedVendorId = data.vendor_id || '';
             savedCategoryId = data.category_id || '';
-            if (form.name) form.name.value = data.name || '';
+            if (form.name_ar) form.name_ar.value = data.name_ar || '';
+            if (form.name_en) form.name_en.value = data.name_en || '';
             if (form.price) form.price.value = data.price || '';
             if (form.quantity) form.quantity.value = data.quantity || '';
             if (form.description) form.description.value = data.description || '';
@@ -65,7 +70,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             const data = {
                 vendor_id: vendorSelect?.value || '',
                 category_id: categorySelect?.value || '',
-                name: form.name?.value || '',
+                name_ar: form.name_ar?.value || '',
+                name_en: form.name_en?.value || '',
                 price: form.price?.value || '',
                 quantity: form.quantity?.value || '',
                 description: form.description?.value || '',
@@ -86,8 +92,12 @@ document.addEventListener('DOMContentLoaded', async function () {
             saveFormData();
         });
     }
-    categorySelect?.addEventListener('change', saveFormData);
-    form.name?.addEventListener('input', saveFormData);
+    categorySelect?.addEventListener('change', function () {
+        saveFormData();
+        syncProductTypeSections();
+    });
+    form.name_ar?.addEventListener('input', saveFormData);
+    form.name_en?.addEventListener('input', saveFormData);
     form.price?.addEventListener('input', saveFormData);
     form.quantity?.addEventListener('input', saveFormData);
     form.description?.addEventListener('input', saveFormData);
@@ -113,6 +123,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     if (savedCategoryId) {
         categorySelect.value = savedCategoryId;
     }
+    syncProductTypeSections();
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -122,7 +133,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         const formData = new FormData();
         formData.append('vendor_id', vendorSelect.value);
         formData.append('category_id', categorySelect.value);
-        formData.append('name', form.name.value.trim());
+        formData.append('name_ar', form.name_ar.value.trim());
+        formData.append('name_en', form.name_en.value.trim());
         formData.append('price', parseFloat(form.price.value) || 0);
         if (form.discount_percentage.value !== '') formData.append('discount_percentage', parseFloat(form.discount_percentage.value) || 0);
         formData.append('quantity', parseInt(form.quantity.value) || 0);
@@ -133,6 +145,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (form.icon?.files?.[0]) formData.append('icon', form.icon.files[0]);
         if (document.getElementById('discount_starts_at').value) formData.append('discount_starts_at', document.getElementById('discount_starts_at').value);
         if (document.getElementById('discount_ends_at').value) formData.append('discount_ends_at', document.getElementById('discount_ends_at').value);
+        appendDetailFields(formData);
 
         const selectedFiles = window.getSelectedPhotos ? window.getSelectedPhotos() : [];
         selectedFiles.forEach(f => formData.append('photos[]', f));
@@ -174,8 +187,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (error.response?.status === 422) {
             const errors = error.response.data.errors || {};
             for (const [f, m] of Object.entries(errors)) {
-                const fieldName = f.replace(/\./g, '\\.');
-                const el = document.getElementById(f + '-error') || document.getElementById(fieldName + '-error');
+                const el = document.querySelector(`[data-error-key="${f}"]`) || document.getElementById(f + '-error');
                 if (el) {
                     el.textContent = Array.isArray(m) ? m[0] : m;
                     el.classList.remove('hidden');
@@ -185,6 +197,30 @@ document.addEventListener('DOMContentLoaded', async function () {
             return;
         }
         showAlert('create-alert', error.response?.data?.message || error.message || 'An unexpected error occurred.');
+    }
+
+    function appendDetailFields(formData) {
+        document.querySelectorAll('[data-array-list]').forEach((list) => {
+            const key = list.getAttribute('data-array-list');
+            const values = Array.from(list.querySelectorAll('[data-array-item-input]'))
+                .map((input) => input.value.trim())
+                .filter(Boolean);
+
+            values.forEach((value) => formData.append(`${key}[]`, value));
+        });
+
+        document.querySelectorAll('[data-request-key]').forEach((field) => {
+            if (field.disabled) {
+                return;
+            }
+
+            const key = field.getAttribute('data-request-key');
+            const value = field.value;
+
+            if (typeof value === 'string' && value.trim() !== '') {
+                formData.append(key, value.trim());
+            }
+        });
     }
 
     function esc(t) {
@@ -205,11 +241,66 @@ document.addEventListener('DOMContentLoaded', async function () {
             const res = await window.axios.get(`${baseApiPath}/vendors/${vendorId}`);
             const categories = res.data?.data?.categories || [];
             categorySelect.innerHTML = '<option value="">Select category...</option>' +
-                categories.map(category => `<option value="${category.id}">${esc(category.name)}</option>`).join('');
+                categories.map(category => `<option value="${category.id}" data-type="${esc(category.type || '')}">${esc(category.name)}</option>`).join('');
+            syncProductTypeSections();
         } catch (error) {
             categorySelect.innerHTML = '<option value="">Failed to load categories</option>';
             console.error('Failed to load categories:', error);
         }
+    }
+
+    function setSectionState(section, visible) {
+        if (!section) {
+            return;
+        }
+
+        section.classList.toggle('hidden', !visible);
+        section.querySelectorAll('input, textarea, select').forEach((field) => {
+            field.disabled = !visible;
+        });
+    }
+
+    function syncProductTypeSections() {
+        const selectedOption = categorySelect?.selectedOptions?.[0];
+        const type = selectedOption?.dataset?.type || '';
+
+        setSectionState(agricultureSection, type === 'agriculture');
+        setSectionState(veterinarySection, type === 'veterinary');
+    }
+
+    function initArrayLists() {
+        document.querySelectorAll('[data-array-list]').forEach((list) => {
+            if (list.dataset.initialized === 'true') {
+                return;
+            }
+
+            list.dataset.initialized = 'true';
+            list.querySelector('[data-array-add]')?.addEventListener('click', () => {
+                appendArrayItem(list, '');
+            });
+
+            appendArrayItem(list, '');
+        });
+    }
+
+    function appendArrayItem(list, value) {
+        const items = list.querySelector('[data-array-items]');
+        const placeholder = list.getAttribute('data-array-placeholder') || '';
+        const item = document.createElement('div');
+        item.className = 'flex items-center gap-2';
+        item.innerHTML = `
+            <input type="text" class="form-input" data-array-item-input placeholder="${escapeHtml(placeholder)}">
+            <button type="button" class="btn-danger btn-xs shrink-0" data-array-remove>Remove</button>
+        `;
+        item.querySelector('[data-array-item-input]').value = value || '';
+        item.querySelector('[data-array-remove]').addEventListener('click', () => item.remove());
+        items.appendChild(item);
+    }
+
+    function escapeHtml(value) {
+        const div = document.createElement('div');
+        div.textContent = value || '';
+        return div.innerHTML;
     }
 });
 </script>

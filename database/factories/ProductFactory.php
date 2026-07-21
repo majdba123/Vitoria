@@ -18,10 +18,14 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $name = fake()->words(3, true);
+
         return [
             'vendor_id' => Vendor::factory(),
             'category_id' => Category::factory(),
-            'name' => fake()->words(3, true),
+            'name' => $name,
+            'name_ar' => $name,
+            'name_en' => $name,
             'description' => fake()->sentence(),
             'icon' => null,
             'image' => null,

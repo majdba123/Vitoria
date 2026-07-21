@@ -254,6 +254,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 </div>
                 <div class="card-body">
                     <h3 class="text-base font-semibold text-gray-900 line-clamp-1">${esc(p.name)}</h3>
+                    <p class="mt-1 text-xs text-gray-500 line-clamp-1">${esc(p.commercial_name || p.category?.name || 'No commercial name')}</p>
                     <p class="mt-1 text-xs text-gray-500 line-clamp-2">${esc(p.description || 'No description')}</p>
                     <div class="mt-3 flex items-center justify-between">
                         <div>

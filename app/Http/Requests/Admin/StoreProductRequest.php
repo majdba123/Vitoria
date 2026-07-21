@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Http\Requests\Concerns\InteractsWithProductDetails;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreProductRequest extends FormRequest
 {
+    use InteractsWithProductDetails;
+
     public function authorize(): bool
     {
         return true;
@@ -16,10 +19,9 @@ class StoreProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        return array_merge([
             'vendor_id' => ['required', 'exists:vendors,id'],
             'category_id' => ['required', 'integer', 'exists:categories,id'],
-            'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
             'icon' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],
             'image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'],
@@ -31,7 +33,7 @@ class StoreProductRequest extends FormRequest
             'discount_ends_at' => ['nullable', 'date', 'after_or_equal:discount_starts_at'],
             'photos' => ['nullable', 'array', 'max:10'],
             'photos.*' => ['required', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'],
-        ];
+        ], $this->localizedNameRules(true), $this->sharedDetailRules(true), $this->agriculturalDetailRules(true), $this->veterinaryDetailRules(true));
     }
 
     /**
@@ -39,12 +41,13 @@ class StoreProductRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
+        $this->normalizeProductDetailPayload();
+
         // Convert string '1'/'0' to boolean for is_active
         if ($this->has('is_active')) {
             $this->merge([
                 'is_active' => filter_var($this->input('is_active'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false,
             ]);
         }
-
     }
 }

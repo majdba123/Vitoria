@@ -34,9 +34,8 @@
 
                 <form id="edit-form" class="space-y-6" novalidate>
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <div class="sm:col-span-2">
-                            <x-form.input name="name" label="Product Name" placeholder="Enter product name" :required="true" />
-                        </div>
+                        <x-form.input name="name_ar" label="Arabic Name" placeholder="Enter Arabic product name" :required="true" />
+                        <x-form.input name="name_en" label="English Name" placeholder="Enter English product name" :required="true" />
                         <x-form.input name="price" label="Price ($)" type="number" placeholder="0.00" :required="true" />
                         <x-form.input name="discount_percentage" label="Discount (%)" type="number" placeholder="Optional" />
                         <x-form.input name="quantity" label="Quantity" type="number" placeholder="0" :required="true" />
@@ -93,6 +92,8 @@
                             <svg id="edit-spinner" class="hidden h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
                         </button>
                     </div>
+
+                    <x-products.detail-fields />
                 </form>
             </div>
         </div>
@@ -134,10 +135,15 @@ document.addEventListener('DOMContentLoaded', async function () {
     const productId = '{{ $productId }}';
     const form = document.getElementById('edit-form');
     const categorySelect = document.getElementById('category_id');
+    const agricultureSection = document.querySelector('[data-detail-section="agriculture"]');
+    const veterinarySection = document.querySelector('[data-detail-section="veterinary"]');
     const baseApiPath = '/api/admin';
     let existingPhotos = [];
     let selectedIds = new Set();
     let primaryPhotoId = null;
+
+    initArrayLists();
+    categorySelect?.addEventListener('change', syncProductTypeSections);
 
     function esc(t) {
         if (!t) return '';
@@ -275,15 +281,18 @@ document.addEventListener('DOMContentLoaded', async function () {
         await loadCategories();
         const res = await window.axios.get('/api/admin/products/' + productId);
         const p = res.data.data;
-        form.name.value = p.name || '';
+        form.name_ar.value = p.name_ar || '';
+        form.name_en.value = p.name_en || '';
         form.price.value = p.price || '';
         form.discount_percentage.value = p.discount_percentage || '';
         form.quantity.value = p.quantity || 0;
         categorySelect.value = p.category_id || '';
+        syncProductTypeSections();
         form.description.value = p.description || '';
         document.getElementById('is_active').checked = p.is_active;
         document.getElementById('discount_starts_at').value = toDateInput(p.discount_starts_at);
         document.getElementById('discount_ends_at').value = toDateInput(p.discount_ends_at);
+        populateDetailFields(p);
         existingPhotos = p.photos || [];
         const vendorName = p.vendor?.store_name || '-';
         const ownerName = p.vendor?.user?.name || '';
@@ -301,7 +310,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         toggleLoading(true);
         const formData = new FormData();
         formData.append('category_id', categorySelect.value);
-        formData.append('name', form.name.value.trim());
+        formData.append('name_ar', form.name_ar.value.trim());
+        formData.append('name_en', form.name_en.value.trim());
         formData.append('price', parseFloat(form.price.value));
         if (form.discount_percentage.value !== '') formData.append('discount_percentage', parseFloat(form.discount_percentage.value));
         formData.append('quantity', parseInt(form.quantity.value));
@@ -312,6 +322,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         formData.append('is_active', document.getElementById('is_active').checked ? '1' : '0');
         if (document.getElementById('discount_starts_at').value) formData.append('discount_starts_at', document.getElementById('discount_starts_at').value);
         if (document.getElementById('discount_ends_at').value) formData.append('discount_ends_at', document.getElementById('discount_ends_at').value);
+        appendDetailFields(formData);
         try {
             await window.axios.post('/api/admin/products/' + productId, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
@@ -342,8 +353,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (error.response?.status === 422) {
             const errors = error.response.data.errors || {};
             for (const [f, m] of Object.entries(errors)) {
-                const fieldName = f.replace(/\./g, '\\.');
-                const el = document.getElementById(f + '-error') || document.getElementById(fieldName + '-error');
+                const el = document.querySelector(`[data-error-key="${f}"]`) || document.getElementById(f + '-error');
                 if (el) {
                     el.textContent = Array.isArray(m) ? m[0] : m;
                     el.classList.remove('hidden');
@@ -360,7 +370,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const res = await window.axios.get(`${baseApiPath}/categories`);
             const categories = res.data.data || [];
             categorySelect.innerHTML = '<option value="">Select category...</option>' +
-                categories.map(category => `<option value="${category.id}">${esc(category.name)}</option>`).join('');
+                categories.map(category => `<option value="${category.id}" data-type="${esc(category.type || '')}">${esc(category.name)}</option>`).join('');
         } catch (error) {
             categorySelect.innerHTML = '<option value="">Failed to load categories</option>';
         }
@@ -376,6 +386,121 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (Number.isNaN(date.getTime())) return '';
         const pad = n => String(n).padStart(2, '0');
         return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    }
+
+    function appendDetailFields(formData) {
+        document.querySelectorAll('[data-array-list]').forEach((list) => {
+            const key = list.getAttribute('data-array-list');
+            const values = Array.from(list.querySelectorAll('[data-array-item-input]'))
+                .map((input) => input.value.trim())
+                .filter(Boolean);
+
+            values.forEach((value) => formData.append(`${key}[]`, value));
+        });
+
+        document.querySelectorAll('[data-request-key]').forEach((field) => {
+            if (field.disabled) {
+                return;
+            }
+
+            const key = field.getAttribute('data-request-key');
+            const value = field.value;
+
+            if (typeof value === 'string' && value.trim() !== '') {
+                formData.append(key, value.trim());
+            }
+        });
+    }
+
+    function populateDetailFields(product) {
+        const sections = {
+            shared_detail: product.shared_detail || {},
+            agricultural_detail: product.agricultural_detail || {},
+            veterinary_detail: product.veterinary_detail || {},
+        };
+
+        Object.entries(sections).forEach(([section, values]) => {
+            Object.entries(values).forEach(([key, value]) => {
+                const arrayList = document.querySelector(`[data-array-list="${section}[${key}]"]`);
+
+                if (arrayList && Array.isArray(value)) {
+                    setArrayListValues(arrayList, value);
+                    return;
+                }
+
+                const input = document.querySelector(`[data-request-key="${section}[${key}]"]`);
+
+                if (!input || value === null || value === undefined) {
+                    return;
+                }
+
+                input.value = typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
+            });
+        });
+    }
+
+    function setSectionState(section, visible) {
+        if (!section) {
+            return;
+        }
+
+        section.classList.toggle('hidden', !visible);
+        section.querySelectorAll('input, textarea, select').forEach((field) => {
+            field.disabled = !visible;
+        });
+    }
+
+    function syncProductTypeSections() {
+        const selectedOption = categorySelect?.selectedOptions?.[0];
+        const type = selectedOption?.dataset?.type || '';
+
+        setSectionState(agricultureSection, type === 'agriculture');
+        setSectionState(veterinarySection, type === 'veterinary');
+    }
+
+    function escapeHtml(value) {
+        const div = document.createElement('div');
+        div.textContent = value || '';
+        return div.innerHTML;
+    }
+
+    function initArrayLists() {
+        document.querySelectorAll('[data-array-list]').forEach((list) => {
+            if (list.dataset.initialized === 'true') {
+                return;
+            }
+
+            list.dataset.initialized = 'true';
+            list.querySelector('[data-array-add]')?.addEventListener('click', () => {
+                appendArrayItem(list, '');
+            });
+        });
+    }
+
+    function setArrayListValues(list, values) {
+        const items = list.querySelector('[data-array-items]');
+        items.innerHTML = '';
+
+        if (!Array.isArray(values) || values.length === 0) {
+            appendArrayItem(list, '');
+            return;
+        }
+
+        values.forEach((value) => appendArrayItem(list, typeof value === 'string' ? value : ''));
+    }
+
+    function appendArrayItem(list, value) {
+        const items = list.querySelector('[data-array-items]');
+        const placeholder = list.getAttribute('data-array-placeholder') || '';
+        const item = document.createElement('div');
+        item.className = 'flex items-center gap-2';
+        item.innerHTML = `
+            <input type="text" class="form-input" data-array-item-input placeholder="${escapeHtml(placeholder)}">
+            <button type="button" class="btn-danger btn-xs shrink-0" data-array-remove>Remove</button>
+        `;
+        item.querySelector('[data-array-item-input]').value = value || '';
+        item.querySelector('[data-array-remove]').addEventListener('click', () => item.remove());
+        items.appendChild(item);
     }
 });
 </script>

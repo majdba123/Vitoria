@@ -99,7 +99,12 @@
                         <p class="mt-1 text-sm font-semibold text-gray-900" id="product-category">—</p>
                     </div>
                     <div>
-                        <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Subcategory</p>
+                        <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Commercial Name</p>
+                        <p class="mt-1 text-sm font-semibold text-gray-900" id="product-commercial-name">—</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Product Type</p>
+                        <p class="mt-1 text-sm font-semibold text-gray-900" id="product-type">—</p>
                     </div>
                     <div>
                         <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Commission</p>
@@ -157,6 +162,27 @@
                 <div id="product-photos" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"></div>
             </div>
         </div>
+
+        <div class="card overflow-hidden border border-gray-200/70 shadow-sm">
+            <div class="card-body border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">Extended Parameters</h3>
+                <p class="mt-0.5 text-sm text-gray-500">Shared, agricultural, and veterinary parameter payloads.</p>
+            </div>
+            <div class="card-body grid gap-4 lg:grid-cols-3">
+                <div>
+                    <p class="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400">Shared Detail</p>
+                    <pre id="shared-detail-json" class="min-h-40 overflow-auto rounded-lg bg-gray-50 p-3 text-xs text-gray-700"></pre>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400">Agricultural Detail</p>
+                    <pre id="agricultural-detail-json" class="min-h-40 overflow-auto rounded-lg bg-gray-50 p-3 text-xs text-gray-700"></pre>
+                </div>
+                <div>
+                    <p class="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400">Veterinary Detail</p>
+                    <pre id="veterinary-detail-json" class="min-h-40 overflow-auto rounded-lg bg-gray-50 p-3 text-xs text-gray-700"></pre>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
@@ -171,9 +197,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         const p = res.data.data;
 
         document.getElementById('product-name').textContent = p.name || '—';
+        document.getElementById('product-commercial-name').textContent = p.shared_detail?.commercial_name || '—';
+        document.getElementById('product-type').textContent = p.product_type || '—';
         document.getElementById('product-price').textContent = '$' + parseFloat(p.price || 0).toFixed(2);
         document.getElementById('product-quantity').textContent = p.quantity || 0;
         document.getElementById('product-description').textContent = p.description || 'No description provided.';
+        document.getElementById('shared-detail-json').textContent = JSON.stringify(p.shared_detail || {}, null, 2);
+        document.getElementById('agricultural-detail-json').textContent = JSON.stringify(p.agricultural_detail || {}, null, 2);
+        document.getElementById('veterinary-detail-json').textContent = JSON.stringify(p.veterinary_detail || {}, null, 2);
         document.getElementById('product-created').textContent = p.created_at ? new Date(p.created_at).toLocaleDateString() : '—';
         document.getElementById('product-category').textContent = p.category?.name || 'Unassigned';
         document.getElementById('product-commission').textContent = p.category?.commission ? parseFloat(p.category.commission).toFixed(2) + '%' : '—';

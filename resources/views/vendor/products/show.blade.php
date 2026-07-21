@@ -10,11 +10,12 @@
         <p class="mt-3 text-sm text-gray-500">Loading product...</p>
     </div>
 
-    <div id="product-content" class="hidden card">
-        <div class="card-body space-y-4">
-            <h2 id="product-name" class="text-2xl font-bold text-gray-900"></h2>
-            <p id="product-category" class="text-sm text-gray-500"></p>
-            <p id="product-description" class="text-sm text-gray-600"></p>
+        <div id="product-content" class="hidden card">
+            <div class="card-body space-y-4">
+                <h2 id="product-name" class="text-2xl font-bold text-gray-900"></h2>
+                <p id="product-commercial-name" class="text-sm text-gray-500"></p>
+                <p id="product-category" class="text-sm text-gray-500"></p>
+                <p id="product-description" class="text-sm text-gray-600"></p>
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div class="rounded-xl bg-gray-50 p-4">
                     <p class="text-xs uppercase text-gray-400">Price</p>
@@ -32,6 +33,20 @@
                     <p class="text-xs uppercase text-gray-400">Rejection Reason</p>
                     <p id="product-rejection-reason" class="mt-1 text-sm font-semibold text-gray-900">-</p>
                 </div>
+                <div class="sm:col-span-2 lg:col-span-4 grid gap-4 lg:grid-cols-3">
+                    <div>
+                        <p class="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400">Shared Detail</p>
+                        <pre id="vendor-shared-detail-json" class="min-h-40 overflow-auto rounded-lg bg-gray-50 p-3 text-xs text-gray-700"></pre>
+                    </div>
+                    <div>
+                        <p class="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400">Agricultural Detail</p>
+                        <pre id="vendor-agricultural-detail-json" class="min-h-40 overflow-auto rounded-lg bg-gray-50 p-3 text-xs text-gray-700"></pre>
+                    </div>
+                    <div>
+                        <p class="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400">Veterinary Detail</p>
+                        <pre id="vendor-veterinary-detail-json" class="min-h-40 overflow-auto rounded-lg bg-gray-50 p-3 text-xs text-gray-700"></pre>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -45,12 +60,16 @@ document.addEventListener('DOMContentLoaded', async function () {
         const response = await window.axios.get('/api/vendor/products/{{ $productId }}');
         const p = response.data.data;
         document.getElementById('product-name').textContent = p.name || 'Product';
+        document.getElementById('product-commercial-name').textContent = p.shared_detail?.commercial_name || p.category?.type || '';
         document.getElementById('product-category').textContent = p.category?.name || 'Unassigned';
         document.getElementById('product-description').textContent = p.description || 'No description.';
         document.getElementById('product-price').textContent = `$${parseFloat(p.price || 0).toFixed(2)}`;
         document.getElementById('product-quantity').textContent = p.quantity || 0;
         document.getElementById('product-status').textContent = p.status ? p.status.charAt(0).toUpperCase() + p.status.slice(1) : (p.is_active ? 'Active' : 'Inactive');
         document.getElementById('product-rejection-reason').textContent = p.rejection_reason || 'No rejection reason.';
+        document.getElementById('vendor-shared-detail-json').textContent = JSON.stringify(p.shared_detail || {}, null, 2);
+        document.getElementById('vendor-agricultural-detail-json').textContent = JSON.stringify(p.agricultural_detail || {}, null, 2);
+        document.getElementById('vendor-veterinary-detail-json').textContent = JSON.stringify(p.veterinary_detail || {}, null, 2);
         document.getElementById('product-loading').classList.add('hidden');
         document.getElementById('product-content').classList.remove('hidden');
     } catch (error) {

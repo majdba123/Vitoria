@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
         empty.classList.add('hidden');
         gridW.classList.remove('hidden');
-        grid.innerHTML = products.map(p => `<div class="card"><div class="card-body"><h3 class="text-base font-semibold text-gray-900">${esc(p.name)}</h3><p class="mt-1 text-sm text-gray-500">${esc(p.category?.name || '')}</p><div class="mt-3 flex items-center justify-between"><span class="text-lg font-bold text-gray-900">$${parseFloat(p.price || 0).toFixed(2)}</span><span class="badge ${p.is_active ? 'badge-success' : 'badge-danger'}">${p.is_active ? 'Active' : 'Inactive'}</span></div><div class="mt-4 flex gap-2"><a href="/vendor/products/${p.id}" class="btn-secondary btn-xs flex-1">Show</a><a href="/vendor/products/${p.id}/edit" class="btn-primary btn-xs flex-1">Edit</a></div></div></div>`).join('');
+        grid.innerHTML = products.map(p => `<div class="card"><div class="card-body"><h3 class="text-base font-semibold text-gray-900">${esc(p.name)}</h3><p class="mt-1 text-sm text-gray-500">${esc(p.commercial_name || p.category?.name || '')}</p><div class="mt-3 flex items-center justify-between"><span class="text-lg font-bold text-gray-900">$${parseFloat(p.price || 0).toFixed(2)}</span><span class="badge ${p.is_active ? 'badge-success' : 'badge-danger'}">${p.is_active ? 'Active' : 'Inactive'}</span></div><div class="mt-4 flex gap-2"><a href="/vendor/products/${p.id}" class="btn-secondary btn-xs flex-1">Show</a><a href="/vendor/products/${p.id}/edit" class="btn-primary btn-xs flex-1">Edit</a></div></div></div>`).join('');
     }
 
     function renderPagination(meta) {

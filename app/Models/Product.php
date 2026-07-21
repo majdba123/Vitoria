@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\App;
 
 class Product extends Model
 {
@@ -34,6 +36,8 @@ class Product extends Model
         'vendor_id',
         'category_id',
         'name',
+        'name_ar',
+        'name_en',
         'description',
         'icon',
         'image',
@@ -114,6 +118,42 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function sharedDetail(): HasOne
+    {
+        return $this->hasOne(SharedProductDetail::class);
+    }
+
+    public function agriculturalDetail(): ?AgriculturalProductDetail
+    {
+        return $this->sharedDetail?->agriculturalDetail;
+    }
+
+    public function veterinaryDetail(): ?VeterinaryProductDetail
+    {
+        return $this->sharedDetail?->veterinaryDetail;
+    }
+
+    public function getLocalizedName(?string $locale = null): string
+    {
+        $resolvedLocale = $locale ?? App::getLocale();
+
+        if ($resolvedLocale === 'ar') {
+            return $this->name_ar ?: $this->name_en ?: $this->attributes['name'] ?? '';
+        }
+
+        return $this->name_en ?: $this->name_ar ?: $this->attributes['name'] ?? '';
+    }
+
+    public function getNameAttribute(?string $value): string
+    {
+        return $this->getLocalizedName();
+    }
+
+    public function setNameAttribute(?string $value): void
+    {
+        $this->attributes['name'] = $value;
     }
 
     public function scopeVisible(Builder $query): Builder

@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\UpdateProductRequest as AdminUpdateProductRequest;
 use App\Http\Requests\Employee\UpdateProductRequest as EmployeeUpdateProductRequest;
 use App\Http\Requests\Vendor\StoreProductRequest as VendorStoreProductRequest;
 use App\Http\Requests\Vendor\UpdateProductRequest as VendorUpdateProductRequest;
+use App\Http\Resources\ExternalProductResource;
 use App\Http\Resources\ProductListResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
@@ -102,13 +103,13 @@ class ProductController extends Controller
         $cacheKey = "pub_product:{$product->id}";
         try {
             $productData = Cache::tags(['products'])->remember($cacheKey, 1800, function () use ($product) {
-                $product->load(['photos', 'category']);
+                $product->load(['photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
                 $product->loadCount('reviews')->loadAvg('reviews', 'rating');
 
                 return new ProductResource($product);
             });
         } catch (\Exception $e) {
-            $product->load(['photos', 'category']);
+            $product->load(['photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
             $product->loadCount('reviews')->loadAvg('reviews', 'rating');
             $productData = new ProductResource($product);
         }
@@ -131,16 +132,16 @@ class ProductController extends Controller
             if ($product->vendor_id !== $vendor->id) {
                 abort(403, __('You do not own this product.'));
             }
-            $product->load(['photos', 'category']);
+            $product->load(['photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
         } else {
-            $product->load(['vendor.user', 'photos', 'category']);
+            $product->load(['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
         }
 
         if ($product->photos->isNotEmpty() && ! $product->photos->where('is_primary', true)->first()) {
             $firstPhoto = $product->photos->first();
             $firstPhoto->update(['is_primary' => true]);
             $product->refresh();
-            $product->load(['photos', 'category']);
+            $product->load(['photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
         }
 
         return response()->json([
@@ -151,6 +152,8 @@ class ProductController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        $this->normalizeDetailPayload($request);
+
         $user = $request->user();
         $vendor = null;
         $targetVendor = null;
@@ -241,6 +244,8 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product): JsonResponse
     {
+        $this->normalizeDetailPayload($request);
+
         $user = $request->user();
         $targetVendor = $product->vendor;
 
@@ -325,7 +330,9 @@ class ProductController extends Controller
             }
         }
 
-        $product->load($user && $user->type === User::TYPE_VENDOR ? ['photos', 'category'] : ['vendor.user', 'photos', 'category']);
+        $product->load($user && $user->type === User::TYPE_VENDOR
+            ? ['photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']
+            : ['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
 
         if ($product->discount_status === Product::DISCOUNT_STATUS_ACTIVE) {
             if (! $hadActiveDiscount) {
@@ -382,7 +389,7 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => __('Primary photo updated successfully.'),
-            'data' => new ProductResource($product->fresh(['vendor.user', 'photos', 'category'])),
+            'data' => new ProductResource($product->fresh(['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail'])),
         ]);
     }
 
@@ -426,5 +433,108 @@ class ProductController extends Controller
     protected function preferredCategoryType(Request $request): ?string
     {
         return $this->selectedProductTypeService->resolve($request);
+    }
+
+    protected function normalizeDetailPayload(Request $request): void
+    {
+        $fields = [
+            'shared_detail.aliases',
+            'shared_detail.barcodes',
+            'shared_detail.keywords',
+            'agricultural_detail.active_ingredients',
+            'agricultural_detail.target_crops',
+            'agricultural_detail.approved_uses',
+            'agricultural_detail.application_methods',
+            'agricultural_detail.application_rates',
+            'agricultural_detail.storage_conditions',
+            'agricultural_detail.warnings',
+            'agricultural_detail.ppe_requirements',
+            'agricultural_detail.first_aid',
+            'agricultural_detail.compatibility',
+            'agricultural_detail.target_pests',
+            'agricultural_detail.pre_harvest_intervals',
+            'agricultural_detail.environmental_hazards',
+            'agricultural_detail.micronutrients',
+            'agricultural_detail.growth_stages',
+            'agricultural_detail.fertilization_methods',
+            'agricultural_detail.seed_treatment',
+            'agricultural_detail.disease_resistance',
+            'agricultural_detail.planting_windows',
+            'agricultural_detail.seeding_rate',
+            'agricultural_detail.planting_depth',
+            'agricultural_detail.plant_spacing',
+            'agricultural_detail.expected_yield',
+            'veterinary_detail.active_ingredients',
+            'veterinary_detail.routes_of_administration',
+            'veterinary_detail.target_species',
+            'veterinary_detail.indications',
+            'veterinary_detail.dosage_instructions',
+            'veterinary_detail.contraindications',
+            'veterinary_detail.warnings',
+            'veterinary_detail.adverse_reactions',
+            'veterinary_detail.drug_interactions',
+            'veterinary_detail.storage_conditions',
+        ];
+
+        $payload = $request->all();
+
+        if (! empty($payload['name']) && empty($payload['name_ar']) && empty($payload['name_en'])) {
+            $payload['name_ar'] = $payload['name'];
+            $payload['name_en'] = $payload['name'];
+        }
+
+        foreach ($fields as $field) {
+            $value = data_get($payload, $field);
+
+            if (! is_string($value) || trim($value) === '') {
+                continue;
+            }
+
+            $decoded = json_decode($value, true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                data_set($payload, $field, $decoded);
+            }
+        }
+
+        $request->replace($payload);
+    }
+
+    public function externalIndex(Request $request): JsonResponse
+    {
+        $perPage = min(max((int) $request->input('per_page', 25), 1), 100);
+        $filters = $request->only(['category_id', 'category_type', 'status']);
+        $products = $this->productService->list(null, $perPage, $filters);
+
+        $products->getCollection()->load([
+            'category',
+            'sharedDetail.agriculturalDetail',
+            'sharedDetail.veterinaryDetail',
+        ]);
+
+        return response()->json([
+            'message' => __('Products retrieved successfully.'),
+            'data' => ExternalProductResource::collection($products->getCollection()),
+            'meta' => [
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'per_page' => $products->perPage(),
+                'total' => $products->total(),
+            ],
+        ]);
+    }
+
+    public function externalShow(Product $product): JsonResponse
+    {
+        $product->load([
+            'category',
+            'sharedDetail.agriculturalDetail',
+            'sharedDetail.veterinaryDetail',
+        ]);
+
+        return response()->json([
+            'message' => __('Product retrieved successfully.'),
+            'data' => new ExternalProductResource($product),
+        ]);
     }
 }
