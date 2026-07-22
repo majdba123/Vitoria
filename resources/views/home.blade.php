@@ -419,28 +419,32 @@
                         grid.innerHTML = allCategories.map((category, index) => {
                             const href = typedPageHref('/', { category_id: category.id });
                             const subcategories = Array.isArray(category.subcategories) ? category.subcategories : [];
-                            const preview = subcategories.slice(0, 3).map((subcategory) => {
-                                return `<span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-300">${esc(subcategoryLabel(subcategory))}</span>`;
+                            const preview = subcategories.slice(0, 4).map((subcategory) => {
+                                const subcategoryHref = typedPageHref('/', { category_id: category.id, subcategory_id: subcategory.id });
+
+                                return `<a href="${subcategoryHref}" class="inline-flex min-h-9 items-center rounded-full bg-gray-100 px-3 py-1.5 text-[11px] font-semibold text-gray-700 transition hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">${esc(subcategoryLabel(subcategory))}</a>`;
                             }).join('');
-                            const moreCount = Math.max(subcategories.length - 3, 0);
+                            const moreCount = Math.max(subcategories.length - 4, 0);
                             const moreLabel = moreCount
                                 ? (homeI18n.categoryHasSubcategoriesMore || '').replace(':count', String(moreCount))
                                 : '';
 
                             return `
-                                <a href="${href}" class="cat-card group flex h-full flex-col overflow-hidden rounded-[26px] border border-gray-200/80 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-brand-500/15 dark:border-gray-800 dark:bg-gray-900" style="opacity:0;transform:translateY(20px);transition:opacity .5s ease ${index * 0.06}s,transform .5s ease ${index * 0.06}s;">
+                                <article class="cat-card group flex h-full flex-col overflow-hidden rounded-[26px] border border-gray-200/80 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-2xl dark:border-gray-800 dark:bg-gray-900" style="opacity:0;transform:translateY(20px);transition:opacity .5s ease ${index * 0.06}s,transform .5s ease ${index * 0.06}s;">
                                     <div class="flex items-start gap-4 p-4 sm:p-5">
                                         <div class="shop-thumb-box h-16 w-16 shrink-0 ring-1 ring-brand-200/50 transition-transform duration-300 group-hover:scale-110 sm:h-20 sm:w-20 dark:ring-brand-500/20">
                                             ${categoryThumbInner(category)}
                                         </div>
                                         <div class="min-w-0 flex-1">
                                             <div class="flex flex-wrap items-center gap-2">
-                                                <h3 class="text-sm font-bold text-gray-900 group-hover:text-brand-600 sm:text-base dark:text-white dark:group-hover:text-brand-400">${esc(category.name)}</h3>
+                                                <a href="${href}" class="text-sm font-bold text-gray-900 transition hover:text-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20 sm:text-base dark:text-white dark:hover:text-brand-400">${esc(category.name)}</a>
                                                 ${categoryTypeLabel(category.type) ? `<span class="inline-flex rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-black text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">${esc(categoryTypeLabel(category.type))}</span>` : ''}
                                             </div>
                                             <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">${esc(categorySubcategorySummary(subcategories))}</p>
                                         </div>
-                                        <svg class="h-5 w-5 shrink-0 text-gray-300 transition-transform duration-200 group-hover:text-brand-500 rtl:group-hover:-translate-x-1 ltr:group-hover:translate-x-1 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                                        <a href="${href}" class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-gray-200 text-gray-400 transition hover:border-brand-300 hover:text-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:text-gray-500 dark:hover:border-brand-500 dark:hover:text-brand-300">
+                                            <svg class="h-5 w-5 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                                        </a>
                                     </div>
                                     ${subcategories.length ? `
                                         <div class="border-t border-gray-100 px-4 py-4 dark:border-gray-800 sm:px-5">
@@ -451,7 +455,13 @@
                                             </div>
                                         </div>
                                     ` : ''}
-                                </a>
+                                    <div class="border-t border-gray-100 px-4 py-4 dark:border-gray-800 sm:px-5">
+                                        <a href="${href}" class="inline-flex items-center gap-2 text-sm font-bold text-brand-600 transition hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:text-brand-400 dark:hover:text-brand-300">
+                                            ${esc(homeI18n.categoryOpen || '')}
+                                            <svg class="h-4 w-4 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                                        </a>
+                                    </div>
+                                </article>
                             `;
                         }).join('');
 
@@ -510,7 +520,9 @@
                     const unitPrice = product.has_active_discount ? product.discounted_price : product.price;
                     const isFav = window._favIds && window._favIds.has(product.id);
                     const reviewCount = parseInt(product.review_count, 10) || 0;
-                    const typeLabel = categoryTypeLabel(product.category?.type);
+                    const subcategoryName = subcategoryLabel(product.subcategory);
+                    const barcode = Array.isArray(product.barcodes) && product.barcodes.length ? product.barcodes[0] : '';
+                    const commercialName = product.commercial_name || '';
 
                     return `
                         <div class="product-card overflow-hidden rounded-2xl border border-gray-200/80 bg-white dark:border-gray-800 dark:bg-gray-900" style="opacity:0;transform:translateY(16px);transition:opacity .4s ease ${(startOpacity + index) * 0.05}s,transform .4s ease ${(startOpacity + index) * 0.05}s;">
@@ -524,8 +536,14 @@
                             </div>
                             <div class="p-3 sm:p-4">
                                 <a href="${typedPageHref('/products/' + product.id)}"><h3 class="line-clamp-2 text-sm font-bold leading-snug text-gray-900 hover:text-brand-600 dark:text-white dark:hover:text-brand-400">${esc(product.name)}</h3></a>
-                                ${typeLabel ? `<span class="mt-2 inline-flex rounded-lg bg-brand-50 px-2 py-1 text-[10px] font-black text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">${esc(typeLabel)}</span>` : ''}
-                                <div class="mt-1.5 flex items-center gap-1.5 text-amber-400">${starStars(product.average_rating)}<span class="text-[11px] text-gray-400 dark:text-gray-500">${reviewCount ? esc(revLabel(reviewCount)) : ''}</span></div>
+                                ${commercialName ? `<p class="mt-1.5 line-clamp-1 text-xs font-semibold text-gray-500 dark:text-gray-400">${esc(commercialName)}</p>` : ''}
+                                ${(subcategoryName || barcode) ? `
+                                    <div class="mt-3 flex flex-wrap gap-2">
+                                        ${subcategoryName ? `<span class="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-1 text-[10px] font-bold text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">${esc(subcategoryName)}</span>` : ''}
+                                        ${barcode ? `<span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-[10px] font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-300">${esc(barcode)}</span>` : ''}
+                                    </div>
+                                ` : ''}
+                                <div class="mt-2.5 flex items-center gap-1.5 text-amber-400">${starStars(product.average_rating)}<span class="text-[11px] text-gray-400 dark:text-gray-500">${reviewCount ? esc(revLabel(reviewCount)) : ''}</span></div>
                                 <div class="mt-2.5 flex items-baseline gap-1">
                                     <span class="text-lg font-black ${product.has_active_discount ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}">${parseFloat(product.has_active_discount ? product.discounted_price : product.price).toLocaleString()}</span><span class="text-[11px] text-gray-400">SYP</span>
                                     ${product.has_active_discount ? `<span class="text-[11px] text-gray-400 line-through">${parseFloat(product.price).toLocaleString()} SYP</span>` : ''}
