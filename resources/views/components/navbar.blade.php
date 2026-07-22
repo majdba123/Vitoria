@@ -1,21 +1,21 @@
 {{-- ═══ Navbar ═══ --}}
 <header class="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
-    <nav class="glass-panel mx-auto max-w-screen-2xl rounded-[30px] border border-white/50 px-3 shadow-[0_24px_55px_-34px_rgba(5,150,105,0.35)] dark:border-white/10">
-        <div class="flex h-[74px] items-center gap-3 px-2 sm:px-3 lg:px-4">
+    <nav class="glass-panel nav-shell mx-auto max-w-screen-2xl rounded-[28px] border border-white/50 px-3 shadow-[0_24px_55px_-34px_rgba(5,150,105,0.35)] dark:border-white/10">
+        <div class="flex min-h-[72px] items-center gap-2 px-1.5 py-2 sm:gap-3 sm:px-2 lg:px-4">
             {{-- Logo --}}
             <a href="{{ url('/') }}" class="flex shrink-0 items-center">
-                <div class="rounded-[22px] bg-white px-3 py-2 shadow-sm ring-1 ring-gray-200 dark:ring-white/10">
+                <div class="nav-logo-shell rounded-[20px] bg-white px-3 py-2 shadow-sm ring-1 ring-gray-200 dark:ring-white/10">
                     <img
                         src="{{ asset('images/vetora-logo.jpg') }}"
                         alt="Vetora"
-                        class="h-10 w-auto object-contain sm:h-12"
+                        class="h-9 w-auto object-contain sm:h-10"
                     >
                 </div>
             </a>
 
             {{-- Desktop Category Button --}}
             <div class="relative hidden lg:block" id="mega-wrap">
-                <button id="mega-btn" class="flex items-center gap-2 rounded-2xl border border-white/40 bg-white/70 px-4 py-2.5 text-sm font-extrabold text-gray-700 shadow-sm hover:-translate-y-0.5 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:border-brand-500 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">
+                <button id="mega-btn" class="nav-pill-btn flex items-center gap-2 rounded-2xl border border-white/40 bg-white/70 px-4 py-2.5 text-sm font-extrabold text-gray-700 shadow-sm hover:-translate-y-0.5 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:border-brand-500 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
                     {{ __('nav.categories') }}
                     <svg class="h-3.5 w-3.5 text-gray-400 transition-transform duration-200" id="mega-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
@@ -26,7 +26,7 @@
                             <div class="px-5 py-8 text-center text-xs text-gray-400">{{ __('nav.loading_categories') }}</div>
                         </div>
                         <div id="mega-subs" class="flex-1 p-5 overflow-y-auto">
-                            <p class="py-8 text-center text-sm text-gray-400 dark:text-gray-500">{{ __('nav.hover_category') }}</p>
+                            <p class="py-8 text-center text-sm text-gray-400 dark:text-gray-500">{{ __('nav.select_category_prompt') }}</p>
                         </div>
                     </div>
                 </div>
@@ -34,8 +34,8 @@
 
             {{-- Desktop Links --}}
             <div class="hidden items-center gap-1 md:flex">
-                <a href="{{ route('products.index') }}" class="rounded-2xl px-4 py-2.5 text-sm font-bold text-gray-600 transition-colors hover:bg-white/70 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white">{{ __('nav.products') }}</a>
-                <a href="{{ route('categories.index') }}" class="rounded-2xl px-4 py-2.5 text-sm font-bold text-gray-600 transition-colors hover:bg-white/70 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white">{{ __('nav.categories') }}</a>
+                <a href="{{ route('products.index') }}" class="nav-pill-btn rounded-2xl px-4 py-2.5 text-sm font-bold text-gray-600 transition-colors hover:bg-white/70 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white">{{ __('nav.products') }}</a>
+                <a href="{{ route('categories.index') }}" class="nav-pill-btn rounded-2xl px-4 py-2.5 text-sm font-bold text-gray-600 transition-colors hover:bg-white/70 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white">{{ __('nav.categories') }}</a>
             </div>
 
             <div class="flex-1"></div>
@@ -45,20 +45,20 @@
                 {{-- Language Switcher --}}
                 <x-language-switcher />
                 {{-- Dark Mode Toggle --}}
-                <button id="theme-toggle" class="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/40 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" title="{{ __('nav.toggle_theme_aria') }}">
+                <button id="theme-toggle" class="nav-action-btn relative flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/40 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" title="{{ __('nav.toggle_theme_aria') }}">
                     <svg id="icon-sun" class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
                     <svg id="icon-moon" class="h-5 w-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
                 </button>
 
                 {{-- Cart --}}
-                <button id="nav-cart" class="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/40 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" onclick="window.showCart && window.showCart()" title="{{ __('nav.cart') }}">
+                <button id="nav-cart" class="nav-action-btn relative flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/40 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" onclick="window.showCart && window.showCart()" title="{{ __('nav.cart') }}">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
                     <span id="cart-badge" class="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold leading-none text-white shadow hidden"></span>
                 </button>
 
                 {{-- Notifications (authenticated only). data-context: customer | vendor | admin for notification links. --}}
                 <div id="nav-notifications-wrap" class="relative hidden" data-context="customer">
-                    <button id="nav-notifications-btn" type="button" class="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/40 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" title="{{ __('nav.notifications_aria') }}">
+                    <button id="nav-notifications-btn" type="button" class="nav-action-btn relative flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/40 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" title="{{ __('nav.notifications_aria') }}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
                         <span id="notification-badge" class="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold leading-none text-white shadow hidden">0</span>
                     </button>
@@ -81,7 +81,7 @@
 
                 {{-- Guest Buttons (hidden when authenticated) --}}
                 <div id="nav-guest" class="hidden items-center gap-2 sm:flex">
-                    <a href="{{ route('login') }}" class="rounded-2xl px-4 py-2.5 text-sm font-bold text-gray-600 transition-colors hover:bg-white/70 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white">{{ __('nav.sign_in') }}</a>
+                    <a href="{{ route('login') }}" class="nav-pill-btn rounded-2xl px-4 py-2.5 text-sm font-bold text-gray-600 transition-colors hover:bg-white/70 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white">{{ __('nav.sign_in') }}</a>
                     <a href="{{ route('register') }}" class="btn-primary btn-sm">{{ __('nav.register') }}</a>
                 </div>
 
@@ -133,7 +133,7 @@
                 </div>
 
                 {{-- Mobile Hamburger --}}
-                <button id="mobile-btn" class="flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 hover:border-white/40 hover:bg-white/70 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 lg:hidden">
+                <button id="mobile-btn" class="nav-action-btn flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 hover:border-white/40 hover:bg-white/70 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 lg:hidden">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
                 </button>
             </div>
@@ -143,10 +143,10 @@
     {{-- Mobile Drawer --}}
     <div id="mobile-drawer" class="fixed inset-0 z-[60] hidden">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeMobileMenu()"></div>
-        <div class="absolute right-0 top-0 flex h-full w-80 max-w-[85vw] flex-col border-l border-white/40 bg-white/92 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/94 rtl:right-auto rtl:left-0 rtl:border-l-0 rtl:border-r" style="animation:slideInRight .25s cubic-bezier(.22,1,.36,1);">
+        <div class="mobile-drawer-shell absolute right-0 top-0 flex h-full w-80 max-w-[88vw] flex-col border-l border-white/40 bg-white/92 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/94 rtl:right-auto rtl:left-0 rtl:border-l-0 rtl:border-r" style="animation:slideInRight .25s cubic-bezier(.22,1,.36,1);">
             <div class="flex items-center justify-between border-b border-gray-200/70 px-5 py-4 dark:border-gray-800">
                 <span class="text-lg font-extrabold text-gray-900 dark:text-white">{{ __('nav.menu') }}</span>
-                <button onclick="closeMobileMenu()" class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                <button onclick="closeMobileMenu()" class="rounded-xl p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="{{ __('nav.close_menu') }}"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
             </div>
 
             {{-- Mobile Profile Section --}}
@@ -178,8 +178,11 @@
                     </a>
                 </div>
                 <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-800">
-                    <p class="mb-2 text-[11px] font-bold uppercase tracking-widest text-gray-400">{{ __('nav.categories') }}</p>
-                    <div id="mobile-cats" class="space-y-0.5"></div>
+                    <div class="mb-3 flex items-center justify-between gap-3">
+                        <p class="text-[11px] font-bold uppercase tracking-widest text-gray-400">{{ __('nav.categories') }}</p>
+                        <span class="text-[11px] text-gray-400 dark:text-gray-500">{{ __('nav.tap_category_prompt') }}</span>
+                    </div>
+                    <div id="mobile-cats" class="space-y-2"></div>
                 </div>
             </div>
 
@@ -235,6 +238,7 @@ window.szCategoryThumbHtml = categoryThumbHtml;
         'open_category' => __('nav.open_category'),
         'subcategories_count' => __('nav.subcategories_count'),
         'no_subcategories' => __('nav.no_subcategories'),
+        'select_category_prompt' => __('nav.select_category_prompt'),
         'failed_notifications' => __('common.failed_notifications'),
         'page' => __('nav.page'),
         'of' => __('nav.of'),
@@ -285,7 +289,15 @@ function initMegaMenu() {
     if (!btn) return;
     let open = false;
     const wrap = document.getElementById('mega-wrap');
-    const show = () => { open = true; panel.classList.remove('hidden'); chevron.style.transform = 'rotate(180deg)'; };
+    const show = () => {
+        open = true;
+        panel.classList.remove('hidden');
+        chevron.style.transform = 'rotate(180deg)';
+        const firstCategoryButton = document.querySelector('.mega-cat-btn');
+        if (!document.querySelector('.mega-cat-btn.is-active') && firstCategoryButton) {
+            firstCategoryButton.click();
+        }
+    };
     const hide = () => { open = false; panel.classList.add('hidden'); chevron.style.transform = ''; };
     btn.addEventListener('click', () => { open ? hide() : show(); });
     document.addEventListener('click', (e) => { if (open && !wrap.contains(e.target)) { hide(); } });
@@ -666,33 +678,113 @@ async function loadNavCategories() {
         mobileCats.innerHTML = cats.map(c => {
             const subCount = Array.isArray(c.subcategories) ? c.subcategories.length : 0;
             return `
-            <div>
-                <a href="/products?category_id=${c.id}" onclick="closeMobileMenu()" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
-                    <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+            <div class="mobile-category-card rounded-2xl border border-gray-200/80 bg-white/70 p-2 dark:border-gray-800 dark:bg-gray-950/60">
+                <button type="button" class="mobile-category-trigger flex w-full items-center gap-3 rounded-xl px-2 py-2.5 text-left text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800" data-mobile-cat="${c.id}">
+                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
                         ${categoryThumbHtml(c, true)}
                     </div>
                     <span class="min-w-0 flex-1">
                         <span class="block truncate">${_esc(c.name)}</span>
                         <span class="mt-0.5 block text-[11px] text-gray-400 dark:text-gray-500">${_esc((window.__navStrings.subcategories_count || '').replace(':count', String(subCount)))}</span>
                     </span>
-                    <svg class="h-3.5 w-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-                </a>
+                    <svg class="mobile-category-chevron h-4 w-4 shrink-0 text-gray-400 transition-transform duration-200 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                </button>
+                <div class="mobile-category-subs hidden px-2 pb-2" data-mobile-subs="${c.id}"></div>
             </div>`;
         }).join('');
+
+        mobileCats.querySelectorAll('[data-mobile-cat]').forEach(button => {
+            button.addEventListener('click', function () {
+                toggleMobileCategory(this.getAttribute('data-mobile-cat'));
+            });
+        });
+
+        const firstCategoryButton = document.querySelector('.mega-cat-btn');
+        if (firstCategoryButton) {
+            firstCategoryButton.click();
+        }
     } catch(e) {}
 }
 
+window.toggleMobileCategory = function (catId) {
+    const cats = window._navCats || [];
+    const category = cats.find(item => String(item.id) === String(catId));
+    if (!category) {
+        return;
+    }
+
+    const locale = document.documentElement.lang === 'ar' ? 'ar' : 'en';
+    const subLabel = function (subcategory) {
+        if (locale === 'ar') {
+            return subcategory.name_ar || subcategory.name_en || '';
+        }
+
+        return subcategory.name_en || subcategory.name_ar || '';
+    };
+    const allPanels = document.querySelectorAll('.mobile-category-subs');
+    const allButtons = document.querySelectorAll('[data-mobile-cat]');
+    const activePanel = document.querySelector('[data-mobile-subs="' + catId + '"]');
+    const activeButton = document.querySelector('[data-mobile-cat="' + catId + '"]');
+    const isOpen = activePanel && !activePanel.classList.contains('hidden');
+
+    allPanels.forEach(panel => {
+        panel.classList.add('hidden');
+        panel.innerHTML = '';
+    });
+    allButtons.forEach(button => {
+        button.classList.remove('bg-brand-50', 'text-brand-700', 'dark:bg-brand-500/10', 'dark:text-brand-300');
+        const chevron = button.querySelector('.mobile-category-chevron');
+        if (chevron) {
+            chevron.style.transform = '';
+        }
+    });
+
+    if (isOpen || !activePanel || !activeButton) {
+        return;
+    }
+
+    const subcategories = Array.isArray(category.subcategories) ? category.subcategories : [];
+    activeButton.classList.add('bg-brand-50', 'text-brand-700', 'dark:bg-brand-500/10', 'dark:text-brand-300');
+    const activeChevron = activeButton.querySelector('.mobile-category-chevron');
+    if (activeChevron) {
+        activeChevron.style.transform = 'rotate(90deg)';
+    }
+
+    activePanel.innerHTML = `
+        <a href="/products?category_id=${category.id}" onclick="closeMobileMenu()" class="mb-2 flex items-center justify-between rounded-xl border border-brand-200 bg-brand-50 px-3 py-2.5 text-sm font-bold text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
+            <span>${_esc(window.__navStrings.all_category_products || '')}</span>
+            <svg class="h-4 w-4 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+        </a>
+        ${subcategories.length ? `<div class="space-y-1.5">
+            ${subcategories.map(subcategory => `
+                <a href="/products?category_id=${category.id}&subcategory_id=${subcategory.id}" onclick="closeMobileMenu()" class="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-brand-300">
+                    <span class="truncate">${_esc(subLabel(subcategory))}</span>
+                    <svg class="h-3.5 w-3.5 shrink-0 text-gray-300 rtl:-scale-x-100 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                </a>
+            `).join('')}
+        </div>` : `<div class="rounded-xl border border-dashed border-gray-200 px-3 py-3 text-xs text-gray-400 dark:border-gray-700 dark:text-gray-500">${_esc(window.__navStrings.no_subcategories || '')}</div>`}
+    `;
+    activePanel.classList.remove('hidden');
+    activePanel.animate(
+        [
+            { opacity: 0, transform: 'translateY(-8px)' },
+            { opacity: 1, transform: 'translateY(0)' }
+        ],
+        { duration: 180, easing: 'ease-out' }
+    );
+};
+
 window.showNavSubs = function(catId, btn) {
     document.querySelectorAll('.mega-cat-btn').forEach(el => {
-        el.classList.remove('bg-white', 'dark:bg-gray-800', 'text-brand-700', 'dark:text-brand-300');
+        el.classList.remove('is-active', 'bg-white', 'dark:bg-gray-800', 'text-brand-700', 'dark:text-brand-300');
         el.style.boxShadow = '';
         const arrow = el.querySelector('svg:last-child');
         if (arrow) {
             arrow.style.transform = '';
         }
     });
-    btn.classList.add('bg-white', 'dark:bg-gray-800', 'text-brand-700', 'dark:text-brand-300');
-    btn.style.boxShadow = 'inset 3px 0 0 #f97316';
+    btn.classList.add('is-active', 'bg-white', 'dark:bg-gray-800', 'text-brand-700', 'dark:text-brand-300');
+    btn.style.boxShadow = 'inset 3px 0 0 #10b981';
     const activeArrow = btn.querySelector('svg:last-child');
     if (activeArrow) {
         activeArrow.style.transform = 'translateX(2px)';
@@ -715,7 +807,7 @@ window.showNavSubs = function(catId, btn) {
     const subGrid = subs.length
         ? `<div class="grid gap-2 sm:grid-cols-2">
             ${subs.map((subcategory) => `
-                <a href="/products?category_id=${cat.id}&subcategory_id=${subcategory.id}" class="group flex items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-brand-500 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">
+                <a href="/products?category_id=${cat.id}&subcategory_id=${subcategory.id}" class="mega-subcard group flex items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-brand-500 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">
                     <span class="truncate">${_esc(subLabel(subcategory))}</span>
                     <svg class="h-4 w-4 shrink-0 text-gray-300 transition group-hover:text-brand-500 rtl:-scale-x-100 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                 </a>

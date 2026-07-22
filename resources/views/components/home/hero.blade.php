@@ -1,61 +1,39 @@
-{{-- ═══ Hero Section ═══ --}}
-<section class="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-900 to-brand-900 dark:from-black dark:via-gray-950 dark:to-brand-950">
-    {{-- Animated Background --}}
-    <div class="absolute inset-0">
-        <div class="absolute -top-1/2 left-1/4 h-[600px] w-[600px] rounded-full bg-brand-500/10 blur-[120px]" style="animation:float 8s ease-in-out infinite;"></div>
-        <div class="absolute -bottom-1/2 right-1/4 h-[500px] w-[500px] rounded-full bg-brand-600/8 blur-[100px]" style="animation:float 10s ease-in-out infinite 2s;"></div>
-        <div class="absolute inset-0" style="background-image:radial-gradient(rgba(255,255,255,.03) 1px, transparent 1px); background-size:32px 32px;"></div>
-    </div>
-
-    <div class="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-36">
-        <div class="mx-auto max-w-3xl text-center">
-            {{-- Badge --}}
-            <div class="anim-down mb-6 inline-flex items-center gap-2.5 rounded-full border border-brand-500/20 bg-brand-500/10 px-5 py-2 backdrop-blur-sm">
-                <span class="relative flex h-2 w-2"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-75"></span><span class="relative inline-flex h-2 w-2 rounded-full bg-brand-500"></span></span>
-                <span class="text-xs font-semibold tracking-wide text-brand-300">{{ __('home.hero_badge') }}</span>
-            </div>
-
-            {{-- Headline --}}
-            <h1 class="anim-up text-4xl font-black leading-[1.1] tracking-tight text-white sm:text-6xl lg:text-7xl" style="animation-delay:.15s;">
-                {{ __('home.hero_title_line_one') }}<br>
-                <span class="bg-gradient-to-r from-brand-400 via-brand-500 to-yellow-400 bg-clip-text text-transparent gradient-animate">{{ __('home.hero_title_highlight') }}</span>
-            </h1>
-
-            {{-- Subtitle --}}
-            <p class="anim-up mx-auto mt-6 max-w-xl text-base leading-relaxed text-gray-400 sm:text-lg" style="animation-delay:.25s;">
-                {{ __('home.hero_subtitle') }}
-            </p>
-
-            {{-- CTAs --}}
-            <div class="anim-up mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row" style="animation-delay:.35s;">
-                <a href="#products" class="group inline-flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 px-8 py-4 text-sm font-bold text-white shadow-xl shadow-brand-500/25 transition-all duration-300 hover:from-brand-600 hover:to-brand-700 hover:shadow-2xl hover:shadow-brand-500/30 active:scale-[.97]">
-                    {{ __('home.hero_primary_cta') }}
-                    <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                </a>
-                <a href="#categories" class="inline-flex items-center gap-2 rounded-2xl border border-gray-700 bg-white/5 px-8 py-4 text-sm font-bold text-gray-300 backdrop-blur-sm transition-all duration-300 hover:border-gray-500 hover:bg-white/10 hover:text-white">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6z"/></svg>
-                    {{ __('home.hero_secondary_cta') }}
-                </a>
-            </div>
-
-            {{-- Stats --}}
-            <div class="anim-up mx-auto mt-16 grid max-w-lg grid-cols-3 gap-8 sm:max-w-xl" style="animation-delay:.45s;">
-                <div class="text-center">
-                    <div class="text-3xl font-black text-white sm:text-4xl" id="stat-products">500+</div>
-                    <div class="mt-1 text-xs font-medium tracking-wide text-gray-500">{{ __('home.hero_stats_products') }}</div>
+<section class="page-shell pb-4 pt-2 sm:pb-5 sm:pt-3">
+    <div class="workspace-hero overflow-hidden">
+        <div class="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(18rem,0.75fr)] lg:items-center">
+            <div class="min-w-0">
+                <span class="eyebrow">{{ __('home.hero_badge') }}</span>
+                <h1 class="mt-5 max-w-3xl text-4xl font-black leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+                    {{ __('home.hero_title_line_one') }}
+                    <span class="block text-brand-200">{{ __('home.hero_title_highlight') }}</span>
+                </h1>
+                <p class="mt-4 max-w-2xl text-sm leading-7 text-white/78 sm:text-base">
+                    {{ __('home.hero_subtitle') }}
+                </p>
+                <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+                    <a href="#products" class="btn-primary">
+                        {{ __('home.hero_primary_cta') }}
+                        <svg class="h-4 w-4 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                    </a>
+                    <a href="#categories" class="btn-secondary border-white/20 bg-white/10 text-white hover:bg-white/15 hover:text-white dark:border-white/15 dark:bg-white/10 dark:text-white">
+                        {{ __('home.hero_secondary_cta') }}
+                    </a>
                 </div>
-                <div class="text-center">
-                    <div class="text-3xl font-black text-white sm:text-4xl">24h</div>
-                    <div class="mt-1 text-xs font-medium tracking-wide text-gray-500">{{ __('home.hero_stats_dispatch') }}</div>
+            </div>
+            <div class="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+                <div class="rounded-[24px] border border-white/10 bg-white/8 p-4 backdrop-blur-sm">
+                    <p class="text-[11px] font-black uppercase tracking-[0.22em] text-white/55">{{ __('home.hero_stats_products') }}</p>
+                    <p class="mt-2 text-2xl font-black text-white">500+</p>
                 </div>
-                <div class="text-center">
-                    <div class="text-3xl font-black text-white sm:text-4xl">24/7</div>
-                    <div class="mt-1 text-xs font-medium tracking-wide text-gray-500">{{ __('home.hero_stats_support') }}</div>
+                <div class="rounded-[24px] border border-white/10 bg-white/8 p-4 backdrop-blur-sm">
+                    <p class="text-[11px] font-black uppercase tracking-[0.22em] text-white/55">{{ __('home.hero_stats_dispatch') }}</p>
+                    <p class="mt-2 text-2xl font-black text-white">24h</p>
+                </div>
+                <div class="rounded-[24px] border border-white/10 bg-white/8 p-4 backdrop-blur-sm">
+                    <p class="text-[11px] font-black uppercase tracking-[0.22em] text-white/55">{{ __('home.hero_stats_support') }}</p>
+                    <p class="mt-2 text-2xl font-black text-white">24/7</p>
                 </div>
             </div>
         </div>
     </div>
-
-    {{-- Gradient separator --}}
-    <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white dark:from-gray-950"></div>
 </section>

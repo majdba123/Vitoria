@@ -590,6 +590,10 @@
         border-color: rgba(16, 185, 129, 0.24);
     }
 
+    .cat-card.ring-2 {
+        box-shadow: 0 20px 42px -28px rgba(16, 185, 129, 0.32);
+    }
+
     .shop-card-media {
         position: relative;
         aspect-ratio: 4 / 5;
@@ -767,6 +771,43 @@
         @apply mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8;
     }
 
+    .nav-shell {
+        backdrop-filter: blur(18px);
+    }
+
+    .nav-logo-shell,
+    .nav-pill-btn,
+    .nav-action-btn,
+    .mobile-drawer-shell,
+    .shop-nav-chip,
+    .mega-subcard,
+    .mobile-category-card {
+        transition:
+            transform 180ms ease,
+            box-shadow 180ms ease,
+            border-color 180ms ease,
+            background-color 180ms ease,
+            color 180ms ease;
+    }
+
+    .nav-pill-btn:hover,
+    .nav-action-btn:hover,
+    .mega-subcard:hover {
+        transform: translateY(-1px);
+    }
+
+    .nav-action-btn {
+        box-shadow: 0 10px 24px -20px rgba(15, 23, 42, 0.22);
+    }
+
+    .nav-logo-shell {
+        box-shadow: 0 16px 30px -24px rgba(15, 23, 42, 0.22);
+    }
+
+    .mobile-drawer-shell {
+        box-shadow: 0 28px 60px -30px rgba(15, 23, 42, 0.42);
+    }
+
     .page-header {
         @apply mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between;
     }
@@ -804,6 +845,10 @@
 
     .responsive-shop-grid {
         @apply grid grid-cols-1 gap-4 min-[430px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5;
+    }
+
+    .shop-nav-chip.is-active {
+        box-shadow: 0 14px 28px -20px rgba(16, 185, 129, 0.4);
     }
 
     .content-stack {
@@ -862,6 +907,12 @@
         background: rgba(18, 28, 30, 0.98);
         border-color: rgba(100, 116, 139, 0.22);
         box-shadow: 0 22px 48px -24px rgba(0, 0, 0, 0.46);
+    }
+
+    html[dir='rtl'] .mobile-drawer-shell,
+    html[dir='rtl'] .dropdown-panel,
+    html[dir='rtl'] .modal-shell {
+        text-align: start;
     }
 
     .toast-shell {
