@@ -20,9 +20,9 @@
                     {{ __('nav.categories') }}
                     <svg class="h-3.5 w-3.5 text-gray-400 transition-transform duration-200" id="mega-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
                 </button>
-                <div id="mega-panel" class="dropdown-panel absolute left-0 top-full z-50 mt-3 hidden w-[780px]" style="animation:fadeIn .15s ease-out;">
+                <div id="mega-panel" class="dropdown-panel absolute top-full z-50 mt-3 hidden w-[780px] ltr:left-0 rtl:right-0" style="animation:fadeIn .15s ease-out;">
                     <div class="flex" style="min-height:340px;">
-                        <div id="mega-cats" class="w-64 shrink-0 overflow-y-auto border-r border-gray-100/80 bg-gray-50/70 py-2 dark:border-gray-800 dark:bg-gray-900/40">
+                        <div id="mega-cats" class="w-64 shrink-0 overflow-y-auto border-e border-gray-100/80 bg-gray-50/70 py-2 dark:border-gray-800 dark:bg-gray-900/40">
                             <div class="px-5 py-8 text-center text-xs text-gray-400">{{ __('nav.loading_categories') }}</div>
                         </div>
                         <div id="mega-subs" class="flex-1 p-5 overflow-y-auto">
@@ -62,7 +62,7 @@
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
                         <span id="notification-badge" class="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold leading-none text-white shadow hidden">0</span>
                     </button>
-                    <div id="notification-dropdown" class="dropdown-panel absolute right-0 top-full z-50 mt-2 hidden flex max-h-[min(32rem,75vh)] w-[min(420px,95vw)] flex-col" style="animation:fadeIn .15s ease-out;">
+                    <div id="notification-dropdown" class="dropdown-panel absolute top-full z-50 mt-2 hidden flex max-h-[min(32rem,75vh)] w-[min(420px,95vw)] flex-col ltr:right-0 rtl:left-0" style="animation:fadeIn .15s ease-out;">
                         <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800 shrink-0">
                             <span class="text-[13px] font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('nav.notifications') }}</span>
                             <button type="button" id="notification-mark-all-read" class="text-[11px] font-medium uppercase tracking-wider text-brand-600 hover:text-brand-700 dark:text-brand-400">{{ __('nav.mark_all_read') }}</button>
@@ -91,7 +91,7 @@
                         <div id="profile-avatar" class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-400 to-brand-600 ring-2 ring-white dark:ring-gray-800">
                             <span id="profile-initial" class="text-sm font-bold text-white">?</span>
                         </div>
-                        <div class="hidden sm:block text-left">
+                        <div class="hidden sm:block text-start">
                             <p id="profile-name" class="text-sm font-bold leading-tight text-gray-900 dark:text-white"></p>
                             <p id="profile-role" class="text-[10px] font-medium text-gray-400 dark:text-gray-500">{{ __('nav.customer') }}</p>
                         </div>
@@ -99,7 +99,7 @@
                     </button>
 
                     {{-- Dropdown --}}
-                    <div id="profile-dropdown" class="dropdown-panel absolute right-0 top-full z-50 mt-2 hidden w-72" style="animation:fadeIn .12s ease-out;">
+                    <div id="profile-dropdown" class="dropdown-panel absolute top-full z-50 mt-2 hidden w-72 ltr:right-0 rtl:left-0" style="animation:fadeIn .12s ease-out;">
                         {{-- User Info Header --}}
                         <div class="border-b border-gray-100 bg-gray-50/80 px-5 py-4 dark:border-gray-800 dark:bg-gray-800/50">
                             <div class="flex items-center gap-3">

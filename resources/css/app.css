@@ -672,7 +672,7 @@
     .dashboard-sidebar-link:hover {
         @apply text-white;
         background: rgba(255, 255, 255, 0.08);
-        transform: translateX(2px);
+        transform: translateX(var(--sidebar-link-shift, 2px));
     }
 
     .dashboard-sidebar-link.is-active {
@@ -698,6 +698,16 @@
         background: linear-gradient(180deg, rgba(252, 254, 252, 0.88), rgba(252, 254, 252, 0.72));
         border-bottom: 1px solid rgba(148, 163, 184, 0.14);
         backdrop-filter: blur(18px);
+    }
+
+    html[dir='rtl'] {
+        --sidebar-link-shift: -2px;
+    }
+
+    html[dir='rtl'] .dashboard-sidebar {
+        border-inline-end: 0;
+        border-inline-start: 1px solid rgba(148, 163, 184, 0.12);
+        box-shadow: -30px 0 80px -45px rgba(5, 150, 105, 0.55);
     }
 
     .dark .dashboard-topbar {
@@ -741,6 +751,12 @@
 
     .workspace-shell {
         @apply mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8;
+    }
+
+    @media (max-width: 640px) {
+        .workspace-shell {
+            @apply px-3;
+        }
     }
 
     .workspace-section {

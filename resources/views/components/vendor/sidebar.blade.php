@@ -4,13 +4,13 @@
     $sidebarEdgeClass = $isRtl ? 'right-0 translate-x-full lg:translate-x-0' : 'left-0 -translate-x-full lg:translate-x-0';
     $closeMarginClass = $isRtl ? 'mr-auto' : 'ml-auto';
     $links = [
-        ['group' => 'Overview', 'route' => 'vendor.dashboard', 'label' => 'Dashboard', 'icon' => 'fa-solid fa-grid-2'],
-        ['group' => 'My Store', 'route' => 'vendor.products.index', 'label' => 'Products', 'icon' => 'fa-solid fa-box-open'],
-        ['group' => 'My Store', 'route' => 'vendor.discounts.index', 'label' => 'Discounts', 'icon' => 'fa-solid fa-badge-percent'],
-        ['group' => 'My Store', 'route' => 'vendor.orders.index', 'label' => 'Orders', 'icon' => 'fa-solid fa-bag-shopping'],
-        ['group' => 'My Store', 'route' => 'vendor.commission', 'label' => 'Commission', 'icon' => 'fa-solid fa-chart-line'],
-        ['group' => 'My Store', 'route' => 'vendor.notifications.index', 'label' => 'Notifications', 'icon' => 'fa-regular fa-bell'],
-        ['group' => 'Account', 'route' => 'vendor.profile', 'label' => 'Profile', 'icon' => 'fa-regular fa-user'],
+        ['group' => __('vendor.group_overview'), 'route' => 'vendor.dashboard', 'label' => __('vendor.dashboard'), 'icon' => 'fa-solid fa-grid-2'],
+        ['group' => __('vendor.group_store'), 'route' => 'vendor.products.index', 'label' => __('vendor.products'), 'icon' => 'fa-solid fa-box-open'],
+        ['group' => __('vendor.group_store'), 'route' => 'vendor.discounts.index', 'label' => __('vendor.discounts'), 'icon' => 'fa-solid fa-badge-percent'],
+        ['group' => __('vendor.group_store'), 'route' => 'vendor.orders.index', 'label' => __('vendor.orders'), 'icon' => 'fa-solid fa-bag-shopping'],
+        ['group' => __('vendor.group_store'), 'route' => 'vendor.commission', 'label' => __('vendor.commission'), 'icon' => 'fa-solid fa-chart-line'],
+        ['group' => __('vendor.group_store'), 'route' => 'vendor.notifications.index', 'label' => __('vendor.notifications'), 'icon' => 'fa-regular fa-bell'],
+        ['group' => __('vendor.group_account'), 'route' => 'vendor.profile', 'label' => __('common.profile'), 'icon' => 'fa-regular fa-user'],
     ];
     $groupedLinks = collect($links)->groupBy('group');
 @endphp
@@ -23,7 +23,7 @@
             </span>
             <span>
                 <span class="block font-display text-xl font-extrabold">Vetora</span>
-                <span class="mt-1 block text-[11px] font-extrabold uppercase tracking-[0.28em] text-emerald-200">Vendor</span>
+                <span class="mt-1 block text-[11px] font-extrabold uppercase tracking-[0.28em] text-emerald-200">{{ __('vendor.badge') }}</span>
             </span>
         </a>
         <button onclick="closeSidebar()" class="{{ $closeMarginClass }} rounded-2xl p-2 text-gray-400 hover:bg-white/5 hover:text-white lg:hidden">
@@ -32,9 +32,9 @@
     </div>
 
     <div class="px-6 pt-5">
-        <div class="rounded-[24px] border border-white/8 bg-white/5 p-4 text-white/80">
-            <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-white/45">Store cockpit</p>
-            <p class="mt-2 text-sm leading-6 text-white/75">Everything you need to manage products, monitor sales, and respond to customers without leaving the workspace.</p>
+        <div class="rounded-[22px] border border-white/8 bg-white/5 p-4 text-white/80">
+            <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-white/45">{{ __('vendor.workspace') }}</p>
+            <p class="mt-2 text-sm leading-6 text-white/75">{{ __('vendor.workspace_summary') }}</p>
         </div>
     </div>
 
@@ -56,7 +56,7 @@
         @endforeach
 
         <div class="mb-6">
-            <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-white/35">Categories</p>
+            <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-white/35">{{ __('vendor.categories') }}</p>
             <div id="sidebar-categories" class="space-y-1">
                 <div class="rounded-2xl border border-white/8 bg-white/5 px-3 py-3">
                     <div class="h-4 w-24 animate-pulse rounded bg-white/10"></div>
@@ -66,7 +66,7 @@
     </nav>
 
     <div class="border-t border-white/8 px-6 py-4 text-[11px] text-white/40">
-        <p>Seller workspace</p>
+        <p>{{ __('vendor.workspace_footer') }}</p>
         <p class="mt-1">{{ date('Y') }}</p>
     </div>
 </aside>

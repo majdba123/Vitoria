@@ -51,7 +51,7 @@
 
                     <div class="min-w-0 flex-1">
                         <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-brand-600 dark:text-brand-300">{{ __('admin.badge') }}</p>
-                        <h1 class="mt-1 truncate text-lg font-black text-gray-900 dark:text-white sm:text-xl">@yield('page-title', 'Dashboard')</h1>
+                        <h1 class="mt-1 truncate text-lg font-black text-gray-900 dark:text-white sm:text-xl">@yield('page-title', __('admin.dashboard'))</h1>
                     </div>
 
                     <div class="flex items-center gap-x-3">

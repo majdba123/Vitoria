@@ -42,7 +42,7 @@
         <div class="{{ $vendorMainPaddingClass }}">
             <header class="dashboard-topbar sticky top-0 z-30">
                 <div class="workspace-shell flex h-[78px] items-center gap-x-4">
-                    <button type="button" id="sidebar-toggle" class="-m-2.5 flex h-10 w-10 items-center justify-center rounded-2xl text-gray-500 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200 lg:hidden" aria-label="Open sidebar">
+                    <button type="button" id="sidebar-toggle" class="-m-2.5 flex h-10 w-10 items-center justify-center rounded-2xl text-gray-500 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200 lg:hidden" aria-label="{{ __('vendor.open_sidebar') }}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
                     </button>
 
@@ -54,12 +54,14 @@
                     </div>
 
                     <div class="flex items-center gap-x-3">
-                        <a href="{{ route('home') }}" class="flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/50 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" title="Go to website">
+                        <a href="{{ route('home') }}" class="flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/50 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" title="{{ __('nav.home') }}">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
                         </a>
 
+                        <x-language-switcher variant="compact" />
+
                         <div id="vendor-notif-wrap" class="relative" data-context="vendor">
-                            <button type="button" id="vendor-notif-btn" class="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/50 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" title="Notifications">
+                            <button type="button" id="vendor-notif-btn" class="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/50 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" title="{{ __('vendor.notifications') }}">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
                                 <span id="vendor-notif-badge" class="absolute -right-0.5 -top-0.5 hidden min-w-[16px] rounded-full bg-amber-500 px-1 text-[10px] font-bold leading-[16px] text-white">0</span>
                             </button>
@@ -83,7 +85,7 @@
                             </div>
                         </div>
 
-                        <button onclick="toggleVendorTheme()" class="flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/50 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" title="Toggle theme">
+                        <button onclick="toggleVendorTheme()" class="flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/50 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" title="{{ __('vendor.toggle_theme') }}">
                             <svg class="hidden h-4 w-4 dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
                             <svg class="block h-4 w-4 dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
                         </button>

@@ -11,7 +11,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Employee - Vetora')</title>
+    <title>@yield('title', __('employee.workspace') . ' - Vetora')</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|sora:600,700,800|ibm-plex-sans-arabic:400,500,600,700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -42,15 +42,15 @@
         <div class="{{ $mainPaddingClass }}">
             <header class="dashboard-topbar sticky top-0 z-30">
                 <div class="workspace-shell flex h-[78px] items-center gap-x-4">
-                    <button type="button" id="sidebar-toggle" class="-m-2.5 flex h-10 w-10 items-center justify-center rounded-2xl text-gray-500 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200 lg:hidden" aria-label="Open sidebar">
+                    <button type="button" id="sidebar-toggle" class="-m-2.5 flex h-10 w-10 items-center justify-center rounded-2xl text-gray-500 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200 lg:hidden" aria-label="{{ __('employee.open_sidebar') }}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
                     </button>
 
                     <div class="h-5 w-px bg-gray-200 dark:bg-gray-700 lg:hidden" aria-hidden="true"></div>
 
                     <div class="min-w-0 flex-1">
-                        <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-cyan-600 dark:text-cyan-300">Employee workspace</p>
-                        <h1 class="mt-1 truncate text-lg font-black text-gray-900 dark:text-white sm:text-xl">@yield('page-title', 'Dashboard')</h1>
+                        <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-cyan-600 dark:text-cyan-300">{{ __('employee.workspace_label') }}</p>
+                        <h1 class="mt-1 truncate text-lg font-black text-gray-900 dark:text-white sm:text-xl">@yield('page-title', __('employee.dashboard'))</h1>
                     </div>
 
                     <div class="flex items-center gap-x-3">
