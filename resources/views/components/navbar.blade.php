@@ -230,6 +230,11 @@ window.szCategoryThumbHtml = categoryThumbHtml;
         'loading' => __('common.loading'),
         'no_categories' => __('common.no_categories'),
         'view_all' => __('common.view_all'),
+        'browse_subcategories' => __('nav.browse_subcategories'),
+        'all_category_products' => __('nav.all_category_products'),
+        'open_category' => __('nav.open_category'),
+        'subcategories_count' => __('nav.subcategories_count'),
+        'no_subcategories' => __('nav.no_subcategories'),
         'failed_notifications' => __('common.failed_notifications'),
         'page' => __('nav.page'),
         'of' => __('nav.of'),
@@ -279,8 +284,13 @@ function initMegaMenu() {
     const btn = document.getElementById('mega-btn'), panel = document.getElementById('mega-panel'), chevron = document.getElementById('mega-chevron');
     if (!btn) return;
     let open = false;
-    btn.addEventListener('click', () => { open = !open; panel.classList.toggle('hidden', !open); chevron.style.transform = open ? 'rotate(180deg)' : ''; });
-    document.addEventListener('click', (e) => { if (open && !document.getElementById('mega-wrap').contains(e.target)) { open = false; panel.classList.add('hidden'); chevron.style.transform = ''; } });
+    const wrap = document.getElementById('mega-wrap');
+    const show = () => { open = true; panel.classList.remove('hidden'); chevron.style.transform = 'rotate(180deg)'; };
+    const hide = () => { open = false; panel.classList.add('hidden'); chevron.style.transform = ''; };
+    btn.addEventListener('click', () => { open ? hide() : show(); });
+    wrap?.addEventListener('mouseenter', show);
+    wrap?.addEventListener('mouseleave', hide);
+    document.addEventListener('click', (e) => { if (open && !wrap.contains(e.target)) { hide(); } });
 }
 
 function initThemeToggle() {
@@ -645,7 +655,7 @@ async function loadNavCategories() {
         }
 
         list.innerHTML = cats.map(c => `
-            <a href="/categories/${c.id}" data-cat-id="${c.id}" class="mega-cat-btn group flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-all hover:bg-white dark:hover:bg-gray-800"
+            <a href="/products?category_id=${c.id}" data-cat-id="${c.id}" class="mega-cat-btn group flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-all hover:bg-white dark:hover:bg-gray-800"
                     onmouseenter="showNavSubs(${c.id}, this)">
                 <div class="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 ring-1 ring-gray-200/50 dark:bg-gray-800 dark:ring-gray-700">
                     ${categoryThumbHtml(c, false)}
@@ -656,13 +666,17 @@ async function loadNavCategories() {
         `).join('');
 
         mobileCats.innerHTML = cats.map(c => {
+            const subCount = Array.isArray(c.subcategories) ? c.subcategories.length : 0;
             return `
             <div>
-                <a href="/categories/${c.id}" onclick="closeMobileMenu()" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
+                <a href="/products?category_id=${c.id}" onclick="closeMobileMenu()" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
                     <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
                         ${categoryThumbHtml(c, true)}
                     </div>
-                    <span class="flex-1">${_esc(c.name)}</span>
+                    <span class="min-w-0 flex-1">
+                        <span class="block truncate">${_esc(c.name)}</span>
+                        <span class="mt-0.5 block text-[11px] text-gray-400 dark:text-gray-500">${_esc((window.__navStrings.subcategories_count || '').replace(':count', String(subCount)))}</span>
+                    </span>
                     <svg class="h-3.5 w-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                 </a>
             </div>`;
@@ -680,14 +694,40 @@ window.showNavSubs = function(catId, btn) {
         panel.innerHTML = '<div class="flex h-full items-center justify-center"><p class="text-sm text-gray-400">' + _esc(window.__navStrings.view_all || 'View All') + '</p></div>';
         return;
     }
+    const subs = Array.isArray(cat.subcategories) ? cat.subcategories : [];
+    const subLabel = function (subcategory) {
+        const locale = document.documentElement.lang === 'ar' ? 'ar' : 'en';
+        if (locale === 'ar') {
+            return subcategory.name_ar || subcategory.name_en || '';
+        }
+
+        return subcategory.name_en || subcategory.name_ar || '';
+    };
+    const subGrid = subs.length
+        ? `<div class="grid gap-2 sm:grid-cols-2">
+            ${subs.map((subcategory) => `
+                <a href="/products?category_id=${cat.id}&subcategory_id=${subcategory.id}" class="group flex items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-brand-500 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">
+                    <span class="truncate">${_esc(subLabel(subcategory))}</span>
+                    <svg class="h-4 w-4 shrink-0 text-gray-300 transition group-hover:text-brand-500 rtl:-scale-x-100 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+                </a>
+            `).join('')}
+        </div>`
+        : `<div class="rounded-2xl border border-dashed border-gray-200 px-4 py-6 text-sm text-gray-400 dark:border-gray-700 dark:text-gray-500">${_esc(window.__navStrings.no_subcategories || '')}</div>`;
     panel.innerHTML = `
-        <div class="mb-4 flex items-center justify-between">
-            <h3 class="text-base font-bold text-gray-900 dark:text-white">${_esc(cat.name)}</h3>
-            <a href="/categories/${cat.id}" class="text-xs font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400">${window.__navStrings && window.__navStrings.view_all ? window.__navStrings.view_all : 'View All'} &rarr;</a>
+        <div class="mb-5 flex items-center justify-between gap-3">
+            <div>
+                <h3 class="text-base font-bold text-gray-900 dark:text-white">${_esc(cat.name)}</h3>
+                <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">${_esc((window.__navStrings.subcategories_count || '').replace(':count', String(subs.length)))}</p>
+            </div>
+            <a href="/products?category_id=${cat.id}" class="inline-flex items-center gap-1 text-xs font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400">
+                ${_esc(window.__navStrings.all_category_products || 'All category products')}
+                <svg class="h-3.5 w-3.5 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+            </a>
         </div>
-        <div class="rounded-2xl border border-dashed border-gray-200 p-4 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
-            ${_esc(cat.type || '')}
+        <div class="mb-4 rounded-2xl border border-dashed border-gray-200 px-4 py-3 text-xs font-medium text-gray-500 dark:border-gray-700 dark:text-gray-400">
+            ${_esc(window.__navStrings.browse_subcategories || '')}
         </div>`;
+    panel.innerHTML += subGrid;
 };
 
 function updateCartBadge(animate) {
