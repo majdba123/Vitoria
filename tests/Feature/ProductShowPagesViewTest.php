@@ -19,6 +19,7 @@ test('admin product show page renders the upgraded detail layout', function () {
     ]);
 
     $this->actingAs($admin)
+        ->withSession(['locale' => 'en'])
         ->get("/admin/products/{$product->id}")
         ->assertOk()
         ->assertSee('Product Overview', false)
@@ -44,9 +45,10 @@ test('vendor product show page renders the upgraded detail layout', function () 
     ]);
 
     $this->actingAs($vendor->user)
+        ->withSession(['locale' => 'en'])
         ->get("/vendor/products/{$product->id}")
         ->assertOk()
-        ->assertSee('Product gallery', false)
+        ->assertSee('Product Gallery', false)
         ->assertSee('Shared Profile', false)
         ->assertSee('Veterinary Profile', false)
         ->assertSee('vendor-product-photo-modal', false);
