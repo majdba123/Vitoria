@@ -288,8 +288,6 @@ function initMegaMenu() {
     const show = () => { open = true; panel.classList.remove('hidden'); chevron.style.transform = 'rotate(180deg)'; };
     const hide = () => { open = false; panel.classList.add('hidden'); chevron.style.transform = ''; };
     btn.addEventListener('click', () => { open ? hide() : show(); });
-    wrap?.addEventListener('mouseenter', show);
-    wrap?.addEventListener('mouseleave', hide);
     document.addEventListener('click', (e) => { if (open && !wrap.contains(e.target)) { hide(); } });
 }
 
@@ -655,14 +653,14 @@ async function loadNavCategories() {
         }
 
         list.innerHTML = cats.map(c => `
-            <a href="/products?category_id=${c.id}" data-cat-id="${c.id}" class="mega-cat-btn group flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-all hover:bg-white dark:hover:bg-gray-800"
-                    onmouseenter="showNavSubs(${c.id}, this)">
+            <button type="button" data-cat-id="${c.id}" class="mega-cat-btn group flex w-full items-center gap-3 rounded-2xl px-4 py-2.5 text-left text-sm transition-all hover:bg-white dark:hover:bg-gray-800"
+                    onclick="showNavSubs(${c.id}, this)">
                 <div class="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 ring-1 ring-gray-200/50 dark:bg-gray-800 dark:ring-gray-700">
                     ${categoryThumbHtml(c, false)}
                 </div>
                 <span class="flex-1 truncate font-medium text-gray-700 group-hover:text-brand-600 dark:text-gray-300 dark:group-hover:text-brand-400">${_esc(c.name)}</span>
-                <svg class="h-3.5 w-3.5 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-            </a>
+                <svg class="h-3.5 w-3.5 text-gray-300 transition-transform duration-200 rtl:-scale-x-100 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            </button>
         `).join('');
 
         mobileCats.innerHTML = cats.map(c => {
@@ -685,9 +683,20 @@ async function loadNavCategories() {
 }
 
 window.showNavSubs = function(catId, btn) {
-    document.querySelectorAll('.mega-cat-btn').forEach(el => { el.classList.remove('bg-white', 'dark:bg-gray-800'); el.style.boxShadow = ''; });
-    btn.classList.add('bg-white', 'dark:bg-gray-800');
+    document.querySelectorAll('.mega-cat-btn').forEach(el => {
+        el.classList.remove('bg-white', 'dark:bg-gray-800', 'text-brand-700', 'dark:text-brand-300');
+        el.style.boxShadow = '';
+        const arrow = el.querySelector('svg:last-child');
+        if (arrow) {
+            arrow.style.transform = '';
+        }
+    });
+    btn.classList.add('bg-white', 'dark:bg-gray-800', 'text-brand-700', 'dark:text-brand-300');
     btn.style.boxShadow = 'inset 3px 0 0 #f97316';
+    const activeArrow = btn.querySelector('svg:last-child');
+    if (activeArrow) {
+        activeArrow.style.transform = 'translateX(2px)';
+    }
     const cat = (window._navCats || []).find(c => c.id === catId);
     const panel = document.getElementById('mega-subs');
     if (!cat) {
@@ -728,6 +737,13 @@ window.showNavSubs = function(catId, btn) {
             ${_esc(window.__navStrings.browse_subcategories || '')}
         </div>`;
     panel.innerHTML += subGrid;
+    panel.animate(
+        [
+            { opacity: 0, transform: 'translateY(10px)' },
+            { opacity: 1, transform: 'translateY(0)' }
+        ],
+        { duration: 220, easing: 'ease-out' }
+    );
 };
 
 function updateCartBadge(animate) {
