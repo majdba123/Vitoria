@@ -8,6 +8,7 @@ use App\Models\ProductPhoto;
 use App\Models\SharedProductDetail;
 use App\Models\Vendor;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
@@ -271,7 +272,7 @@ class ProductService
         $data['name'] = $data['name_ar'] ?? $data['name_en'] ?? $data['name'] ?? $product->getRawOriginal('name');
 
         $product->update($data);
-        $this->syncProductDetails($product, $detailPayload);
+        $this->syncProductDetails($product, $detailPayload, true);
         $this->flushProductCache();
 
         return $product->fresh($product->vendor ? ['vendor.user', 'photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail'] : ['photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
@@ -471,7 +472,14 @@ class ProductService
 
     /**
      * @param  array<string, mixed>  $data
-     * @return array{shared_detail: array<string, mixed>, agricultural_detail: array<string, mixed>, veterinary_detail: array<string, mixed>}
+     * @return array{
+     *     shared_detail: array<string, mixed>,
+     *     agricultural_detail: array<string, mixed>,
+     *     veterinary_detail: array<string, mixed>,
+     *     shared_detail_present: bool,
+     *     agricultural_detail_present: bool,
+     *     veterinary_detail_present: bool
+     * }
      */
     protected function extractDetailPayload(array &$data): array
     {
@@ -479,6 +487,9 @@ class ProductService
             'shared_detail' => (array) ($data['shared_detail'] ?? []),
             'agricultural_detail' => (array) ($data['agricultural_detail'] ?? []),
             'veterinary_detail' => (array) ($data['veterinary_detail'] ?? []),
+            'shared_detail_present' => array_key_exists('shared_detail', $data),
+            'agricultural_detail_present' => array_key_exists('agricultural_detail', $data),
+            'veterinary_detail_present' => array_key_exists('veterinary_detail', $data),
         ];
 
         unset($data['shared_detail'], $data['agricultural_detail'], $data['veterinary_detail']);
@@ -487,13 +498,26 @@ class ProductService
     }
 
     /**
-     * @param  array{shared_detail: array<string, mixed>, agricultural_detail: array<string, mixed>, veterinary_detail: array<string, mixed>}  $detailPayload
+     * @param  array{
+     *     shared_detail: array<string, mixed>,
+     *     agricultural_detail: array<string, mixed>,
+     *     veterinary_detail: array<string, mixed>,
+     *     shared_detail_present: bool,
+     *     agricultural_detail_present: bool,
+     *     veterinary_detail_present: bool
+     * }  $detailPayload
      */
-    protected function syncProductDetails(Product $product, array $detailPayload): void
+    protected function syncProductDetails(Product $product, array $detailPayload, bool $allowNullUpdate = false): void
     {
-        $sharedAttributes = $this->filterNullValues($detailPayload['shared_detail']);
-        $agriculturalAttributes = $this->filterNullValues($detailPayload['agricultural_detail']);
-        $veterinaryAttributes = $this->filterNullValues($detailPayload['veterinary_detail']);
+        $sharedAttributes = $allowNullUpdate
+            ? $this->prepareNullableAttributes(new SharedProductDetail, $detailPayload['shared_detail'], ['product_id'])
+            : $this->filterNullValues($detailPayload['shared_detail']);
+        $agriculturalAttributes = $allowNullUpdate
+            ? $this->prepareNullableAttributes(new \App\Models\AgriculturalProductDetail, $detailPayload['agricultural_detail'], ['shared_product_detail_id'])
+            : $this->filterNullValues($detailPayload['agricultural_detail']);
+        $veterinaryAttributes = $allowNullUpdate
+            ? $this->prepareNullableAttributes(new \App\Models\VeterinaryProductDetail, $detailPayload['veterinary_detail'], ['shared_product_detail_id'])
+            : $this->filterNullValues($detailPayload['veterinary_detail']);
 
         if (isset($sharedAttributes['barcodes']) && is_array($sharedAttributes['barcodes'])) {
             $sharedAttributes['barcodes'] = collect($sharedAttributes['barcodes'])
@@ -503,24 +527,36 @@ class ProductService
                 ->all();
         }
 
-        if ($sharedAttributes === [] && $agriculturalAttributes === [] && $veterinaryAttributes === []) {
+        if (
+            ! $allowNullUpdate
+            && $sharedAttributes === []
+            && $agriculturalAttributes === []
+            && $veterinaryAttributes === []
+        ) {
+            return;
+        }
+
+        $shouldSyncShared = $allowNullUpdate
+            ? ($detailPayload['shared_detail_present'] || $detailPayload['agricultural_detail_present'] || $detailPayload['veterinary_detail_present'])
+            : ($sharedAttributes !== [] || $agriculturalAttributes !== [] || $veterinaryAttributes !== []);
+
+        if (! $shouldSyncShared) {
             return;
         }
 
         /** @var SharedProductDetail $sharedDetail */
-        $sharedDetail = $product->sharedDetail()->updateOrCreate(
-            ['product_id' => $product->id],
-            $sharedAttributes
-        );
+        $sharedDetail = $product->sharedDetail()->updateOrCreate(['product_id' => $product->id], $sharedAttributes);
 
         $categoryType = $product->category?->type
             ?? Category::query()->whereKey($product->category_id)->value('type');
 
         if ($categoryType === Category::TYPE_AGRICULTURE) {
-            $sharedDetail->agriculturalDetail()->updateOrCreate(
-                ['shared_product_detail_id' => $sharedDetail->id],
-                $agriculturalAttributes
-            );
+            if ($allowNullUpdate ? $detailPayload['agricultural_detail_present'] : $agriculturalAttributes !== []) {
+                $sharedDetail->agriculturalDetail()->updateOrCreate(
+                    ['shared_product_detail_id' => $sharedDetail->id],
+                    $agriculturalAttributes
+                );
+            }
 
             if ($sharedDetail->veterinaryDetail) {
                 $sharedDetail->veterinaryDetail()->delete();
@@ -528,10 +564,12 @@ class ProductService
         }
 
         if ($categoryType === Category::TYPE_VETERINARY) {
-            $sharedDetail->veterinaryDetail()->updateOrCreate(
-                ['shared_product_detail_id' => $sharedDetail->id],
-                $veterinaryAttributes
-            );
+            if ($allowNullUpdate ? $detailPayload['veterinary_detail_present'] : $veterinaryAttributes !== []) {
+                $sharedDetail->veterinaryDetail()->updateOrCreate(
+                    ['shared_product_detail_id' => $sharedDetail->id],
+                    $veterinaryAttributes
+                );
+            }
 
             if ($sharedDetail->agriculturalDetail) {
                 $sharedDetail->agriculturalDetail()->delete();
@@ -560,5 +598,39 @@ class ProductService
 
             return true;
         });
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     * @param  list<string>  $ignoredFillable
+     * @return array<string, mixed>
+     */
+    protected function prepareNullableAttributes(Model $model, array $attributes, array $ignoredFillable = []): array
+    {
+        $normalized = [];
+
+        foreach ($model->getFillable() as $field) {
+            if (in_array($field, $ignoredFillable, true)) {
+                continue;
+            }
+
+            if (! array_key_exists($field, $attributes)) {
+                continue;
+            }
+
+            $value = $attributes[$field];
+
+            if (is_string($value)) {
+                $value = trim($value) === '' ? null : trim($value);
+            }
+
+            if (is_array($value) && $value === []) {
+                $value = null;
+            }
+
+            $normalized[$field] = $value;
+        }
+
+        return $normalized;
     }
 }

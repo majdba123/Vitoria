@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Concerns;
 
+use Illuminate\Validation\Rule;
+
 trait InteractsWithProductDetails
 {
     /**
@@ -202,5 +204,14 @@ trait InteractsWithProductDetails
         }
 
         $this->replace($payload);
+    }
+
+    protected function productPhotoExistsRule(string $column = 'id'): \Illuminate\Validation\Rules\Exists
+    {
+        $productId = (int) ($this->route('product')?->id ?? 0);
+
+        return Rule::exists('product_photos', $column)->where(function ($query) use ($productId) {
+            return $query->where('product_id', $productId);
+        });
     }
 }
