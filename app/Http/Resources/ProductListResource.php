@@ -61,8 +61,9 @@ class ProductListResource extends JsonResource
             : $price;
         $discountAmount = max($price - $discountedPrice, 0);
 
-        // Use primary photo if available, otherwise use first photo
-        $displayPhoto = $photos->where('is_primary', true)->first() ?? $photos->first();
+        $displayPhoto = $photos->firstWhere('image_type', \App\Models\ProductPhoto::TYPE_PRIMARY)
+            ?? $photos->where('is_primary', true)->first()
+            ?? $photos->first();
 
         $data = [
             'id' => $this->id,

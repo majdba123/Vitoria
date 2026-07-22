@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Http\Resources\Auth\UserResource;
+use App\Models\ProductPhoto;
 use App\Models\User;
 use App\Services\Admin\UserService;
 use Illuminate\Http\JsonResponse;
@@ -55,7 +56,12 @@ class UserController extends Controller
     {
         $products = $user->favouriteProducts()
             ->with([
-                'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(1),
+                'photos' => function ($q) {
+                    $q->orderByRaw(
+                        'CASE WHEN image_type = ? THEN 0 WHEN is_primary = 1 THEN 1 ELSE 2 END',
+                        [ProductPhoto::TYPE_PRIMARY]
+                    )->orderBy('sort_order')->limit(1);
+                },
                 'vendor:id,store_name',
                 'category:id,name',
             ])

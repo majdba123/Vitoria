@@ -50,7 +50,7 @@
         const nextStartOrder = selectedFiles.length + 1;
 
         files.forEach((file, index) => {
-            file._imageType = file._imageType || (selectedFiles.length === 0 && index === 0 ? 'front' : 'back');
+            file._imageType = file._imageType || (selectedFiles.length === 0 && index === 0 ? 'primary' : 'back');
             file._sortOrder = file._sortOrder || (nextStartOrder + index);
         });
 
@@ -74,14 +74,15 @@
             }
 
             const sizeMB = (file.size / 1048576).toFixed(1);
-            const isFront = (file._imageType || 'front') === 'front';
+            const currentType = file._imageType || 'front';
+            const typeLabel = currentType === 'primary' ? 'Primary' : currentType === 'front' ? 'Front' : 'Back';
 
             return `
                 <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
                     <div class="relative aspect-[4/3] overflow-hidden bg-gray-100">
                         <img src="${file._objectURL}" class="h-full w-full object-cover" alt="">
                         <div class="absolute left-3 top-3 inline-flex items-center rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-semibold text-gray-700 shadow-sm">
-                            ${isFront ? 'Front' : 'Back'} • #${file._sortOrder || index + 1}
+                            ${typeLabel} • #${file._sortOrder || index + 1}
                         </div>
                     </div>
                     <div class="space-y-3 p-4">
@@ -103,8 +104,9 @@
                             <div>
                                 <label class="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-gray-500">Photo Type</label>
                                 <select data-photo-type-index="${index}" class="form-select text-sm">
-                                    <option value="front" ${isFront ? 'selected' : ''}>Front</option>
-                                    <option value="back" ${!isFront ? 'selected' : ''}>Back</option>
+                                    <option value="primary" ${currentType === 'primary' ? 'selected' : ''}>Primary</option>
+                                    <option value="front" ${currentType === 'front' ? 'selected' : ''}>Front</option>
+                                    <option value="back" ${currentType === 'back' ? 'selected' : ''}>Back</option>
                                 </select>
                             </div>
                             <div>

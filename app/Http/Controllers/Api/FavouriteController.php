@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\ProductPhoto;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -17,7 +18,12 @@ class FavouriteController extends Controller
         $products = $request->user()
             ->favouriteProducts()
             ->with([
-                'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(1),
+                'photos' => function ($q) {
+                    $q->orderByRaw(
+                        'CASE WHEN image_type = ? THEN 0 WHEN is_primary = 1 THEN 1 ELSE 2 END',
+                        [ProductPhoto::TYPE_PRIMARY]
+                    )->orderBy('sort_order')->limit(1);
+                },
                 'category:id,name',
             ])
             ->select(['products.id', 'products.name', 'products.price', 'products.category_id', 'products.quantity'])

@@ -83,7 +83,7 @@ class Product extends Model
      */
     public function photos(): HasMany
     {
-        return $this->hasMany(ProductPhoto::class)->orderBy('sort_order');
+        return $this->hasMany(ProductPhoto::class);
     }
 
     /**
@@ -91,7 +91,13 @@ class Product extends Model
      */
     public function primaryPhoto(): ?ProductPhoto
     {
-        return $this->photos()->where('is_primary', true)->first();
+        return $this->photos()
+            ->orderByRaw(
+                'CASE WHEN image_type = ? THEN 0 WHEN is_primary = 1 THEN 1 ELSE 2 END',
+                [ProductPhoto::TYPE_PRIMARY]
+            )
+            ->orderBy('sort_order')
+            ->first();
     }
 
     public function favouritedBy(): BelongsToMany

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use App\Http\Requests\Concerns\InteractsWithProductDetails;
+use App\Models\ProductPhoto;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -38,7 +39,7 @@ class StoreProductRequest extends FormRequest
             'photos' => ['nullable', 'array', 'max:10'],
             'photos.*' => ['required', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'],
             'photo_types' => ['nullable', 'array'],
-            'photo_types.*' => ['required', Rule::in(['front', 'back'])],
+            'photo_types.*' => ['required', Rule::in(ProductPhoto::allowedTypes())],
             'photo_sort_orders' => ['nullable', 'array'],
             'photo_sort_orders.*' => ['nullable', 'integer', 'min:1'],
         ], $this->localizedNameRules(true), $this->sharedDetailRules(true), $this->agriculturalDetailRules(true), $this->veterinaryDetailRules(true));

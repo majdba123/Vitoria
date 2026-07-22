@@ -7,9 +7,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductPhoto extends Model
 {
+    public const TYPE_PRIMARY = 'primary';
+
     public const TYPE_FRONT = 'front';
 
     public const TYPE_BACK = 'back';
+
+    /**
+     * @return list<string>
+     */
+    public static function allowedTypes(): array
+    {
+        return [
+            self::TYPE_PRIMARY,
+            self::TYPE_FRONT,
+            self::TYPE_BACK,
+        ];
+    }
 
     /**
      * @var list<string>

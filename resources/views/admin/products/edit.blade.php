@@ -179,6 +179,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     <div>
                         <label class="mb-1 block text-[10px] font-medium uppercase tracking-wide text-gray-500">Type</label>
                         <select data-existing-photo-type="${photo.id}" class="form-select w-full !py-1 text-xs">
+                            <option value="primary" ${(photo.image_type || 'front') === 'primary' ? 'selected' : ''}>Primary</option>
                             <option value="front" ${(photo.image_type || 'front') === 'front' ? 'selected' : ''}>Front</option>
                             <option value="back" ${(photo.image_type || 'front') === 'back' ? 'selected' : ''}>Back</option>
                         </select>
@@ -260,7 +261,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById('new-photos')?.addEventListener('change', function () {
         newPhotoFiles = Array.from(this.files || []).map((file, index) => ({
             file,
-            image_type: index === 0 ? 'front' : 'back',
+            image_type: index === 0 ? 'primary' : 'back',
             sort_order: existingPhotos.length + index + 1,
         }));
 
@@ -291,6 +292,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     <div>
                         <label class="mb-1 block text-[10px] font-medium uppercase tracking-wide text-gray-500">Type</label>
                         <select data-new-photo-type="${index}" class="form-select w-full !py-1 text-xs">
+                            <option value="primary" ${item.image_type === 'primary' ? 'selected' : ''}>Primary</option>
                             <option value="front" ${item.image_type === 'front' ? 'selected' : ''}>Front</option>
                             <option value="back" ${item.image_type === 'back' ? 'selected' : ''}>Back</option>
                         </select>

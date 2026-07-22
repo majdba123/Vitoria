@@ -68,6 +68,44 @@ test('homepage product api is safe with missing optional image data', function (
         ->and($response->json('data.0.fallback_photo_url'))->toContain('product-placeholder.svg');
 });
 
+test('homepage product api prefers photo type primary for product cards', function () {
+    $category = Category::query()->create([
+        'name' => 'Primary Card Category',
+        'type' => Category::TYPE_AGRICULTURE,
+    ]);
+    $vendor = Vendor::factory()->create([
+        'status' => Vendor::STATUS_ACTIVE,
+        'is_active' => true,
+    ]);
+    $vendor->categories()->sync([$category->id]);
+
+    $product = Product::factory()->for($vendor)->create([
+        'category_id' => $category->id,
+        'status' => Product::STATUS_APPROVED,
+        'is_active' => true,
+        'quantity' => 5,
+    ]);
+
+    $product->photos()->createMany([
+        [
+            'path' => 'products/test/front-card.jpg',
+            'image_type' => 'front',
+            'sort_order' => 1,
+            'is_primary' => false,
+        ],
+        [
+            'path' => 'products/test/primary-card.jpg',
+            'image_type' => 'primary',
+            'sort_order' => 2,
+            'is_primary' => true,
+        ],
+    ]);
+
+    $response = $this->getJson('/api/products?per_page=5')->assertOk();
+
+    expect($response->json('data.0.first_photo_url'))->toContain('products/test/primary-card.jpg');
+});
+
 test('normal website users can choose product type from the homepage', function () {
     $user = User::factory()->create([
         'type' => User::TYPE_USER,

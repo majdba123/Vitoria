@@ -64,7 +64,9 @@ class ProductResource extends JsonResource
     public function toArray(Request $request): array
     {
         $photos = $this->whenLoaded('photos') ? $this->photos : collect();
-        $displayPhoto = $photos->where('is_primary', true)->first() ?? $photos->first();
+        $displayPhoto = $photos->firstWhere('image_type', \App\Models\ProductPhoto::TYPE_PRIMARY)
+            ?? $photos->where('is_primary', true)->first()
+            ?? $photos->first();
         $price = (float) $this->price;
         $hasActiveDiscount = method_exists($this->resource, 'hasActiveDiscount')
             ? $this->resource->hasActiveDiscount()

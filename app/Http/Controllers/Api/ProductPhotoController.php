@@ -116,7 +116,7 @@ class ProductPhotoController extends Controller
             $rules['photos'] = ['array', 'max:10'];
             $rules['photos.*'] = ['image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'];
             $rules['photo_types'] = ['sometimes', 'array'];
-            $rules['photo_types.*'] = ['required', 'in:front,back'];
+            $rules['photo_types.*'] = ['required', 'in:'.implode(',', ProductPhoto::allowedTypes())];
             $rules['photo_sort_orders'] = ['sometimes', 'array'];
             $rules['photo_sort_orders.*'] = ['nullable', 'integer', 'min:1'];
         }
@@ -129,7 +129,7 @@ class ProductPhotoController extends Controller
             $rules['photo_ids'] = ['array'];
             $rules['photo_ids.*'] = ['required', 'integer', 'exists:product_photos,id'];
             $rules['existing_photo_types'] = ['sometimes', 'array'];
-            $rules['existing_photo_types.*'] = ['required', 'in:front,back'];
+            $rules['existing_photo_types.*'] = ['required', 'in:'.implode(',', ProductPhoto::allowedTypes())];
             $rules['existing_photo_sort_orders'] = ['sometimes', 'array'];
             $rules['existing_photo_sort_orders.*'] = ['nullable', 'integer', 'min:1'];
         }

@@ -31,9 +31,9 @@ test('admin product creation stores product photos only', function () {
         'is_active' => true,
         'photos' => [
             UploadedFile::fake()->image('product-front.jpg', 900, 700),
-            UploadedFile::fake()->image('product-back.jpg', 900, 700),
+            UploadedFile::fake()->image('product-primary.jpg', 900, 700),
         ],
-        'photo_types' => ['front', 'back'],
+        'photo_types' => ['front', 'primary'],
         'photo_sort_orders' => [1, 2],
     ], ['Accept' => 'application/json']);
 
@@ -45,9 +45,13 @@ test('admin product creation stores product photos only', function () {
         ]);
 
     $product = Product::query()->with('photos')->where('name', 'Asset Enabled Product')->firstOrFail();
+    $primaryTypePhoto = $product->photos->firstWhere('image_type', 'primary');
 
     expect($product->photos)->toHaveCount(2)
-        ->and($product->photos->firstWhere('is_primary', true))->not->toBeNull();
+        ->and($primaryTypePhoto)->not->toBeNull()
+        ->and($product->photos->firstWhere('is_primary', true)?->id)->toBe($primaryTypePhoto?->id);
+
+    $response->assertJsonPath('data.first_photo_url', asset('storage/'.$primaryTypePhoto->path));
 
     Storage::disk('public')->assertExists($product->photos[0]->path);
     Storage::disk('public')->assertExists($product->photos[1]->path);

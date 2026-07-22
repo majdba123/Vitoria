@@ -144,7 +144,7 @@ class ProductController extends Controller
         }
 
         if ($product->photos->isNotEmpty() && ! $product->photos->where('is_primary', true)->first()) {
-            $firstPhoto = $product->photos->first();
+            $firstPhoto = $product->photos->firstWhere('image_type', ProductPhoto::TYPE_PRIMARY) ?? $product->photos->first();
             $firstPhoto->update(['is_primary' => true]);
             $product->refresh();
             $product->load(['photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);

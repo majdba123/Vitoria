@@ -13,6 +13,16 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductService
 {
+    public static function applyPhotoDisplayOrder(\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Relations\HasMany $query): void
+    {
+        $query
+            ->orderByRaw(
+                'CASE WHEN image_type = ? THEN 0 WHEN is_primary = 1 THEN 1 ELSE 2 END',
+                [ProductPhoto::TYPE_PRIMARY]
+            )
+            ->orderBy('sort_order');
+    }
+
     /**
      * @param  array<string, mixed>  $filters
      */
@@ -23,7 +33,10 @@ class ProductService
             : Product::query();
 
         $query->with([
-            'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(3),
+            'photos' => function ($q) {
+                self::applyPhotoDisplayOrder($q);
+                $q->limit(3);
+            },
             'category:id,name,type,commission',
             'subcategory:id,category_id,name_ar,name_en',
             'sharedDetail.agriculturalDetail',
@@ -91,7 +104,10 @@ class ProductService
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->with([
-                'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(1),
+                'photos' => function ($q) {
+                    self::applyPhotoDisplayOrder($q);
+                    $q->limit(1);
+                },
                 'category:id,name,type,logo,icon',
                 'subcategory:id,category_id,name_ar,name_en',
                 'vendor:id,store_name,user_id,logo,is_active,status',
@@ -294,7 +310,10 @@ class ProductService
         }
 
         $product->photos()->where('is_primary', true)->update(['is_primary' => false]);
-        $photo->update(['is_primary' => true]);
+        $photo->update([
+            'is_primary' => true,
+            'image_type' => $photo->image_type === ProductPhoto::TYPE_PRIMARY ? ProductPhoto::TYPE_PRIMARY : $photo->image_type,
+        ]);
         $this->flushProductCache();
 
         return $product->fresh(['vendor.user', 'photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
@@ -314,17 +333,25 @@ class ProductService
         foreach ($files as $index => $file) {
             $path = $file->store('products/'.$product->id, 'public');
             $itemMetadata = $metadata[$index] ?? [];
+            $imageType = $itemMetadata['image_type'] ?? ProductPhoto::TYPE_FRONT;
             $sortOrder = isset($itemMetadata['sort_order']) && $itemMetadata['sort_order'] > 0
                 ? (int) $itemMetadata['sort_order']
                 : ++$maxOrder;
+            $shouldBecomePrimary = $imageType === ProductPhoto::TYPE_PRIMARY;
+
+            if ($shouldBecomePrimary) {
+                $product->photos()->where('is_primary', true)->update(['is_primary' => false]);
+                $hasPrimary = false;
+            }
+
             $photos[] = $product->photos()->create([
                 'path' => $path,
-                'image_type' => $itemMetadata['image_type'] ?? ProductPhoto::TYPE_FRONT,
+                'image_type' => $imageType,
                 'sort_order' => $sortOrder,
-                'is_primary' => ! $hasPrimary && $index === 0,
+                'is_primary' => $shouldBecomePrimary || (! $hasPrimary && $index === 0),
             ]);
 
-            if (! $hasPrimary && $index === 0) {
+            if ($shouldBecomePrimary || (! $hasPrimary && $index === 0)) {
                 $hasPrimary = true;
             }
 
@@ -364,6 +391,15 @@ class ProductService
 
             if ($attributes !== []) {
                 $photo->update($attributes);
+
+                if (($attributes['image_type'] ?? null) === ProductPhoto::TYPE_PRIMARY) {
+                    $product->photos()
+                        ->whereKeyNot($photo->id)
+                        ->where('is_primary', true)
+                        ->update(['is_primary' => false]);
+
+                    $photo->update(['is_primary' => true]);
+                }
             }
         }
 
@@ -392,7 +428,9 @@ class ProductService
 
         if ($deletedPrimary) {
             $product->refresh();
-            $firstRemaining = $product->photos()->orderBy('sort_order')->first();
+            $remainingPhotos = $product->photos()->get();
+            $firstRemaining = $remainingPhotos->firstWhere('image_type', ProductPhoto::TYPE_PRIMARY)
+                ?? $remainingPhotos->sortBy('sort_order')->first();
             if ($firstRemaining instanceof ProductPhoto) {
                 $firstRemaining->update(['is_primary' => true]);
             }

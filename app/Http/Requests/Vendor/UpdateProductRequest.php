@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Vendor;
 
 use App\Http\Requests\Concerns\InteractsWithProductDetails;
+use App\Models\ProductPhoto;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -43,7 +44,7 @@ class UpdateProductRequest extends FormRequest
             'photo_ids' => ['sometimes', 'array'],
             'photo_ids.*' => ['required', 'integer', 'exists:product_photos,id'],
             'photo_types' => ['sometimes', 'array'],
-            'photo_types.*' => ['required', Rule::in(['front', 'back'])],
+            'photo_types.*' => ['required', Rule::in(ProductPhoto::allowedTypes())],
             'photo_sort_orders' => ['sometimes', 'array'],
             'photo_sort_orders.*' => ['nullable', 'integer', 'min:1'],
         ], $this->localizedNameRules(), $this->sharedDetailRules(), $this->agriculturalDetailRules(), $this->veterinaryDetailRules());
