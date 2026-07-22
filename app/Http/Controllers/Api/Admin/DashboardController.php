@@ -94,7 +94,9 @@ class DashboardController extends Controller
                 ->map(fn (Product $product) => [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'image_url' => $product->image ? asset('storage/'.$product->image) : null,
+                    'image_url' => $product->photos()->orderByDesc('is_primary')->orderBy('sort_order')->value('path')
+                        ? asset('storage/'.$product->photos()->orderByDesc('is_primary')->orderBy('sort_order')->value('path'))
+                        : null,
                     'status' => $product->status,
                     'is_active' => $product->is_active,
                     'created_at' => $product->created_at,

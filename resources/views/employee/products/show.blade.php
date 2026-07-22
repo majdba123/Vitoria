@@ -52,7 +52,7 @@ document.addEventListener('employee-ready', async function () {
         const response = await window.axios.get('/api/employee/products/' + productId);
         const product = response.data.data;
         document.getElementById('product-name').textContent = product.name || '';
-        document.getElementById('product-image').src = product.first_photo_url || product.image_url || product.icon_url || '/images/product-placeholder.svg';
+        document.getElementById('product-image').src = product.first_photo_url || '/images/product-placeholder.svg';
         document.getElementById('product-description').textContent = product.description || '';
         document.getElementById('product-status').textContent = product.status || '';
         document.getElementById('product-reason').textContent = product.rejection_reason || '{{ __('employee.no_reason') }}';

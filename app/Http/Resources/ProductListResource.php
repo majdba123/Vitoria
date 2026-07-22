@@ -8,6 +8,29 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductListResource extends JsonResource
 {
+    protected function resolvedProductType(): ?string
+    {
+        $categoryType = $this->category?->type;
+
+        if ($categoryType === \App\Models\Category::TYPE_VETERINARY) {
+            return 'veterinary_medicine';
+        }
+
+        if ($categoryType === \App\Models\Category::TYPE_AGRICULTURE) {
+            if (
+                $this->relationLoaded('sharedDetail')
+                && $this->sharedDetail
+                && $this->sharedDetail->relationLoaded('agriculturalDetail')
+            ) {
+                return $this->sharedDetail->agriculturalDetail?->agricultural_product_type ?: 'other';
+            }
+
+            return \App\Models\Category::TYPE_AGRICULTURE;
+        }
+
+        return $categoryType;
+    }
+
     protected function localizedName(): string
     {
         return $this->resource->getLocalizedName(app()->getLocale());
@@ -45,14 +68,11 @@ class ProductListResource extends JsonResource
             'id' => $this->id,
             'vendor_id' => $this->when($this->shouldExposeVendor($request), $this->vendor_id),
             'category_id' => $this->category_id,
+            'subcategory_id' => $this->subcategory_id,
             'name' => $this->localizedName(),
             'name_ar' => $this->name_ar,
             'name_en' => $this->name_en,
             'description' => $this->description,
-            'icon' => $this->icon,
-            'icon_url' => $this->icon ? asset('storage/'.$this->icon) : null,
-            'image' => $this->image,
-            'image_url' => $this->image ? asset('storage/'.$this->image) : null,
             'price' => $this->price,
             'discount_percentage' => $this->discount_percentage,
             'discount_is_active' => $this->discount_is_active,
@@ -66,10 +86,10 @@ class ProductListResource extends JsonResource
             'quantity' => $this->quantity,
             'is_active' => $this->is_active,
             'status' => $this->status,
-            'product_type' => $this->category?->type,
+            'product_type' => $this->resolvedProductType(),
             'commercial_name' => $this->whenLoaded('sharedDetail', fn () => $this->sharedDetail?->commercial_name),
-            'barcode' => $this->whenLoaded('sharedDetail', fn () => $this->sharedDetail?->barcode),
-            'first_photo_url' => $this->image ? asset('storage/'.$this->image) : ($displayPhoto ? '/storage/'.$displayPhoto->path : null),
+            'barcodes' => $this->whenLoaded('sharedDetail', fn () => $this->sharedDetail?->barcodes),
+            'first_photo_url' => $displayPhoto ? asset('storage/'.$displayPhoto->path) : null,
             'fallback_photo_url' => asset('images/product-placeholder.svg'),
             'average_rating' => round((float) ($this->reviews_avg_rating ?? 0), 2),
             'review_count' => (int) ($this->reviews_count ?? 0),
@@ -82,6 +102,16 @@ class ProductListResource extends JsonResource
                 'name' => $category->name,
                 'type' => $category->type,
                 'type_label' => \App\Models\Category::typeLabels()[$category->type] ?? $category->type,
+            ] : null;
+        }
+
+        if ($this->relationLoaded('subcategory')) {
+            $subcategory = $this->subcategory;
+            $data['subcategory'] = $subcategory ? [
+                'id' => $subcategory->id,
+                'category_id' => $subcategory->category_id,
+                'name_ar' => $subcategory->name_ar,
+                'name_en' => $subcategory->name_en,
             ] : null;
         }
 

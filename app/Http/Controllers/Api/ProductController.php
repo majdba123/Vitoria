@@ -11,6 +11,7 @@ use App\Http\Requests\Vendor\UpdateProductRequest as VendorUpdateProductRequest;
 use App\Http\Resources\ExternalProductResource;
 use App\Http\Resources\ProductListResource;
 use App\Http\Resources\ProductResource;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductPhoto;
 use App\Models\User;
@@ -22,11 +23,16 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
+    protected const STORE_PROFILE_BASIC = 'basic';
+
+    protected const STORE_PROFILE_AGRICULTURE = 'agriculture';
+
+    protected const STORE_PROFILE_VETERINARY = 'veterinary';
+
     public function __construct(
         public NotificationService $notificationService,
         public ProductService $productService,
@@ -44,9 +50,9 @@ class ProductController extends Controller
                 abort(403, __('Vendor profile not found.'));
             }
 
-            $filters = $request->only(['category_id', 'category_type', 'status', 'is_active', 'has_discount']);
+            $filters = $request->only(['category_id', 'subcategory_id', 'category_type', 'product_type', 'status', 'is_active', 'has_discount', 'in_stock', 'search']);
         } else {
-            $filters = $request->only(['vendor_id', 'category_id', 'category_type', 'status', 'is_active', 'has_discount']);
+            $filters = $request->only(['vendor_id', 'category_id', 'subcategory_id', 'category_type', 'product_type', 'status', 'is_active', 'has_discount', 'in_stock', 'search']);
         }
 
         $perPage = min(max((int) $request->input('per_page', 15), 1), 50);
@@ -66,7 +72,7 @@ class ProductController extends Controller
 
     public function publicIndex(Request $request): JsonResponse
     {
-        $filters = $request->only(['category_id', 'category_type', 'has_discount', 'per_page', 'sort']);
+        $filters = $request->only(['category_id', 'subcategory_id', 'category_type', 'product_type', 'has_discount', 'per_page', 'sort', 'search']);
         $perPage = min((int) ($filters['per_page'] ?? 15), 50);
         $filters['per_page'] = $perPage;
         $filters['category_type'] = $request->has('category_type')
@@ -103,13 +109,13 @@ class ProductController extends Controller
         $cacheKey = "pub_product:{$product->id}";
         try {
             $productData = Cache::tags(['products'])->remember($cacheKey, 1800, function () use ($product) {
-                $product->load(['photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
+                $product->load(['photos', 'category', 'subcategory', 'sharedDetail']);
                 $product->loadCount('reviews')->loadAvg('reviews', 'rating');
 
                 return new ProductResource($product);
             });
         } catch (\Exception $e) {
-            $product->load(['photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
+            $product->load(['photos', 'category', 'subcategory', 'sharedDetail']);
             $product->loadCount('reviews')->loadAvg('reviews', 'rating');
             $productData = new ProductResource($product);
         }
@@ -132,16 +138,16 @@ class ProductController extends Controller
             if ($product->vendor_id !== $vendor->id) {
                 abort(403, __('You do not own this product.'));
             }
-            $product->load(['photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
+            $product->load(['photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
         } else {
-            $product->load(['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
+            $product->load(['vendor.user', 'photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
         }
 
         if ($product->photos->isNotEmpty() && ! $product->photos->where('is_primary', true)->first()) {
             $firstPhoto = $product->photos->first();
             $firstPhoto->update(['is_primary' => true]);
             $product->refresh();
-            $product->load(['photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
+            $product->load(['photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
         }
 
         return response()->json([
@@ -151,6 +157,26 @@ class ProductController extends Controller
     }
 
     public function store(Request $request): JsonResponse
+    {
+        return $this->storeForProfile($request, self::STORE_PROFILE_BASIC);
+    }
+
+    public function storeBasic(Request $request): JsonResponse
+    {
+        return $this->storeForProfile($request, self::STORE_PROFILE_BASIC);
+    }
+
+    public function storeAgriculture(Request $request): JsonResponse
+    {
+        return $this->storeForProfile($request, self::STORE_PROFILE_AGRICULTURE);
+    }
+
+    public function storeVeterinary(Request $request): JsonResponse
+    {
+        return $this->storeForProfile($request, self::STORE_PROFILE_VETERINARY);
+    }
+
+    protected function storeForProfile(Request $request, string $profile): JsonResponse
     {
         $this->normalizeDetailPayload($request);
 
@@ -176,6 +202,7 @@ class ProductController extends Controller
         }
 
         $this->validateCategoryBelongsToVendor($targetVendor, (int) $validated['category_id']);
+        $this->validateStoreProfile($validated, $profile);
 
         if (isset($validated['is_active'])) {
             $validated['is_active'] = filter_var($validated['is_active'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
@@ -193,42 +220,19 @@ class ProductController extends Controller
         );
 
         $photos = $request->file('photos', []);
-        $storedPaths = [];
-        $createdProductId = null;
-
         try {
-            $product = DB::transaction(function () use (&$createdProductId, &$storedPaths, $photos, $request, $validated, $vendor) {
-                $displayAssets = $this->productService->storeDisplayAssets([
-                    'icon' => $request->file('icon'),
-                    'image' => $request->file('image'),
-                ]);
-                $storedPaths = array_values($displayAssets);
-
-                unset($validated['photos'], $validated['icon'], $validated['image']);
-                $productData = array_merge($validated, $displayAssets);
-
-                $product = $this->productService->create($vendor, $productData);
-                $createdProductId = $product->id;
+            $product = DB::transaction(function () use ($photos, $validated, $vendor) {
+                unset($validated['photos']);
+                $product = $this->productService->create($vendor, $validated);
 
                 if (! empty($photos)) {
-                    $createdPhotos = $this->productService->addPhotos($product, $photos);
-                    foreach ($createdPhotos as $photo) {
-                        $storedPaths[] = $photo->path;
-                    }
+                    $this->productService->addPhotos($product, $photos, $this->buildPhotoMetadata($validated));
                     $product->load('photos');
                 }
 
                 return $product;
             });
         } catch (\Throwable $exception) {
-            foreach ($storedPaths as $path) {
-                Storage::disk('public')->delete($path);
-            }
-
-            if ($createdProductId) {
-                Storage::disk('public')->deleteDirectory('products/'.$createdProductId);
-            }
-
             throw $exception;
         }
 
@@ -300,39 +304,11 @@ class ProductController extends Controller
         $oldDiscountPct = $product->discount_percentage;
         $oldStarts = $product->discount_starts_at?->toDateTimeString();
         $oldEnds = $product->discount_ends_at?->toDateTimeString();
-        $oldAssets = [
-            'icon' => $product->icon,
-            'image' => $product->image,
-        ];
-        $newAssets = [];
-
-        try {
-            $product = DB::transaction(function () use ($request, $product, $validated, &$newAssets) {
-                $newAssets = $this->productService->replaceDisplayAssets($product, [
-                    'icon' => $request->file('icon'),
-                    'image' => $request->file('image'),
-                ]);
-                unset($validated['icon'], $validated['image']);
-
-                return $this->productService->update($product, array_merge($validated, $newAssets));
-            });
-        } catch (\Throwable $exception) {
-            foreach ($newAssets as $path) {
-                Storage::disk('public')->delete($path);
-            }
-
-            throw $exception;
-        }
-
-        foreach ($newAssets as $field => $path) {
-            if ($path && ! empty($oldAssets[$field])) {
-                Storage::disk('public')->delete($oldAssets[$field]);
-            }
-        }
+        $product = DB::transaction(fn () => $this->productService->update($product, $validated));
 
         $product->load($user && $user->type === User::TYPE_VENDOR
-            ? ['photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']
-            : ['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
+            ? ['photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']
+            : ['vendor.user', 'photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
 
         if ($product->discount_status === Product::DISCOUNT_STATUS_ACTIVE) {
             if (! $hadActiveDiscount) {
@@ -389,7 +365,7 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => __('Primary photo updated successfully.'),
-            'data' => new ProductResource($product->fresh(['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail'])),
+            'data' => new ProductResource($product->fresh(['vendor.user', 'photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail'])),
         ]);
     }
 
@@ -430,9 +406,72 @@ class ProductController extends Controller
         }
     }
 
+    /**
+     * @param  array<string, mixed>  $validated
+     */
+    protected function validateStoreProfile(array $validated, string $profile): void
+    {
+        if ($profile === self::STORE_PROFILE_BASIC) {
+            return;
+        }
+
+        $categoryType = Category::query()->whereKey((int) $validated['category_id'])->value('type');
+
+        if ($profile === self::STORE_PROFILE_AGRICULTURE) {
+            if ($categoryType !== Category::TYPE_AGRICULTURE) {
+                throw ValidationException::withMessages([
+                    'category_id' => __('Selected category must belong to agriculture for this endpoint.'),
+                ]);
+            }
+
+            if (empty($validated['agricultural_detail']) || ! is_array($validated['agricultural_detail'])) {
+                throw ValidationException::withMessages([
+                    'agricultural_detail' => __('Agricultural detail is required for this endpoint.'),
+                ]);
+            }
+
+            return;
+        }
+
+        if ($profile === self::STORE_PROFILE_VETERINARY) {
+            if ($categoryType !== Category::TYPE_VETERINARY) {
+                throw ValidationException::withMessages([
+                    'category_id' => __('Selected category must belong to veterinary for this endpoint.'),
+                ]);
+            }
+
+            if (empty($validated['veterinary_detail']) || ! is_array($validated['veterinary_detail'])) {
+                throw ValidationException::withMessages([
+                    'veterinary_detail' => __('Veterinary detail is required for this endpoint.'),
+                ]);
+            }
+        }
+    }
+
     protected function preferredCategoryType(Request $request): ?string
     {
         return $this->selectedProductTypeService->resolve($request);
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     * @return array<int, array{image_type?: string, sort_order?: int}>
+     */
+    protected function buildPhotoMetadata(array $validated): array
+    {
+        $types = array_values((array) ($validated['photo_types'] ?? []));
+        $sortOrders = array_values((array) ($validated['photo_sort_orders'] ?? []));
+        $count = max(count($types), count($sortOrders));
+        $metadata = [];
+
+        for ($index = 0; $index < $count; $index++) {
+            $metadata[$index] = [
+                'image_type' => $types[$index] ?? \App\Models\ProductPhoto::TYPE_FRONT,
+                'sort_order' => isset($sortOrders[$index]) ? (int) $sortOrders[$index] : $index + 1,
+            ];
+        }
+
+        return $metadata;
     }
 
     protected function normalizeDetailPayload(Request $request): void
@@ -503,11 +542,12 @@ class ProductController extends Controller
     public function externalIndex(Request $request): JsonResponse
     {
         $perPage = min(max((int) $request->input('per_page', 25), 1), 100);
-        $filters = $request->only(['category_id', 'category_type', 'status']);
+        $filters = $request->only(['category_id', 'subcategory_id', 'category_type', 'product_type', 'status', 'search']);
         $products = $this->productService->list(null, $perPage, $filters);
 
         $products->getCollection()->load([
             'category',
+            'subcategory',
             'sharedDetail.agriculturalDetail',
             'sharedDetail.veterinaryDetail',
         ]);
@@ -528,6 +568,7 @@ class ProductController extends Controller
     {
         $product->load([
             'category',
+            'subcategory',
             'sharedDetail.agriculturalDetail',
             'sharedDetail.veterinaryDetail',
         ]);

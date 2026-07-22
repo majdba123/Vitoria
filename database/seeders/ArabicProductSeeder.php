@@ -2,10 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Models\AgriculturalProductDetail;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductPhoto;
+use App\Models\SharedProductDetail;
+use App\Models\Subcategory;
 use App\Models\Vendor;
+use App\Models\VeterinaryProductDetail;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -16,8 +20,6 @@ class ArabicProductSeeder extends Seeder
     {
         $agricultureImage = $this->storeDemoAsset('demo/products/agriculture-product.png');
         $veterinaryImage = $this->storeDemoAsset('demo/products/veterinary-product.png');
-        $agricultureIcon = $this->storeDemoAsset('demo/products/icons/agriculture-icon.png');
-        $veterinaryIcon = $this->storeDemoAsset('demo/products/icons/veterinary-icon.png');
 
         foreach ($this->products() as $item) {
             $category = Category::query()
@@ -29,9 +31,7 @@ class ArabicProductSeeder extends Seeder
                 ->where('business_type', $item['type'])
                 ->whereHas('user', fn ($query) => $query->where('email', $item['vendor_email']))
                 ->firstOrFail();
-
             $image = $item['type'] === Category::TYPE_AGRICULTURE ? $agricultureImage : $veterinaryImage;
-            $icon = $item['type'] === Category::TYPE_AGRICULTURE ? $agricultureIcon : $veterinaryIcon;
 
             $product = Product::query()->updateOrCreate(
                 [
@@ -40,9 +40,10 @@ class ArabicProductSeeder extends Seeder
                 ],
                 [
                     'category_id' => $category->id,
+                    'subcategory_id' => $this->resolveSubcategoryId($category->id, $item['subcategory'] ?? null),
+                    'name_ar' => $item['name_ar'] ?? $item['name'],
+                    'name_en' => $item['name_en'] ?? $item['name'],
                     'description' => $item['description'],
-                    'icon' => $icon,
-                    'image' => $image,
                     'price' => $item['price'],
                     'discount_percentage' => $item['discount_percentage'],
                     'quantity' => $item['quantity'],
@@ -52,13 +53,41 @@ class ArabicProductSeeder extends Seeder
                 ],
             );
 
+            $sharedDetail = SharedProductDetail::query()->updateOrCreate(
+                ['product_id' => $product->id],
+                $item['shared_detail'],
+            );
+
+            if ($item['type'] === Category::TYPE_AGRICULTURE) {
+                AgriculturalProductDetail::query()->updateOrCreate(
+                    ['shared_product_detail_id' => $sharedDetail->id],
+                    $item['agricultural_detail'],
+                );
+
+                VeterinaryProductDetail::query()
+                    ->where('shared_product_detail_id', $sharedDetail->id)
+                    ->delete();
+            }
+
+            if ($item['type'] === Category::TYPE_VETERINARY) {
+                VeterinaryProductDetail::query()->updateOrCreate(
+                    ['shared_product_detail_id' => $sharedDetail->id],
+                    $item['veterinary_detail'],
+                );
+
+                AgriculturalProductDetail::query()
+                    ->where('shared_product_detail_id', $sharedDetail->id)
+                    ->delete();
+            }
+
             ProductPhoto::query()->updateOrCreate(
                 [
                     'product_id' => $product->id,
-                    'sort_order' => 0,
+                    'sort_order' => 1,
                 ],
                 [
                     'path' => $image,
+                    'image_type' => ProductPhoto::TYPE_FRONT,
                     'is_primary' => true,
                 ],
             );
@@ -66,27 +95,219 @@ class ArabicProductSeeder extends Seeder
     }
 
     /**
-     * @return list<array{name: string, category: string, type: string, vendor_email: string, description: string, price: float, discount_percentage: float, quantity: int}>
+     * @return list<array<string, mixed>>
      */
     private function products(): array
     {
-               return [
-            ['name' => 'بذور قمح عالية الجودة', 'category' => 'البذور', 'type' => Category::TYPE_AGRICULTURE, 'vendor_email' => 'agriculture.vendor@vetora.test', 'description' => 'بذور قمح منتقاة للموسم الزراعي، مناسبة لتحسين الإنتاجية وجودة المحصول.', 'price' => 42.50, 'discount_percentage' => 5.0, 'quantity' => 120],
-            ['name' => 'سماد عضوي طبيعي', 'category' => 'الأسمدة', 'type' => Category::TYPE_AGRICULTURE, 'vendor_email' => 'agriculture.vendor@vetora.test', 'description' => 'سماد عضوي غني بالعناصر الأساسية لدعم نمو النباتات وتحسين خصوبة التربة.', 'price' => 28.00, 'discount_percentage' => 0.0, 'quantity' => 90],
-            ['name' => 'نظام ري بالتنقيط', 'category' => 'أنظمة الري', 'type' => Category::TYPE_AGRICULTURE, 'vendor_email' => 'agriculture.vendor@vetora.test', 'description' => 'نظام ري عملي يوفر المياه ويوزعها بدقة على المحاصيل والمساحات الزراعية.', 'price' => 180.00, 'discount_percentage' => 7.5, 'quantity' => 35],
-            ['name' => 'مضخة مياه زراعية', 'category' => 'المعدات الزراعية', 'type' => Category::TYPE_AGRICULTURE, 'vendor_email' => 'agriculture.vendor@vetora.test', 'description' => 'مضخة مياه متينة للاستخدام الزراعي اليومي في المزارع والحقول.', 'price' => 240.00, 'discount_percentage' => 4.0, 'quantity' => 18],
-            ['name' => 'بيت بلاستيكي صغير', 'category' => 'البيوت البلاستيكية', 'type' => Category::TYPE_AGRICULTURE, 'vendor_email' => 'agriculture.vendor@vetora.test', 'description' => 'حل عملي لحماية الشتلات وتنظيم بيئة الزراعة ضمن المساحات الصغيرة والمتوسطة.', 'price' => 520.00, 'discount_percentage' => 6.0, 'quantity' => 10],
-            ['name' => 'مبيد آمن للمحاصيل', 'category' => 'المبيدات الزراعية', 'type' => Category::TYPE_AGRICULTURE, 'vendor_email' => 'agriculture.vendor@vetora.test', 'description' => 'مبيد زراعي للاستخدام المسؤول في حماية المحاصيل من الآفات الشائعة.', 'price' => 36.00, 'discount_percentage' => 0.0, 'quantity' => 70],
-            ['name' => 'تربة زراعية محسنة', 'category' => 'التربة والسماد العضوي', 'type' => Category::TYPE_AGRICULTURE, 'vendor_email' => 'agriculture.vendor@vetora.test', 'description' => 'خليط تربة محسّن لدعم الإنبات السريع ونمو الجذور بصورة صحية.', 'price' => 22.00, 'discount_percentage' => 3.0, 'quantity' => 150],
-            ['name' => 'منجل حصاد احترافي', 'category' => 'أدوات الحصاد', 'type' => Category::TYPE_AGRICULTURE, 'vendor_email' => 'agriculture.vendor@vetora.test', 'description' => 'أداة حصاد يدوية بجودة عالية للاستخدام اليومي في الحقول والمزارع.', 'price' => 18.00, 'discount_percentage' => 0.0, 'quantity' => 85],
-            ['name' => 'لقاح للأغنام', 'category' => 'اللقاحات', 'type' => Category::TYPE_VETERINARY, 'vendor_email' => 'veterinary.vendor@vetora.test', 'description' => 'لقاح بيطري مخصص لدعم برامج التحصين وحماية قطعان الأغنام.', 'price' => 32.00, 'discount_percentage' => 2.5, 'quantity' => 110],
-            ['name' => 'مضاد حيوي بيطري', 'category' => 'الأدوية البيطرية', 'type' => Category::TYPE_VETERINARY, 'vendor_email' => 'veterinary.vendor@vetora.test', 'description' => 'منتج بيطري للاستخدام وفق إرشادات الطبيب المختص وبرامج الرعاية الصحية.', 'price' => 46.00, 'discount_percentage' => 0.0, 'quantity' => 65],
-            ['name' => 'مكمل أعلاف للماشية', 'category' => 'مكملات الأعلاف', 'type' => Category::TYPE_VETERINARY, 'vendor_email' => 'veterinary.vendor@vetora.test', 'description' => 'مكمل غذائي يساعد على دعم صحة المواشي وتحسين الاستفادة من الأعلاف.', 'price' => 38.00, 'discount_percentage' => 4.0, 'quantity' => 95],
-            ['name' => 'قفازات طبية بيطرية', 'category' => 'أدوات رعاية الحيوانات', 'type' => Category::TYPE_VETERINARY, 'vendor_email' => 'veterinary.vendor@vetora.test', 'description' => 'قفازات طبية مناسبة للعيادات البيطرية وأعمال الفحص والرعاية اليومية.', 'price' => 14.00, 'discount_percentage' => 0.0, 'quantity' => 200],
-            ['name' => 'مطهر عيادات بيطرية', 'category' => 'المطهرات البيطرية', 'type' => Category::TYPE_VETERINARY, 'vendor_email' => 'veterinary.vendor@vetora.test', 'description' => 'مطهر عملي للحفاظ على نظافة العيادات ومناطق رعاية الحيوانات.', 'price' => 26.00, 'discount_percentage' => 3.5, 'quantity' => 80],
-            ['name' => 'جهاز قياس حرارة للحيوانات', 'category' => 'معدات العيادات البيطرية', 'type' => Category::TYPE_VETERINARY, 'vendor_email' => 'veterinary.vendor@vetora.test', 'description' => 'جهاز قياس حرارة سريع ومناسب للاستخدام البيطري الميداني والعيادي.', 'price' => 58.00, 'discount_percentage' => 0.0, 'quantity' => 45],
-            ['name' => 'أدوات فحص بيطرية', 'category' => 'معدات العيادات البيطرية', 'type' => Category::TYPE_VETERINARY, 'vendor_email' => 'veterinary.vendor@vetora.test', 'description' => 'مجموعة أدوات فحص أساسية للعيادات البيطرية وخدمات الرعاية الميدانية.', 'price' => 125.00, 'discount_percentage' => 5.0, 'quantity' => 24],
-            ['name' => 'غذاء علاجي للحيوانات', 'category' => 'مستلزمات المواشي', 'type' => Category::TYPE_VETERINARY, 'vendor_email' => 'veterinary.vendor@vetora.test', 'description' => 'غذاء علاجي داعم للحيوانات ضمن برامج التغذية والرعاية البيطرية.', 'price' => 44.00, 'discount_percentage' => 2.0, 'quantity' => 75],
+        return [
+            [
+                'name' => 'بذور قمح عالية الجودة',
+                'name_ar' => 'بذور قمح عالية الجودة',
+                'name_en' => 'Premium Wheat Seeds',
+                'category' => 'البذور',
+                'subcategory' => 'بذور قمح',
+                'type' => Category::TYPE_AGRICULTURE,
+                'vendor_email' => 'agriculture.vendor@vetora.test',
+                'description' => 'بذور قمح منتقاة للموسم الزراعي ومناسبة للإنتاجية العالية.',
+                'price' => 42.50,
+                'discount_percentage' => 5.0,
+                'quantity' => 120,
+                'shared_detail' => [
+                    'commercial_name' => 'Golden Wheat Pro',
+                    'barcodes' => ['SEED-WHEAT-001'],
+                    'manufacturer_name_ar' => 'الشركة السورية للبذور',
+                    'manufacturer_name_en' => 'Syrian Seeds Co.',
+                    'brand_name_ar' => 'حصاد',
+                    'brand_name_en' => 'Hasad',
+                    'country_of_origin' => 'Syria',
+                    'registration_number' => 'AG-SE-1001',
+                    'registration_status' => 'registered',
+                    'package_size' => 25,
+                    'package_unit' => 'kg',
+                    'short_description' => 'بذور قمح معتمدة للزراعة الحقلية.',
+                    'approved_description' => 'مناسبة للزراعة الحقلية في المناطق المعتدلة.',
+                    'keywords' => ['قمح', 'بذور', 'زراعة'],
+                ],
+                'agricultural_detail' => [
+                    'agricultural_product_type' => 'seed',
+                    'crop_name_ar' => 'قمح',
+                    'crop_name_en' => 'Wheat',
+                    'variety_name' => 'شام 8',
+                    'variety_type' => 'Field Crop',
+                    'germination_percent' => 96,
+                    'purity_percent' => 99,
+                    'seed_treatment' => ['معالجة فطرية أساسية'],
+                    'disease_resistance' => ['تحمل متوسط للصدأ الأصفر'],
+                    'planting_windows' => ['منتصف تشرين الثاني - منتصف كانون الأول'],
+                    'seeding_rate' => ['180 كغ/هكتار'],
+                    'planting_depth' => ['3-5 سم'],
+                    'plant_spacing' => ['سطور متقاربة'],
+                    'maturity_days' => '145',
+                    'expected_yield' => ['4.5 طن/هكتار'],
+                ],
+            ],
+            [
+                'name' => 'سماد عضوي طبيعي',
+                'name_ar' => 'سماد عضوي طبيعي',
+                'name_en' => 'Natural Organic Fertilizer',
+                'category' => 'الأسمدة',
+                'subcategory' => 'أسمدة عضوية',
+                'type' => Category::TYPE_AGRICULTURE,
+                'vendor_email' => 'agriculture.vendor@vetora.test',
+                'description' => 'سماد عضوي غني بالعناصر الأساسية لتحسين خصوبة التربة.',
+                'price' => 28.00,
+                'discount_percentage' => 0.0,
+                'quantity' => 90,
+                'shared_detail' => [
+                    'commercial_name' => 'Bio Soil Boost',
+                    'barcodes' => ['FERT-ORG-001'],
+                    'manufacturer_name_ar' => 'شركة التربة الخضراء',
+                    'manufacturer_name_en' => 'Green Soil Company',
+                    'brand_name_ar' => 'نمو',
+                    'brand_name_en' => 'Nomo',
+                    'country_of_origin' => 'Syria',
+                    'registration_number' => 'AG-FE-2040',
+                    'registration_status' => 'registered',
+                    'package_size' => 50,
+                    'package_unit' => 'kg',
+                    'short_description' => 'سماد عضوي للتربة والخضار.',
+                    'approved_description' => 'يرفع المادة العضوية ويحسن النشاط الحيوي في التربة.',
+                    'keywords' => ['سماد', 'عضوي', 'تربة'],
+                ],
+                'agricultural_detail' => [
+                    'agricultural_product_type' => 'fertilizer',
+                    'fertilizer_type' => 'organic',
+                    'nutrient_n_percent' => 4,
+                    'nutrient_p_percent' => 3,
+                    'nutrient_k_percent' => 2,
+                    'organic_matter_percent' => 65,
+                    'application_methods' => ['نثري', 'مع مياه الري'],
+                    'growth_stages' => ['قبل الزراعة', 'مرحلة النمو الخضري'],
+                    'fertilization_methods' => ['أرضي'],
+                    'micronutrients' => ['حديد', 'زنك'],
+                ],
+            ],
+            [
+                'name' => 'مبيد آمن للمحاصيل',
+                'name_ar' => 'مبيد آمن للمحاصيل',
+                'name_en' => 'Safe Crop Insecticide',
+                'category' => 'المبيدات الزراعية',
+                'subcategory' => 'مبيدات حشرية',
+                'type' => Category::TYPE_AGRICULTURE,
+                'vendor_email' => 'agriculture.vendor@vetora.test',
+                'description' => 'مبيد زراعي لحماية المحاصيل من الآفات الشائعة.',
+                'price' => 36.00,
+                'discount_percentage' => 0.0,
+                'quantity' => 70,
+                'shared_detail' => [
+                    'commercial_name' => 'Crop Shield 25 EC',
+                    'barcodes' => ['PEST-INS-001'],
+                    'manufacturer_name_ar' => 'شركة الحماية الزراعية',
+                    'manufacturer_name_en' => 'Crop Protection Co.',
+                    'brand_name_ar' => 'درع',
+                    'brand_name_en' => 'Dir3',
+                    'country_of_origin' => 'Jordan',
+                    'registration_number' => 'AG-PE-3010',
+                    'registration_status' => 'registered',
+                    'package_size' => 1,
+                    'package_unit' => 'L',
+                    'short_description' => 'مبيد حشري جهازي للمحاصيل الحقلية.',
+                    'approved_description' => 'يستخدم ضمن برنامج المكافحة المتكاملة.',
+                    'keywords' => ['مبيد', 'حشري', 'محاصيل'],
+                ],
+                'agricultural_detail' => [
+                    'agricultural_product_type' => 'pesticide',
+                    'formulation' => 'EC',
+                    'pesticide_type' => 'Insecticide',
+                    'chemical_group' => 'Pyrethroid',
+                    'active_ingredients' => ['Lambda-cyhalothrin'],
+                    'target_crops' => ['قطن', 'بندورة'],
+                    'target_pests' => ['ذبابة بيضاء', 'حشرات ماصة'],
+                    'application_methods' => ['رش ورقي'],
+                    'application_rates' => ['150 مل/100 لتر'],
+                    'warnings' => ['يحفظ بعيدًا عن الأطفال'],
+                    'pre_harvest_intervals' => ['7 أيام'],
+                    'toxicity_class' => 'II',
+                ],
+            ],
+            [
+                'name' => 'لقاح للأغنام',
+                'name_ar' => 'لقاح للأغنام',
+                'name_en' => 'Sheep Vaccine',
+                'category' => 'اللقاحات',
+                'subcategory' => 'لقاحات أغنام',
+                'type' => Category::TYPE_VETERINARY,
+                'vendor_email' => 'veterinary.vendor@vetora.test',
+                'description' => 'لقاح بيطري مخصص لدعم برامج التحصين للأغنام.',
+                'price' => 32.00,
+                'discount_percentage' => 2.5,
+                'quantity' => 110,
+                'shared_detail' => [
+                    'commercial_name' => 'Sheep Guard Vaccine',
+                    'barcodes' => ['VET-VAC-001'],
+                    'manufacturer_name_ar' => 'مختبرات اللقاح البيطري',
+                    'manufacturer_name_en' => 'Vet Vaccine Labs',
+                    'brand_name_ar' => 'مناعة',
+                    'brand_name_en' => 'Manaa',
+                    'country_of_origin' => 'Turkey',
+                    'registration_number' => 'VT-VA-1120',
+                    'registration_status' => 'registered',
+                    'package_size' => 100,
+                    'package_unit' => 'ml',
+                    'short_description' => 'لقاح بيطري للأغنام.',
+                    'approved_description' => 'يعطى ضمن برنامج التحصين الدوري المعتمد.',
+                    'keywords' => ['لقاح', 'أغنام', 'بيطري'],
+                ],
+                'veterinary_detail' => [
+                    'concentration' => '10^6',
+                    'dosage_form' => 'injection',
+                    'routes_of_administration' => ['subcutaneous'],
+                    'target_species' => ['Sheep'],
+                    'indications' => ['التحصين الوقائي الموسمي'],
+                    'storage_conditions' => ['2-8°C'],
+                    'warnings' => ['للاستخدام البيطري فقط'],
+                ],
+            ],
+            [
+                'name' => 'مضاد حيوي بيطري',
+                'name_ar' => 'مضاد حيوي بيطري',
+                'name_en' => 'Veterinary Antibiotic',
+                'category' => 'الأدوية البيطرية',
+                'subcategory' => 'مضادات حيوية',
+                'type' => Category::TYPE_VETERINARY,
+                'vendor_email' => 'veterinary.vendor@vetora.test',
+                'description' => 'منتج بيطري واسع الطيف للاستخدام تحت إشراف الطبيب.',
+                'price' => 46.00,
+                'discount_percentage' => 0.0,
+                'quantity' => 65,
+                'shared_detail' => [
+                    'commercial_name' => 'Vet Cure 20%',
+                    'barcodes' => ['VET-ANT-001'],
+                    'manufacturer_name_ar' => 'شركة الأدوية البيطرية المتحدة',
+                    'manufacturer_name_en' => 'United Vet Pharma',
+                    'brand_name_ar' => 'فيت كيور',
+                    'brand_name_en' => 'Vet Cure',
+                    'country_of_origin' => 'Syria',
+                    'registration_number' => 'VT-MD-2201',
+                    'registration_status' => 'registered',
+                    'package_size' => 100,
+                    'package_unit' => 'ml',
+                    'short_description' => 'مضاد حيوي بيطري واسع الطيف.',
+                    'approved_description' => 'يستخدم تبعًا لتشخيص الطبيب البيطري.',
+                    'keywords' => ['مضاد حيوي', 'أبقار', 'بيطري'],
+                ],
+                'veterinary_detail' => [
+                    'concentration' => '20%',
+                    'dosage_form' => 'solution',
+                    'routes_of_administration' => ['intramuscular'],
+                    'target_species' => ['Cattle', 'Sheep'],
+                    'dosage_instructions' => ['1 ml / 10 kg'],
+                    'contraindications' => ['لا يستخدم عند الحساسية للمادة الفعالة'],
+                    'withdrawal_meat_days' => 7,
+                    'withdrawal_milk_days' => 3,
+                    'storage_conditions' => ['يحفظ في مكان بارد وجاف'],
+                ],
+            ],
         ];
     }
 
@@ -102,5 +323,17 @@ class ArabicProductSeeder extends Seeder
         }
 
         return $path;
+    }
+
+    private function resolveSubcategoryId(int $categoryId, ?string $subcategoryName): ?int
+    {
+        if (! $subcategoryName) {
+            return null;
+        }
+
+        return Subcategory::query()
+            ->where('category_id', $categoryId)
+            ->where('name_ar', $subcategoryName)
+            ->value('id');
     }
 }

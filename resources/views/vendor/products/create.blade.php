@@ -29,11 +29,29 @@
 document.addEventListener('DOMContentLoaded', async function () {
     const form = document.getElementById('create-form');
     const categorySelect = document.getElementById('category_id');
+    const subcategorySelect = document.getElementById('subcategory_id');
+    const subcategoryFieldWrap = document.getElementById('subcategory-field-wrap');
+    const productTypeProxyWrap = document.getElementById('product-type-proxy-wrap');
+    const productTypeProxy = document.getElementById('product_type_proxy');
     const agricultureSection = document.querySelector('[data-detail-section="agriculture"]');
     const veterinarySection = document.querySelector('[data-detail-section="veterinary"]');
     const STORAGE_KEY = 'vendor_product_create_form';
     const baseApiPath = '/api/vendor';
     let savedCategoryId = '';
+    let savedSubcategoryId = '';
+    const productTypeOptions = {
+        agriculture: [
+            { value: 'pesticide', label: 'Pesticide' },
+            { value: 'fertilizer', label: 'Fertilizer' },
+            { value: 'seed', label: 'Seed' },
+            { value: 'soil_amendment', label: 'Soil Amendment' },
+            { value: 'growth_regulator', label: 'Growth Regulator' },
+            { value: 'other', label: 'Other' },
+        ],
+        veterinary: [
+            { value: 'veterinary_medicine', label: 'Veterinary Medicine' },
+        ],
+    };
 
     initArrayLists();
 
@@ -42,6 +60,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (saved) {
             const data = JSON.parse(saved);
             savedCategoryId = data.category_id || '';
+            savedSubcategoryId = data.subcategory_id || '';
             if (form.name_ar) form.name_ar.value = data.name_ar || '';
             if (form.name_en) form.name_en.value = data.name_en || '';
             if (form.price) form.price.value = data.price || '';
@@ -57,6 +76,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     function saveFormData() {
         const data = {
             category_id: categorySelect?.value || '',
+            subcategory_id: subcategorySelect?.value || '',
             name_ar: form.name_ar?.value || '',
             name_en: form.name_en?.value || '',
             price: form.price?.value || '',
@@ -72,8 +92,17 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     categorySelect?.addEventListener('change', function () {
         saveFormData();
+        syncSubcategoryOptions();
         syncProductTypeSections();
     });
+    productTypeProxy?.addEventListener('change', function () {
+        const agriculturalTypeSelect = document.getElementById('agricultural_agricultural_product_type');
+        if (agriculturalTypeSelect) {
+            agriculturalTypeSelect.value = this.value;
+            agriculturalTypeSelect.dispatchEvent(new Event('change'));
+        }
+    });
+    subcategorySelect?.addEventListener('change', saveFormData);
     form.name_ar?.addEventListener('input', saveFormData);
     form.name_en?.addEventListener('input', saveFormData);
     form.price?.addEventListener('input', saveFormData);
@@ -85,11 +114,17 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById('is_active')?.addEventListener('change', saveFormData);
 
     try {
-        const res = await window.axios.get(`${baseApiPath}/categories`);
+        const res = await window.axios.get(`${baseApiPath}/allowed-categories`);
         const categories = res.data.data || [];
         categorySelect.innerHTML = '<option value="">Select category...</option>' +
-            categories.map(category => `<option value="${category.id}" data-type="${esc(category.type || '')}">${esc(category.name)}</option>`).join('');
-        if (savedCategoryId) categorySelect.value = savedCategoryId;
+            categories.map(category => `<option value="${category.id}" data-type="${esc(category.type || '')}" data-subcategories='${JSON.stringify(category.subcategories || []).replace(/'/g, '&#39;')}'>${esc(category.name)}</option>`).join('');
+        if (savedCategoryId) {
+            categorySelect.value = savedCategoryId;
+        }
+        syncSubcategoryOptions();
+        if (savedSubcategoryId) {
+            subcategorySelect.value = savedSubcategoryId;
+        }
         syncProductTypeSections();
     } catch (e) {
         categorySelect.innerHTML = '<option value="">Failed to load categories</option>';
@@ -101,6 +136,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         toggleLoading(true);
         const formData = new FormData();
         formData.append('category_id', categorySelect.value);
+        if (subcategorySelect?.value) formData.append('subcategory_id', subcategorySelect.value);
         formData.append('name_ar', form.name_ar.value.trim());
         formData.append('name_en', form.name_en.value.trim());
         formData.append('price', parseFloat(form.price.value) || 0);
@@ -109,13 +145,16 @@ document.addEventListener('DOMContentLoaded', async function () {
         formData.append('is_active', document.getElementById('is_active').checked ? '1' : '0');
         const desc = form.description.value.trim();
         if (desc) formData.append('description', desc);
-        if (form.image?.files?.[0]) formData.append('image', form.image.files[0]);
-        if (form.icon?.files?.[0]) formData.append('icon', form.icon.files[0]);
         if (document.getElementById('discount_starts_at').value) formData.append('discount_starts_at', document.getElementById('discount_starts_at').value);
         if (document.getElementById('discount_ends_at').value) formData.append('discount_ends_at', document.getElementById('discount_ends_at').value);
         appendDetailFields(formData);
-        const selectedFiles = window.getSelectedPhotos ? window.getSelectedPhotos() : [];
-        selectedFiles.forEach(f => formData.append('photos[]', f));
+
+        const selectedPhotos = window.getSelectedPhotoPayload ? window.getSelectedPhotoPayload() : [];
+        selectedPhotos.forEach((item) => {
+            formData.append('photos[]', item.file);
+            formData.append('photo_types[]', item.image_type);
+            formData.append('photo_sort_orders[]', item.sort_order);
+        });
 
         try {
             await window.axios.post('/api/vendor/products', formData, {
@@ -136,16 +175,19 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('create-spinner').classList.toggle('hidden', !l);
         document.getElementById('create-btn-text').textContent = l ? 'Creating...' : 'Create Product';
     }
+
     function clearErrors() {
         document.getElementById('create-alert').classList.add('hidden');
         document.getElementById('create-success').classList.add('hidden');
         document.querySelectorAll('.form-error').forEach(el => { el.classList.add('hidden'); el.textContent = ''; });
     }
+
     function showAlert(id, msg) {
         const el = document.getElementById(id);
         document.getElementById(id + '-message').textContent = msg;
         el.classList.remove('hidden');
     }
+
     function handleErrors(error) {
         if (error.response?.status === 422) {
             const errors = error.response.data.errors || {};
@@ -185,11 +227,34 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         });
     }
+
     function esc(t) {
         if (!t) return '';
         const d = document.createElement('div');
         d.textContent = t;
         return d.innerHTML;
+    }
+
+    function syncSubcategoryOptions() {
+        if (!subcategorySelect || !subcategoryFieldWrap) {
+            return;
+        }
+
+        const selectedOption = categorySelect?.selectedOptions?.[0];
+        const subcategories = selectedOption?.dataset?.subcategories
+            ? JSON.parse(selectedOption.dataset.subcategories)
+            : [];
+
+        if (!Array.isArray(subcategories) || subcategories.length === 0) {
+            subcategoryFieldWrap.classList.add('hidden');
+            subcategorySelect.innerHTML = '<option value="">Select subcategory...</option>';
+            subcategorySelect.value = '';
+            return;
+        }
+
+        subcategoryFieldWrap.classList.remove('hidden');
+        subcategorySelect.innerHTML = '<option value="">Select subcategory...</option>' +
+            subcategories.map((subcategory) => `<option value="${subcategory.id}">${esc(subcategory.name_ar || subcategory.name_en || '')}</option>`).join('');
     }
 
     function setSectionState(section, visible) {
@@ -207,8 +272,27 @@ document.addEventListener('DOMContentLoaded', async function () {
         const selectedOption = categorySelect?.selectedOptions?.[0];
         const type = selectedOption?.dataset?.type || '';
 
+        if (productTypeProxyWrap && productTypeProxy) {
+            const options = productTypeOptions[type] || [];
+            productTypeProxyWrap.classList.toggle('hidden', options.length === 0);
+            productTypeProxy.innerHTML = '<option value="">Select product type from the list</option>' +
+                options.map((option) => `<option value="${option.value}">${option.label}</option>`).join('');
+            if (type !== 'agriculture') {
+                productTypeProxy.value = options[0]?.value || '';
+            }
+        }
+
         setSectionState(agricultureSection, type === 'agriculture');
         setSectionState(veterinarySection, type === 'veterinary');
+        const agriculturalTypeSelect = document.getElementById('agricultural_agricultural_product_type');
+        if (agriculturalTypeSelect) {
+            if (type !== 'agriculture') {
+                agriculturalTypeSelect.value = '';
+            } else if (productTypeProxy) {
+                agriculturalTypeSelect.value = productTypeProxy.value;
+            }
+            agriculturalTypeSelect.dispatchEvent(new Event('change'));
+        }
     }
 
     function initArrayLists() {

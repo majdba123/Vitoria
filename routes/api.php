@@ -59,6 +59,13 @@ Route::prefix('external/products')->as('external.products.')->group(function () 
     Route::get('/{product}', [\App\Http\Controllers\Api\ProductController::class, 'externalShow'])->name('show');
 });
 
+Route::middleware(['auth:sanctum', 'throttle:api.authenticated'])->prefix('ai/products')->as('ai.products.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\AiProductController::class, 'index'])->name('index');
+    Route::get('/agriculture', [\App\Http\Controllers\Api\AiProductController::class, 'agricultureIndex'])->name('agriculture');
+    Route::get('/veterinary', [\App\Http\Controllers\Api\AiProductController::class, 'veterinaryIndex'])->name('veterinary');
+    Route::get('/{product}', [\App\Http\Controllers\Api\AiProductController::class, 'show'])->name('show');
+});
+
 /*
 |--------------------------------------------------------------------------
 | Authenticated Routes

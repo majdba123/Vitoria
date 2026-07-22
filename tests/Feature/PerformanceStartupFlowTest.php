@@ -145,7 +145,7 @@ test('auth login is rate limited with clean response', function () {
         'password' => 'wrong',
     ])
         ->assertTooManyRequests()
-        ->assertJsonPath('message', 'Too many attempts. Please try again soon.');
+        ->assertJsonPath('message', 'Too many requests. Please wait a little and try again.');
 });
 
 test('checkout failure does not create orders or decrement stock', function () {
@@ -163,7 +163,7 @@ test('checkout failure does not create orders or decrement stock', function () {
     expect($set['product']->refresh()->quantity)->toBe(1);
 });
 
-test('product display image upload is removed when product transaction fails', function () {
+test('product photo upload is removed when product transaction fails', function () {
     Storage::fake('public');
     performanceAdmin();
     $set = performanceProductSet();
@@ -182,10 +182,10 @@ test('product display image upload is removed when product transaction fails', f
         'name' => 'Rollback Product',
         'price' => 50,
         'quantity' => 5,
-        'image' => UploadedFile::fake()->image('rollback.jpg'),
-        'icon' => UploadedFile::fake()->image('rollback-icon.png'),
+        'photos' => [
+            UploadedFile::fake()->image('rollback-front.jpg'),
+        ],
     ], ['Accept' => 'application/json'])->assertStatus(500);
 
-    expect(Storage::disk('public')->allFiles('products/image'))->toBeEmpty()
-        ->and(Storage::disk('public')->allFiles('products/icon'))->toBeEmpty();
+    expect(Storage::disk('public')->allFiles('products'))->toBeEmpty();
 });

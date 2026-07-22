@@ -35,12 +35,11 @@ class Product extends Model
     protected $fillable = [
         'vendor_id',
         'category_id',
+        'subcategory_id',
         'name',
         'name_ar',
         'name_en',
         'description',
-        'icon',
-        'image',
         'price',
         'discount_percentage',
         'quantity',
@@ -62,6 +61,7 @@ class Product extends Model
             'price' => 'decimal:2',
             'discount_percentage' => 'decimal:2',
             'quantity' => 'integer',
+            'subcategory_id' => 'integer',
             'is_active' => 'boolean',
             'discount_is_active' => 'boolean',
             'discount_starts_at' => 'datetime',
@@ -118,6 +118,11 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function subcategory(): BelongsTo
+    {
+        return $this->belongsTo(Subcategory::class);
     }
 
     public function sharedDetail(): HasOne

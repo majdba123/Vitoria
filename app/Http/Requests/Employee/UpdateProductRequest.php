@@ -21,8 +21,6 @@ class UpdateProductRequest extends FormRequest
             'name_ar' => ['sometimes', 'nullable', 'string', 'max:255'],
             'name_en' => ['sometimes', 'nullable', 'string', 'max:255'],
             'description' => ['sometimes', 'nullable', 'string', 'max:2000'],
-            'icon' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],
-            'image' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'],
             'status' => ['sometimes', 'nullable', Rule::in(['pending', 'approved', 'rejected'])],
             'rejection_reason' => ['sometimes', 'nullable', 'string', 'max:2000', Rule::requiredIf(fn (): bool => $this->input('status') === 'rejected')],
         ];

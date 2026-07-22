@@ -16,11 +16,8 @@ return new class extends Migration
             $table->foreignId('product_id')->unique()->constrained()->cascadeOnDelete();
             $table->string('commercial_name')->nullable();
             $table->json('aliases')->nullable();
-            $table->string('barcode')->nullable();
             $table->json('barcodes')->nullable();
             $table->string('sku')->nullable();
-            $table->foreignId('manufacturer_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('brand_id')->nullable()->constrained()->nullOnDelete();
             $table->string('country_of_origin')->nullable();
             $table->string('registration_number')->nullable();
             $table->string('registration_status')->nullable();

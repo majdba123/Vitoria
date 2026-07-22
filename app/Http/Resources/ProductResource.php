@@ -9,6 +9,29 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
 {
+    protected function resolvedProductType(): ?string
+    {
+        $categoryType = $this->category?->type;
+
+        if ($categoryType === \App\Models\Category::TYPE_VETERINARY) {
+            return 'veterinary_medicine';
+        }
+
+        if ($categoryType === \App\Models\Category::TYPE_AGRICULTURE) {
+            if (
+                $this->relationLoaded('sharedDetail')
+                && $this->sharedDetail
+                && $this->sharedDetail->relationLoaded('agriculturalDetail')
+            ) {
+                return $this->sharedDetail->agriculturalDetail?->agricultural_product_type ?: 'other';
+            }
+
+            return \App\Models\Category::TYPE_AGRICULTURE;
+        }
+
+        return $categoryType;
+    }
+
     protected function localizedName(): string
     {
         return $this->resource->getLocalizedName(app()->getLocale());
@@ -22,11 +45,26 @@ class ProductResource extends JsonResource
             && ($user->type === User::TYPE_ADMIN || $user->type === User::TYPE_VENDOR);
     }
 
+    protected function shouldExposeSpecializedDetails(Request $request): bool
+    {
+        $user = $request->user();
+
+        return $user instanceof User
+            && in_array($user->type, [
+                User::TYPE_ADMIN,
+                User::TYPE_VENDOR,
+                User::TYPE_EMPLOYEE,
+                User::TYPE_SYNDICATE,
+            ], true);
+    }
+
     /**
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
+        $photos = $this->whenLoaded('photos') ? $this->photos : collect();
+        $displayPhoto = $photos->where('is_primary', true)->first() ?? $photos->first();
         $price = (float) $this->price;
         $hasActiveDiscount = method_exists($this->resource, 'hasActiveDiscount')
             ? $this->resource->hasActiveDiscount()
@@ -40,14 +78,11 @@ class ProductResource extends JsonResource
             'id' => $this->id,
             'vendor_id' => $this->when($this->shouldExposeVendor($request), $this->vendor_id),
             'category_id' => $this->category_id,
+            'subcategory_id' => $this->subcategory_id,
             'name' => $this->localizedName(),
             'name_ar' => $this->name_ar,
             'name_en' => $this->name_en,
             'description' => $this->description,
-            'icon' => $this->icon,
-            'icon_url' => $this->icon ? asset('storage/'.$this->icon) : null,
-            'image' => $this->image,
-            'image_url' => $this->image ? asset('storage/'.$this->image) : null,
             'price' => $this->price,
             'discount_percentage' => $this->discount_percentage,
             'discount_is_active' => $this->discount_is_active,
@@ -61,7 +96,9 @@ class ProductResource extends JsonResource
             'quantity' => $this->quantity,
             'is_active' => $this->is_active,
             'status' => $this->status,
-            'product_type' => $this->category?->type,
+            'product_type' => $this->resolvedProductType(),
+            'first_photo_url' => $displayPhoto ? asset('storage/'.$displayPhoto->path) : null,
+            'fallback_photo_url' => asset('images/product-placeholder.svg'),
             'shared_detail' => $this->whenLoaded('sharedDetail', function (): ?array {
                 $detail = $this->sharedDetail;
 
@@ -72,11 +109,12 @@ class ProductResource extends JsonResource
                 return [
                     'commercial_name' => $detail->commercial_name,
                     'aliases' => $detail->aliases,
-                    'barcode' => $detail->barcode,
                     'barcodes' => $detail->barcodes,
                     'sku' => $detail->sku,
-                    'manufacturer_id' => $detail->manufacturer_id,
-                    'brand_id' => $detail->brand_id,
+                    'manufacturer_name_ar' => $detail->manufacturer_name_ar,
+                    'manufacturer_name_en' => $detail->manufacturer_name_en,
+                    'brand_name_ar' => $detail->brand_name_ar,
+                    'brand_name_en' => $detail->brand_name_en,
                     'country_of_origin' => $detail->country_of_origin,
                     'registration_number' => $detail->registration_number,
                     'registration_status' => $detail->registration_status,
@@ -87,8 +125,20 @@ class ProductResource extends JsonResource
                     'keywords' => $detail->keywords,
                 ];
             }),
-            'agricultural_detail' => $this->whenLoaded('sharedDetail', fn (): ?array => $this->sharedDetail?->agriculturalDetail?->toArray()),
-            'veterinary_detail' => $this->whenLoaded('sharedDetail', fn (): ?array => $this->sharedDetail?->veterinaryDetail?->toArray()),
+            'agricultural_detail' => $this->when(
+                $this->shouldExposeSpecializedDetails($request)
+                && $this->relationLoaded('sharedDetail')
+                && $this->sharedDetail
+                && $this->sharedDetail->relationLoaded('agriculturalDetail'),
+                fn (): ?array => $this->sharedDetail?->agriculturalDetail?->toArray()
+            ),
+            'veterinary_detail' => $this->when(
+                $this->shouldExposeSpecializedDetails($request)
+                && $this->relationLoaded('sharedDetail')
+                && $this->sharedDetail
+                && $this->sharedDetail->relationLoaded('veterinaryDetail'),
+                fn (): ?array => $this->sharedDetail?->veterinaryDetail?->toArray()
+            ),
             'category' => $this->whenLoaded('category', function () use ($request): ?array {
                 $category = $this->category;
 
@@ -107,6 +157,20 @@ class ProductResource extends JsonResource
                 }
 
                 return $data;
+            }),
+            'subcategory' => $this->whenLoaded('subcategory', function (): ?array {
+                $subcategory = $this->subcategory;
+
+                if (! $subcategory) {
+                    return null;
+                }
+
+                return [
+                    'id' => $subcategory->id,
+                    'category_id' => $subcategory->category_id,
+                    'name_ar' => $subcategory->name_ar,
+                    'name_en' => $subcategory->name_en,
+                ];
             }),
             'photos' => ProductPhotoResource::collection($this->whenLoaded('photos')),
             'vendor' => $this->when(

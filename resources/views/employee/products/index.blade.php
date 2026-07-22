@@ -103,7 +103,7 @@ document.addEventListener('employee-ready', function () {
             grid.innerHTML = products.map((product) => `
                 <div class="group overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-xl dark:border-gray-800 dark:bg-gray-950/70">
                     <div class="aspect-[4/3] overflow-hidden bg-gray-100">
-                        <img src="${product.first_photo_url || product.image_url || product.icon_url || '/images/product-placeholder.svg'}" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" alt="">
+                        <img src="${product.first_photo_url || '/images/product-placeholder.svg'}" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" alt="">
                     </div>
                     <div class="space-y-3 p-4">
                         <div class="flex items-start justify-between gap-3">

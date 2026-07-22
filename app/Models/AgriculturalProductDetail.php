@@ -16,13 +16,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *     unit?: string
  * }
  * @phpstan-type AgriculturalCrop array{
- *     crop_id?: int|string,
  *     name_ar?: string,
  *     name_en?: string,
  *     scientific_name?: string
  * }
  * @phpstan-type ApprovedUse array{
- *     crop_id?: int|string,
  *     crop_name_ar?: string,
  *     crop_name_en?: string,
  *     target?: string,
@@ -36,7 +34,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @phpstan-type ApplicationRate array{
  *     value?: float|int|string,
  *     unit?: string,
- *     crop_id?: int|string,
  *     crop_name_ar?: string,
  *     crop_name_en?: string,
  *     area?: string,
@@ -47,10 +44,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *     name_ar?: string,
  *     name_en?: string,
  *     scientific_name?: string,
- *     crop_id?: int|string
+ *     crop_name_ar?: string,
+ *     crop_name_en?: string
  * }
  * @phpstan-type PreHarvestInterval array{
- *     crop_id?: int|string,
  *     crop_name_ar?: string,
  *     crop_name_en?: string,
  *     days?: int|float|string
@@ -110,6 +107,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property list<Micronutrient>|null $micronutrients
  * @property list<GrowthStage>|null $growth_stages
  * @property list<string>|null $fertilization_methods
+ * @property string|null $crop_name_ar
+ * @property string|null $crop_name_en
  * @property list<SeedResistance>|null $disease_resistance
  * @property list<PlantingWindow>|null $planting_windows
  * @property ValueWithUnit|array<string, mixed>|null $seeding_rate
@@ -162,7 +161,8 @@ class AgriculturalProductDetail extends Model
         'solubility',
         'growth_stages',
         'fertilization_methods',
-        'crop_id',
+        'crop_name_ar',
+        'crop_name_en',
         'variety_name',
         'variety_type',
         'germination_percent',
@@ -189,6 +189,7 @@ class AgriculturalProductDetail extends Model
             'approved_uses' => 'array',
             'application_methods' => 'array',
             'application_rates' => 'array',
+            'storage_conditions' => 'array',
             'warnings' => 'array',
             'ppe_requirements' => 'array',
             'first_aid' => 'array',
@@ -199,9 +200,10 @@ class AgriculturalProductDetail extends Model
             'micronutrients' => 'array',
             'growth_stages' => 'array',
             'fertilization_methods' => 'array',
-            'crop_id' => 'integer',
             'germination_percent' => 'decimal:2',
             'purity_percent' => 'decimal:2',
+            'seed_treatment' => 'array',
+            'disease_resistance' => 'array',
             'planting_windows' => 'array',
             'seeding_rate' => 'array',
             'planting_depth' => 'array',

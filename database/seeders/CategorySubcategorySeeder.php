@@ -8,6 +8,9 @@ class CategorySubcategorySeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call(ArabicCategorySeeder::class);
+        $this->call([
+            ArabicCategorySeeder::class,
+            ArabicSubcategorySeeder::class,
+        ]);
     }
 }

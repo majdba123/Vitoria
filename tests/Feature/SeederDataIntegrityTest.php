@@ -18,7 +18,7 @@ test('marketplace seeders create valid category vendor and product type data', f
         ->and(Vendor::query()->where('business_type', Vendor::BUSINESS_TYPE_AGRICULTURE)->count())->toBe(1)
         ->and(Vendor::query()->where('business_type', Vendor::BUSINESS_TYPE_VETERINARY)->count())->toBe(1)
         ->and(Vendor::query()->where('business_type', Vendor::BUSINESS_TYPE_BOTH)->count())->toBe(0)
-        ->and(Product::query()->count())->toBe(16);
+        ->and(Product::query()->count())->toBe(5);
 
     Vendor::query()
         ->with('categories:id,type')
@@ -45,15 +45,13 @@ test('marketplace seeders create valid category vendor and product type data', f
         });
 
     Product::query()
-        ->with(['vendor.categories:id,type', 'category:id,type'])
+        ->with(['vendor.categories:id,type', 'category:id,type', 'photos'])
         ->get()
         ->each(function (Product $product): void {
-            expect($product->image)->not->toBeNull()
-                ->and($product->icon)->not->toBeNull()
+            expect($product->photos)->not->toBeEmpty()
                 ->and($product->category)->not->toBeNull();
 
-            Storage::disk('public')->assertExists($product->image);
-            Storage::disk('public')->assertExists($product->icon);
+            Storage::disk('public')->assertExists($product->photos->first()->path);
 
             $productCategoryType = $product->category->type;
             $vendorTypes = $product->vendor->categories->pluck('type')->unique();

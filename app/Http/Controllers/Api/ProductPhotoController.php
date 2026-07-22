@@ -115,10 +115,23 @@ class ProductPhotoController extends Controller
         if ($request->hasFile('photos')) {
             $rules['photos'] = ['array', 'max:10'];
             $rules['photos.*'] = ['image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'];
+            $rules['photo_types'] = ['sometimes', 'array'];
+            $rules['photo_types.*'] = ['required', 'in:front,back'];
+            $rules['photo_sort_orders'] = ['sometimes', 'array'];
+            $rules['photo_sort_orders.*'] = ['nullable', 'integer', 'min:1'];
         }
 
         if ($request->has('primary_photo_id')) {
             $rules['primary_photo_id'] = ['nullable', 'integer', 'exists:product_photos,id'];
+        }
+
+        if ($request->has('photo_ids')) {
+            $rules['photo_ids'] = ['array'];
+            $rules['photo_ids.*'] = ['required', 'integer', 'exists:product_photos,id'];
+            $rules['existing_photo_types'] = ['sometimes', 'array'];
+            $rules['existing_photo_types.*'] = ['required', 'in:front,back'];
+            $rules['existing_photo_sort_orders'] = ['sometimes', 'array'];
+            $rules['existing_photo_sort_orders.*'] = ['nullable', 'integer', 'min:1'];
         }
 
         if (! empty($rules)) {
@@ -132,13 +145,31 @@ class ProductPhotoController extends Controller
                 $removedPhotoIds = array_values(array_filter(array_map('intval', $photoIdsToRemove)));
                 if (! empty($removedPhotoIds)) {
                     $this->productService->removePhotos($product, $removedPhotoIds);
-                    // Refresh product after deletion
                     $product->refresh();
                 }
             }
         }
 
-        // Step 2: Upload new photos
+        if ($request->has('photo_ids')) {
+            $photoIds = array_values(array_map('intval', (array) $request->input('photo_ids', [])));
+            $photoTypes = array_values((array) $request->input('existing_photo_types', []));
+            $photoSortOrders = array_values((array) $request->input('existing_photo_sort_orders', []));
+            $updates = [];
+
+            foreach ($photoIds as $index => $photoId) {
+                $updates[] = [
+                    'id' => $photoId,
+                    'image_type' => $photoTypes[$index] ?? ProductPhoto::TYPE_FRONT,
+                    'sort_order' => isset($photoSortOrders[$index]) ? (int) $photoSortOrders[$index] : $index + 1,
+                ];
+            }
+
+            if ($updates !== []) {
+                $this->productService->updatePhotoMetadata($product, $updates);
+                $product->refresh();
+            }
+        }
+
         if ($request->hasFile('photos')) {
             $files = $request->file('photos');
             if (is_array($files)) {
@@ -146,19 +177,17 @@ class ProductPhotoController extends Controller
                     return $file && $file->isValid();
                 });
                 if (! empty($validFiles)) {
-                    $this->productService->addPhotos($product, array_values($validFiles));
-                    // Refresh product after upload
+                    $metadata = $this->buildPhotoMetadata($request);
+                    $this->productService->addPhotos($product, array_values($validFiles), $metadata);
                     $product->refresh();
                 }
             }
         }
 
-        // Step 3: Set primary photo (must be done after uploads in case new photo is set as primary)
         if ($request->has('primary_photo_id')) {
             $primaryPhotoId = $request->input('primary_photo_id');
             if ($primaryPhotoId !== null && $primaryPhotoId !== '') {
                 $primaryPhotoId = (int) $primaryPhotoId;
-                // Refresh to get latest photos
                 $product->refresh();
                 $photo = $product->photos()->where('id', $primaryPhotoId)->first();
                 if ($photo) {
@@ -167,10 +196,9 @@ class ProductPhotoController extends Controller
             }
         }
 
-        // Final reload of product with fresh photos
         $product->refresh();
         $user = $request->user();
-        $product->load($user && $user->type === User::TYPE_VENDOR ? 'photos' : ['vendor.user', 'photos']);
+        $product->load($user && $user->type === User::TYPE_VENDOR ? ['photos', 'subcategory'] : ['vendor.user', 'photos', 'subcategory']);
 
         return response()->json([
             'message' => __('Photos updated successfully.'),
@@ -198,5 +226,25 @@ class ProductPhotoController extends Controller
             }
         }
         // Admin has access to all products, no check needed
+    }
+
+    /**
+     * @return array<int, array{image_type?: string, sort_order?: int}>
+     */
+    private function buildPhotoMetadata(Request $request): array
+    {
+        $types = array_values((array) $request->input('photo_types', []));
+        $sortOrders = array_values((array) $request->input('photo_sort_orders', []));
+        $count = max(count($types), count($sortOrders));
+        $metadata = [];
+
+        for ($index = 0; $index < $count; $index++) {
+            $metadata[$index] = [
+                'image_type' => $types[$index] ?? ProductPhoto::TYPE_FRONT,
+                'sort_order' => isset($sortOrders[$index]) ? (int) $sortOrders[$index] : $index + 1,
+            ];
+        }
+
+        return $metadata;
     }
 }

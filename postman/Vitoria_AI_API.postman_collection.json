@@ -1,0 +1,1469 @@
+{
+    "info":  {
+                 "_postman_id":  "b57175f8-3cca-4d7b-9e36-2db77dfea1fc",
+                 "name":  "Vitoria AI API",
+                 "description":  "Postman collection for login, product store, lookup lists, and AI product endpoints in Vitoria.",
+                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+             },
+    "variable":  [
+                     {
+                         "key":  "base_url",
+                         "value":  "http://127.0.0.1:8000"
+                     },
+                     {
+                         "key":  "phone_number",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "password",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "auth_token",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "product_id",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "vendor_id",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "category_id",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "subcategory_id",
+                         "value":  ""
+                     }
+                 ],
+    "item":  [
+                 {
+                     "name":  "Auth",
+                     "item":  [
+                                  {
+                                      "name":  "Login",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Login successful\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(200);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "const json = pm.response.json();",
+                                                                                    "const token = json?.data?.token || \u0027\u0027;",
+                                                                                    "",
+                                                                                    "if (token) {",
+                                                                                    "    pm.collectionVariables.set(\u0027auth_token\u0027, token);",
+                                                                                    "}"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "application/json"
+                                                                     },
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"phone_number\": \"{{phone_number}}\",\n  \"password\": \"{{password}}\"\n}"
+                                                               },
+                                                      "url":  {
+                                                                  "raw":  "{{base_url}}/api/auth/login",
+                                                                  "host":  [
+                                                                               "{{base_url}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "auth",
+                                                                               "login"
+                                                                           ]
+                                                              },
+                                                      "description":  "Login endpoint. It saves data.token automatically into auth_token for all secured requests."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Reference Lists",
+                     "auth":  {
+                                  "type":  "bearer",
+                                  "bearer":  [
+                                                 {
+                                                     "key":  "token",
+                                                     "value":  "{{auth_token}}",
+                                                     "type":  "string"
+                                                 }
+                                             ]
+                              },
+                     "item":  [
+                                  {
+                                      "name":  "List Vendors",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Vendors loaded\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(200);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "const json = pm.response.json();",
+                                                                                    "const firstVendorId = json?.data?.[0]?.id;",
+                                                                                    "",
+                                                                                    "if (firstVendorId) {",
+                                                                                    "    pm.collectionVariables.set(\u0027vendor_id\u0027, String(firstVendorId));",
+                                                                                    "}"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{base_url}}/api/admin/vendors?status=\u0026business_type=\u0026category_type=\u0026name=\u0026email=\u0026category_id=\u0026page=1",
+                                                                  "host":  [
+                                                                               "{{base_url}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "admin",
+                                                                               "vendors"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "status",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "business_type",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "category_type",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "name",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "email",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "category_id",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "1"
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Admin vendors list.\nFilters:\nstatus = vendor status such as pending or active.\nbusiness_type = vendor business type.\ncategory_type = agriculture or veterinary.\nname = store name or user name search.\nemail = vendor user email search.\ncategory_id = return vendors linked to one category.\npage = pagination page.\nThe first vendor id is saved automatically into vendor_id."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "List Categories",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Categories loaded\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(200);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "const json = pm.response.json();",
+                                                                                    "const firstCategoryId = json?.data?.[0]?.id;",
+                                                                                    "",
+                                                                                    "if (firstCategoryId) {",
+                                                                                    "    pm.collectionVariables.set(\u0027category_id\u0027, String(firstCategoryId));",
+                                                                                    "}"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{base_url}}/api/admin/categories?type=\u0026search=\u0026per_page=24\u0026page=1",
+                                                                  "host":  [
+                                                                               "{{base_url}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "admin",
+                                                                               "categories"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "type",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "search",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "per_page",
+                                                                                    "value":  "24"
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "1"
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Admin categories list.\nFilters:\ntype = agriculture or veterinary.\nsearch = category name search.\nper_page = 1 to 100.\npage = pagination page.\nThe first category id is saved automatically into category_id."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "List Subcategories",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Subcategories loaded\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(200);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "const json = pm.response.json();",
+                                                                                    "const firstSubcategoryId = json?.data?.[0]?.id;",
+                                                                                    "",
+                                                                                    "if (firstSubcategoryId) {",
+                                                                                    "    pm.collectionVariables.set(\u0027subcategory_id\u0027, String(firstSubcategoryId));",
+                                                                                    "}"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{base_url}}/api/admin/subcategories?category_id={{category_id}}\u0026type=\u0026search=\u0026per_page=24\u0026page=1",
+                                                                  "host":  [
+                                                                               "{{base_url}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "admin",
+                                                                               "subcategories"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "category_id",
+                                                                                    "value":  "{{category_id}}"
+                                                                                },
+                                                                                {
+                                                                                    "key":  "type",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "search",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "per_page",
+                                                                                    "value":  "24"
+                                                                                },
+                                                                                {
+                                                                                    "key":  "page",
+                                                                                    "value":  "1"
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Admin subcategories list.\nFilters:\ncategory_id = return subcategories of one category.\ntype = agriculture or veterinary by parent category type.\nsearch = subcategory name search.\nper_page = 1 to 100.\npage = pagination page.\nThe first subcategory id is saved automatically into subcategory_id."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "List Vendor Allowed Categories",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{base_url}}/api/vendor/allowed-categories?type=",
+                                                                  "host":  [
+                                                                               "{{base_url}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "vendor",
+                                                                               "allowed-categories"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "type",
+                                                                                    "value":  ""
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Vendor allowed categories list.\nFilter:\ntype = agriculture or veterinary.\nUse this when you are logged in as vendor and want the categories that vendor can sell under."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "List Products (Admin Filters)",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027Products loaded\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(200);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "const json = pm.response.json();",
+                                                                                    "const firstProductId = json?.data?.[0]?.id;",
+                                                                                    "",
+                                                                                    "if (firstProductId) {",
+                                                                                    "    pm.collectionVariables.set(\u0027product_id\u0027, String(firstProductId));",
+                                                                                    "}"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{base_url}}/api/admin/products?per_page=15\u0026vendor_id=\u0026category_id=\u0026subcategory_id=\u0026category_type=\u0026product_type=\u0026status=\u0026is_active=\u0026has_discount=\u0026in_stock=\u0026search=",
+                                                                  "host":  [
+                                                                               "{{base_url}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "admin",
+                                                                               "products"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "per_page",
+                                                                                    "value":  "15"
+                                                                                },
+                                                                                {
+                                                                                    "key":  "vendor_id",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "category_id",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "subcategory_id",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "category_type",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "product_type",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "status",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "is_active",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "has_discount",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "in_stock",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "search",
+                                                                                    "value":  ""
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Admin products list.\nFilters:\nper_page = 1 to 50.\nvendor_id = filter by vendor.\ncategory_id = filter by category.\nsubcategory_id = filter by subcategory.\ncategory_type = agriculture or veterinary.\nproduct_type = derived type such as fertilizer, pesticide, seeds, or veterinary_medicine.\nstatus = pending, approved, rejected.\nis_active = true or false.\nhas_discount = true or false.\nin_stock = true or false.\nsearch = search in names, description, barcodes, manufacturer, and brand.\nThe first product id is saved automatically into product_id."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "Store Product",
+                     "auth":  {
+                                  "type":  "bearer",
+                                  "bearer":  [
+                                                 {
+                                                     "key":  "token",
+                                                     "value":  "{{auth_token}}",
+                                                     "type":  "string"
+                                                 }
+                                             ]
+                              },
+                     "item":  [
+                                  {
+                                      "name":  "Store Product (Universal Admin Endpoint)",
+                                      "request":  {
+                                                      "method":  "POST",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "body":  {
+                                                                   "mode":  "formdata",
+                                                                   "formdata":  [
+                                                                                    {
+                                                                                        "key":  "vendor_id",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Required for admin store only. Use the vendor id returned from List Vendors. Do not send it in vendor API because vendor is taken from logged in user.",
+                                                                                        "value":  "{{vendor_id}}"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "category_id",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Required. Choose the parent category first. It decides whether product is agriculture or veterinary.",
+                                                                                        "value":  "{{category_id}}"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "subcategory_id",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional. Use it only when the selected category has subcategories. It must belong to category_id.",
+                                                                                        "value":  "{{subcategory_id}}"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "name_ar",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Required Arabic product name.",
+                                                                                        "value":  "Demo Product AR"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "name_en",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Required English product name.",
+                                                                                        "value":  "Demo Product EN"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "description",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional general description for the product.",
+                                                                                        "value":  "General product description"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "price",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Required product price.",
+                                                                                        "value":  "100"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "discount_percentage",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional. Use it only when the product has a discount. Value must be from 0 to 100.",
+                                                                                        "value":  "10"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "discount_starts_at",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional discount start datetime. Use it only when discount_percentage exists.",
+                                                                                        "value":  "2026-07-22 09:00:00"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "discount_ends_at",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional discount end datetime. Must be after discount_starts_at.",
+                                                                                        "value":  "2026-08-22 09:00:00"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "quantity",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Required available stock quantity.",
+                                                                                        "value":  "50"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "is_active",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional active flag. Send 1 to activate or 0 to keep inactive.",
+                                                                                        "value":  "1"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "photos[0]",
+                                                                                        "description":  "Optional product photo file. Use product photos instead of any old image/icon fields.",
+                                                                                        "type":  "file",
+                                                                                        "src":  ""
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "photos[1]",
+                                                                                        "description":  "Optional second product photo file, for example the back image.",
+                                                                                        "type":  "file",
+                                                                                        "src":  ""
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "photo_types[0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional. Use front for the front image of photos[0].",
+                                                                                        "value":  "front"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "photo_types[1]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional. Use back for the back image of photos[1].",
+                                                                                        "value":  "back"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "photo_sort_orders[0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional sort order of photos[0]. Lower number appears first.",
+                                                                                        "value":  "1"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "photo_sort_orders[1]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional sort order of photos[1].",
+                                                                                        "value":  "2"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[commercial_name]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional commercial or market name.",
+                                                                                        "value":  "Commercial Demo Name"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[aliases][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional alternative name. Repeat aliases[n] for multiple aliases.",
+                                                                                        "value":  "Alias One"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[aliases][1]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional second alias.",
+                                                                                        "value":  "Alias Two"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[barcodes][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional barcode array item. Use this instead of any single barcode field.",
+                                                                                        "value":  "1234567890"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[barcodes][1]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional second barcode for the same product.",
+                                                                                        "value":  "1234567891"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[sku]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional internal stock keeping code.",
+                                                                                        "value":  "SKU-001"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[manufacturer_name_ar]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional manufacturer name in Arabic.",
+                                                                                        "value":  "Manufacturer AR"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[manufacturer_name_en]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional manufacturer name in English.",
+                                                                                        "value":  "Manufacturer EN"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[brand_name_ar]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional brand name in Arabic.",
+                                                                                        "value":  "Brand AR"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[brand_name_en]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional brand name in English.",
+                                                                                        "value":  "Brand EN"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[country_of_origin]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional product origin country.",
+                                                                                        "value":  "Syria"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[registration_number]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional registration number from authority or company.",
+                                                                                        "value":  "REG-001"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[registration_status]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional registration status.",
+                                                                                        "value":  "registered"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[package_size]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional package size value such as 1, 25, 100.",
+                                                                                        "value":  "1"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[package_unit]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional package unit such as L, ml, kg, g.",
+                                                                                        "value":  "L"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[short_description]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional short summary.",
+                                                                                        "value":  "Short description"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[approved_description]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional approved or formal description.",
+                                                                                        "value":  "Approved description"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[keywords][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional search keyword. Repeat keywords[n] for more values.",
+                                                                                        "value":  "keyword-1"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "shared_detail[keywords][1]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional second keyword.",
+                                                                                        "value":  "keyword-2"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[agricultural_product_type]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is agriculture. It defines the agricultural product type. Common values: fertilizer, pesticide, seeds, soil_amendment, growth_regulator, other.",
+                                                                                        "value":  "seeds"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[active_ingredients][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional agriculture field. Useful for pesticide and some special products.",
+                                                                                        "value":  "Ingredient One"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[formulation]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional agriculture field. Useful for fertilizer or pesticide formulations.",
+                                                                                        "value":  "Powder"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[target_crops][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional agriculture field for crops targeted by the product.",
+                                                                                        "value":  "Wheat"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[approved_uses][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional agriculture field for approved use cases.",
+                                                                                        "value":  "Approved use example"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[application_methods][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional agriculture field for method of use.",
+                                                                                        "value":  "Spray"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[application_rates][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional agriculture field for dose or rate.",
+                                                                                        "value":  "2 kg/ha"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[max_applications]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional agriculture field for max application count.",
+                                                                                        "value":  "3"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[application_interval_days]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional agriculture field for interval in days.",
+                                                                                        "value":  "14"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[storage_conditions][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional agriculture field for storage notes.",
+                                                                                        "value":  "Keep in dry place"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[warnings][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional agriculture field for warnings.",
+                                                                                        "value":  "Wear gloves"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[ppe_requirements][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional agriculture field for PPE requirements.",
+                                                                                        "value":  "Mask"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[first_aid][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional agriculture field for first aid instructions.",
+                                                                                        "value":  "Wash with water"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[container_disposal]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional agriculture field for package or container disposal.",
+                                                                                        "value":  "Dispose safely"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[compatibility][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Optional agriculture field for compatibility with other products.",
+                                                                                        "value":  "Compatible with X"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[pesticide_type]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is pesticide.",
+                                                                                        "value":  "insecticide"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[chemical_group]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is pesticide.",
+                                                                                        "value":  "Group A"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[mode_of_action]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is pesticide.",
+                                                                                        "value":  "Contact action"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[target_pests][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is pesticide.",
+                                                                                        "value":  "Aphids"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[pre_harvest_intervals][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is pesticide.",
+                                                                                        "value":  "14 days"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[re_entry_interval_hours]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is pesticide.",
+                                                                                        "value":  "24"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[toxicity_class]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is pesticide.",
+                                                                                        "value":  "II"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[environmental_hazards][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is pesticide.",
+                                                                                        "value":  "Toxic to fish"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[resistance_management]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is pesticide.",
+                                                                                        "value":  "Rotate mode of action"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[fertilizer_type]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is fertilizer.",
+                                                                                        "value":  "organic"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[nutrient_n_percent]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is fertilizer.",
+                                                                                        "value":  "20"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[nutrient_p_percent]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is fertilizer.",
+                                                                                        "value":  "10"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[nutrient_k_percent]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is fertilizer.",
+                                                                                        "value":  "5"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[micronutrients][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is fertilizer.",
+                                                                                        "value":  "Zn"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[organic_matter_percent]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is fertilizer.",
+                                                                                        "value":  "40"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[ph_value]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is fertilizer.",
+                                                                                        "value":  "6.5"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[solubility]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is fertilizer.",
+                                                                                        "value":  "High"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[growth_stages][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is fertilizer or growth related products.",
+                                                                                        "value":  "Vegetative"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[fertilization_methods][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is fertilizer.",
+                                                                                        "value":  "Soil application"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[crop_name_ar]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is seeds.",
+                                                                                        "value":  "???"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[crop_name_en]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is seeds.",
+                                                                                        "value":  "Wheat"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[variety_name]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is seeds.",
+                                                                                        "value":  "Sham 5"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[variety_type]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is seeds.",
+                                                                                        "value":  "Hybrid"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[germination_percent]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is seeds.",
+                                                                                        "value":  "95"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[purity_percent]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is seeds.",
+                                                                                        "value":  "99"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[seed_treatment][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is seeds.",
+                                                                                        "value":  "Treated with fungicide"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[disease_resistance][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is seeds.",
+                                                                                        "value":  "Rust resistant"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[planting_windows][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is seeds.",
+                                                                                        "value":  "November - December"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[seeding_rate][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is seeds.",
+                                                                                        "value":  "150 kg/ha"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[planting_depth][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is seeds.",
+                                                                                        "value":  "3 cm"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[plant_spacing][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is seeds.",
+                                                                                        "value":  "15 cm"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[maturity_days]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is seeds.",
+                                                                                        "value":  "120"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "agricultural_detail[expected_yield][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this when agricultural_product_type is seeds.",
+                                                                                        "value":  "5 tons/ha"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[active_ingredients][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "Amoxicillin"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[concentration]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "150 mg/ml"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[dosage_form]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "Injection"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[routes_of_administration][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "Intramuscular"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[target_species][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "Cattle"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[indications][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "Respiratory infection"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[dosage_instructions][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "1 ml per 10 kg"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[treatment_duration]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "5 days"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[contraindications][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "Do not use in allergy cases"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[warnings][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "Keep away from children"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[special_precautions]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "Use under veterinary supervision"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[adverse_reactions][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "Local swelling"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[drug_interactions][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "Avoid with tetracyclines"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[pregnancy_lactation_use]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "Consult veterinarian"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[withdrawal_meat_days]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "14"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[withdrawal_milk_days]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "3"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[withdrawal_eggs_days]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "0"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[storage_conditions][0]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "Store at 2-8 C"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[shelf_life_after_opening]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "28 days"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[overdose_information]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "Call veterinarian if overdose happens"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[disposal_instructions]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "Dispose according to regulations"
+                                                                                    },
+                                                                                    {
+                                                                                        "key":  "veterinary_detail[medical_disclaimer]",
+                                                                                        "type":  "text",
+                                                                                        "description":  "Use this only when category is veterinary.",
+                                                                                        "value":  "Professional use only"
+                                                                                    }
+                                                                                ]
+                                                               },
+                                                      "url":  {
+                                                                  "raw":  "{{base_url}}/api/admin/products",
+                                                                  "host":  [
+                                                                               "{{base_url}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "admin",
+                                                                               "products"
+                                                                           ]
+                                                              },
+                                                      "description":  "Universal product store endpoint for admin. Use barcodes[] only; there is no single barcode parameter anymore. Product type is not a top level field in store API. For agriculture, send agricultural_detail[agricultural_product_type]. For veterinary, send veterinary_detail fields. Each form-data row has its own description explaining when to use it."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  }
+                              ]
+                 },
+                 {
+                     "name":  "AI Products",
+                     "auth":  {
+                                  "type":  "bearer",
+                                  "bearer":  [
+                                                 {
+                                                     "key":  "token",
+                                                     "value":  "{{auth_token}}",
+                                                     "type":  "string"
+                                                 }
+                                             ]
+                              },
+                     "item":  [
+                                  {
+                                      "name":  "List All AI Products",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027List request successful\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(200);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "const json = pm.response.json();",
+                                                                                    "const firstProductId = json?.data?.[0]?.id;",
+                                                                                    "",
+                                                                                    "if (firstProductId) {",
+                                                                                    "    pm.collectionVariables.set(\u0027product_id\u0027, String(firstProductId));",
+                                                                                    "}"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{base_url}}/api/ai/products?per_page=25\u0026vendor_id=\u0026category_id=\u0026subcategory_id=\u0026category_type=\u0026product_type=\u0026status=\u0026is_active=\u0026has_discount=\u0026in_stock=\u0026search=",
+                                                                  "host":  [
+                                                                               "{{base_url}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "ai",
+                                                                               "products"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "per_page",
+                                                                                    "value":  "25"
+                                                                                },
+                                                                                {
+                                                                                    "key":  "vendor_id",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "category_id",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "subcategory_id",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "category_type",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "product_type",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "status",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "is_active",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "has_discount",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "in_stock",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "search",
+                                                                                    "value":  ""
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Returns all AI products. Supported filters: per_page, vendor_id, category_id, subcategory_id, category_type, product_type, status, is_active, has_discount, in_stock, search."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "List Agriculture AI Products",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027List request successful\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(200);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "const json = pm.response.json();",
+                                                                                    "const firstProductId = json?.data?.[0]?.id;",
+                                                                                    "",
+                                                                                    "if (firstProductId) {",
+                                                                                    "    pm.collectionVariables.set(\u0027product_id\u0027, String(firstProductId));",
+                                                                                    "}"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{base_url}}/api/ai/products/agriculture?per_page=25\u0026vendor_id=\u0026category_id=\u0026subcategory_id=\u0026category_type=agriculture\u0026product_type=\u0026status=\u0026is_active=\u0026has_discount=\u0026in_stock=\u0026search=",
+                                                                  "host":  [
+                                                                               "{{base_url}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "ai",
+                                                                               "products",
+                                                                               "agriculture"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "per_page",
+                                                                                    "value":  "25"
+                                                                                },
+                                                                                {
+                                                                                    "key":  "vendor_id",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "category_id",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "subcategory_id",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "category_type",
+                                                                                    "value":  "agriculture"
+                                                                                },
+                                                                                {
+                                                                                    "key":  "product_type",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "status",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "is_active",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "has_discount",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "in_stock",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "search",
+                                                                                    "value":  ""
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Returns only agriculture AI products. category_type is forced to agriculture by this endpoint. Supported filters: per_page, vendor_id, category_id, subcategory_id, product_type, status, is_active, has_discount, in_stock, search."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "List Veterinary AI Products",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "type":  "text/javascript",
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027List request successful\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(200);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "const json = pm.response.json();",
+                                                                                    "const firstProductId = json?.data?.[0]?.id;",
+                                                                                    "",
+                                                                                    "if (firstProductId) {",
+                                                                                    "    pm.collectionVariables.set(\u0027product_id\u0027, String(firstProductId));",
+                                                                                    "}"
+                                                                                ]
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{base_url}}/api/ai/products/veterinary?per_page=25\u0026vendor_id=\u0026category_id=\u0026subcategory_id=\u0026category_type=veterinary\u0026product_type=\u0026status=\u0026is_active=\u0026has_discount=\u0026in_stock=\u0026search=",
+                                                                  "host":  [
+                                                                               "{{base_url}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "ai",
+                                                                               "products",
+                                                                               "veterinary"
+                                                                           ],
+                                                                  "query":  [
+                                                                                {
+                                                                                    "key":  "per_page",
+                                                                                    "value":  "25"
+                                                                                },
+                                                                                {
+                                                                                    "key":  "vendor_id",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "category_id",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "subcategory_id",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "category_type",
+                                                                                    "value":  "veterinary"
+                                                                                },
+                                                                                {
+                                                                                    "key":  "product_type",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "status",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "is_active",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "has_discount",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "in_stock",
+                                                                                    "value":  ""
+                                                                                },
+                                                                                {
+                                                                                    "key":  "search",
+                                                                                    "value":  ""
+                                                                                }
+                                                                            ]
+                                                              },
+                                                      "description":  "Returns only veterinary AI products. category_type is forced to veterinary by this endpoint. Supported filters: per_page, vendor_id, category_id, subcategory_id, product_type, status, is_active, has_discount, in_stock, search."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Show AI Product",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Accept",
+                                                                         "value":  "application/json"
+                                                                     }
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{base_url}}/api/ai/products/{{product_id}}",
+                                                                  "host":  [
+                                                                               "{{base_url}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "ai",
+                                                                               "products",
+                                                                               "{{product_id}}"
+                                                                           ]
+                                                              },
+                                                      "description":  "Show one product from AI API using product_id."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  }
+                              ]
+                 }
+             ]
+}

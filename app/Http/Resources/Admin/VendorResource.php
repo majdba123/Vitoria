@@ -46,6 +46,14 @@ class VendorResource extends JsonResource
                 'type' => $c->type,
                 'type_label' => \App\Models\Category::typeLabels()[$c->type] ?? $c->type,
                 'commission' => $c->commission,
+                'subcategories' => $c->relationLoaded('subcategories')
+                    ? $c->subcategories->map(fn ($subcategory) => [
+                        'id' => $subcategory->id,
+                        'category_id' => $subcategory->category_id,
+                        'name_ar' => $subcategory->name_ar,
+                        'name_en' => $subcategory->name_en,
+                    ])->values()
+                    : [],
             ])),
             'category_ids' => $this->whenLoaded('categories', fn () => $this->categories->pluck('id')),
             'created_at' => $this->created_at,

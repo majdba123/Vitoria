@@ -23,7 +23,7 @@ class VendorController extends Controller
     public function index(Request $request): JsonResponse
     {
         $vendors = Vendor::query()
-            ->with(['user', 'categories', 'city'])
+            ->with(['user', 'categories.subcategories', 'city'])
             ->when($request->filled('status'), function ($query) use ($request) {
                 $query->where('status', (string) $request->string('status'));
             })
@@ -64,7 +64,7 @@ class VendorController extends Controller
 
     public function show(Vendor $vendor): JsonResponse
     {
-        $vendor->load(['user', 'categories', 'city']);
+        $vendor->load(['user', 'categories.subcategories', 'city']);
 
         return response()->json([
             'message' => __('Vendor retrieved successfully.'),

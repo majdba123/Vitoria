@@ -37,6 +37,9 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::apiResource('users', UserController::class)->only(['index', 'show']);
     Route::get('users/{user}/favourites', [UserController::class, 'favourites'])->name('users.favourites');
     Route::get('products/{product}/reviews', [ProductReviewController::class, 'indexForAdmin'])->name('products.reviews.index');
+    Route::post('products/store-basic', [ProductController::class, 'storeBasic'])->middleware(['throttle:api.write', 'throttle:uploads'])->name('products.store-basic');
+    Route::post('products/store-agriculture', [ProductController::class, 'storeAgriculture'])->middleware(['throttle:api.write', 'throttle:uploads'])->name('products.store-agriculture');
+    Route::post('products/store-veterinary', [ProductController::class, 'storeVeterinary'])->middleware(['throttle:api.write', 'throttle:uploads'])->name('products.store-veterinary');
     Route::apiResource('products', ProductController::class)->except(['index', 'show'])->middleware(['throttle:api.write', 'throttle:uploads']);
     Route::apiResource('products', ProductController::class)->only(['index', 'show']);
     Route::patch('products/{product}/toggle-active', [ProductController::class, 'toggleActive'])->middleware('throttle:api.write')->name('products.toggle-active');
@@ -44,6 +47,8 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::patch('products/{product}/photos/{photo}/set-primary', [ProductController::class, 'setPrimaryPhoto'])->middleware('throttle:api.write')->name('products.set-primary-photo');
     Route::apiResource('categories', \App\Http\Controllers\Api\Admin\CategoryController::class)->except(['index', 'show'])->middleware(['throttle:api.write', 'throttle:uploads']);
     Route::apiResource('categories', \App\Http\Controllers\Api\Admin\CategoryController::class)->only(['index', 'show']);
+    Route::apiResource('subcategories', \App\Http\Controllers\Api\Admin\SubcategoryController::class)->except(['index', 'show'])->middleware('throttle:api.write');
+    Route::apiResource('subcategories', \App\Http\Controllers\Api\Admin\SubcategoryController::class)->only(['index', 'show']);
     Route::apiResource('cities', \App\Http\Controllers\Api\Admin\CityController::class)->except(['index', 'show'])->middleware('throttle:api.write');
     Route::apiResource('cities', \App\Http\Controllers\Api\Admin\CityController::class)->only(['index', 'show']);
     Route::apiResource('coupons', \App\Http\Controllers\Api\Admin\CouponController::class)->except(['index', 'show'])->middleware('throttle:api.write');

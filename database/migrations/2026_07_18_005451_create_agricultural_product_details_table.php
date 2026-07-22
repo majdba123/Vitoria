@@ -48,7 +48,8 @@ return new class extends Migration
             $table->string('solubility')->nullable();
             $table->json('growth_stages')->nullable();
             $table->json('fertilization_methods')->nullable();
-            $table->unsignedBigInteger('crop_id')->nullable();
+            $table->string('crop_name_ar')->nullable();
+            $table->string('crop_name_en')->nullable();
             $table->string('variety_name')->nullable();
             $table->string('variety_type')->nullable();
             $table->decimal('germination_percent', 8, 2)->nullable();

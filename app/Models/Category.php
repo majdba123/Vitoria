@@ -67,6 +67,11 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function subcategories(): HasMany
+    {
+        return $this->hasMany(Subcategory::class)->orderBy('name_ar');
+    }
+
     public function scopeAgriculture(Builder $query): Builder
     {
         return $query->where('type', self::TYPE_AGRICULTURE);

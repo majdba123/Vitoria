@@ -57,12 +57,6 @@
                 </div>
 
                 <div>
-                    <label for="image" class="form-label">{{ __('employee.photo') }}</label>
-                    <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/gif,image/webp" class="form-input">
-                    <p class="form-error" id="image-error"></p>
-                </div>
-
-                <div>
                     <label for="status" class="form-label">{{ __('employee.status') }}</label>
                     <select id="status" name="status" class="form-select">
                         <option value="pending">{{ __('employee.pending') }}</option>
@@ -127,7 +121,7 @@ document.addEventListener('employee-ready', async function () {
         document.getElementById('rejection_reason').value = product.rejection_reason || '';
         preview.name.textContent = product.name || '-';
         preview.desc.textContent = product.description || '';
-        preview.image.src = product.first_photo_url || product.image_url || product.icon_url || '/images/product-placeholder.svg';
+        preview.image.src = product.first_photo_url || '/images/product-placeholder.svg';
         preview.status.textContent = product.status || '';
         preview.reason.textContent = product.rejection_reason || '{{ __('employee.no_reason') }}';
         setStatusVisibility();
@@ -149,7 +143,6 @@ document.addEventListener('employee-ready', async function () {
         if (name) formData.append('name', name);
         if (description) formData.append('description', description);
         if (statusSelect.value) formData.append('status', statusSelect.value);
-        if (form.image.files[0]) formData.append('image', form.image.files[0]);
         if (statusSelect.value === 'rejected') {
             const reason = document.getElementById('rejection_reason').value.trim();
             if (reason) formData.append('rejection_reason', reason);
@@ -165,7 +158,7 @@ document.addEventListener('employee-ready', async function () {
             document.getElementById('edit-success').classList.remove('hidden');
             preview.name.textContent = product.name || '-';
             preview.desc.textContent = product.description || '';
-            preview.image.src = product.first_photo_url || product.image_url || product.icon_url || '/images/product-placeholder.svg';
+            preview.image.src = product.first_photo_url || '/images/product-placeholder.svg';
             preview.status.textContent = product.status || '';
             preview.reason.textContent = product.rejection_reason || '{{ __('employee.no_reason') }}';
         } catch (error) {

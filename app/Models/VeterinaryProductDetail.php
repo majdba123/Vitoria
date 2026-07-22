@@ -102,6 +102,7 @@ class VeterinaryProductDetail extends Model
             'warnings' => 'array',
             'adverse_reactions' => 'array',
             'drug_interactions' => 'array',
+            'storage_conditions' => 'array',
             'withdrawal_meat_days' => 'integer',
             'withdrawal_milk_days' => 'integer',
             'withdrawal_eggs_days' => 'integer',

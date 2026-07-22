@@ -38,12 +38,14 @@ class CategoryController extends Controller
         if ($cacheKey) {
             $categories = $this->cacheService->remember($cacheKey, 1800, function () use ($type, $perPage) {
                 return Category::query()
+                    ->with('subcategories')
                     ->when($type, fn ($query) => $query->where('type', $type))
                     ->latest()
                     ->paginate($perPage);
             }, ['categories']);
         } else {
             $categories = Category::query()
+                ->with('subcategories')
                 ->when($type, fn ($query) => $query->where('type', $type))
                 ->when($search, fn ($query) => $query->where('name', 'like', '%'.$search.'%'))
                 ->latest()
@@ -75,10 +77,10 @@ class CategoryController extends Controller
 
         try {
             $data = $this->cacheService->remember($cacheKey, 1800, function () use ($category) {
-                return $category;
+                return $category->load('subcategories');
             }, ['categories']);
         } catch (\Exception $e) {
-            $data = $category;
+            $data = $category->load('subcategories');
         }
 
         return response()->json([

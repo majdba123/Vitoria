@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const res = await window.axios.get(withSelectedType(`/api/products/${productId}`));
         const p = res.data.data;
         const photos = p.photos || [];
-        const displayImage = p.image_url || '';
+        const displayImage = p.first_photo_url || p.fallback_photo_url || '';
 
         $('product-name').textContent = p.name || '—';
         $('bc-name').textContent = p.name || 'Details';

@@ -8,7 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 
-test('admin product creation stores product image and icon uploads', function () {
+test('admin product creation stores product photos only', function () {
     Storage::fake('public');
     Sanctum::actingAs(User::factory()->admin()->create());
 
@@ -25,31 +25,35 @@ test('admin product creation stores product image and icon uploads', function ()
         'vendor_id' => $vendor->id,
         'category_id' => $category->id,
         'name' => 'Asset Enabled Product',
-        'description' => 'A product with a dedicated image and icon.',
+        'description' => 'A product with dedicated photos.',
         'price' => 125.50,
         'quantity' => 25,
         'is_active' => true,
-        'image' => UploadedFile::fake()->image('product.jpg', 900, 700),
-        'icon' => UploadedFile::fake()->image('product-icon.png', 96, 96),
+        'photos' => [
+            UploadedFile::fake()->image('product-front.jpg', 900, 700),
+            UploadedFile::fake()->image('product-back.jpg', 900, 700),
+        ],
+        'photo_types' => ['front', 'back'],
+        'photo_sort_orders' => [1, 2],
     ], ['Accept' => 'application/json']);
 
     $response->assertCreated()
         ->assertJsonPath('data.name', 'Asset Enabled Product')
         ->assertJsonPath('data.category.type', Category::TYPE_AGRICULTURE)
         ->assertJsonStructure([
-            'data' => ['image_url', 'icon_url'],
+            'data' => ['photos', 'first_photo_url'],
         ]);
 
-    $product = Product::query()->where('name', 'Asset Enabled Product')->firstOrFail();
+    $product = Product::query()->with('photos')->where('name', 'Asset Enabled Product')->firstOrFail();
 
-    expect($product->image)->not->toBeNull()
-        ->and($product->icon)->not->toBeNull();
+    expect($product->photos)->toHaveCount(2)
+        ->and($product->photos->firstWhere('is_primary', true))->not->toBeNull();
 
-    Storage::disk('public')->assertExists($product->image);
-    Storage::disk('public')->assertExists($product->icon);
+    Storage::disk('public')->assertExists($product->photos[0]->path);
+    Storage::disk('public')->assertExists($product->photos[1]->path);
 });
 
-test('product asset uploads reject non image files', function () {
+test('product photo uploads reject non image files', function () {
     Storage::fake('public');
     Sanctum::actingAs(User::factory()->admin()->create());
 
@@ -68,9 +72,10 @@ test('product asset uploads reject non image files', function () {
         'name' => 'Invalid Asset Product',
         'price' => 45,
         'quantity' => 8,
-        'image' => UploadedFile::fake()->create('not-image.pdf', 32, 'application/pdf'),
-        'icon' => UploadedFile::fake()->create('not-icon.txt', 8, 'text/plain'),
+        'photos' => [
+            UploadedFile::fake()->create('not-image.pdf', 32, 'application/pdf'),
+        ],
     ], ['Accept' => 'application/json'])
         ->assertUnprocessable()
-        ->assertJsonValidationErrors(['image', 'icon']);
+        ->assertJsonValidationErrors(['photos.0']);
 });

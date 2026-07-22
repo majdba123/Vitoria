@@ -4,18 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $product_id
  * @property string $commercial_name
  * @property list<string>|null $aliases
- * @property string|null $barcode
  * @property list<string>|null $barcodes
  * @property string|null $sku
- * @property int|null $manufacturer_id
- * @property int|null $brand_id
+ * @property string|null $manufacturer_name_ar
+ * @property string|null $manufacturer_name_en
+ * @property string|null $brand_name_ar
+ * @property string|null $brand_name_en
  * @property string|null $country_of_origin
  * @property string|null $registration_number
  * @property string|null $registration_status
@@ -47,11 +47,12 @@ class SharedProductDetail extends Model
         'product_id',
         'commercial_name',
         'aliases',
-        'barcode',
         'barcodes',
         'sku',
-        'manufacturer_id',
-        'brand_id',
+        'manufacturer_name_ar',
+        'manufacturer_name_en',
+        'brand_name_ar',
+        'brand_name_en',
         'country_of_origin',
         'registration_number',
         'registration_status',
@@ -70,8 +71,6 @@ class SharedProductDetail extends Model
     {
         return [
             'product_id' => 'integer',
-            'manufacturer_id' => 'integer',
-            'brand_id' => 'integer',
             'aliases' => 'array',
             'barcodes' => 'array',
             'package_size' => 'decimal:2',
@@ -83,16 +82,6 @@ class SharedProductDetail extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
-    }
-
-    public function manufacturer(): BelongsTo
-    {
-        return $this->belongsTo(Manufacturer::class);
-    }
-
-    public function brand(): BelongsTo
-    {
-        return $this->belongsTo(Brand::class);
     }
 
     public function agriculturalDetail(): HasOne
@@ -117,6 +106,16 @@ class SharedProductDetail extends Model
 
     public function getProductTypeAttribute(): ?string
     {
-        return $this->product?->category?->type;
+        $categoryType = $this->product?->category?->type;
+
+        if ($categoryType === Category::TYPE_VETERINARY) {
+            return 'veterinary_medicine';
+        }
+
+        if ($categoryType === Category::TYPE_AGRICULTURE) {
+            return $this->agriculturalDetail?->agricultural_product_type ?: 'other';
+        }
+
+        return $categoryType;
     }
 }

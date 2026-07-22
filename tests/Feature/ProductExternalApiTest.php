@@ -30,7 +30,6 @@ test('external product api returns localized name and veterinary payload', funct
     $sharedDetail = SharedProductDetail::query()->create([
         'product_id' => $product->id,
         'commercial_name' => 'Vet Shield',
-        'barcode' => 'EXT-900',
         'barcodes' => ['EXT-900', 'EXT-901'],
         'package_size' => 100,
         'package_unit' => 'ml',

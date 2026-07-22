@@ -33,7 +33,6 @@ test('admin can create an agriculture product with shared and agriculture detail
         'is_active' => true,
         'shared_detail' => [
             'commercial_name' => 'Ferti Grow',
-            'barcode' => 'AGR-100',
             'aliases' => ['Ferti', 'Grow'],
             'barcodes' => ['AGR-100', 'AGR-101'],
             'package_size' => 25,
@@ -54,7 +53,7 @@ test('admin can create an agriculture product with shared and agriculture detail
         ->assertJsonPath('data.name_en', 'Organic Fertilizer')
         ->assertJsonPath('data.shared_detail.commercial_name', 'Ferti Grow')
         ->assertJsonPath('data.agricultural_detail.fertilizer_type', 'organic')
-        ->assertJsonPath('data.product_type', Category::TYPE_AGRICULTURE);
+        ->assertJsonPath('data.product_type', 'fertilizer');
 
     $product = Product::query()->firstOrFail();
     $sharedDetail = SharedProductDetail::query()->where('product_id', $product->id)->firstOrFail();
@@ -100,7 +99,7 @@ test('vendor can update a veterinary product with shared and veterinary details'
         'quantity' => 8,
         'shared_detail' => [
             'commercial_name' => 'Vet Cure',
-            'barcode' => 'VET-500',
+            'barcodes' => ['VET-500'],
             'short_description' => 'Updated by vendor',
         ],
         'veterinary_detail' => [
@@ -117,7 +116,7 @@ test('vendor can update a veterinary product with shared and veterinary details'
         ->assertJsonPath('data.name_en', 'Veterinary Antibiotic')
         ->assertJsonPath('data.shared_detail.commercial_name', 'Vet Cure')
         ->assertJsonPath('data.veterinary_detail.concentration', '10%')
-        ->assertJsonPath('data.product_type', Category::TYPE_VETERINARY);
+        ->assertJsonPath('data.product_type', 'veterinary_medicine');
 
     $product->refresh();
     $sharedDetail = $product->sharedDetail()->firstOrFail();
@@ -126,7 +125,7 @@ test('vendor can update a veterinary product with shared and veterinary details'
     expect($product->getRawOriginal('name'))->toBe('مضاد حيوي بيطري')
         ->and($product->getLocalizedName('ar'))->toBe('مضاد حيوي بيطري')
         ->and($product->getLocalizedName('en'))->toBe('Veterinary Antibiotic')
-        ->and($sharedDetail->barcode)->toBe('VET-500')
+        ->and($sharedDetail->barcodes)->toBe(['VET-500'])
         ->and($veterinaryDetail->dosage_form)->toBe('solution')
         ->and($veterinaryDetail->routes_of_administration)->toBe(['oral']);
 });

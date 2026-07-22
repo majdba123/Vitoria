@@ -4,6 +4,7 @@ namespace App\Http\Requests\Vendor;
 
 use App\Http\Requests\Concerns\InteractsWithProductDetails;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreProductRequest extends FormRequest
 {
@@ -21,9 +22,12 @@ class StoreProductRequest extends FormRequest
     {
         return array_merge([
             'category_id' => ['required', 'integer', 'exists:categories,id'],
+            'subcategory_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('subcategories', 'id')->where(fn ($query) => $query->where('category_id', (int) request()->input('category_id'))),
+            ],
             'description' => ['nullable', 'string', 'max:2000'],
-            'icon' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'],
             'price' => ['required', 'numeric', 'min:0'],
             'discount_percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'quantity' => ['required', 'integer', 'min:0'],
@@ -32,6 +36,10 @@ class StoreProductRequest extends FormRequest
             'discount_ends_at' => ['nullable', 'date', 'after_or_equal:discount_starts_at'],
             'photos' => ['nullable', 'array', 'max:10'],
             'photos.*' => ['required', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:5120'],
+            'photo_types' => ['nullable', 'array'],
+            'photo_types.*' => ['required', Rule::in(['front', 'back'])],
+            'photo_sort_orders' => ['nullable', 'array'],
+            'photo_sort_orders.*' => ['nullable', 'integer', 'min:1'],
         ], $this->localizedNameRules(true), $this->sharedDetailRules(true), $this->agriculturalDetailRules(true), $this->veterinaryDetailRules(true));
     }
 

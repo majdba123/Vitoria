@@ -4,8 +4,8 @@
 @section('page-title', 'Edit Product')
 
 @section('content')
-<div class="mx-auto max-w-2xl">
-    <nav class="mb-4 flex items-center gap-2 text-sm text-gray-500">
+<div class="mx-auto max-w-3xl">
+    <nav class="mb-6 flex items-center gap-2 text-sm text-gray-500">
         <a href="{{ route('admin.products.index') }}" class="hover:text-gray-700">Products</a>
         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
         <span class="text-gray-900">Edit</span>
@@ -17,93 +17,32 @@
     </div>
 
     <div id="edit-content" class="hidden space-y-5">
-        <div class="card">
-            <div class="card-body border-b border-gray-100">
-                <h2 class="text-lg font-bold text-gray-900">Edit Product</h2>
-                <p class="mt-0.5 text-sm text-gray-500">Update product details. Vendor cannot be changed after creation.</p>
-            </div>
+        <x-alert type="error" id="edit-alert" />
+        <x-alert type="success" id="edit-success" />
 
-            <div class="card-body">
-                <x-alert type="error" id="edit-alert" />
-                <x-alert type="success" id="edit-success" />
-
-                <div class="mb-5 rounded-lg bg-gray-50 px-4 py-3">
-                    <p class="text-xs font-medium uppercase text-gray-500">Vendor</p>
-                    <p id="vendor-info" class="mt-0.5 text-sm font-semibold text-gray-900">-</p>
-                </div>
-
-                <form id="edit-form" class="space-y-6" novalidate>
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <x-form.input name="name_ar" label="Arabic Name" placeholder="Enter Arabic product name" :required="true" />
-                        <x-form.input name="name_en" label="English Name" placeholder="Enter English product name" :required="true" />
-                        <x-form.input name="price" label="Price ($)" type="number" placeholder="0.00" :required="true" />
-                        <x-form.input name="discount_percentage" label="Discount (%)" type="number" placeholder="Optional" />
-                        <x-form.input name="quantity" label="Quantity" type="number" placeholder="0" :required="true" />
-                        <div>
-                            <label for="discount_starts_at" class="form-label">Discount Start</label>
-                            <input id="discount_starts_at" name="discount_starts_at" type="date" class="form-input">
-                            <p class="form-error" id="discount_starts_at-error"></p>
-                        </div>
-                        <div>
-                            <label for="discount_ends_at" class="form-label">Discount End</label>
-                            <input id="discount_ends_at" name="discount_ends_at" type="date" class="form-input">
-                            <p class="form-error" id="discount_ends_at-error"></p>
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label for="category_id" class="form-label">Category <span class="text-red-500">*</span></label>
-                            <select id="category_id" name="category_id" class="form-input">
-                                <option value="">Select category...</option>
-                            </select>
-                            <p class="form-error" id="category_id-error"></p>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="description" class="form-label">Description</label>
-                        <textarea id="description" name="description" rows="3" placeholder="Product description (optional)" class="form-textarea"></textarea>
-                        <p class="form-error" id="description-error"></p>
-                    </div>
-
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <div>
-                            <label for="image" class="form-label">Product Image</label>
-                            <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/gif,image/webp" class="form-input">
-                            <p class="form-error" id="image-error"></p>
-                        </div>
-                        <div>
-                            <label for="icon" class="form-label">Product Icon</label>
-                            <input id="icon" name="icon" type="file" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" class="form-input">
-                            <p class="form-error" id="icon-error"></p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-3">
-                        <label class="form-label mb-0">Active</label>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="is_active">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="flex flex-col-reverse gap-2 border-t border-gray-100 pt-5 sm:flex-row sm:justify-end">
-                        <a href="{{ route('admin.products.index') }}" class="btn-secondary">Cancel</a>
-                        <button type="submit" id="edit-btn" class="btn-primary">
-                            <span id="edit-btn-text">Save Changes</span>
-                            <svg id="edit-spinner" class="hidden h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
-                        </button>
-                    </div>
-
-                    <x-products.detail-fields />
-                </form>
-            </div>
+        <div class="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-4">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Vendor</p>
+            <p id="vendor-info" class="mt-1 text-sm font-semibold text-slate-900">-</p>
         </div>
+
+        <form id="edit-form" class="space-y-6" novalidate>
+            <x-products.form-fields :showVendorSelect="false" :showLegacyMediaFields="false" />
+
+            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <a href="{{ route('admin.products.index') }}" class="btn-secondary">Cancel</a>
+                <button type="submit" id="edit-btn" class="btn-primary">
+                    <span id="edit-btn-text">Save Changes</span>
+                    <svg id="edit-spinner" class="hidden h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                </button>
+            </div>
+        </form>
 
         <div class="card">
             <div class="card-body border-b border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-lg font-bold text-gray-900">Product Photos</h2>
-                        <p class="mt-0.5 text-sm text-gray-500">Mark photos to remove or set as primary, then click "Save Photo Changes".</p>
+                        <p class="mt-0.5 text-sm text-gray-500">Update image type, order, primary image, and add more photos from here.</p>
                     </div>
                 </div>
             </div>
@@ -116,6 +55,7 @@
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
                         <input type="file" id="new-photos" multiple accept="image/jpeg,image/png,image/gif,image/webp" class="form-input flex-1 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-emerald-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-emerald-700 hover:file:bg-emerald-100">
                     </div>
+                    <div id="new-photo-preview" class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3"></div>
                 </div>
                 <div class="mt-4 flex justify-end border-t border-gray-100 pt-4">
                     <button type="button" id="save-photos-btn" class="btn-primary">
@@ -135,15 +75,45 @@ document.addEventListener('DOMContentLoaded', async function () {
     const productId = '{{ $productId }}';
     const form = document.getElementById('edit-form');
     const categorySelect = document.getElementById('category_id');
+    const subcategorySelect = document.getElementById('subcategory_id');
+    const subcategoryFieldWrap = document.getElementById('subcategory-field-wrap');
+    const categoryTypeFieldWrap = document.getElementById('category-type-field-wrap');
+    const categoryTypeDisplay = document.getElementById('category_type_display');
+    const productTypeProxyWrap = document.getElementById('product-type-proxy-wrap');
+    const productTypeProxy = document.getElementById('product_type_proxy');
     const agricultureSection = document.querySelector('[data-detail-section="agriculture"]');
     const veterinarySection = document.querySelector('[data-detail-section="veterinary"]');
+    const productTypeOptions = {
+        agriculture: [
+            { value: 'pesticide', label: 'Pesticide' },
+            { value: 'fertilizer', label: 'Fertilizer' },
+            { value: 'seed', label: 'Seed' },
+            { value: 'soil_amendment', label: 'Soil Amendment' },
+            { value: 'growth_regulator', label: 'Growth Regulator' },
+            { value: 'other', label: 'Other' },
+        ],
+        veterinary: [
+            { value: 'veterinary_medicine', label: 'Veterinary Medicine' },
+        ],
+    };
     const baseApiPath = '/api/admin';
     let existingPhotos = [];
+    let newPhotoFiles = [];
     let selectedIds = new Set();
     let primaryPhotoId = null;
 
     initArrayLists();
-    categorySelect?.addEventListener('change', syncProductTypeSections);
+    categorySelect?.addEventListener('change', function () {
+        syncSubcategoryOptions();
+        syncProductTypeSections();
+    });
+    productTypeProxy?.addEventListener('change', function () {
+        const agriculturalTypeSelect = document.getElementById('agricultural_agricultural_product_type');
+        if (agriculturalTypeSelect) {
+            agriculturalTypeSelect.value = this.value;
+            agriculturalTypeSelect.dispatchEvent(new Event('change'));
+        }
+    });
 
     function esc(t) {
         if (!t) return '';
@@ -176,6 +146,19 @@ document.addEventListener('DOMContentLoaded', async function () {
                 <div class="relative aspect-square overflow-hidden rounded-lg border-2 transition-all duration-200 ${isSelected ? 'border-red-500 ring-4 ring-red-200 shadow-lg' : isMarkedPrimary ? 'border-emerald-500 ring-4 ring-emerald-200 shadow-lg' : isPrimary ? 'border-blue-400 ring-2 ring-blue-200' : 'border-gray-200 hover:border-gray-300'}" data-photo-id="${photo.id}" data-photo-url="${photoUrl}">
                     <img src="${photoUrl}" class="h-full w-full object-cover transition-transform duration-200 ${isSelected || isMarkedPrimary ? 'opacity-60' : 'group-hover:scale-105'}" alt="">
                 </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="mb-1 block text-[10px] font-medium uppercase tracking-wide text-gray-500">Type</label>
+                        <select data-existing-photo-type="${photo.id}" class="form-select w-full !py-1 text-xs">
+                            <option value="front" ${(photo.image_type || 'front') === 'front' ? 'selected' : ''}>Front</option>
+                            <option value="back" ${(photo.image_type || 'front') === 'back' ? 'selected' : ''}>Back</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="mb-1 block text-[10px] font-medium uppercase tracking-wide text-gray-500">Order</label>
+                        <input type="number" min="1" value="${photo.sort_order || 1}" data-existing-photo-sort="${photo.id}" class="form-input !py-1 text-xs">
+                    </div>
+                </div>
                 <div class="flex items-center justify-center gap-1.5">
                     <button type="button" data-action="remove" data-photo-id="${photo.id}" class="group flex h-10 w-10 items-center justify-center rounded-lg ${isSelected ? 'bg-red-50 text-red-600 border-2 border-red-400 shadow-md' : 'bg-white text-gray-600 border border-gray-300 hover:bg-red-50 hover:text-red-600 hover:border-red-400'} transition-all duration-200 shadow-sm hover:shadow-md">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
@@ -193,7 +176,13 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     function updateSavePhotosButton() {
         const btn = document.getElementById('save-photos-btn');
-        const hasChanges = selectedIds.size > 0 || primaryPhotoId !== null || (document.getElementById('new-photos')?.files?.length || 0) > 0;
+        const existingMetadataChanged = existingPhotos.some((photo) => {
+            const currentType = document.querySelector(`[data-existing-photo-type="${photo.id}"]`)?.value || photo.image_type || 'front';
+            const currentSort = Number.parseInt(document.querySelector(`[data-existing-photo-sort="${photo.id}"]`)?.value || `${photo.sort_order || 1}`, 10) || (photo.sort_order || 1);
+
+            return currentType !== (photo.image_type || 'front') || currentSort !== (photo.sort_order || 1);
+        });
+        const hasChanges = selectedIds.size > 0 || primaryPhotoId !== null || newPhotoFiles.length > 0 || existingMetadataChanged;
         if (!btn) return;
         btn.disabled = !hasChanges;
         btn.classList.toggle('opacity-50', !hasChanges);
@@ -237,8 +226,63 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (action === 'view' && photoUrl) window.viewPhotoLarge(photoUrl);
         if (action === 'primary' && photoId) window.togglePrimaryMark(parseInt(photoId));
     });
+    document.getElementById('existing-photos')?.addEventListener('change', updateSavePhotosButton);
 
-    document.getElementById('new-photos')?.addEventListener('change', updateSavePhotosButton);
+    document.getElementById('new-photos')?.addEventListener('change', function () {
+        newPhotoFiles = Array.from(this.files || []).map((file, index) => ({
+            file,
+            image_type: index === 0 ? 'front' : 'back',
+            sort_order: existingPhotos.length + index + 1,
+        }));
+
+        renderNewPhotoPreviews();
+        updateSavePhotosButton();
+    });
+
+    function renderNewPhotoPreviews() {
+        const container = document.getElementById('new-photo-preview');
+        if (!container) {
+            return;
+        }
+
+        if (newPhotoFiles.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+
+        container.innerHTML = newPhotoFiles.map((item, index) => {
+            const url = URL.createObjectURL(item.file);
+
+            return `<div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+                <div class="aspect-square overflow-hidden">
+                    <img src="${url}" class="h-full w-full object-cover" alt="">
+                </div>
+                <div class="space-y-2 p-2">
+                    <p class="truncate text-xs font-medium text-gray-700">${esc(item.file.name)}</p>
+                    <div>
+                        <label class="mb-1 block text-[10px] font-medium uppercase tracking-wide text-gray-500">Type</label>
+                        <select data-new-photo-type="${index}" class="form-select w-full !py-1 text-xs">
+                            <option value="front" ${item.image_type === 'front' ? 'selected' : ''}>Front</option>
+                            <option value="back" ${item.image_type === 'back' ? 'selected' : ''}>Back</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="mb-1 block text-[10px] font-medium uppercase tracking-wide text-gray-500">Order</label>
+                        <input type="number" min="1" value="${item.sort_order}" data-new-photo-sort="${index}" class="form-input !py-1 text-xs">
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+
+        container.querySelectorAll('[data-new-photo-type]').forEach((select) => {
+            select.addEventListener('change', function () {
+                const index = Number.parseInt(this.getAttribute('data-new-photo-type'), 10);
+                if (!Number.isNaN(index) && newPhotoFiles[index]) {
+                    newPhotoFiles[index].image_type = this.value;
+                }
+            });
+        });
+    }
 
     document.getElementById('save-photos-btn')?.addEventListener('click', async function() {
         const btn = this;
@@ -250,10 +294,16 @@ document.addEventListener('DOMContentLoaded', async function () {
         try {
             const formData = new FormData();
             Array.from(selectedIds).forEach(id => formData.append('photo_ids_to_remove[]', parseInt(id)));
-            const newPhotosInput = document.getElementById('new-photos');
-            if (newPhotosInput?.files?.length) {
-                Array.from(newPhotosInput.files).forEach(f => formData.append('photos[]', f));
-            }
+            existingPhotos.forEach((photo) => {
+                formData.append('photo_ids[]', photo.id);
+                formData.append('existing_photo_types[]', document.querySelector(`[data-existing-photo-type="${photo.id}"]`)?.value || photo.image_type || 'front');
+                formData.append('existing_photo_sort_orders[]', document.querySelector(`[data-existing-photo-sort="${photo.id}"]`)?.value || photo.sort_order || 1);
+            });
+            newPhotoFiles.forEach((item, index) => {
+                formData.append('photos[]', item.file);
+                formData.append('photo_types[]', item.image_type || 'front');
+                formData.append('photo_sort_orders[]', document.querySelector(`[data-new-photo-sort="${index}"]`)?.value || item.sort_order || index + 1);
+            });
             if (primaryPhotoId) formData.append('primary_photo_id', parseInt(primaryPhotoId));
             const res = await window.axios.post(`/api/admin/products/${productId}/photos/update`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
@@ -263,8 +313,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 existingPhotos = product.photos;
                 selectedIds.clear();
                 primaryPhotoId = null;
+                newPhotoFiles = [];
                 renderExistingPhotos();
-                if (newPhotosInput) newPhotosInput.value = '';
+                document.getElementById('new-photos').value = '';
+                renderNewPhotoPreviews();
                 updateSavePhotosButton();
                 showAlert('photo-success', 'Photo changes saved successfully!');
             }
@@ -287,12 +339,18 @@ document.addEventListener('DOMContentLoaded', async function () {
         form.discount_percentage.value = p.discount_percentage || '';
         form.quantity.value = p.quantity || 0;
         categorySelect.value = p.category_id || '';
+        syncSubcategoryOptions();
+        subcategorySelect.value = p.subcategory_id || '';
         syncProductTypeSections();
         form.description.value = p.description || '';
         document.getElementById('is_active').checked = p.is_active;
         document.getElementById('discount_starts_at').value = toDateInput(p.discount_starts_at);
         document.getElementById('discount_ends_at').value = toDateInput(p.discount_ends_at);
         populateDetailFields(p);
+        if (productTypeProxy) {
+            productTypeProxy.value = p.product_type || p.agricultural_detail?.agricultural_product_type || '';
+        }
+        document.getElementById('agricultural_agricultural_product_type')?.dispatchEvent(new Event('change'));
         existingPhotos = p.photos || [];
         const vendorName = p.vendor?.store_name || '-';
         const ownerName = p.vendor?.user?.name || '';
@@ -310,6 +368,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         toggleLoading(true);
         const formData = new FormData();
         formData.append('category_id', categorySelect.value);
+        if (subcategorySelect?.value) formData.append('subcategory_id', subcategorySelect.value);
         formData.append('name_ar', form.name_ar.value.trim());
         formData.append('name_en', form.name_en.value.trim());
         formData.append('price', parseFloat(form.price.value));
@@ -317,8 +376,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         formData.append('quantity', parseInt(form.quantity.value));
         const desc = form.description.value.trim();
         if (desc) formData.append('description', desc);
-        if (form.image?.files?.[0]) formData.append('image', form.image.files[0]);
-        if (form.icon?.files?.[0]) formData.append('icon', form.icon.files[0]);
         formData.append('is_active', document.getElementById('is_active').checked ? '1' : '0');
         if (document.getElementById('discount_starts_at').value) formData.append('discount_starts_at', document.getElementById('discount_starts_at').value);
         if (document.getElementById('discount_ends_at').value) formData.append('discount_ends_at', document.getElementById('discount_ends_at').value);
@@ -346,7 +403,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     function clearErrors() {
         document.getElementById('edit-alert').classList.add('hidden');
         document.getElementById('edit-success').classList.add('hidden');
-        document.querySelectorAll('[id$="-error"]').forEach(el => { el.classList.add('hidden'); el.textContent = ''; });
+        document.querySelectorAll('.form-error').forEach(el => { el.classList.add('hidden'); el.textContent = ''; });
     }
 
     function handleErrors(error) {
@@ -370,10 +427,32 @@ document.addEventListener('DOMContentLoaded', async function () {
             const res = await window.axios.get(`${baseApiPath}/categories`);
             const categories = res.data.data || [];
             categorySelect.innerHTML = '<option value="">Select category...</option>' +
-                categories.map(category => `<option value="${category.id}" data-type="${esc(category.type || '')}">${esc(category.name)}</option>`).join('');
+                categories.map(category => `<option value="${category.id}" data-type="${esc(category.type || '')}" data-subcategories='${JSON.stringify(category.subcategories || []).replace(/'/g, '&#39;')}'>${esc(category.name)}</option>`).join('');
         } catch (error) {
             categorySelect.innerHTML = '<option value="">Failed to load categories</option>';
         }
+    }
+
+    function syncSubcategoryOptions() {
+        if (!subcategorySelect || !subcategoryFieldWrap) {
+            return;
+        }
+
+        const selectedOption = categorySelect?.selectedOptions?.[0];
+        const subcategories = selectedOption?.dataset?.subcategories
+            ? JSON.parse(selectedOption.dataset.subcategories)
+            : [];
+
+        if (!Array.isArray(subcategories) || subcategories.length === 0) {
+            subcategoryFieldWrap.classList.add('hidden');
+            subcategorySelect.innerHTML = '<option value="">Select subcategory...</option>';
+            subcategorySelect.value = '';
+            return;
+        }
+
+        subcategoryFieldWrap.classList.remove('hidden');
+        subcategorySelect.innerHTML = '<option value="">Select subcategory...</option>' +
+            subcategories.map((subcategory) => `<option value="${subcategory.id}">${esc(subcategory.name_ar || subcategory.name_en || '')}</option>`).join('');
     }
 
     function toDateInput(value) {
@@ -434,7 +513,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     return;
                 }
 
-                input.value = typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
+                input.value = value;
             });
         });
     }
@@ -454,8 +533,33 @@ document.addEventListener('DOMContentLoaded', async function () {
         const selectedOption = categorySelect?.selectedOptions?.[0];
         const type = selectedOption?.dataset?.type || '';
 
+        if (categoryTypeFieldWrap && categoryTypeDisplay) {
+            categoryTypeFieldWrap.classList.toggle('hidden', type === '');
+            categoryTypeDisplay.value = type ? type.charAt(0).toUpperCase() + type.slice(1) : '';
+        }
+
+        if (productTypeProxyWrap && productTypeProxy) {
+            const options = productTypeOptions[type] || [];
+            const currentValue = productTypeProxy.value;
+            productTypeProxyWrap.classList.toggle('hidden', options.length === 0);
+            productTypeProxy.innerHTML = '<option value="">Select product type from the list</option>' +
+                options.map((option) => `<option value="${option.value}">${option.label}</option>`).join('');
+            productTypeProxy.value = options.some((option) => option.value === currentValue)
+                ? currentValue
+                : (type !== 'agriculture' ? (options[0]?.value || '') : '');
+        }
+
         setSectionState(agricultureSection, type === 'agriculture');
         setSectionState(veterinarySection, type === 'veterinary');
+        const agriculturalTypeSelect = document.getElementById('agricultural_agricultural_product_type');
+        if (agriculturalTypeSelect) {
+            if (type !== 'agriculture') {
+                agriculturalTypeSelect.value = '';
+            } else if (productTypeProxy) {
+                agriculturalTypeSelect.value = productTypeProxy.value;
+            }
+            agriculturalTypeSelect.dispatchEvent(new Event('change'));
+        }
     }
 
     function escapeHtml(value) {

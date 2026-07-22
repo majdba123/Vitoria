@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('throttle:api.authenticated')->group(function () {
     Route::get('products/{product}/reviews', [ProductReviewController::class, 'indexForVendor'])->name('products.reviews.index');
+    Route::post('products/store-basic', [ProductController::class, 'storeBasic'])->middleware(['throttle:api.write', 'throttle:uploads'])->name('products.store-basic');
+    Route::post('products/store-agriculture', [ProductController::class, 'storeAgriculture'])->middleware(['throttle:api.write', 'throttle:uploads'])->name('products.store-agriculture');
+    Route::post('products/store-veterinary', [ProductController::class, 'storeVeterinary'])->middleware(['throttle:api.write', 'throttle:uploads'])->name('products.store-veterinary');
     Route::apiResource('products', ProductController::class)->except(['index', 'show'])->middleware(['throttle:api.write', 'throttle:uploads']);
     Route::apiResource('products', ProductController::class)->only(['index', 'show']);
     Route::patch('products/{product}/photos/{photo}/set-primary', [ProductController::class, 'setPrimaryPhoto'])->middleware('throttle:api.write')->name('products.set-primary-photo');

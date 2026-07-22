@@ -8,7 +8,6 @@ use App\Models\ProductPhoto;
 use App\Models\SharedProductDetail;
 use App\Models\Vendor;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
@@ -26,20 +25,151 @@ class ProductService
         $query->with([
             'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(3),
             'category:id,name,type,commission',
+            'subcategory:id,category_id,name_ar,name_en',
             'sharedDetail.agriculturalDetail',
             'sharedDetail.veterinaryDetail',
         ]);
 
-        if (! $vendor && ! empty($filters['vendor_id'])) {
-            $query->where('vendor_id', $filters['vendor_id']);
+        $this->applyListFilters($query, $filters, ! $vendor);
+
+        if (! $vendor) {
+            $query->with('vendor:id,store_name,user_id', 'vendor.user:id,name');
+        }
+
+        return $query->latest('products.created_at')->paginate($perPage);
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     */
+    public function listPublic(int $perPage = 15, array $filters = []): LengthAwarePaginator
+    {
+        $categoryId = ! empty($filters['category_id']) ? (int) $filters['category_id'] : null;
+        $subcategoryId = ! empty($filters['subcategory_id']) ? (int) $filters['subcategory_id'] : null;
+        $categoryType = ! empty($filters['category_type']) ? (string) $filters['category_type'] : null;
+        $productType = ! empty($filters['product_type']) ? (string) $filters['product_type'] : null;
+        $search = ! empty($filters['search']) ? trim((string) $filters['search']) : null;
+        $hasDiscount = isset($filters['has_discount']) && $filters['has_discount'] !== ''
+            ? filter_var($filters['has_discount'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)
+            : null;
+        $sort = isset($filters['sort']) && in_array($filters['sort'], ['top_rated', 'best_selling', 'most_favorited'], true)
+            ? $filters['sort'] : 'latest';
+        $page = (int) request()->get('page', 1);
+
+        $cacheKey = 'pub_products:'.sha1(json_encode([
+            'category_id' => $categoryId,
+            'subcategory_id' => $subcategoryId,
+            'category_type' => $categoryType,
+            'product_type' => $productType,
+            'search' => $search,
+            'has_discount' => $hasDiscount,
+            'sort' => $sort,
+            'per_page' => $perPage,
+            'page' => $page,
+        ]));
+
+        return $this->cachedOrFetch(['products'], $cacheKey, 900, function () use ($perPage, $categoryId, $subcategoryId, $categoryType, $productType, $search, $hasDiscount, $sort) {
+            return $this->fetchPublicProducts($perPage, $categoryId, $subcategoryId, $categoryType, $productType, $search, $hasDiscount, $sort);
+        });
+    }
+
+    /**
+     * @param  'latest'|'top_rated'|'best_selling'|'most_favorited'  $sort
+     */
+    protected function fetchPublicProducts(
+        int $perPage,
+        ?int $categoryId = null,
+        ?int $subcategoryId = null,
+        ?string $categoryType = null,
+        ?string $productType = null,
+        ?string $search = null,
+        ?bool $hasDiscount = null,
+        string $sort = 'latest'
+    ): LengthAwarePaginator {
+        $query = Product::query()
+            ->visible()
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
+            ->with([
+                'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(1),
+                'category:id,name,type,logo,icon',
+                'subcategory:id,category_id,name_ar,name_en',
+                'vendor:id,store_name,user_id,logo,is_active,status',
+                'sharedDetail',
+            ]);
+
+        $this->applyListFilters($query, [
+            'category_id' => $categoryId,
+            'subcategory_id' => $subcategoryId,
+            'category_type' => $categoryType,
+            'product_type' => $productType,
+            'search' => $search,
+            'has_discount' => $hasDiscount,
+            'in_stock' => true,
+        ], false);
+
+        match ($sort) {
+            'top_rated' => $query->having('reviews_count', '>=', 1)->orderByDesc('reviews_avg_rating')->orderByDesc('reviews_count'),
+            'best_selling' => $this->applyBestSellingOrder($query),
+            'most_favorited' => $this->applyMostFavoritedOrder($query),
+            default => $query->latest('products.created_at'),
+        };
+
+        return $query->paginate($perPage);
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     */
+    protected function applyListFilters(\Illuminate\Database\Eloquent\Builder $query, array $filters, bool $allowVendorFilter): void
+    {
+        if ($allowVendorFilter && ! empty($filters['vendor_id'])) {
+            $query->where('vendor_id', (int) $filters['vendor_id']);
         }
 
         if (! empty($filters['category_id'])) {
-            $query->where('category_id', $filters['category_id']);
+            $query->where('category_id', (int) $filters['category_id']);
+        }
+
+        if (! empty($filters['subcategory_id'])) {
+            $query->where('subcategory_id', (int) $filters['subcategory_id']);
         }
 
         if (! empty($filters['category_type'])) {
-            $query->whereHas('category', fn ($q) => $q->where('type', $filters['category_type']));
+            $query->whereHas('category', fn ($categoryQuery) => $categoryQuery->where('type', $filters['category_type']));
+        }
+
+        if (! empty($filters['product_type'])) {
+            $productType = (string) $filters['product_type'];
+
+            if ($productType === 'veterinary_medicine') {
+                $query->whereHas('category', fn ($categoryQuery) => $categoryQuery->where('type', Category::TYPE_VETERINARY));
+            } elseif ($productType === Category::TYPE_AGRICULTURE) {
+                $query->whereHas('category', fn ($categoryQuery) => $categoryQuery->where('type', Category::TYPE_AGRICULTURE));
+            } else {
+                $query->whereHas('sharedDetail.agriculturalDetail', fn ($detailQuery) => $detailQuery->where('agricultural_product_type', $productType));
+            }
+        }
+
+        if (! empty($filters['search'])) {
+            $search = trim((string) $filters['search']);
+
+            $query->where(function ($searchQuery) use ($search) {
+                $searchQuery
+                    ->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('name_ar', 'like', '%'.$search.'%')
+                    ->orWhere('name_en', 'like', '%'.$search.'%')
+                    ->orWhere('description', 'like', '%'.$search.'%')
+                    ->orWhereHas('sharedDetail', function ($detailQuery) use ($search) {
+                        $detailQuery
+                            ->where('commercial_name', 'like', '%'.$search.'%')
+                            ->orWhere('barcodes', 'like', '%'.$search.'%')
+                            ->orWhere('manufacturer_name_ar', 'like', '%'.$search.'%')
+                            ->orWhere('manufacturer_name_en', 'like', '%'.$search.'%')
+                            ->orWhere('brand_name_ar', 'like', '%'.$search.'%')
+                            ->orWhere('brand_name_en', 'like', '%'.$search.'%');
+                    });
+            });
         }
 
         if (isset($filters['status']) && $filters['status'] !== '') {
@@ -50,10 +180,20 @@ class ProductService
             $query->where('is_active', filter_var($filters['is_active'], FILTER_VALIDATE_BOOLEAN));
         }
 
+        if (isset($filters['in_stock']) && $filters['in_stock'] !== '') {
+            $inStock = filter_var($filters['in_stock'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+            if ($inStock === true) {
+                $query->where('quantity', '>', 0);
+            } elseif ($inStock === false) {
+                $query->where('quantity', '<=', 0);
+            }
+        }
+
         if (isset($filters['has_discount']) && $filters['has_discount'] !== '') {
-            $wantDiscount = filter_var($filters['has_discount'], FILTER_VALIDATE_BOOLEAN);
+            $wantDiscount = filter_var($filters['has_discount'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
             $query->where(function ($builder) use ($wantDiscount) {
-                $activeDiscountQuery = fn ($q) => $q
+                $activeDiscountQuery = fn ($discountQuery) => $discountQuery
                     ->where('discount_is_active', true)
                     ->where('discount_percentage', '>', 0)
                     ->where('discount_status', Product::DISCOUNT_STATUS_ACTIVE);
@@ -70,88 +210,6 @@ class ProductService
                 }
             });
         }
-
-        if (! $vendor) {
-            $query->with('vendor:id,store_name,user_id', 'vendor.user:id,name');
-        }
-
-        return $query->latest('products.created_at')->paginate($perPage);
-    }
-
-    /**
-     * @param  array<string, mixed>  $filters
-     */
-    public function listPublic(int $perPage = 15, array $filters = []): LengthAwarePaginator
-    {
-        $categoryId = ! empty($filters['category_id']) ? (int) $filters['category_id'] : null;
-        $categoryType = ! empty($filters['category_type']) ? (string) $filters['category_type'] : null;
-        $hasDiscount = isset($filters['has_discount']) && $filters['has_discount'] !== ''
-            ? filter_var($filters['has_discount'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)
-            : null;
-        $sort = isset($filters['sort']) && in_array($filters['sort'], ['top_rated', 'best_selling', 'most_favorited'], true)
-            ? $filters['sort'] : 'latest';
-        $page = (int) request()->get('page', 1);
-
-        $cacheKey = "pub_products:c{$categoryId}:ct{$categoryType}:d{$hasDiscount}:srt{$sort}:pp{$perPage}:p{$page}";
-
-        return $this->cachedOrFetch(['products'], $cacheKey, 900, function () use ($perPage, $categoryId, $categoryType, $hasDiscount, $sort) {
-            return $this->fetchPublicProducts($perPage, $categoryId, $categoryType, $hasDiscount, $sort);
-        });
-    }
-
-    /**
-     * @param  'latest'|'top_rated'|'best_selling'|'most_favorited'  $sort
-     */
-    protected function fetchPublicProducts(
-        int $perPage,
-        ?int $categoryId = null,
-        ?string $categoryType = null,
-        ?bool $hasDiscount = null,
-        string $sort = 'latest'
-    ): LengthAwarePaginator {
-        $query = Product::query()
-            ->visible()
-            ->withCount('reviews')
-            ->withAvg('reviews', 'rating')
-            ->with([
-                'photos' => fn ($q) => $q->orderByDesc('is_primary')->orderBy('sort_order')->limit(1),
-                'category:id,name,type,logo,icon',
-                'vendor:id,store_name,user_id,logo,is_active,status',
-                'sharedDetail.agriculturalDetail',
-                'sharedDetail.veterinaryDetail',
-            ]);
-
-        if ($categoryId) {
-            $query->where('category_id', $categoryId);
-        }
-
-        if ($categoryType) {
-            $query->forCategoryType($categoryType);
-        }
-
-        if ($hasDiscount !== null) {
-            if ($hasDiscount) {
-                $query->where('discount_is_active', true)
-                    ->where('discount_percentage', '>', 0)
-                    ->where('discount_status', Product::DISCOUNT_STATUS_ACTIVE);
-            } else {
-                $query->where(function ($negativeQuery) {
-                    $negativeQuery->where('discount_is_active', false)
-                        ->orWhereNull('discount_percentage')
-                        ->orWhere('discount_percentage', '<=', 0)
-                        ->orWhere('discount_status', '!=', Product::DISCOUNT_STATUS_ACTIVE);
-                });
-            }
-        }
-
-        match ($sort) {
-            'top_rated' => $query->having('reviews_count', '>=', 1)->orderByDesc('reviews_avg_rating')->orderByDesc('reviews_count'),
-            'best_selling' => $this->applyBestSellingOrder($query),
-            'most_favorited' => $this->applyMostFavoritedOrder($query),
-            default => $query->latest('products.created_at'),
-        };
-
-        return $query->paginate($perPage);
     }
 
     protected function applyBestSellingOrder(\Illuminate\Database\Eloquent\Builder $query): void
@@ -188,7 +246,7 @@ class ProductService
 
         $this->flushProductCache();
 
-        return $product->load($vendor ? ['photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail'] : ['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
+        return $product->load($vendor ? ['photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail'] : ['vendor.user', 'photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
     }
 
     public function update(Product $product, array $data): Product
@@ -200,13 +258,11 @@ class ProductService
         $this->syncProductDetails($product, $detailPayload);
         $this->flushProductCache();
 
-        return $product->fresh($product->vendor ? ['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail'] : ['photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
+        return $product->fresh($product->vendor ? ['vendor.user', 'photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail'] : ['photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
     }
 
     public function delete(Product $product): void
     {
-        $this->deleteDisplayAssets($product);
-
         foreach ($product->photos as $photo) {
             Storage::disk('public')->delete($photo->path);
         }
@@ -220,7 +276,7 @@ class ProductService
         $product->update(['is_active' => ! $product->is_active]);
         $this->flushProductCache();
 
-        return $product->fresh(['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
+        return $product->fresh(['vendor.user', 'photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
     }
 
     public function updateStatus(Product $product, string $status): Product
@@ -228,7 +284,7 @@ class ProductService
         $product->update(['status' => $status]);
         $this->flushProductCache();
 
-        return $product->fresh(['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
+        return $product->fresh(['vendor.user', 'photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
     }
 
     public function setPrimaryPhoto(Product $product, ProductPhoto $photo): Product
@@ -241,14 +297,15 @@ class ProductService
         $photo->update(['is_primary' => true]);
         $this->flushProductCache();
 
-        return $product->fresh(['vendor.user', 'photos', 'category', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
+        return $product->fresh(['vendor.user', 'photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
     }
 
     /**
      * @param  array<int, UploadedFile>  $files
+     * @param  array<int, array{image_type?: string, sort_order?: int}>  $metadata
      * @return array<int, ProductPhoto>
      */
-    public function addPhotos(Product $product, array $files): array
+    public function addPhotos(Product $product, array $files, array $metadata = []): array
     {
         $maxOrder = $product->photos()->max('sort_order') ?? 0;
         $hasPrimary = $product->photos()->where('is_primary', true)->exists();
@@ -256,15 +313,22 @@ class ProductService
 
         foreach ($files as $index => $file) {
             $path = $file->store('products/'.$product->id, 'public');
+            $itemMetadata = $metadata[$index] ?? [];
+            $sortOrder = isset($itemMetadata['sort_order']) && $itemMetadata['sort_order'] > 0
+                ? (int) $itemMetadata['sort_order']
+                : ++$maxOrder;
             $photos[] = $product->photos()->create([
                 'path' => $path,
-                'sort_order' => ++$maxOrder,
+                'image_type' => $itemMetadata['image_type'] ?? ProductPhoto::TYPE_FRONT,
+                'sort_order' => $sortOrder,
                 'is_primary' => ! $hasPrimary && $index === 0,
             ]);
 
             if (! $hasPrimary && $index === 0) {
                 $hasPrimary = true;
             }
+
+            $maxOrder = max($maxOrder, $sortOrder);
         }
 
         $this->flushProductCache();
@@ -273,34 +337,37 @@ class ProductService
     }
 
     /**
-     * @param  array<string, UploadedFile|null>  $files
-     * @return array<string, string>
+     * @param  array<int, array{id: int, image_type?: string, sort_order?: int}>  $updates
      */
-    public function storeDisplayAssets(array $files): array
+    public function updatePhotoMetadata(Product $product, array $updates): void
     {
-        $paths = [];
+        foreach ($updates as $update) {
+            $photoId = (int) ($update['id'] ?? 0);
+            if ($photoId <= 0) {
+                continue;
+            }
 
-        foreach (['icon', 'image'] as $field) {
-            if (($files[$field] ?? null) instanceof UploadedFile) {
-                $paths[$field] = $files[$field]->store('products/'.$field, 'public');
+            $photo = $product->photos()->whereKey($photoId)->first();
+            if (! $photo instanceof ProductPhoto) {
+                continue;
+            }
+
+            $attributes = [];
+
+            if (isset($update['image_type'])) {
+                $attributes['image_type'] = $update['image_type'];
+            }
+
+            if (isset($update['sort_order']) && (int) $update['sort_order'] > 0) {
+                $attributes['sort_order'] = (int) $update['sort_order'];
+            }
+
+            if ($attributes !== []) {
+                $photo->update($attributes);
             }
         }
 
-        return $paths;
-    }
-
-    public function replaceDisplayAssets(Product $product, array $files): array
-    {
-        return $this->storeDisplayAssets($files);
-    }
-
-    protected function deleteDisplayAssets(Product $product): void
-    {
-        foreach (['icon', 'image'] as $field) {
-            if ($product->{$field}) {
-                Storage::disk('public')->delete($product->{$field});
-            }
-        }
+        $this->flushProductCache();
     }
 
     public function removePhoto(ProductPhoto $photo): void
@@ -389,6 +456,14 @@ class ProductService
         $sharedAttributes = $this->filterNullValues($detailPayload['shared_detail']);
         $agriculturalAttributes = $this->filterNullValues($detailPayload['agricultural_detail']);
         $veterinaryAttributes = $this->filterNullValues($detailPayload['veterinary_detail']);
+
+        if (isset($sharedAttributes['barcodes']) && is_array($sharedAttributes['barcodes'])) {
+            $sharedAttributes['barcodes'] = collect($sharedAttributes['barcodes'])
+                ->filter(fn (mixed $value): bool => is_string($value) && trim($value) !== '')
+                ->map(fn (string $value): string => trim($value))
+                ->values()
+                ->all();
+        }
 
         if ($sharedAttributes === [] && $agriculturalAttributes === [] && $veterinaryAttributes === []) {
             return;

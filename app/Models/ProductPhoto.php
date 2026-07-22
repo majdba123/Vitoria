@@ -7,12 +7,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductPhoto extends Model
 {
+    public const TYPE_FRONT = 'front';
+
+    public const TYPE_BACK = 'back';
+
     /**
      * @var list<string>
      */
     protected $fillable = [
         'product_id',
         'path',
+        'image_type',
         'sort_order',
         'is_primary',
     ];
@@ -23,6 +28,7 @@ class ProductPhoto extends Model
     protected function casts(): array
     {
         return [
+            'image_type' => 'string',
             'sort_order' => 'integer',
             'is_primary' => 'boolean',
         ];

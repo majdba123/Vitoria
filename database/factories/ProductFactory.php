@@ -27,8 +27,6 @@ class ProductFactory extends Factory
             'name_ar' => $name,
             'name_en' => $name,
             'description' => fake()->sentence(),
-            'icon' => null,
-            'image' => null,
             'price' => fake()->randomFloat(2, 1, 999),
             'quantity' => fake()->numberBetween(0, 500),
             'is_active' => true,

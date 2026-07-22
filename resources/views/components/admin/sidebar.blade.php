@@ -12,6 +12,7 @@
         ['group' => __('admin.management'), 'route' => 'admin.coupons.index', 'label' => __('admin.coupons'), 'icon' => 'fa-solid fa-ticket'],
         ['group' => __('admin.management'), 'route' => 'admin.orders.index', 'label' => __('admin.orders'), 'icon' => 'fa-solid fa-bag-shopping'],
         ['group' => 'catalog', 'route' => 'admin.categories.index', 'label' => __('admin.categories'), 'icon' => 'fa-solid fa-layer-group'],
+        ['group' => 'catalog', 'route' => 'admin.subcategories.index', 'label' => __('Subcategories'), 'icon' => 'fa-solid fa-diagram-project'],
         ['group' => 'catalog', 'route' => 'admin.cities.index', 'label' => 'Cities', 'icon' => 'fa-solid fa-city'],
         ['group' => __('admin.management'), 'route' => 'admin.users.index', 'label' => __('admin.users'), 'icon' => 'fa-solid fa-users'],
         ['group' => __('admin.management'), 'route' => 'admin.notifications.index', 'label' => __('admin.notifications_log'), 'icon' => 'fa-regular fa-bell'],

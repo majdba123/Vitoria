@@ -99,6 +99,10 @@
                         <p class="mt-1 text-sm font-semibold text-gray-900" id="product-category">—</p>
                     </div>
                     <div>
+                        <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Subcategory</p>
+                        <p class="mt-1 text-sm font-semibold text-gray-900" id="product-subcategory">—</p>
+                    </div>
+                    <div>
                         <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Commercial Name</p>
                         <p class="mt-1 text-sm font-semibold text-gray-900" id="product-commercial-name">—</p>
                     </div>
@@ -207,6 +211,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('veterinary-detail-json').textContent = JSON.stringify(p.veterinary_detail || {}, null, 2);
         document.getElementById('product-created').textContent = p.created_at ? new Date(p.created_at).toLocaleDateString() : '—';
         document.getElementById('product-category').textContent = p.category?.name || 'Unassigned';
+        document.getElementById('product-subcategory').textContent = p.subcategory?.name_ar || p.subcategory?.name_en || '—';
         document.getElementById('product-commission').textContent = p.category?.commission ? parseFloat(p.category.commission).toFixed(2) + '%' : '—';
         document.getElementById('product-discount-value').textContent = p.discount_percentage ? parseFloat(p.discount_percentage).toFixed(2) + '%' : 'No discount';
         document.getElementById('product-discount-start').textContent = formatDateOnly(p.discount_starts_at);
@@ -382,12 +387,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                     </div>
                 </div>
             `;
-        } else if (p.image_url) {
-            primaryPhotoContainer.innerHTML = `
-                <div class="group relative h-80 w-full max-w-md overflow-hidden rounded-xl border-2 border-brand-500 bg-gray-50">
-                    <img src="${p.image_url}" class="h-full w-full object-contain transition-transform group-hover:scale-105" alt="Product image">
-                </div>
-            `;
         } else {
             primaryPhotoContainer.innerHTML = '<p class="text-sm text-gray-400 py-8">No primary photo available.</p>';
         }
@@ -401,6 +400,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             photosContainer.innerHTML = otherPhotos.map(photo => {
                 return `<div class="group relative aspect-[4/3] overflow-hidden rounded-lg border border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100 p-2 transition-colors sm:aspect-square">
                     <img src="${photo.url}" class="h-full w-full rounded-md bg-white object-contain transition-transform group-hover:scale-105" alt="">
+                    <div class="absolute left-3 top-3 rounded bg-white/95 px-2 py-1 text-[10px] font-semibold text-gray-700 shadow-sm">${esc((photo.image_type || 'front').toUpperCase())} • #${photo.sort_order || 1}</div>
                     <div class="absolute inset-0 flex items-center justify-center gap-2 bg-black/0 transition-all group-hover:bg-black/50 group-hover:opacity-100">
                         <button type="button" onclick="viewPhotoLarge('${photo.url}')" title="View Large" class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-white opacity-0 shadow-lg transition-all hover:bg-brand-700 group-hover:opacity-100">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6"/></svg>

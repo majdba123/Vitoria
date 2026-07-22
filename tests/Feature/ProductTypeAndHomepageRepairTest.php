@@ -36,8 +36,6 @@ function repairCategorySet(string $type, string $name): array
         'status' => Product::STATUS_APPROVED,
         'is_active' => true,
         'quantity' => 10,
-        'image' => null,
-        'icon' => null,
     ]);
 
     return compact('category', 'vendor', 'product');
@@ -59,8 +57,6 @@ test('homepage product api is safe with missing optional image data', function (
         'status' => Product::STATUS_APPROVED,
         'is_active' => true,
         'quantity' => 5,
-        'image' => null,
-        'icon' => null,
     ]);
 
     $response = $this->getJson('/api/products?per_page=5')->assertOk();

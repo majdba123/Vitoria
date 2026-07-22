@@ -17,6 +17,7 @@ class ArabicDemoDatabaseSeeder extends Seeder
             $this->call([
                 ArabicCitySeeder::class,
                 ArabicCategorySeeder::class,
+                ArabicSubcategorySeeder::class,
                 ArabicSyndicateSeeder::class,
                 ArabicVendorSeeder::class,
                 ArabicProductSeeder::class,
