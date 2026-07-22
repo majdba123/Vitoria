@@ -2,6 +2,7 @@
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Subcategory;
 use App\Models\Syndicate;
 use App\Models\User;
 use App\Models\Vendor;
@@ -164,6 +165,89 @@ test('public products api allows explicit all types filter', function () {
 
     expect($productIds)->toContain($agriculture['product']->id)
         ->and($productIds)->toContain($veterinary['product']->id);
+});
+
+test('public categories api exposes subcategories for homepage browsing', function () {
+    $category = Category::query()->create([
+        'name' => 'Homepage Category',
+        'type' => Category::TYPE_AGRICULTURE,
+    ]);
+
+    $firstSubcategory = Subcategory::query()->create([
+        'category_id' => $category->id,
+        'name_ar' => 'فرعية أولى',
+        'name_en' => 'First Subcategory',
+    ]);
+
+    $secondSubcategory = Subcategory::query()->create([
+        'category_id' => $category->id,
+        'name_ar' => 'فرعية ثانية',
+        'name_en' => 'Second Subcategory',
+    ]);
+
+    $response = $this->getJson('/api/categories?per_page=100&type='.Category::TYPE_AGRICULTURE)
+        ->assertOk();
+
+    $categoryRow = collect($response->json('data'))->firstWhere('id', $category->id);
+
+    expect($categoryRow)->not->toBeNull()
+        ->and(collect($categoryRow['subcategories'] ?? [])->pluck('id')->all())->toContain($firstSubcategory->id, $secondSubcategory->id);
+});
+
+test('public products api filters by subcategory without leaking sibling products', function () {
+    $category = Category::query()->create([
+        'name' => 'Filtered Category',
+        'type' => Category::TYPE_AGRICULTURE,
+    ]);
+
+    $vendor = Vendor::factory()->create([
+        'status' => Vendor::STATUS_ACTIVE,
+        'is_active' => true,
+    ]);
+    $vendor->categories()->sync([$category->id]);
+
+    $firstSubcategory = Subcategory::query()->create([
+        'category_id' => $category->id,
+        'name_ar' => 'فرعية ألف',
+        'name_en' => 'Alpha',
+    ]);
+
+    $secondSubcategory = Subcategory::query()->create([
+        'category_id' => $category->id,
+        'name_ar' => 'فرعية باء',
+        'name_en' => 'Beta',
+    ]);
+
+    $matchingProduct = Product::factory()->for($vendor)->create([
+        'category_id' => $category->id,
+        'subcategory_id' => $firstSubcategory->id,
+        'status' => Product::STATUS_APPROVED,
+        'is_active' => true,
+        'quantity' => 12,
+    ]);
+
+    Product::factory()->for($vendor)->create([
+        'category_id' => $category->id,
+        'subcategory_id' => $secondSubcategory->id,
+        'status' => Product::STATUS_APPROVED,
+        'is_active' => true,
+        'quantity' => 8,
+    ]);
+
+    Product::factory()->for($vendor)->create([
+        'category_id' => $category->id,
+        'subcategory_id' => null,
+        'status' => Product::STATUS_APPROVED,
+        'is_active' => true,
+        'quantity' => 5,
+    ]);
+
+    $response = $this->getJson('/api/products?per_page=100&category_id='.$category->id.'&subcategory_id='.$firstSubcategory->id)
+        ->assertOk();
+
+    $productIds = collect($response->json('data'))->pluck('id');
+
+    expect($productIds->all())->toBe([$matchingProduct->id]);
 });
 
 test('category page preserves selected type in view all link', function () {
