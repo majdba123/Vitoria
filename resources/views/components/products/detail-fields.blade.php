@@ -42,7 +42,7 @@
         <p class="mt-1 text-sm text-gray-500">{{ $t('هذه الحقول تظهر لكل منتج مهما كان نوعه.', 'These fields apply to every product regardless of type.') }}</p>
     </div>
     <div class="card-body space-y-6">
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="grid grid-cols-1 gap-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 sm:grid-cols-2" data-agri-subtype="pesticide fertilizer soil_amendment growth_regulator other">
             @foreach ([
                 ['commercial_name', $t('الاسم التجاري', 'Commercial Name')],
                 ['sku', 'SKU'],
@@ -133,7 +133,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2" data-agri-subtype="pesticide fertilizer soil_amendment growth_regulator other">
             @foreach ([
                 ['approved_uses', $t('الاستخدامات المعتمدة', 'Approved Uses'), $t('إضافة استخدام', 'Add use'), $t('أدخل استخدامًا معتمدًا', 'Enter approved use')],
                 ['application_methods', $t('طرق التطبيق', 'Application Methods'), $t('إضافة طريقة', 'Add method'), $t('أدخل طريقة التطبيق', 'Enter application method')],

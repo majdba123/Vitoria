@@ -31,14 +31,20 @@ document.addEventListener('DOMContentLoaded', async function () {
     const categorySelect = document.getElementById('category_id');
     const subcategorySelect = document.getElementById('subcategory_id');
     const subcategoryFieldWrap = document.getElementById('subcategory-field-wrap');
+    const categoryTypeFieldWrap = document.getElementById('category-type-field-wrap');
+    const categoryTypeDisplay = document.getElementById('category_type_display');
     const productTypeProxyWrap = document.getElementById('product-type-proxy-wrap');
     const productTypeProxy = document.getElementById('product_type_proxy');
+    const productSelectionState = document.getElementById('product-selection-state');
+    const productSelectionStateText = document.getElementById('product-selection-state-text');
+    const productSelectionStateBadge = document.getElementById('product-selection-state-badge');
     const agricultureSection = document.querySelector('[data-detail-section="agriculture"]');
     const veterinarySection = document.querySelector('[data-detail-section="veterinary"]');
     const STORAGE_KEY = 'vendor_product_create_form';
     const baseApiPath = '/api/vendor';
     let savedCategoryId = '';
     let savedSubcategoryId = '';
+    let savedProductType = '';
     const productTypeOptions = {
         agriculture: [
             { value: 'pesticide', label: 'Pesticide' },
@@ -61,6 +67,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const data = JSON.parse(saved);
             savedCategoryId = data.category_id || '';
             savedSubcategoryId = data.subcategory_id || '';
+            savedProductType = data.product_type || '';
             if (form.name_ar) form.name_ar.value = data.name_ar || '';
             if (form.name_en) form.name_en.value = data.name_en || '';
             if (form.price) form.price.value = data.price || '';
@@ -77,6 +84,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const data = {
             category_id: categorySelect?.value || '',
             subcategory_id: subcategorySelect?.value || '',
+            product_type: productTypeProxy?.value || '',
             name_ar: form.name_ar?.value || '',
             name_en: form.name_en?.value || '',
             price: form.price?.value || '',
@@ -101,6 +109,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             agriculturalTypeSelect.value = this.value;
             agriculturalTypeSelect.dispatchEvent(new Event('change'));
         }
+        updateSelectionSummary(categorySelect?.selectedOptions?.[0]?.dataset?.type || '', this.value || '');
+        saveFormData();
     });
     subcategorySelect?.addEventListener('change', saveFormData);
     form.name_ar?.addEventListener('input', saveFormData);
@@ -235,6 +245,31 @@ document.addEventListener('DOMContentLoaded', async function () {
         return d.innerHTML;
     }
 
+    function updateSelectionSummary(categoryType, productType) {
+        if (!productSelectionState || !productSelectionStateText || !productSelectionStateBadge) {
+            return;
+        }
+
+        const hasCategory = categoryType !== '';
+        productSelectionState.classList.toggle('hidden', !hasCategory);
+
+        if (!hasCategory) {
+            productSelectionStateBadge.textContent = 'Not selected yet';
+            productSelectionStateText.textContent = 'Choose the category and product type to reveal only the required fields.';
+            return;
+        }
+
+        const normalizedCategoryType = categoryType.charAt(0).toUpperCase() + categoryType.slice(1);
+        const normalizedProductType = productType
+            ? productType.replaceAll('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase())
+            : 'Pending product type';
+
+        productSelectionStateBadge.textContent = `${normalizedCategoryType} • ${normalizedProductType}`;
+        productSelectionStateText.textContent = categoryType === 'agriculture'
+            ? 'Agricultural fields now depend on the selected product type from the list.'
+            : 'Veterinary fields are now limited to the selected category only.';
+    }
+
     function syncSubcategoryOptions() {
         if (!subcategorySelect || !subcategoryFieldWrap) {
             return;
@@ -244,17 +279,23 @@ document.addEventListener('DOMContentLoaded', async function () {
         const subcategories = selectedOption?.dataset?.subcategories
             ? JSON.parse(selectedOption.dataset.subcategories)
             : [];
+        const currentValue = subcategorySelect.value || savedSubcategoryId;
 
         if (!Array.isArray(subcategories) || subcategories.length === 0) {
             subcategoryFieldWrap.classList.add('hidden');
             subcategorySelect.innerHTML = '<option value="">Select subcategory...</option>';
             subcategorySelect.value = '';
+            subcategorySelect.disabled = true;
             return;
         }
 
         subcategoryFieldWrap.classList.remove('hidden');
         subcategorySelect.innerHTML = '<option value="">Select subcategory...</option>' +
             subcategories.map((subcategory) => `<option value="${subcategory.id}">${esc(subcategory.name_ar || subcategory.name_en || '')}</option>`).join('');
+        subcategorySelect.disabled = false;
+        if (subcategories.some((subcategory) => String(subcategory.id) === String(currentValue))) {
+            subcategorySelect.value = currentValue;
+        }
     }
 
     function setSectionState(section, visible) {
@@ -272,14 +313,21 @@ document.addEventListener('DOMContentLoaded', async function () {
         const selectedOption = categorySelect?.selectedOptions?.[0];
         const type = selectedOption?.dataset?.type || '';
 
+        if (categoryTypeFieldWrap && categoryTypeDisplay) {
+            categoryTypeFieldWrap.classList.toggle('hidden', type === '');
+            categoryTypeDisplay.value = type ? type.charAt(0).toUpperCase() + type.slice(1) : '';
+        }
+
         if (productTypeProxyWrap && productTypeProxy) {
             const options = productTypeOptions[type] || [];
+            const currentValue = productTypeProxy.value || savedProductType;
             productTypeProxyWrap.classList.toggle('hidden', options.length === 0);
             productTypeProxy.innerHTML = '<option value="">Select product type from the list</option>' +
                 options.map((option) => `<option value="${option.value}">${option.label}</option>`).join('');
-            if (type !== 'agriculture') {
-                productTypeProxy.value = options[0]?.value || '';
-            }
+            productTypeProxy.disabled = options.length === 0;
+            productTypeProxy.value = options.some((option) => option.value === currentValue)
+                ? currentValue
+                : (type !== 'agriculture' ? (options[0]?.value || '') : '');
         }
 
         setSectionState(agricultureSection, type === 'agriculture');
@@ -293,6 +341,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
             agriculturalTypeSelect.dispatchEvent(new Event('change'));
         }
+
+        updateSelectionSummary(type, productTypeProxy?.value || '');
     }
 
     function initArrayLists() {
