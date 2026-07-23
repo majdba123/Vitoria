@@ -105,13 +105,11 @@
                 </div>
             </section>
 
-            <x-home.promo-banner />
             <x-home.products />
             <x-home.best-selling-products />
             <x-home.most-favorited-products />
         </div>
 
-        <x-home.trust-badges />
         <x-home.contact />
     @else
         <section class="page-shell">
@@ -491,24 +489,24 @@
                             : '';
 
                         return `
-                            <article data-home-category-card="${category.id}" class="cat-card group flex h-full flex-col overflow-hidden rounded-[26px] border border-gray-200/80 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-2xl dark:border-gray-800 dark:bg-gray-900" style="opacity:0;transform:translateY(20px);transition:opacity .5s ease ${index * 0.06}s,transform .5s ease ${index * 0.06}s;">
-                                <div class="flex items-start gap-4 p-4 sm:p-5">
-                                    <div class="shop-thumb-box h-16 w-16 shrink-0 ring-1 ring-brand-200/50 transition-transform duration-300 group-hover:scale-110 sm:h-20 sm:w-20 dark:ring-brand-500/20">
+                            <article data-home-category-card="${category.id}" class="storefront-category-card cat-card group flex h-full flex-col overflow-hidden transition hover:-translate-y-1" style="opacity:0;transform:translateY(20px);transition:opacity .5s ease ${index * 0.06}s,transform .5s ease ${index * 0.06}s;">
+                                <div class="relative z-10 flex items-start gap-4 p-5 sm:p-6">
+                                    <div class="shop-thumb-box h-16 w-16 shrink-0 rounded-[26px] ring-1 ring-brand-200/50 transition-transform duration-300 group-hover:scale-105 sm:h-20 sm:w-20 dark:ring-brand-500/20">
                                         ${categoryThumbInner(category)}
                                     </div>
                                     <div class="min-w-0 flex-1">
                                         <div class="flex flex-wrap items-center gap-2">
-                                            <button type="button" data-home-category="${category.id}" class="text-start text-sm font-bold text-gray-900 transition hover:text-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20 sm:text-base dark:text-white dark:hover:text-brand-400">${esc(category.name)}</button>
+                                            <button type="button" data-home-category="${category.id}" class="text-start text-base font-black tracking-tight text-gray-900 transition hover:text-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:text-white dark:hover:text-brand-400">${esc(category.name)}</button>
                                             ${categoryTypeLabel(category.type) ? `<span class="inline-flex rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-black text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">${esc(categoryTypeLabel(category.type))}</span>` : ''}
                                         </div>
-                                        <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">${esc(categorySubcategorySummary(subcategories))}</p>
+                                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">${esc(categorySubcategorySummary(subcategories))}</p>
                                     </div>
-                                    <button type="button" data-home-category="${category.id}" class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-gray-200 text-gray-400 transition hover:border-brand-300 hover:text-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:text-gray-500 dark:hover:border-brand-500 dark:hover:text-brand-300">
+                                    <button type="button" data-home-category="${category.id}" class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-gray-200 text-gray-400 transition hover:border-brand-300 hover:text-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:text-gray-500 dark:hover:border-brand-500 dark:hover:text-brand-300">
                                         <svg class="h-5 w-5 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                                     </button>
                                 </div>
                                 ${subcategories.length ? `
-                                    <div class="border-t border-gray-100 px-4 py-4 dark:border-gray-800 sm:px-5">
+                                    <div class="relative z-10 border-t border-gray-100 px-5 py-4 dark:border-gray-800 sm:px-6">
                                         <p class="mb-3 text-[11px] font-black uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">${esc(homeI18n.categoryPreviewTitle || '')}</p>
                                         <div class="flex flex-wrap gap-2">
                                             ${preview}
@@ -516,7 +514,7 @@
                                         </div>
                                     </div>
                                 ` : ''}
-                                <div class="border-t border-gray-100 px-4 py-4 dark:border-gray-800 sm:px-5">
+                                <div class="relative z-10 border-t border-gray-100 px-5 py-4 dark:border-gray-800 sm:px-6">
                                     <button type="button" data-home-category="${category.id}" class="inline-flex items-center gap-2 text-sm font-bold text-brand-600 transition hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:text-brand-400 dark:hover:text-brand-300">
                                         ${esc(homeI18n.categoryOpen || '')}
                                         <svg class="h-4 w-4 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
@@ -584,36 +582,36 @@
                     const commercialName = product.commercial_name || '';
 
                     return `
-                        <div class="product-card overflow-hidden rounded-[26px] border border-gray-200/80 bg-white dark:border-gray-800 dark:bg-gray-900" style="opacity:0;transform:translateY(16px);transition:opacity .4s ease ${(startOpacity + index) * 0.05}s,transform .4s ease ${(startOpacity + index) * 0.05}s;">
+                        <div class="storefront-product-card product-card" style="opacity:0;transform:translateY(16px);transition:opacity .4s ease ${(startOpacity + index) * 0.05}s,transform .4s ease ${(startOpacity + index) * 0.05}s;">
                             <div class="relative">
                                 <a href="${typedPageHref('/products/' + product.id)}" class="block">
-                                    <div class="shop-card-media">
-                                        ${photo ? `<img src="${esc(photo)}" alt="${esc(product.name)}" class="shop-card-media-img" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}'">` : `<div class="shop-card-media-fallback"><svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg></div>`}
+                                    <div class="storefront-product-media">
+                                        ${photo ? `<img src="${esc(photo)}" alt="${esc(product.name)}" class="storefront-product-image" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}'">` : `<div class="shop-card-media-fallback"><svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg></div>`}
                                         ${!inStock ? '<div class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70"><span class="rounded-full bg-red-100 px-3 py-1 text-[11px] font-bold text-red-600 dark:bg-red-500/10 dark:text-red-400">' + esc(homeI18n.soldOut || '') + '</span></div>' : ''}
                                         ${product.has_active_discount ? `<div class="absolute left-3 top-3 z-10 rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">-${parseFloat(product.discount_percentage || 0).toFixed(0)}%</div>` : ''}
                                     </div>
                                 </a>
                                 <button data-fav-btn="${product.id}" onclick="event.stopPropagation();window.toggleFav(${product.id},this)" class="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/92 shadow-sm backdrop-blur-sm transition-all hover:scale-110 dark:bg-gray-900/92 ${isFav ? 'text-red-500' : 'text-gray-400 dark:text-gray-500'}"><svg class="h-5 w-5" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="${isFav ? 'currentColor' : 'none'}"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg></button>
                             </div>
-                            <div class="flex min-h-[220px] flex-col p-4 sm:p-5">
+                            <div class="relative z-10 flex min-h-[240px] flex-col p-4 sm:p-5">
                                 <div class="flex-1">
-                                    <a href="${typedPageHref('/products/' + product.id)}"><h3 class="line-clamp-2 text-sm font-bold leading-7 text-gray-900 hover:text-brand-600 dark:text-white dark:hover:text-brand-400">${esc(product.name)}</h3></a>
+                                    <a href="${typedPageHref('/products/' + product.id)}"><h3 class="line-clamp-2 text-base font-black leading-7 tracking-tight text-gray-900 hover:text-brand-600 dark:text-white dark:hover:text-brand-400">${esc(product.name)}</h3></a>
                                     ${commercialName ? `<p class="mt-1.5 line-clamp-1 text-xs font-semibold text-gray-500 dark:text-gray-400">${esc(commercialName)}</p>` : ''}
                                     ${(subcategoryName || barcode) ? `
-                                        <div class="mt-3 flex flex-wrap gap-2">
+                                        <div class="storefront-product-meta mt-3">
                                             ${subcategoryName ? `<span class="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-1 text-[10px] font-bold text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">${esc(subcategoryName)}</span>` : ''}
                                             ${barcode ? `<span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-[10px] font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-300">${esc(barcode)}</span>` : ''}
                                         </div>
                                     ` : ''}
-                                    <div class="mt-3 flex items-center gap-1.5 text-amber-400">${starStars(product.average_rating)}<span class="text-[11px] text-gray-400 dark:text-gray-500">${reviewCount ? esc(revLabel(reviewCount)) : ''}</span></div>
+                                    <div class="mt-4 flex items-center gap-1.5 text-amber-400">${starStars(product.average_rating)}<span class="text-[11px] text-gray-400 dark:text-gray-500">${reviewCount ? esc(revLabel(reviewCount)) : ''}</span></div>
                                 </div>
-                                <div class="mt-4">
-                                    <div class="flex flex-wrap items-baseline gap-1.5">
-                                        <span class="text-lg font-black ${product.has_active_discount ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}">${parseFloat(product.has_active_discount ? product.discounted_price : product.price).toLocaleString()}</span>
-                                        <span class="text-[11px] text-gray-400">SYP</span>
-                                        ${product.has_active_discount ? `<span class="text-[11px] text-gray-400 line-through">${parseFloat(product.price).toLocaleString()} SYP</span>` : ''}
+                                <div class="mt-5">
+                                    <div class="flex flex-wrap items-end gap-2">
+                                        <span class="text-xl font-black ${product.has_active_discount ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}">${parseFloat(product.has_active_discount ? product.discounted_price : product.price).toLocaleString()}</span>
+                                        <span class="pb-0.5 text-[11px] font-semibold text-gray-400">SYP</span>
+                                        ${product.has_active_discount ? `<span class="pb-0.5 text-[11px] text-gray-400 line-through">${parseFloat(product.price).toLocaleString()} SYP</span>` : ''}
                                     </div>
-                                    <button onclick="window.addToCart(${product.id},\`${esc(product.name)}\`,${unitPrice},\`${esc(photo)}\`)" class="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-xs font-bold transition-all duration-200 ${inStock ? 'bg-gray-900 text-white hover:bg-brand-600 active:scale-[.97] dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white' : 'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600'}" ${!inStock ? 'disabled' : ''}>
+                                    <button onclick="window.addToCart(${product.id},\`${esc(product.name)}\`,${unitPrice},\`${esc(photo)}\`)" class="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-xs font-bold transition-all duration-200 ${inStock ? 'bg-gray-900 text-white hover:bg-brand-600 active:scale-[.97] dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white' : 'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600'}" ${!inStock ? 'disabled' : ''}>
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/></svg>
                                         ${inStock ? esc(homeI18n.addCart || '') : esc(homeI18n.soldOut || '')}
                                     </button>

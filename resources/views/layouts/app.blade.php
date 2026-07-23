@@ -326,7 +326,6 @@
             try {
                 await window.axios.post('/api/startup/preferences', {
                     timezone: timezoneSelect.value,
-                document.getElementById('startup-location').value = '\u062a\u0645 \u0627\u062e\u062a\u064a\u0627\u0631 \u0645\u0648\u0642\u0639 \u0627\u0644\u0645\u062a\u0635\u0641\u062d';
                     latitude: document.getElementById('startup-latitude').value || null,
                     longitude: document.getElementById('startup-longitude').value || null,
                 });

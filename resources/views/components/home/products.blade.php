@@ -1,11 +1,11 @@
 {{-- ═══ Latest Products — Shows last 5, links to full page ═══ --}}
-<section id="products" class="scroll-mt-20 bg-white py-14 dark:bg-gray-950 sm:py-20">
-    <div class="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
-        <div class="mb-8 flex items-end justify-between">
+<section id="products" class="storefront-section scroll-mt-24 bg-white dark:bg-gray-950/70">
+    <div class="page-shell py-0">
+        <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-                <span class="inline-block rounded-full bg-emerald-50 px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">{{ __('home.badge_new_arrivals') }}</span>
-                <h2 class="mt-3 text-2xl font-black text-gray-900 sm:text-3xl dark:text-white">{{ __('home.latest_products_title') }}</h2>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('home.latest_products_subtitle') }}</p>
+                <span class="eyebrow bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">{{ __('home.badge_new_arrivals') }}</span>
+                <h2 class="mt-3 text-3xl font-black tracking-tight text-gray-900 dark:text-white sm:text-4xl">{{ __('home.latest_products_title') }}</h2>
+                <p class="mt-2 max-w-2xl text-sm leading-7 text-gray-500 dark:text-gray-400">{{ __('home.latest_products_subtitle') }}</p>
             </div>
             <a id="home-products-view-all" href="/products" class="hidden items-center gap-1.5 rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-brand-600 active:scale-[.97] sm:inline-flex dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">
                 {{ __('common.view_all') }}
@@ -13,10 +13,10 @@
             </a>
         </div>
 
-        <div id="products-loading" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            <div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton hidden h-80 rounded-2xl xl:block"></div>
+        <div id="products-loading" class="responsive-shop-grid">
+            <div class="skeleton h-[25rem] rounded-[28px]"></div><div class="skeleton h-[25rem] rounded-[28px]"></div><div class="skeleton h-[25rem] rounded-[28px]"></div><div class="skeleton h-[25rem] rounded-[28px]"></div><div class="skeleton hidden h-[25rem] rounded-[28px] xl:block"></div>
         </div>
-        <div id="products-grid" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"></div>
+        <div id="products-grid" class="responsive-shop-grid"></div>
         <div id="products-empty" class="hidden py-12 text-center text-sm text-gray-400 dark:text-gray-500">{{ __('home.no_products_yet') }}</div>
 
         <div class="mt-8 text-center sm:hidden">

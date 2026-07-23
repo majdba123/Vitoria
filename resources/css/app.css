@@ -1038,4 +1038,208 @@
         border-color: rgba(148, 163, 184, 0.24);
         background: rgba(148, 163, 184, 0.06);
     }
+
+    .storefront-section {
+        @apply py-12 sm:py-16 lg:py-18;
+    }
+
+    .storefront-hero {
+        @apply relative overflow-hidden rounded-[36px] px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12;
+        background:
+            radial-gradient(circle at top left, rgba(52, 211, 153, 0.2), transparent 26%),
+            radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.12), transparent 24%),
+            linear-gradient(135deg, #081a18 0%, #102b27 48%, #17363f 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 28px 64px -30px rgba(8, 30, 27, 0.55);
+    }
+
+    .storefront-hero::before {
+        content: '';
+        position: absolute;
+        inset: auto -8% -24% auto;
+        width: 18rem;
+        height: 18rem;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.24), transparent 68%);
+        pointer-events: none;
+    }
+
+    .storefront-hero::after {
+        content: '';
+        position: absolute;
+        inset: 1rem auto auto -4rem;
+        width: 14rem;
+        height: 14rem;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.06), transparent 72%);
+        pointer-events: none;
+    }
+
+    .storefront-info-strip {
+        @apply rounded-[28px] border px-4 py-4 sm:px-5;
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+    }
+
+    .storefront-category-card {
+        @apply relative overflow-hidden rounded-[28px] border;
+        background: var(--site-surface-strong);
+        border-color: rgba(148, 163, 184, 0.16);
+        box-shadow: var(--site-shadow-soft);
+    }
+
+    .storefront-category-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(145deg, rgba(16, 185, 129, 0.08), transparent 38%);
+        pointer-events: none;
+    }
+
+    .storefront-category-card.is-selected {
+        border-color: rgba(16, 185, 129, 0.4);
+        box-shadow: 0 24px 50px -32px rgba(16, 185, 129, 0.45);
+    }
+
+    .storefront-chip-scroll {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .storefront-chip-scroll::-webkit-scrollbar {
+        display: none;
+    }
+
+    .storefront-product-card {
+        @apply relative overflow-hidden rounded-[28px] border;
+        background: var(--site-surface-strong);
+        border-color: rgba(148, 163, 184, 0.16);
+        box-shadow: var(--site-shadow-soft);
+    }
+
+    .storefront-product-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(145deg, rgba(16, 185, 129, 0.05), transparent 34%);
+        pointer-events: none;
+    }
+
+    .storefront-product-media {
+        position: relative;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        background:
+            radial-gradient(circle at top, rgba(255, 255, 255, 0.72), transparent 54%),
+            linear-gradient(180deg, rgba(247, 250, 252, 0.96), rgba(237, 242, 247, 0.92));
+    }
+
+    .dark .storefront-product-media {
+        background:
+            radial-gradient(circle at top, rgba(255, 255, 255, 0.06), transparent 54%),
+            linear-gradient(180deg, rgba(8, 18, 20, 0.98), rgba(15, 23, 42, 0.9));
+    }
+
+    .storefront-product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+        padding: 1rem;
+        transition: transform 280ms ease;
+    }
+
+    .storefront-product-card:hover .storefront-product-image {
+        transform: scale(1.05);
+    }
+
+    .storefront-product-meta {
+        @apply flex flex-wrap gap-2;
+    }
+
+    .storefront-subcard {
+        @apply rounded-[30px] border p-4 sm:p-5;
+        background: var(--site-surface-strong);
+        border-color: rgba(148, 163, 184, 0.16);
+        box-shadow: var(--site-shadow-soft);
+    }
+
+    .storefront-gallery-main {
+        @apply relative overflow-hidden rounded-[32px] border;
+        background: var(--site-surface-strong);
+        border-color: rgba(148, 163, 184, 0.16);
+        box-shadow: var(--site-shadow-soft);
+        min-height: min(35rem, 76vw);
+    }
+
+    .storefront-gallery-main img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+        padding: clamp(1rem, 2vw, 1.5rem);
+    }
+
+    .storefront-thumb-button {
+        @apply relative overflow-hidden rounded-2xl border;
+        border-color: rgba(148, 163, 184, 0.16);
+        background: rgba(255, 255, 255, 0.92);
+        min-width: 5rem;
+        min-height: 5rem;
+    }
+
+    .dark .storefront-thumb-button {
+        background: rgba(15, 24, 38, 0.92);
+    }
+
+    .storefront-thumb-button.is-active {
+        border-color: rgba(16, 185, 129, 0.46);
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.14);
+    }
+
+    .storefront-thumb-button img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+        padding: 0.35rem;
+    }
+
+    .storefront-detail-panel {
+        @apply rounded-[30px] border p-5 sm:p-6;
+        background: var(--site-surface-strong);
+        border-color: rgba(148, 163, 184, 0.16);
+        box-shadow: var(--site-shadow-soft);
+    }
+
+    .storefront-spec-grid {
+        @apply grid gap-3 sm:grid-cols-2;
+    }
+
+    .storefront-spec-card {
+        @apply rounded-2xl border px-4 py-3;
+        border-color: rgba(148, 163, 184, 0.16);
+        background: rgba(148, 163, 184, 0.06);
+    }
+
+    .dark .storefront-spec-card {
+        background: rgba(15, 23, 42, 0.46);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .storefront-product-image,
+        .storefront-thumb-button,
+        .storefront-category-card,
+        .storefront-product-card,
+        .list-panel,
+        .nav-pill-btn,
+        .nav-action-btn,
+        .mega-subcard,
+        .mobile-category-card {
+            transition: none !important;
+            animation: none !important;
+            transform: none !important;
+        }
+    }
 }
