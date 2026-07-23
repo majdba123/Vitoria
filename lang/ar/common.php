@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'loading' => 'جاري التحميل...',
+    'loading' => 'جارٍ التحميل...',
     'save' => 'حفظ',
     'saved' => 'تم الحفظ بنجاح.',
     'save_changes' => 'حفظ التغييرات',
@@ -16,12 +16,12 @@ return [
     'added_to_favourites' => 'تمت الإضافة إلى المفضلة',
     'your_cart_empty' => 'سلتك فارغة.',
     'checkout' => 'إتمام الطلب',
-    'processing' => 'جاري المعالجة...',
+    'processing' => 'جارٍ المعالجة...',
     'profile' => 'الملف الشخصي',
     'delete' => 'حذف',
     'edit' => 'تعديل',
     'view_details' => 'عرض التفاصيل',
-    'searching' => 'جاري البحث…',
+    'searching' => 'جارٍ البحث…',
     'generic_error' => 'حدث خطأ. يُرجى المحاولة مرة أخرى.',
     'please_sign_in_again' => 'انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.',
     'page_label' => 'صفحة',
@@ -32,7 +32,7 @@ return [
     'no_subcategories' => 'لا توجد تصنيفات فرعية',
     'failed_load_categories' => 'تعذر تحميل الفئات.',
     'failed_notifications' => 'تعذر تحميل الإشعارات.',
-    'saving' => 'جاري الحفظ...',
+    'saving' => 'جارٍ الحفظ...',
     'refresh' => 'تحديث',
     'failed_save' => 'فشل الحفظ.',
     'bad_request' => 'طلب غير صالح. يرجى المحاولة مرة أخرى.',
@@ -51,4 +51,6 @@ return [
     'no' => 'لا',
     'not_available' => 'غير متاح',
     'not_specified' => 'غير محدد',
+    'no_data' => 'لا توجد بيانات متاحة.',
+    'completed' => 'مكتمل',
 ];

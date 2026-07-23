@@ -3,37 +3,33 @@
 @php
     $section = $section ?? 'dashboard';
     $sectionLabels = [
-        'dashboard' => 'نظرة عامة',
-        'categories' => 'التصنيفات',
-        'vendors' => 'التجار',
-        'products' => 'المنتجات',
-        'podcasts' => 'البودكاست',
-        'orders' => 'الطلبات',
-        'sales' => 'المبيعات',
-        'reports' => 'التقارير',
+        'dashboard' => __('syndicate.dashboard'),
+        'categories' => __('syndicate.categories'),
+        'vendors' => __('syndicate.vendors'),
+        'products' => __('syndicate.products'),
+        'podcasts' => __('syndicate.podcasts'),
+        'orders' => __('syndicate.orders'),
+        'sales' => __('syndicate.sales'),
+        'reports' => __('syndicate.reports'),
     ];
 @endphp
 
-@section('title', ($sectionLabels[$section] ?? 'لوحة النقابة') . ' - Vetora')
-@section('page-title', $sectionLabels[$section] ?? 'لوحة النقابة')
+@section('title', ($sectionLabels[$section] ?? __('syndicate.dashboard')) . ' - Vetora')
+@section('page-title', $sectionLabels[$section] ?? __('syndicate.dashboard'))
 
 @section('content')
 <div class="space-y-6">
-    <section class="workspace-hero">
-        <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-            <div class="min-w-0">
-                <p class="text-xs font-black text-brand-700 dark:text-brand-300">مساحة عمل النقابة</p>
-                <h2 id="syndicate-name" class="mt-2 text-2xl font-black text-gray-900 dark:text-white">جاري تحميل البيانات...</h2>
-                <p class="mt-2 max-w-2xl text-sm leading-7 text-gray-500 dark:text-gray-400">
-                    تظهر هنا البيانات المرتبطة بنوع النقابة فقط، مع منع عرض بيانات النوع الآخر من خلال استعلامات الخادم.
-                </p>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                <span id="syndicate-type" class="badge badge-brand">-</span>
-                <span id="syndicate-status" class="badge badge-success">-</span>
-                <a href="{{ route('syndicate.sales') }}" class="btn-secondary btn-sm">المبيعات</a>
-                <a href="{{ route('syndicate.reports') }}" class="btn-primary btn-sm">التقارير</a>
-            </div>
+    <section class="dashboard-page-header">
+        <div class="min-w-0">
+            <p class="text-[11px] font-black uppercase tracking-[0.22em] text-brand-600 dark:text-brand-300">{{ __('syndicate.workspace') }}</p>
+            <h2 id="syndicate-name" class="mt-2 text-2xl font-black text-gray-900 dark:text-white">{{ __('syndicate.loading_data') }}</h2>
+            <p class="dashboard-section-copy">{{ __('syndicate.dashboard_copy') }}</p>
+        </div>
+        <div class="dashboard-page-header-actions">
+            <span id="syndicate-type" class="badge badge-brand">-</span>
+            <span id="syndicate-status" class="badge badge-success">-</span>
+            <a href="{{ route('syndicate.sales') }}" class="btn-secondary btn-sm">{{ __('syndicate.sales_cta') }}</a>
+            <a href="{{ route('syndicate.reports') }}" class="btn-primary btn-sm">{{ __('syndicate.reports_cta') }}</a>
         </div>
     </section>
 
@@ -50,19 +46,19 @@
         <div class="card xl:col-span-2">
             <div class="card-body flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 dark:border-gray-800">
                 <div>
-                    <h3 class="text-base font-black text-gray-900 dark:text-white" id="main-title">السجلات</h3>
-                    <p id="main-subtitle" class="mt-1 text-xs text-gray-500">يتم تحميل البيانات حسب نوع النقابة الحالية.</p>
+                    <h3 class="text-base font-black text-gray-900 dark:text-white" id="main-title">{{ __('syndicate.records_title') }}</h3>
+                    <p id="main-subtitle" class="mt-1 text-xs text-gray-500">{{ __('syndicate.records_subtitle') }}</p>
                 </div>
                 <span id="main-count" class="badge badge-brand hidden"></span>
             </div>
             <div id="main-list" class="card-body space-y-3">
-                <p class="py-8 text-center text-sm text-gray-400">جاري تحميل البيانات...</p>
+                <p class="py-8 text-center text-sm text-gray-400">{{ __('syndicate.loading_data') }}</p>
             </div>
             <div id="main-pagination" class="hidden items-center justify-between border-t border-gray-100 px-4 py-3 text-sm dark:border-gray-800">
                 <p id="main-page-info" class="text-xs text-gray-500"></p>
                 <div class="flex gap-2">
-                    <button id="main-prev" type="button" class="btn-secondary btn-xs">السابق</button>
-                    <button id="main-next" type="button" class="btn-secondary btn-xs">التالي</button>
+                    <button id="main-prev" type="button" class="btn-secondary btn-xs">{{ __('syndicate.prev') }}</button>
+                    <button id="main-next" type="button" class="btn-secondary btn-xs">{{ __('syndicate.next') }}</button>
                 </div>
             </div>
         </div>
@@ -70,15 +66,15 @@
         <div class="space-y-5">
             <div class="card">
                 <div class="card-body border-b border-gray-100 dark:border-gray-800">
-                    <h3 class="text-base font-black text-gray-900 dark:text-white">الأعلى أداء</h3>
-                    <p class="mt-1 text-xs text-gray-500">أفضل التصنيفات والمنتجات والتجار حسب المبيعات.</p>
+                    <h3 class="text-base font-black text-gray-900 dark:text-white">{{ __('syndicate.top_performance') }}</h3>
+                    <p class="mt-1 text-xs text-gray-500">{{ __('syndicate.top_performance_copy') }}</p>
                 </div>
                 <div id="side-list" class="card-body space-y-3"></div>
             </div>
 
             <div class="card">
                 <div class="card-body border-b border-gray-100 dark:border-gray-800">
-                    <h3 class="text-base font-black text-gray-900 dark:text-white">ملخص سريع</h3>
+                    <h3 class="text-base font-black text-gray-900 dark:text-white">{{ __('syndicate.quick_summary') }}</h3>
                 </div>
                 <div id="quick-summary" class="card-body space-y-2"></div>
             </div>
@@ -115,11 +111,11 @@ document.addEventListener('syndicate-ready', async function () {
         renderOverview(overview);
         await loadSection(1);
     } catch (error) {
-        showLoadError(error, 'تعذر تحميل بيانات النقابة.');
+        showLoadError(error, @json(__('syndicate.load_failed')));
     }
 
     async function loadSection(page) {
-        list.innerHTML = '<p class="py-8 text-center text-sm text-gray-400">جاري تحميل البيانات...</p>';
+        list.innerHTML = '<p class="py-8 text-center text-sm text-gray-400">' + @json(__('syndicate.loading_data')) + '</p>';
         document.getElementById('main-count').classList.add('hidden');
 
         try {
@@ -133,14 +129,14 @@ document.addEventListener('syndicate-ready', async function () {
             renderSection(section, payload, meta);
             renderPagination(meta);
         } catch (error) {
-            showLoadError(error, 'تعذر تحميل البيانات.');
+            showLoadError(error, @json(__('syndicate.load_failed_section')));
         }
     }
 
     function renderHeader(syndicate) {
-        document.getElementById('syndicate-name').textContent = syndicate.name || 'نقابة Vetora';
+        document.getElementById('syndicate-name').textContent = syndicate.name || 'Vetora';
         document.getElementById('syndicate-type').textContent = typeLabel(syndicate.type);
-        document.getElementById('syndicate-status').textContent = syndicate.status === 'inactive' ? 'غير نشط' : 'نشط';
+        document.getElementById('syndicate-status').textContent = syndicate.status === 'inactive' ? @json(__('syndicate.inactive')) : @json(__('syndicate.active'));
         document.getElementById('syndicate-status').className = syndicate.status === 'inactive' ? 'badge badge-danger' : 'badge badge-success';
     }
 
@@ -148,280 +144,111 @@ document.addEventListener('syndicate-ready', async function () {
         const sales = data.sales_stats || {};
         const orders = data.order_stats || {};
         const cards = [
-            ['التصنيفات', data.total_categories || 0, 'fa-solid fa-layer-group'],
-            ['التجار', data.total_merchants || 0, 'fa-solid fa-store'],
-            ['المنتجات', data.total_products || 0, 'fa-solid fa-box-open'],
-            ['الطلبات المكتملة', orders.completed_orders || 0, 'fa-solid fa-circle-check'],
-            ['المبيعات المكتملة', money(sales.completed_sales), 'fa-solid fa-chart-line'],
-            ['طلبات قيد الانتظار', orders.pending_orders || 0, 'fa-solid fa-clock'],
-            ['متوسط الطلب', money(sales.average_order_value), 'fa-solid fa-receipt'],
-            ['البودكاست', data.total_podcasts || 0, 'fa-solid fa-microphone-lines'],
+            { label: @json(__('syndicate.vendors')), value: data.total_vendors || 0 },
+            { label: @json(__('syndicate.products')), value: data.total_products || 0 },
+            { label: @json(__('syndicate.orders')), value: orders.total_orders || 0 },
+            { label: @json(__('syndicate.sales')), value: sales.total_sales_amount || 0 },
+            { label: @json(__('syndicate.categories')), value: data.total_categories || 0 },
+            { label: @json(__('common.active')), value: data.active_vendors || 0 },
+            { label: @json(__('common.pending')), value: orders.pending_orders || 0 },
+            { label: @json(__('common.completed')), value: orders.completed_orders || 0 },
         ];
-
-        document.getElementById('overview-grid').innerHTML = cards.map(([label, value, icon]) => `
-            <div class="card card-body">
-                <div class="flex items-center justify-between gap-3">
-                    <p class="text-xs font-black text-gray-500">${esc(label)}</p>
-                    <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">
-                        <i class="${icon}" aria-hidden="true"></i>
-                    </span>
-                </div>
-                <p class="mt-4 text-2xl font-black text-gray-900 dark:text-white">${esc(value)}</p>
+        document.getElementById('overview-grid').innerHTML = cards.map((card) => `
+            <div class="stat-tile card-body">
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">${esc(card.label)}</p>
+                <p class="mt-3 text-2xl font-black text-gray-900 dark:text-white">${esc(card.value)}</p>
             </div>
         `).join('');
 
-        const sideRows = [
-            ...(data.top_selling_categories || []).map(row => ['تصنيف', row.name, row.sales_total]),
-            ...(data.top_selling_products || []).map(row => ['منتج', row.name, row.sales_total]),
-            ...(data.top_merchants_by_sales || []).map(row => ['تاجر', row.store_name, row.sales_total]),
-        ].slice(0, 10);
+        renderQuickSummary(data);
+        renderSideList(data);
+    }
 
-        document.getElementById('side-list').innerHTML = sideRows.length ? sideRows.map(row => `
-            <div class="flex items-center justify-between gap-3 rounded-xl border border-gray-200 p-3 dark:border-gray-800">
-                <div class="min-w-0">
-                    <p class="truncate text-sm font-bold text-gray-900 dark:text-white">${esc(row[1] || 'بدون اسم')}</p>
-                    <p class="text-xs text-gray-500">${esc(row[0])}</p>
-                </div>
-                <span class="badge badge-brand">${esc(money(row[2]))}</span>
+    function renderQuickSummary(data) {
+        const container = document.getElementById('quick-summary');
+        const rows = [
+            [@json(__('syndicate.categories')), data.total_categories || 0],
+            [@json(__('syndicate.vendors')), data.total_vendors || 0],
+            [@json(__('syndicate.products')), data.total_products || 0],
+        ];
+        container.innerHTML = rows.map(([label, value]) => `
+            <div class="list-panel flex items-center justify-between gap-3">
+                <span class="text-sm font-semibold">${esc(label)}</span>
+                <span class="badge badge-brand">${esc(value)}</span>
             </div>
-        `).join('') : emptyState('لا توجد بيانات أداء بعد.');
+        `).join('');
+    }
 
-        document.getElementById('quick-summary').innerHTML = [
-            ['مبيعات اليوم', money(sales.sales_today)],
-            ['مبيعات هذا الشهر', money(sales.sales_this_month)],
-            ['طلبات هذا الشهر', orders.orders_this_month || 0],
-            ['طلبات اليوم', orders.orders_today || 0],
-        ].map(row => `
-            <div class="flex items-center justify-between rounded-xl bg-gray-50 px-3 py-2 text-sm dark:bg-gray-800">
-                <span class="text-gray-500">${esc(row[0])}</span>
-                <span class="font-black text-gray-900 dark:text-white">${esc(row[1])}</span>
+    function renderSideList(data) {
+        const container = document.getElementById('side-list');
+        const rows = (data.top_categories || data.top_vendors || []).slice(0, 5);
+        if (!rows.length) {
+            container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">' + @json(__('common.no_data')) + '</p>';
+            return;
+        }
+
+        container.innerHTML = rows.map((row, index) => `
+            <div class="list-panel flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                    <p class="truncate text-sm font-semibold text-gray-900 dark:text-white">${esc(row.name || row.title || ('#' + (index + 1)))}</p>
+                    <p class="mt-1 text-xs text-gray-500">${esc(sectionLabels[section] || '')}</p>
+                </div>
+                <span class="badge badge-brand">${esc(row.total_sales || row.products_count || row.orders_count || row.count || 0)}</span>
             </div>
         `).join('');
     }
 
     function renderSection(name, payload, meta) {
-        document.getElementById('main-title').textContent = sectionLabels[name] || 'السجلات';
-        document.getElementById('main-subtitle').textContent = subtitleFor(name);
-
-        if (name === 'dashboard' || name === 'sales') {
-            list.innerHTML = renderReportBlocks(overview);
-            return;
-        }
-
-        if (name === 'reports') {
-            list.innerHTML = renderReportBlocks(payload);
-            return;
-        }
-
-        const rows = Array.isArray(payload.data) ? payload.data : (Array.isArray(payload) ? payload : []);
+        const title = sectionLabels[name] || @json(__('syndicate.records_title'));
+        const subtitle = @json(__('syndicate.records_subtitle'));
+        document.getElementById('main-title').textContent = title;
+        document.getElementById('main-subtitle').textContent = subtitle;
         const countBadge = document.getElementById('main-count');
-        if (meta.total != null) {
-            countBadge.textContent = `${meta.total} سجل`;
+
+        if (typeof meta.total === 'number') {
+            countBadge.textContent = meta.total;
             countBadge.classList.remove('hidden');
         }
 
-        if (!rows.length) {
-            list.innerHTML = emptyState('لا توجد بيانات متاحة حاليا.');
+        const items = Array.isArray(payload.data) ? payload.data : (Array.isArray(payload.items) ? payload.items : []);
+        if (!items.length) {
+            list.innerHTML = '<p class="py-8 text-center text-sm text-gray-400">' + @json(__('common.no_data')) + '</p>';
             return;
         }
 
-        list.innerHTML = rows.map(row => renderRow(name, row)).join('');
-    }
-
-    function renderReportBlocks(data) {
-        const blocks = [
-            ['المبيعات', data.sales_stats || data.sales || {}],
-            ['الطلبات', data.order_stats || data.orders || {}],
-            ['المنتجات', data.product_stats || data.products || {}],
-            ['التصنيفات', data.category_stats || data.categories || {}],
-            ['التجار', data.merchant_stats || data.merchants || {}],
-            ['البودكاست', data.podcast_stats || data.podcasts || {}],
-        ];
-
-        return blocks.map(([title, stats]) => `
-            <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
-                <h4 class="text-sm font-black text-gray-900 dark:text-white">${esc(title)}</h4>
-                <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    ${Object.entries(stats || {}).slice(0, 10).map(([key, value]) => `
-                        <div class="flex items-center justify-between rounded-xl bg-gray-50 px-3 py-2 text-sm dark:bg-gray-800">
-                            <span class="text-gray-500">${esc(labelFor(key))}</span>
-                            <span class="font-black text-gray-900 dark:text-white">${esc(displayValue(value))}</span>
-                        </div>
-                    `).join('')}
+        list.innerHTML = items.map((item) => `
+            <div class="list-panel">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <p class="truncate text-sm font-bold text-gray-900 dark:text-white">${esc(item.name || item.title || item.id || '—')}</p>
+                        <p class="mt-1 text-xs text-gray-500">${esc(item.description || item.email || item.status || '')}</p>
+                    </div>
+                    <span class="badge badge-brand">${esc(item.products_count || item.orders_count || item.total_sales || item.id || '')}</span>
                 </div>
             </div>
         `).join('');
     }
 
-    function renderRow(type, row) {
-        const title = row.name || row.store_name || row.order_number || row.product_name || ('سجل #' + row.id);
-        const subtitle = rowSubtitle(type, row);
-        const metric = rowMetric(type, row);
-
-        return `
-            <div class="flex flex-col gap-3 rounded-xl border border-gray-200 p-4 dark:border-gray-800 sm:flex-row sm:items-center sm:justify-between">
-                <div class="min-w-0">
-                    <p class="truncate text-sm font-black text-gray-900 dark:text-white">${esc(title)}</p>
-                    <p class="mt-1 text-xs leading-6 text-gray-500">${esc(subtitle)}</p>
-                </div>
-                <span class="badge badge-brand self-start sm:self-center">${esc(metric)}</span>
-            </div>
-        `;
-    }
-
-    function rowSubtitle(type, row) {
-        if (type === 'vendors') {
-            return (row.categories || []).map(category => category.name || category).join('، ') || businessType(row.business_type);
-        }
-
-        if (type === 'products') {
-            return [row.vendor?.store_name, row.category?.name, row.is_active ? 'نشط' : 'غير نشط'].filter(Boolean).join(' · ');
-        }
-
-        if (type === 'orders') {
-            return [row.user?.name || row.customer, row.vendor?.store_name || row.merchant, orderStatus(row.status)].filter(Boolean).join(' · ');
-        }
-
-        return row.type_label || businessType(row.business_type) || row.status || row.category?.name || '';
-    }
-
-    function rowMetric(type, row) {
-        if (type === 'categories') {
-            return `${Number(row.products_count || 0)} منتج · ${Number(row.vendors_count || 0)} تاجر`;
-        }
-
-        if (type === 'vendors') {
-            return `${Number(row.products_count || 0)} منتج`;
-        }
-
-        if (type === 'orders') {
-            return money(row.total_amount);
-        }
-
-        if (type === 'products') {
-            return row.is_active ? 'نشط' : 'غير نشط';
-        }
-
-        return row.quantity ?? row.status ?? '';
-    }
-
     function renderPagination(meta) {
-        if (!meta.last_page || meta.last_page <= 1) {
+        if (!meta || !meta.last_page || meta.last_page <= 1) {
             pagination.classList.add('hidden');
-            pagination.classList.remove('flex');
             return;
         }
 
         pagination.classList.remove('hidden');
-        pagination.classList.add('flex');
-        document.getElementById('main-page-info').textContent = `صفحة ${meta.current_page} من ${meta.last_page} (${meta.total})`;
+        document.getElementById('main-page-info').textContent = `${meta.current_page} / ${meta.last_page}`;
         document.getElementById('main-prev').disabled = meta.current_page <= 1;
         document.getElementById('main-next').disabled = meta.current_page >= meta.last_page;
     }
 
-    function showLoadError(error, fallback) {
-        const parsed = window.showApiError ? window.showApiError(error) : { generalMessage: fallback };
-        list.innerHTML = `<p class="py-8 text-center text-sm text-red-500">${esc(parsed.generalMessage || fallback)}</p>`;
-        pagination.classList.add('hidden');
-        pagination.classList.remove('flex');
-    }
-
-    function emptyState(message) {
-        return `<p class="py-8 text-center text-sm text-gray-400">${esc(message)}</p>`;
-    }
-
-    function subtitleFor(name) {
-        const subtitles = {
-            dashboard: 'ملخص شامل للطلبات والمبيعات والمنتجات.',
-            categories: 'التصنيفات المسموحة لهذا النوع فقط.',
-            vendors: 'التجار المرتبطون بنوع النقابة أو بتصنيفات هذا النوع.',
-            products: 'المنتجات المرتبطة بتصنيفات هذا النوع.',
-            podcasts: 'البودكاست المرتبط بنوع النقابة عند توفره.',
-            orders: 'الطلبات المرتبطة بمنتجات هذا النوع.',
-            sales: 'تحليل المبيعات حسب نوع النقابة.',
-            reports: 'تقرير تشغيلي مختصر حسب نوع النقابة.',
-        };
-
-        return subtitles[name] || 'بيانات النقابة الحالية.';
-    }
-
-    function money(value) {
-        return `${Number(value || 0).toLocaleString('ar-SY')} SYP`;
-    }
-
     function typeLabel(type) {
-        if (type === 'agriculture') return 'زراعي';
-        if (type === 'veterinary') return 'بيطري';
-        return 'نقابة';
+        if (type === 'agriculture') return @json(__('syndicate.type_agriculture'));
+        if (type === 'veterinary') return @json(__('syndicate.type_veterinary'));
+        return @json(__('syndicate.type_default'));
     }
 
-    function businessType(value) {
-        if (value === 'agriculture') return 'زراعي';
-        if (value === 'veterinary') return 'بيطري';
-        if (value === 'both') return 'زراعي وبيطري';
-        return value || '';
-    }
-
-    function orderStatus(value) {
-        const statuses = {
-            pending: 'قيد الانتظار',
-            confirmed: 'قيد المعالجة',
-            completed: 'مكتمل',
-            cancelled: 'ملغي',
-        };
-
-        return statuses[value] || value || '';
-    }
-
-    function displayValue(value) {
-        if (Array.isArray(value)) return `${value.length} عنصر`;
-        if (value && typeof value === 'object') return value.total ?? value.count ?? Object.keys(value).length;
-        if (typeof value === 'number') return money(value);
-        return value ?? 0;
-    }
-
-    function labelFor(key) {
-        const labels = {
-            total_sales: 'إجمالي المبيعات',
-            completed_sales: 'المبيعات المكتملة',
-            pending_sales: 'المبيعات المعلقة',
-            cancelled_sales: 'المبيعات الملغاة',
-            refunded_sales: 'المبيعات المستردة',
-            sales_today: 'مبيعات اليوم',
-            sales_this_week: 'مبيعات الأسبوع',
-            sales_this_month: 'مبيعات الشهر',
-            sales_this_year: 'مبيعات السنة',
-            average_order_value: 'متوسط قيمة الطلب',
-            total_orders: 'إجمالي الطلبات',
-            pending_orders: 'طلبات معلقة',
-            processing_orders: 'طلبات قيد المعالجة',
-            completed_orders: 'طلبات مكتملة',
-            cancelled_orders: 'طلبات ملغاة',
-            refunded_orders: 'طلبات مستردة',
-            failed_orders: 'طلبات فاشلة',
-            orders_today: 'طلبات اليوم',
-            orders_this_month: 'طلبات الشهر',
-            total_products: 'إجمالي المنتجات',
-            active_products: 'منتجات نشطة',
-            inactive_products: 'منتجات غير نشطة',
-            products_with_images: 'منتجات لديها صور',
-            products_without_images: 'منتجات بلا صور',
-            total_categories: 'إجمالي التصنيفات',
-            categories_with_products: 'تصنيفات لديها منتجات',
-            categories_without_products: 'تصنيفات بلا منتجات',
-            categories_with_merchants: 'تصنيفات لديها تجار',
-            categories_without_merchants: 'تصنيفات بلا تجار',
-            total_merchants: 'إجمالي التجار',
-            active_merchants: 'تجار نشطون',
-            inactive_merchants: 'تجار غير نشطين',
-            merchants_with_products: 'تجار لديهم منتجات',
-            merchants_without_products: 'تجار بلا منتجات',
-            total_podcasts: 'إجمالي البودكاست',
-            active_podcasts: 'بودكاست منشور',
-            inactive_podcasts: 'بودكاست غير منشور',
-        };
-
-        return labels[key] || key.replaceAll('_', ' ');
+    function showLoadError(error, message) {
+        document.getElementById('main-list').innerHTML = `<p class="py-8 text-center text-sm text-red-500">${esc(message)}</p>`;
     }
 });
 </script>

@@ -11,7 +11,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'لوحة النقابة - Vetora')</title>
+    <title>@yield('title', __('syndicate.dashboard') . ' - Vetora')</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|sora:600,700,800|ibm-plex-sans-arabic:400,500,600,700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -29,6 +29,17 @@
     $sessionAuthUser = auth()->check()
         ? (new \App\Http\Resources\Auth\UserResource(auth()->user()->loadMissing('syndicate')))->resolve(request())
         : null;
+    $currentRoute = request()->route()?->getName() ?? '';
+    $links = [
+        ['route' => 'syndicate.dashboard', 'label' => __('syndicate.dashboard'), 'icon' => 'fa-solid fa-grid-2'],
+        ['route' => 'syndicate.categories', 'label' => __('syndicate.categories'), 'icon' => 'fa-solid fa-layer-group'],
+        ['route' => 'syndicate.vendors', 'label' => __('syndicate.vendors'), 'icon' => 'fa-solid fa-store'],
+        ['route' => 'syndicate.products', 'label' => __('syndicate.products'), 'icon' => 'fa-solid fa-box-open'],
+        ['route' => 'syndicate.podcasts', 'label' => __('syndicate.podcasts'), 'icon' => 'fa-solid fa-microphone-lines'],
+        ['route' => 'syndicate.orders', 'label' => __('syndicate.orders'), 'icon' => 'fa-solid fa-bag-shopping'],
+        ['route' => 'syndicate.sales', 'label' => __('syndicate.sales'), 'icon' => 'fa-solid fa-chart-line'],
+        ['route' => 'syndicate.reports', 'label' => __('syndicate.reports'), 'icon' => 'fa-regular fa-chart-bar'],
+    ];
 @endphp
 <body
     data-session-auth="{{ auth()->check() ? '1' : '0' }}"
@@ -44,34 +55,21 @@
                     </span>
                     <span>
                         <span class="block font-display text-xl font-extrabold">Vetora</span>
-                        <span class="mt-1 block text-[11px] font-extrabold uppercase tracking-[0.28em] text-cyan-200">Syndicate</span>
+                        <span class="mt-1 block text-[11px] font-extrabold uppercase tracking-[0.28em] text-cyan-200">{{ __('syndicate.workspace_label') }}</span>
                     </span>
                 </a>
                 <button onclick="closeSidebar()" class="{{ $closeMarginClass }} rounded-2xl p-2 text-gray-400 hover:bg-white/5 hover:text-white lg:hidden">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
-            @php
-                $currentRoute = request()->route()?->getName() ?? '';
-                $links = [
-                    ['route' => 'syndicate.dashboard', 'label' => 'نظرة عامة', 'icon' => 'fa-solid fa-grid-2'],
-                    ['route' => 'syndicate.categories', 'label' => 'التصنيفات', 'icon' => 'fa-solid fa-layer-group'],
-                    ['route' => 'syndicate.vendors', 'label' => 'التجار', 'icon' => 'fa-solid fa-store'],
-                    ['route' => 'syndicate.products', 'label' => 'المنتجات', 'icon' => 'fa-solid fa-box-open'],
-                    ['route' => 'syndicate.podcasts', 'label' => 'البودكاست', 'icon' => 'fa-solid fa-microphone-lines'],
-                    ['route' => 'syndicate.orders', 'label' => 'الطلبات', 'icon' => 'fa-solid fa-bag-shopping'],
-                    ['route' => 'syndicate.sales', 'label' => 'المبيعات', 'icon' => 'fa-solid fa-chart-line'],
-                    ['route' => 'syndicate.reports', 'label' => 'التقارير', 'icon' => 'fa-regular fa-chart-bar'],
-                ];
-            @endphp
             <div class="px-6 pt-5">
                 <div class="rounded-[24px] border border-white/8 bg-white/5 p-4 text-white/80">
-                    <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-white/45">Association layer</p>
-                    <p class="mt-2 text-sm leading-6 text-white/75">Track type-specific network performance, category coverage, and sales intelligence from one secure view.</p>
+                    <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-white/45">{{ __('syndicate.sidebar_intro') }}</p>
+                    <p class="mt-2 text-sm leading-6 text-white/75">{{ __('syndicate.sidebar_intro_copy') }}</p>
                 </div>
             </div>
             <nav class="min-h-0 flex-1 overflow-y-auto px-4 py-5">
-                <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-white/35">Workspace</p>
+                <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-white/35">{{ __('syndicate.workspace') }}</p>
                 @foreach ($links as $link)
                     @php
                         $isActive = $currentRoute === $link['route'];
@@ -84,7 +82,7 @@
                 @endforeach
             </nav>
             <div class="border-t border-white/8 px-6 py-4 text-[11px] text-white/40">
-                <p>&copy; {{ date('Y') }} Vetora</p>
+                <p>{{ __('syndicate.workspace_footer') }}</p>
             </div>
         </aside>
         <div class="{{ $mainPaddingClass }}">
@@ -94,11 +92,11 @@
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
                     </button>
                     <div class="min-w-0 flex-1">
-                        <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-cyan-600 dark:text-cyan-300">Syndicate hub</p>
-                        <h1 class="mt-1 truncate text-lg font-black text-gray-900 dark:text-white">@yield('page-title', 'النقابة')</h1>
+                        <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-cyan-600 dark:text-cyan-300">{{ __('syndicate.workspace_label') }}</p>
+                        <h1 class="mt-1 truncate text-lg font-black text-gray-900 dark:text-white">@yield('page-title', __('syndicate.dashboard'))</h1>
                     </div>
                     <span id="syndicate-type-badge" class="badge badge-brand"></span>
-                    <button onclick="syndicateLogout()" class="btn-secondary btn-sm">تسجيل الخروج</button>
+                    <button onclick="syndicateLogout()" class="btn-secondary btn-sm">{{ __('syndicate.sign_out') }}</button>
                 </div>
             </header>
             <main class="workspace-shell py-8">@yield('content')</main>
@@ -109,7 +107,7 @@
             <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-white/70 shadow-lg shadow-gray-900/5 backdrop-blur-md dark:bg-white/5 dark:shadow-black/20">
                 <div class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-cyan-500"></div>
             </div>
-            <p class="mt-4 text-sm font-semibold text-gray-500">جارٍ التحقق من صلاحية النقابة...</p>
+            <p class="mt-4 text-sm font-semibold text-gray-500">{{ __('syndicate.loading_access') }}</p>
         </div>
     </div>
     <script>
@@ -117,9 +115,9 @@
         const syndicateHiddenClass = @json($sidebarHiddenClass);
         function deleteCookie(name) { document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/'; }
         function syndicateTypeLabel(type) {
-            if (type === 'agriculture') return 'زراعي';
-            if (type === 'veterinary') return 'بيطري';
-            return 'نقابة';
+            if (type === 'agriculture') return @json(__('syndicate.type_agriculture'));
+            if (type === 'veterinary') return @json(__('syndicate.type_veterinary'));
+            return @json(__('syndicate.type_default'));
         }
         function hydrateSyndicateDashboard(user) {
             if (!user) {

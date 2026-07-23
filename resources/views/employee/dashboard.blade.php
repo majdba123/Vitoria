@@ -5,19 +5,17 @@
 
 @section('content')
 <div class="space-y-6">
-    <div class="workspace-hero">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-                <span class="eyebrow bg-white/10 text-white ring-1 ring-inset ring-white/10">{{ __('employee.workspace') }}</span>
-                <h2 class="mt-4 text-2xl font-black sm:text-3xl">{{ __('employee.dashboard_title') }}</h2>
-                <p class="mt-2 max-w-3xl text-sm leading-7 text-slate-300">{{ __('employee.dashboard_copy') }}</p>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                <a href="{{ route('employee.products.index') }}" class="btn-primary btn-sm">{{ __('employee.view_products') }}</a>
-                <button id="reload-dashboard-btn" class="btn-secondary btn-sm">{{ __('employee.refresh') }}</button>
-            </div>
+    <section class="dashboard-page-header">
+        <div>
+            <p class="text-[11px] font-black uppercase tracking-[0.22em] text-brand-600 dark:text-brand-300">{{ __('employee.workspace') }}</p>
+            <h2 class="mt-2 text-2xl font-black text-gray-900 dark:text-white">{{ __('employee.dashboard_title') }}</h2>
+            <p class="dashboard-section-copy">{{ __('employee.dashboard_copy') }}</p>
         </div>
-    </div>
+        <div class="dashboard-page-header-actions">
+            <a href="{{ route('employee.products.index') }}" class="btn-primary btn-sm">{{ __('employee.view_products') }}</a>
+            <button id="reload-dashboard-btn" class="btn-secondary btn-sm">{{ __('employee.refresh') }}</button>
+        </div>
+    </section>
 
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6">
         <div class="stat-tile">
@@ -38,7 +36,7 @@
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m6 2.25a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">Active Products</p>
+                    <p class="text-sm text-gray-500">{{ __('employee.active_products_label') }}</p>
                     <p class="text-lg font-bold text-sky-600" id="stat-active-products">0</p>
                 </div>
             </div>

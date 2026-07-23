@@ -753,6 +753,40 @@
         pointer-events: none;
     }
 
+    .dashboard-page-header {
+        @apply flex flex-col gap-4 rounded-[28px] border px-5 py-5 sm:px-6 sm:py-6 lg:flex-row lg:items-start lg:justify-between;
+        background: var(--site-surface-strong);
+        border-color: rgba(148, 163, 184, 0.16);
+        box-shadow: var(--site-shadow-soft);
+    }
+
+    .dashboard-page-header-actions {
+        @apply flex flex-wrap gap-2;
+    }
+
+    .dashboard-section-title {
+        @apply text-base font-black tracking-tight text-ink-900 dark:text-white;
+    }
+
+    .dashboard-section-copy {
+        @apply mt-1 text-sm leading-6 text-ink-500 dark:text-slate-400;
+    }
+
+    .stat-tile {
+        @apply rounded-[24px] border;
+        background: var(--site-surface-strong);
+        border-color: rgba(148, 163, 184, 0.16);
+        box-shadow: var(--site-shadow-soft);
+    }
+
+    .icon-chip {
+        @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-500/10 text-brand-700 dark:text-brand-300;
+    }
+
+    .list-panel {
+        @apply rounded-2xl border border-gray-200/80 bg-white px-4 py-3 text-ink-700 transition hover:border-brand-300 hover:bg-brand-50/40 dark:border-gray-800 dark:bg-gray-950/60 dark:text-slate-200 dark:hover:border-brand-500 dark:hover:bg-brand-500/10;
+    }
+
     .workspace-shell {
         @apply mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8;
     }

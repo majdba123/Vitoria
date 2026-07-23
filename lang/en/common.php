@@ -51,4 +51,6 @@ return [
     'no' => 'No',
     'not_available' => 'Not available',
     'not_specified' => 'Not specified',
+    'no_data' => 'No data available.',
+    'completed' => 'Completed',
 ];
