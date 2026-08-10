@@ -318,7 +318,13 @@ class OrderController extends Controller
                 }
 
                 if ($coupon) {
-                    $coupon->increment('used_count');
+                    $lockedCoupon = Coupon::query()->whereKey($coupon->id)->lockForUpdate()->first();
+
+                    if (! $lockedCoupon || ($lockedCoupon->usage_limit !== null && $lockedCoupon->used_count >= $lockedCoupon->usage_limit)) {
+                        throw new \RuntimeException('This coupon has just reached its usage limit. Please remove it and try again.');
+                    }
+
+                    $lockedCoupon->increment('used_count');
                 }
 
                 return collect($orders);

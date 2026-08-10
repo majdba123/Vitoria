@@ -95,9 +95,7 @@ class AuthService
             ->first();
 
         if (! $user) {
-            Log::warning('Failed login attempt: unknown phone number.', [
-                'phone_number' => $credentials['phone_number'],
-            ]);
+            Log::warning('Failed login attempt: unknown phone number.');
 
             throw ValidationException::withMessages([
                 'phone_number' => [__('The provided credentials are incorrect.')],
@@ -107,7 +105,6 @@ class AuthService
         if (! $user->password || ! Hash::check($credentials['password'], $user->password)) {
             Log::warning('Failed login attempt: invalid password.', [
                 'user_id' => $user->id,
-                'phone_number' => $credentials['phone_number'],
             ]);
 
             throw ValidationException::withMessages([

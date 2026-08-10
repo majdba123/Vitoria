@@ -27,7 +27,7 @@ class ProductService
     /**
      * @param  array<string, mixed>  $filters
      */
-    public function list(?Vendor $vendor = null, int $perPage = 15, array $filters = []): LengthAwarePaginator
+    public function list(?Vendor $vendor = null, int $perPage = 15, array $filters = [], bool $onlyVisible = false): LengthAwarePaginator
     {
         $query = $vendor
             ? $vendor->products()
@@ -45,6 +45,12 @@ class ProductService
         ]);
 
         $this->applyListFilters($query, $filters, ! $vendor);
+
+        if ($onlyVisible) {
+            $query->where('is_active', true)
+                ->where('status', Product::STATUS_APPROVED)
+                ->whereHas('vendor', fn ($vendorQuery) => $vendorQuery->where('is_active', true));
+        }
 
         if (! $vendor) {
             $query->with('vendor:id,store_name,user_id', 'vendor.user:id,name');

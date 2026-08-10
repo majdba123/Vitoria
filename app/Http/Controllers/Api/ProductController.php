@@ -361,6 +361,18 @@ class ProductController extends Controller
 
     public function setPrimaryPhoto(Request $request, Product $product, ProductPhoto $photo): JsonResponse
     {
+        $user = $request->user();
+
+        if ($user && $user->type === User::TYPE_VENDOR) {
+            $vendor = $user->vendor;
+            if (! $vendor) {
+                abort(403, __('Vendor profile not found.'));
+            }
+            if ($product->vendor_id !== $vendor->id) {
+                abort(403, __('You do not own this product.'));
+            }
+        }
+
         $this->productService->setPrimaryPhoto($product, $photo);
 
         return response()->json([
@@ -542,8 +554,8 @@ class ProductController extends Controller
     public function externalIndex(Request $request): JsonResponse
     {
         $perPage = min(max((int) $request->input('per_page', 25), 1), 100);
-        $filters = $request->only(['category_id', 'subcategory_id', 'category_type', 'product_type', 'status', 'search']);
-        $products = $this->productService->list(null, $perPage, $filters);
+        $filters = $request->only(['category_id', 'subcategory_id', 'category_type', 'product_type', 'search']);
+        $products = $this->productService->list(null, $perPage, $filters, onlyVisible: true);
 
         $products->getCollection()->load([
             'category',
@@ -566,6 +578,14 @@ class ProductController extends Controller
 
     public function externalShow(Product $product): JsonResponse
     {
+        if (! $product->is_active || $product->status !== Product::STATUS_APPROVED) {
+            abort(404, __('Product not found.'));
+        }
+
+        if (! $product->vendor || ! $product->vendor->is_active) {
+            abort(404, __('Product not found.'));
+        }
+
         $product->load([
             'category',
             'subcategory',

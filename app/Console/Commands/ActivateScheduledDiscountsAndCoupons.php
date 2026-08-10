@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Coupon;
 use App\Models\Product;
+use App\Services\ApplicationCacheService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
@@ -26,7 +27,7 @@ class ActivateScheduledDiscountsAndCoupons extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(ApplicationCacheService $cacheService): int
     {
         $now = Carbon::now();
 
@@ -57,6 +58,10 @@ class ActivateScheduledDiscountsAndCoupons extends Command
                     ->orWhere('discount_ends_at', '>=', $now);
             })
             ->update(['discount_status' => Product::DISCOUNT_STATUS_ACTIVE]);
+
+        if ($activatedDiscounts > 0) {
+            $cacheService->flushProducts();
+        }
 
         $this->info("Activated coupons: {$activatedCoupons}");
         $this->info("Activated product discounts: {$activatedDiscounts}");

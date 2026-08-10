@@ -33,6 +33,14 @@ class AiProductController extends Controller
 
     public function show(Product $product): JsonResponse
     {
+        if (! $product->is_active || $product->status !== Product::STATUS_APPROVED) {
+            abort(404, __('Product not found.'));
+        }
+
+        if (! $product->vendor || ! $product->vendor->is_active) {
+            abort(404, __('Product not found.'));
+        }
+
         $product->load([
             'vendor:id,store_name,user_id,logo,is_active,status',
             'category:id,name,type',
@@ -57,8 +65,6 @@ class AiProductController extends Controller
             'subcategory_id',
             'category_type',
             'product_type',
-            'status',
-            'is_active',
             'has_discount',
             'in_stock',
             'search',
@@ -68,7 +74,7 @@ class AiProductController extends Controller
             $filters['category_type'] = $forcedCategoryType;
         }
 
-        $products = $this->productService->list(null, $perPage, $filters);
+        $products = $this->productService->list(null, $perPage, $filters, onlyVisible: true);
 
         return response()->json([
             'message' => __('AI products retrieved successfully.'),
