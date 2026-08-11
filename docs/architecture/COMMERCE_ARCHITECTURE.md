@@ -1,0 +1,228 @@
+# Vetora — Commerce Architecture
+
+Scope: what is **implemented and tested** as of Phase B. Deferred work is listed
+in [IMPLEMENTATION_DECISIONS.md](IMPLEMENTATION_DECISIONS.md) and is not described here.
+
+---
+
+## 1. The trust boundary
+
+One rule governs the whole commerce path:
+
+> The frontend sends **intent**. The backend computes **truth**.
+
+Concretely, no endpoint accepts a price, a discount, a subtotal, a grand total,
+or an availability claim. `cart_items` has columns for `product_id` and
+`quantity` and nothing else — there is deliberately no `unit_price` column, so a
+stale or hostile client has nowhere to pin an old price. Every monetary figure is
+recomputed from `products.price` and the product's active discount on each read
+and again inside the checkout transaction.
+
+Tested by `ServerCartTest::it ignores any price the client tries to send`.
+
+---
+
+## 2. Stock
+
+`products.quantity` is the only stock mechanism (decision D1). There is no
+warehouse, batch, lot, reservation, movement or ledger table.
+
+Two operations touch it, and only two:
+
+**Consume** — `CheckoutService::consumeStock()`
+
+```sql
+UPDATE products SET quantity = quantity - :qty
+ WHERE id = :id AND quantity >= :qty AND is_active = 1 AND status = 'approved'
+```
+
+The `quantity >= :qty` guard is inside the statement. Zero affected rows means a
+concurrent checkout won the race, and the whole transaction rolls back with a 422.
+This is correct on SQLite — where `lockForUpdate()` is a no-op — as well as on
+MySQL and Postgres, so it survives a driver change.
+
+**Restore** — `OrderCancellationService::restoreStockOnce()`
+
+```sql
+UPDATE orders SET stock_restored_at = NOW() WHERE id = :id AND stock_restored_at IS NULL
+```
+
+Exactly one caller can win that claim. Everyone else short-circuits and returns
+`false` before touching a product row. The idempotency comes from this claim, not
+from the order's status — which is why calling it five times in a row is safe.
+
+Tested by `restores stock exactly once no matter how many times restoration is
+invoked`, `never lets stock go negative`, and `does not decrement stock twice`.
+
+---
+
+## 3. Cart
+
+| | |
+|---|---|
+| Tables | `carts`, `cart_items` |
+| Guest identity | web session (`vetora_cart_token`), never a client-supplied id |
+| User identity | `carts.user_id`, `unique` — one cart per account |
+| Line identity | `unique(cart_id, product_id)` — re-adding updates, never duplicates |
+| Line cap | `CartService::MAX_LINE_QUANTITY` = 999 |
+
+**Merge at login.** `CartService::mergeGuestCartIntoUser()` runs from
+`AuthController::login()` after `session()->regenerate()` (which rotates the id
+but preserves the payload, so the guest token is still readable). If the account
+has no cart, the guest cart is adopted wholesale. Otherwise quantities are summed
+and then **clamped to available stock**, so a merge can never produce a line that
+will only fail later at checkout. Out-of-stock guest lines are dropped.
+
+**Reconciliation.** `CartService::reconcile()` runs on every cart read and again
+at the start of checkout. It removes products that became inactive, unapproved,
+vendor-suspended or out of stock, and clamps lines that now exceed availability.
+The customer gets a notice rather than a hard failure.
+
+---
+
+## 4. Addresses and the order snapshot
+
+`user_addresses` is a customer convenience list with labels reflecting Vetora's
+actual buyers: `home`, `work`, `farm`, `clinic`, `pharmacy`, `other`.
+
+Orders **do not reference it**. At creation, `UserAddress::toOrderSnapshot()`
+copies the delivery details into the order's own `ship_*` columns. Editing or
+soft-deleting an address afterwards cannot alter a historical order (decision D5).
+
+Tested by `snapshots the delivery address onto the order and never reads it back`.
+
+---
+
+## 5. Checkout
+
+`POST /api/checkout` — body is exactly `{address_id, payment_method}`.
+
+Sequence:
+
+1. Validate `payment_method` against `CheckoutService::availablePaymentMethods()`
+   — currently `['cash']` only. COD is the only method the platform configures
+   and no gateway is stubbed (decision D9).
+2. Authorize the address through `UserAddressPolicy` — a foreign id returns 403.
+3. Reconcile the cart.
+4. Price it server-side; reject an empty cart.
+5. Re-resolve the coupon against the live subtotal and the buying user.
+6. **In one transaction:** group lines by vendor, create one order per vendor,
+   consume stock atomically per line, write items, record the opening status
+   history row, claim the coupon, clear the cart.
+
+**Multi-vendor split** is preserved from the previous implementation: a cart
+spanning three vendors produces three `orders` rows. One order-level coupon
+discount is allocated across them in proportion to vendor subtotal, with the
+rounding remainder assigned to the last vendor so the parts sum exactly to the
+whole. One coupon *use* is consumed for the checkout as a whole.
+
+**Legacy endpoint.** `POST /api/orders/checkout` still accepts the old
+client-supplied `items[]` array, because shipped mobile clients call it. It now
+writes those items into the caller's server cart and delegates to the same
+`CheckoutService`, so there remains exactly one code path that decrements stock.
+Orders created this way carry no address snapshot. It is marked deprecated in
+`routes/api.php`.
+
+### Money
+
+| Column | Meaning |
+|---|---|
+| `subtotal_amount` | sum of line totals, post product-discount |
+| `coupon_discount_amount` | this vendor's allocated share |
+| `shipping_total` | structurally present, **0** — shipping is deferred |
+| `tax_total` | structurally present, **0** — no VAT rate is invented (D7) |
+| `grand_total` | subtotal − discount + shipping + tax, floored at 0 |
+| `total_amount` | retained, mirrors `grand_total`, for backward compatibility |
+| `currency` | persisted ISO code, default `SYP`, no FX (D6) |
+
+---
+
+## 6. Order lifecycle
+
+States and legal transitions live in `Order::TRANSITIONS` — one declaration, and
+the only source of truth:
+
+```
+pending ──▶ confirmed ──▶ preparing ──▶ shipped ──▶ out_for_delivery ──▶ completed
+   │            │             │
+   └────────────┴─────────────┴──▶ cancelled
+```
+
+`completed` is retained as the terminal success state rather than renamed to
+`delivered`, so historical orders stay valid (decision D4). `ready` and pickup
+states are not implemented — no pickup business model exists in the repository.
+
+**Nothing writes `status` directly.** `OrderStatusService::transition()` is the
+only path, and it enforces two independent gates:
+
+1. **Actor permission** — customers may only cancel; vendors and admins drive
+   fulfilment. A customer calling for `confirmed` is rejected even though the
+   state machine allows that edge.
+2. **State machine** — `pending → shipped` is rejected for everyone.
+
+The write itself is conditional (`WHERE status = :from`), so a concurrent update
+loses cleanly with a conflict message instead of silently overwriting.
+
+Every transition writes an `order_status_histories` row: previous status, new
+status, actor, actor type, reason, notes, timestamp. That table drives the
+customer, vendor and admin timelines.
+
+---
+
+## 7. Cancellation
+
+Allowed only from `pending`, `confirmed`, `preparing` — states where the goods
+have not left the vendor. Reason is validated against `Order::CANCEL_REASONS`;
+an arbitrary string is rejected.
+
+The order records `cancelled_at`, `cancelled_by_user_id`, `cancellation_reason`,
+`cancellation_notes`, and stock is restored through the exactly-once claim in §2.
+
+Vendor and customer cancellation share one implementation. The previous code
+duplicated the restore loop in `Api\OrderController` and `Api\Vendor\OrderController`,
+and both copies carried the double-restore race (audit R1).
+
+---
+
+## 8. Coupons
+
+Server-side only. `CouponService` validates active flag, status, window, global
+usage limit, minimum subtotal, maximum discount cap, per-user limit, and
+first-order-only. A failing rule returns `null` rather than naming which rule
+failed, so the endpoint cannot be used to probe coupon configuration.
+
+`coupon_redemptions` records who redeemed what on which order — the fact that
+makes per-user limits expressible at all (audit R3). The global cap is enforced
+by a conditional `UPDATE ... WHERE used_count < usage_limit`; zero affected rows
+aborts the checkout.
+
+---
+
+## 9. Authorization
+
+`OrderPolicy` and `UserAddressPolicy` enforce per-record ownership. Controllers
+call `$this->authorize(...)`; the base `Controller` now uses `AuthorizesRequests`.
+Existing type middleware (`admin`, `vendor`, `employee`, `syndicate`) remains the
+coarse outer gate. Table-driven RBAC is deferred (decision D3).
+
+Vendor isolation is tested directly: a vendor calling status or cancel on another
+vendor's order gets 403, and a customer reading another customer's order gets 403.
+
+---
+
+## 10. Endpoints added
+
+| Method | Path | Auth |
+|---|---|---|
+| GET | `/api/cart` | guest or user |
+| POST | `/api/cart/items` | guest or user |
+| PATCH | `/api/cart/items` | guest or user |
+| DELETE | `/api/cart/items/{productId}` | guest or user |
+| DELETE | `/api/cart` | guest or user |
+| POST · DELETE | `/api/cart/coupon` | guest or user |
+| GET · POST | `/api/addresses` | user |
+| PATCH · DELETE | `/api/addresses/{address}` | user |
+| PATCH | `/api/addresses/{address}/default` | user |
+| GET | `/api/checkout/summary` | user |
+| POST | `/api/checkout` | user |
+| PATCH | `/api/vendor/orders/{orderId}/status` | vendor |
