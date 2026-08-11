@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
 {
@@ -56,6 +57,17 @@ class Order extends Model
         self::STATUS_PENDING,
         self::STATUS_CONFIRMED,
         self::STATUS_PREPARING,
+    ];
+
+    /**
+     * A return can only be requested once the order has actually been
+     * delivered — returning something that never arrived is a cancellation,
+     * not a return (spec §12).
+     *
+     * @var list<string>
+     */
+    public const RETURNABLE_STATUSES = [
+        self::STATUS_COMPLETED,
     ];
 
     public const CANCEL_REASONS = [
@@ -148,6 +160,15 @@ class Order extends Model
     }
 
     /**
+     * Whether a return may be requested against this order at all.
+     * Per-item, per-quantity eligibility is enforced by ReturnService.
+     */
+    public function isReturnable(): bool
+    {
+        return in_array($this->status, self::RETURNABLE_STATUSES, true);
+    }
+
+    /**
      * Flat, display-ready delivery address snapshot. Reads only the order's own
      * columns — never the (mutable) user_addresses row (decision D5).
      *
@@ -217,5 +238,21 @@ class Order extends Model
     public function cancelledBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'cancelled_by_user_id');
+    }
+
+    /**
+     * The order's single payment record (spec §11).
+     */
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    /**
+     * Return requests raised against this order (spec §12).
+     */
+    public function returns(): HasMany
+    {
+        return $this->hasMany(OrderReturn::class);
     }
 }

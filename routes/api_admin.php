@@ -64,6 +64,17 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::get('orders', [\App\Http\Controllers\Api\Admin\OrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{orderId}', [\App\Http\Controllers\Api\Admin\OrderController::class, 'show'])->name('orders.show');
     Route::patch('orders/{orderId}/complete', [\App\Http\Controllers\Api\Admin\OrderController::class, 'markCompleted'])->middleware('throttle:api.write')->name('orders.complete');
+
+    Route::get('returns', [\App\Http\Controllers\Api\Admin\ReturnController::class, 'index'])->name('returns.index');
+    Route::get('returns/{returnId}', [\App\Http\Controllers\Api\Admin\ReturnController::class, 'show'])->name('returns.show');
+    Route::patch('returns/{returnId}/status', [\App\Http\Controllers\Api\Admin\ReturnController::class, 'updateStatus'])->middleware('throttle:api.write')->name('returns.status');
+    Route::post('returns/{returnId}/refund', [\App\Http\Controllers\Api\Admin\ReturnController::class, 'refund'])->middleware('throttle:api.write')->name('returns.refund');
+
+    Route::get('refunds', [\App\Http\Controllers\Api\Admin\RefundController::class, 'index'])->name('refunds.index');
+    Route::get('refunds/{refundId}', [\App\Http\Controllers\Api\Admin\RefundController::class, 'show'])->name('refunds.show');
+    Route::post('refunds', [\App\Http\Controllers\Api\Admin\RefundController::class, 'store'])->middleware('throttle:api.write')->name('refunds.store');
+    Route::patch('refunds/{refundId}/complete', [\App\Http\Controllers\Api\Admin\RefundController::class, 'complete'])->middleware('throttle:api.write')->name('refunds.complete');
+    Route::patch('refunds/{refundId}/cancel', [\App\Http\Controllers\Api\Admin\RefundController::class, 'cancel'])->middleware('throttle:api.write')->name('refunds.cancel');
     Route::post('notifications/send', [\App\Http\Controllers\Api\Admin\NotificationController::class, 'send'])->middleware('throttle:notifications.write')->name('notifications.send');
 
     Route::get('contact-messages', [\App\Http\Controllers\Api\Admin\ContactMessageController::class, 'index'])->name('contact-messages.index');

@@ -21,6 +21,7 @@ class OrderCancellationService
 {
     public function __construct(
         private readonly OrderStatusService $orderStatusService,
+        private readonly PaymentService $paymentService,
     ) {}
 
     /**
@@ -66,6 +67,14 @@ class OrderCancellationService
         ]);
 
         $this->restoreStockOnce($order);
+
+        $order->loadMissing('payment');
+
+        if ($order->payment) {
+            // A settled payment is untouched here — undoing money already
+            // collected is a refund, not a cancellation (spec §11).
+            $this->paymentService->cancelIfUnsettled($order->payment);
+        }
 
         return $order->refresh();
     }

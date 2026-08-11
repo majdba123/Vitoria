@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Events\AdminNotificationSent;
 use App\Models\AdminNotification;
 use App\Models\Order;
+use App\Models\OrderReturn;
 use App\Models\Product;
+use App\Models\Refund;
 use App\Models\User;
 
 class NotificationService
@@ -102,6 +104,115 @@ class NotificationService
             'type' => AdminNotification::TYPE_PRIVATE,
             'action_type' => AdminNotification::ACTION_ORDER,
             'action_id' => $order->id,
+            'sent_by' => null,
+        ]);
+        $notification->recipients()->sync($recipientIds);
+
+        $this->broadcastNotification($notification, $recipientIds);
+    }
+
+    /**
+     * Notify admin and vendor when a customer requests a return (spec §12).
+     */
+    public function notifyReturnRequested(OrderReturn $return): void
+    {
+        $orderNumber = $return->order->order_number;
+        $bodyAdmin = "طلب إرجاع جديد لطلب #{$orderNumber}";
+        $bodyVendor = "طلب إرجاع جديد لطلب #{$orderNumber}";
+
+        $recipientIds = User::query()->where('type', User::TYPE_ADMIN)->pluck('id')->all();
+
+        $notification = AdminNotification::query()->create([
+            'title' => 'طلب إرجاع',
+            'body' => $bodyAdmin,
+            'type' => AdminNotification::TYPE_PRIVATE,
+            'action_type' => AdminNotification::ACTION_ORDER,
+            'action_id' => $return->order_id,
+            'sent_by' => null,
+        ]);
+        if ($recipientIds !== []) {
+            $notification->recipients()->sync($recipientIds);
+            $this->broadcastNotification($notification, $recipientIds);
+        }
+
+        $vendorUserId = $return->vendor?->user_id;
+        if ($vendorUserId) {
+            $notifVendor = AdminNotification::query()->create([
+                'title' => 'طلب إرجاع',
+                'body' => $bodyVendor,
+                'type' => AdminNotification::TYPE_PRIVATE,
+                'action_type' => AdminNotification::ACTION_ORDER,
+                'action_id' => $return->order_id,
+                'sent_by' => null,
+            ]);
+            $notifVendor->recipients()->sync([$vendorUserId]);
+            $this->broadcastNotification($notifVendor, [$vendorUserId]);
+        }
+    }
+
+    /**
+     * Notify the customer (and admin) when a return's status changes.
+     */
+    public function notifyReturnStatusUpdated(OrderReturn $return, string $newStatus): void
+    {
+        $orderNumber = $return->order->order_number;
+        $statusMessages = [
+            OrderReturn::STATUS_APPROVED => "تمت الموافقة على طلب إرجاعك للطلب #{$orderNumber}",
+            OrderReturn::STATUS_REJECTED => "تم رفض طلب إرجاعك للطلب #{$orderNumber}",
+            OrderReturn::STATUS_RECEIVED => "تم استلام المرتجع الخاص بالطلب #{$orderNumber}",
+            OrderReturn::STATUS_COMPLETED => "اكتمل إرجاع الطلب #{$orderNumber}",
+            OrderReturn::STATUS_CANCELLED => "تم إلغاء طلب إرجاع الطلب #{$orderNumber}",
+        ];
+        $body = $statusMessages[$newStatus] ?? "تم تحديث حالة إرجاع الطلب #{$orderNumber}";
+
+        $recipientIds = array_unique(array_filter([
+            $return->user_id,
+            ...User::query()->where('type', User::TYPE_ADMIN)->pluck('id')->all(),
+        ]));
+
+        if ($recipientIds === []) {
+            return;
+        }
+
+        $notification = AdminNotification::query()->create([
+            'title' => 'تحديث الإرجاع',
+            'body' => $body,
+            'type' => AdminNotification::TYPE_PRIVATE,
+            'action_type' => AdminNotification::ACTION_ORDER,
+            'action_id' => $return->order_id,
+            'sent_by' => null,
+        ]);
+        $notification->recipients()->sync($recipientIds);
+
+        $this->broadcastNotification($notification, $recipientIds);
+    }
+
+    /**
+     * Notify the customer when a refund's status changes (spec §13).
+     */
+    public function notifyRefundStatusUpdated(Refund $refund, string $newStatus): void
+    {
+        $orderNumber = $refund->order->order_number;
+        $statusMessages = [
+            Refund::STATUS_PENDING => "تم إنشاء طلب استرداد لطلبك #{$orderNumber}",
+            Refund::STATUS_COMPLETED => "تم استرداد المبلغ لطلبك #{$orderNumber}",
+            Refund::STATUS_FAILED => "فشلت عملية استرداد المبلغ لطلبك #{$orderNumber}",
+            Refund::STATUS_CANCELLED => "تم إلغاء طلب استرداد المبلغ لطلبك #{$orderNumber}",
+        ];
+        $body = $statusMessages[$newStatus] ?? "تم تحديث حالة استرداد المبلغ لطلبك #{$orderNumber}";
+
+        $recipientIds = array_unique(array_filter([$refund->order->user_id]));
+
+        if ($recipientIds === []) {
+            return;
+        }
+
+        $notification = AdminNotification::query()->create([
+            'title' => 'تحديث الاسترداد',
+            'body' => $body,
+            'type' => AdminNotification::TYPE_PRIVATE,
+            'action_type' => AdminNotification::ACTION_ORDER,
+            'action_id' => $refund->order_id,
             'sent_by' => null,
         ]);
         $notification->recipients()->sync($recipientIds);

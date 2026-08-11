@@ -117,8 +117,15 @@ Route::middleware(['auth:sanctum', 'throttle:api.authenticated'])->group(functio
     Route::get('/orders', [\App\Http\Controllers\Api\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{orderId}', [\App\Http\Controllers\Api\OrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{orderId}/cancel', [\App\Http\Controllers\Api\OrderController::class, 'cancel'])->middleware('throttle:api.write')->name('orders.cancel');
+    Route::post('/orders/{orderId}/returns', [\App\Http\Controllers\Api\OrderReturnController::class, 'store'])->middleware('throttle:orders.write')->name('orders.returns.store');
     // DEPRECATED: client-supplied items[]. Use POST /api/checkout instead.
     Route::post('/orders/checkout', [\App\Http\Controllers\Api\OrderController::class, 'store'])->middleware('throttle:orders.write')->name('orders.checkout');
+
+    Route::prefix('returns')->as('returns.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\OrderReturnController::class, 'index'])->name('index');
+        Route::get('/{returnId}', [\App\Http\Controllers\Api\OrderReturnController::class, 'show'])->name('show');
+        Route::patch('/{returnId}/cancel', [\App\Http\Controllers\Api\OrderReturnController::class, 'cancel'])->middleware('throttle:api.write')->name('cancel');
+    });
 
     Route::prefix('addresses')->as('addresses.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\UserAddressController::class, 'index'])->name('index');

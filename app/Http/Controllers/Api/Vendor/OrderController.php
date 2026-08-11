@@ -96,6 +96,8 @@ class OrderController extends Controller
                 'items:id,order_id,product_id,product_name,original_unit_price,has_discount,applied_discount_percentage,unit_price,quantity,line_total,discount_amount',
                 'items.product:id,category_id',
                 'items.product.category:id,name',
+                'payment',
+                'returns',
             ])
             ->where('vendor_id', $vendor->id)
             ->findOrFail($orderId);

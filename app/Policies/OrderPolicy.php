@@ -53,6 +53,15 @@ class OrderPolicy
     }
 
     /**
+     * Request a return against this order (spec §12). Only the customer who
+     * placed it — vendors and admins review returns, they do not raise them.
+     */
+    public function requestReturn(User $user, Order $order): bool
+    {
+        return $order->user_id === $user->id;
+    }
+
+    /**
      * The vendor account behind this user owns the order.
      */
     private function ownsVendor(User $user, Order $order): bool

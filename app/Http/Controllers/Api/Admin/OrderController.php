@@ -4,15 +4,17 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Services\Commerce\CartException;
+use App\Services\Commerce\OrderStatusService;
 use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class OrderController extends Controller
 {
     public function __construct(
         protected NotificationService $notificationService,
+        protected OrderStatusService $orderStatusService,
     ) {}
 
     /**
@@ -88,6 +90,8 @@ class OrderController extends Controller
                 'items:id,order_id,product_id,product_name,original_unit_price,has_discount,applied_discount_percentage,unit_price,quantity,line_total,discount_amount',
                 'items.product:id,category_id',
                 'items.product.category:id,name',
+                'payment',
+                'returns',
             ])
             ->findOrFail($orderId);
 
@@ -99,16 +103,15 @@ class OrderController extends Controller
 
     /**
      * Mark an order as completed (admin only).
+     *
+     * Routed through OrderStatusService rather than writing `status` directly:
+     * that is what enforces the state machine (an order must actually reach
+     * `out_for_delivery` first), writes the audit history row, and — as of
+     * Phase C — settles the order's COD payment (spec §8, §11).
      */
-    public function markCompleted(int $orderId): JsonResponse
+    public function markCompleted(Request $request, int $orderId): JsonResponse
     {
         $order = Order::query()->findOrFail($orderId);
-
-        if ($order->status === Order::STATUS_CANCELLED) {
-            return response()->json([
-                'message' => 'Cancelled orders cannot be marked as completed.',
-            ], 422);
-        }
 
         if ($order->status === Order::STATUS_COMPLETED) {
             return response()->json([
@@ -116,17 +119,16 @@ class OrderController extends Controller
             ]);
         }
 
-        $order->update([
-            'status' => Order::STATUS_COMPLETED,
-        ]);
-
         try {
-            Cache::tags(['products'])->flush();
-        } catch (\Exception $e) {
-            // Silently fail if cache driver doesn't support tags
+            $order = $this->orderStatusService->transition(
+                $order,
+                Order::STATUS_COMPLETED,
+                $request->user(),
+                'admin',
+            );
+        } catch (CartException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
         }
-
-        $this->notificationService->notifyOrderStatusUpdated($order, Order::STATUS_COMPLETED);
 
         return response()->json([
             'message' => 'Order marked as completed successfully.',

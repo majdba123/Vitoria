@@ -1,7 +1,9 @@
 # Vetora — Commerce Architecture
 
-Scope: what is **implemented and tested** as of Phase B. Deferred work is listed
-in [IMPLEMENTATION_DECISIONS.md](IMPLEMENTATION_DECISIONS.md) and is not described here.
+Scope: what is **implemented and tested** as of Phase C (payments, returns,
+refunds — §12–14 below — added on top of the Phase B cart/checkout/lifecycle
+work in §1–11). Deferred work is listed in
+[IMPLEMENTATION_DECISIONS.md](IMPLEMENTATION_DECISIONS.md) and is not described here.
 
 ---
 
@@ -227,6 +229,13 @@ vendor's order gets 403, and a customer reading another customer's order gets 40
 | POST | `/api/checkout` | user |
 | PATCH | `/api/vendor/orders/{orderId}/status` | vendor |
 | GET | `/checkout` (web page) | user |
+| POST | `/api/orders/{orderId}/returns` | user |
+| GET | `/api/returns`, `/api/returns/{id}` | user |
+| PATCH | `/api/returns/{id}/cancel` | user |
+| GET · PATCH | `/api/vendor/returns`, `/api/vendor/returns/{id}/status` | vendor |
+| POST | `/api/vendor/returns/{id}/refund` | vendor |
+| GET · PATCH | `/api/admin/returns`, `/api/admin/returns/{id}/status` | admin |
+| GET · POST · PATCH | `/api/admin/refunds`, `/api/admin/refunds/{id}/complete`, `/cancel` | admin |
 
 ---
 
@@ -256,3 +265,115 @@ inline so the shopper is never bounced out of checkout.
 
 The cart modal's button no longer places an order — it navigates to `/checkout`,
 because an order now requires a delivery address.
+
+---
+
+## 12. Payments (Phase C)
+
+One `payments` row per order (`unique(order_id)`), created inside the same
+checkout transaction as the order (decision D9 — COD is the only configured
+provider, no gateway is stubbed).
+
+```
+pending ──▶ paid ──▶ partially_refunded ──▶ refunded
+   │                        ▲
+   └──▶ cancelled            └── (a second, smaller refund can still land here)
+```
+
+- **`pending → paid`** happens in exactly one place: `OrderStatusService::transition()`,
+  when an order reaches `completed`. COD settles when the courier hands over the
+  goods and collects cash — i.e. exactly when fulfilment reaches its terminal
+  state — so every completion path (vendor, admin) settles the payment the same
+  way. `Admin\OrderController::markCompleted()` was rewired through
+  `OrderStatusService` for this reason: it previously wrote `status` directly,
+  bypassing both the state machine and payment settlement.
+- **`pending → cancelled`** happens in `OrderCancellationService::cancel()`. A
+  payment that has already settled is left alone — undoing collected money is a
+  refund, not a cancellation.
+- Both settlement and cancellation are conditional updates
+  (`WHERE status = 'pending'`), so a payment can only ever be claimed once.
+
+No card number, CVV, token, or PAN is accepted, stored, or logged anywhere —
+`provider_reference` is a free-text string a real gateway would populate later.
+
+---
+
+## 13. Returns (Phase C)
+
+`order_returns` (named to avoid the `RETURN` reserved word in MySQL) +
+`return_items`. A return may only be requested once the order is `completed`
+(`Order::isReturnable()`) — returning something that never arrived is a
+cancellation, not a return.
+
+```
+requested ──▶ under_review ──▶ approved ──▶ received ──▶ completed
+    │               │               │
+    └───────────────┴───────────────┴──▶ cancelled
+```
+
+- **Quantity validation.** `ReturnService::request()` sums quantity already
+  claimed by any non-rejected, non-cancelled return against the same order item
+  and rejects a request that would exceed what was actually purchased.
+- **Actor permissions**, mirroring `OrderStatusService`: customers may only
+  cancel their own return; vendors and admins drive review. Vendor isolation is
+  enforced by `OrderReturnPolicy` against `order_returns.vendor_id`.
+- **Stock restoration** happens on `received`, not `approved` — approval is a
+  decision, receipt is the physical fact — through the same exactly-once claim
+  pattern as order cancellation: a conditional `UPDATE ... WHERE
+  stock_restored_at IS NULL` on `order_returns`, not a status check.
+- The write itself is conditional (`WHERE status = :from`), so a concurrent
+  review action loses cleanly with a conflict message.
+
+---
+
+## 14. Refunds (Phase C)
+
+`refunds`, linked to the order, optionally to the return that justified it and
+the payment it draws against. `unique(order_return_id)` makes "at most one
+refund per return" a database guarantee, not just an application check.
+
+```
+pending ──▶ processing ──▶ completed
+   │             │
+   └─────────────┴──▶ failed / cancelled
+```
+
+**The invariant that matters:** cumulative completed refunds against a payment
+must never exceed what was actually paid.
+`RefundService::complete()` enforces it with a conditional UPDATE against
+`payments.refunded_amount`:
+
+```sql
+UPDATE payments SET refunded_amount = refunded_amount + :amount
+ WHERE id = :id AND (amount - refunded_amount) >= :amount
+```
+
+rather than trusting the amount validated when the refund was initiated — a
+second refund racing the first cannot overdraw the payment.
+
+**A SQLite footgun worth documenting.** That check was first written as a bound
+parameter (`whereRaw('(amount - refunded_amount) >= ?', [$amount])`). It failed
+closed on every request: Laravel binds PHP floats as `PDO::PARAM_STR`, and
+SQLite's type-ordering rule places any TEXT value above every NUMERIC value
+regardless of content, so `200.0 >= '200'` is *always false* in SQLite,
+independent of the numbers involved. `$amount` is a trusted, server-computed
+decimal — never user input — so the fix formats it with `number_format($amount,
+2, '.', '')` and interpolates it into the raw SQL directly, the same reasoning
+`CheckoutService` and `OrderCancellationService` already apply to the analogous
+integer case (decision D1). Covered by
+`PaymentsReturnsRefundsTest::it initiates and completes a refund, settling the
+payment`, which would not pass against the bound-parameter version.
+
+- `complete()` claims the refund (`WHERE status IN (pending, processing)`)
+  before touching the payment, so calling it twice — accidentally or
+  concurrently — finds nothing left to claim on the second call and rejects
+  rather than double-paying.
+- Completing a refund tied to a `received` return also closes the return to
+  `completed`: money moved, so the loop the return started is done.
+- `RefundService::initiateAdHoc()` supports an admin-initiated refund with no
+  return behind it (a duplicate COD collection, a goodwill adjustment),
+  restricted to `Refund::ADHOC_REASONS` and still capped by the same
+  payment-draw check.
+- Settling money is admin-only (`RefundPolicy::manage`): a vendor may request a
+  refund for a return it owns (`OrderReturnPolicy::initiateRefund`), but only an
+  admin can complete or cancel one.

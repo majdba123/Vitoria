@@ -3,11 +3,12 @@
 Last run: 2026-08-12 · `php artisan test`
 
 ```
-Tests:    190 passed (1085 assertions)
-Duration: 36.68s
+Tests:    207 passed (1219 assertions)
+Duration: 76.24s
 ```
 
-Baseline before this program: 145 passed (913 assertions). **45 tests added, 0 regressions.**
+Baseline before this program: 145 passed (913 assertions). **62 tests added, 0
+regressions** (45 from Phase B, 17 from Phase C — payments, returns, refunds).
 
 The checkout flow was additionally exercised end-to-end in a real browser
 against the dev server — guest cart → login merge → address creation → order
@@ -139,15 +140,40 @@ All verification records were removed afterwards; `.env` was restored.
 
 ---
 
+### `tests/Feature/PaymentsReturnsRefundsTest.php` — 17 tests
+
+Covers spec §11–§13 (Phase C).
+
+| Test | Property proved |
+|---|---|
+| creates a payment at checkout, for the grand total, that settles once delivered | payment created inside the checkout transaction, amount matches grand_total |
+| **marks the payment paid only once the order reaches completed** | COD settles exactly at the terminal fulfilment state, via the admin completion path too |
+| cancels an unsettled payment when the order is cancelled | pending payment cancelled alongside order cancellation |
+| leaves an already-settled payment untouched by cancellation | a paid payment survives `cancelIfUnsettled()` — undoing collected money is a refund, not a cancellation |
+| requests a return for a delivered order | happy path, status `requested` |
+| rejects a return request for an order that has not been delivered | `Order::isReturnable()` gate |
+| rejects returning more than was purchased | quantity-already-claimed check |
+| stops a customer from requesting a return on someone else's order | 403 |
+| stops a vendor from reviewing another vendor's return | 403, `OrderReturnPolicy` vendor isolation |
+| rejects an invalid return transition | `requested → received` refused |
+| **restores stock exactly once when a return is received** | quantity restored on `received`; a second direct `restoreStockOnce()` call returns `false` and stock is unchanged |
+| lets a customer cancel their own pending return but not someone else's | ownership-scoped cancel |
+| initiates and completes a refund, settling the payment | full lifecycle: return received → refund initiated → refund completed → payment `refunded`, return `completed` |
+| **prevents a duplicate refund for the same return** | second `initiate()` for the same return rejected; `unique(order_return_id)` backstop |
+| **cannot complete the same refund twice** | second `complete()` call rejected; `refunded_amount` not double-incremented |
+| caps a refund at what remains available on the payment | amount above `refundableAmount()` rejected before a refund row is created |
+| only an admin can complete or cancel a refund | vendor hitting the admin completion route gets 403 |
+
+---
+
 ## Not yet covered
 
 These areas have no tests because the features are not implemented. Listed so the
 gap is explicit rather than implied by omission:
 
-payments · returns · refunds · shipping · invoices · vendor ledger · settlements
-· vendor staff · RBAC tables · vendor verification documents · product documents
-· product comparison · notification preferences · admin audit log · reports ·
-exports · CMS · SEO.
+shipping · invoices · vendor ledger · settlements · vendor staff · RBAC tables ·
+vendor verification documents · product documents · product comparison ·
+notification preferences · admin audit log · reports · exports · CMS · SEO.
 
 ## Known gaps in what *is* implemented
 

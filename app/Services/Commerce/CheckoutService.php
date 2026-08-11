@@ -27,6 +27,7 @@ class CheckoutService
         private readonly CouponService $couponService,
         private readonly OrderStatusService $orderStatusService,
         private readonly NotificationService $notificationService,
+        private readonly PaymentService $paymentService,
     ) {}
 
     /**
@@ -143,6 +144,7 @@ class CheckoutService
 
                 $order->update(['items_count' => $itemsCount]);
                 $this->orderStatusService->recordInitial($order, $user);
+                $this->paymentService->createForOrder($order, $user, $paymentMethod);
 
                 $created[] = $order;
             }

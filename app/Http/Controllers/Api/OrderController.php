@@ -75,6 +75,8 @@ class OrderController extends Controller
                 'items.product:id,category_id',
                 'items.product.category:id,name',
                 'statusHistories',
+                'payment',
+                'returns',
             ])
             ->findOrFail($orderId);
 
@@ -84,6 +86,21 @@ class OrderController extends Controller
             'message' => 'Order retrieved successfully.',
             'data' => array_merge($this->presentOrder($order), [
                 'shipping_address' => $order->shippingAddress(),
+                'payment' => $order->payment ? [
+                    'status' => $order->payment->status,
+                    'status_name' => __("payments.status.{$order->payment->status}"),
+                    'method' => $order->payment->method,
+                    'amount' => $order->payment->amount,
+                    'refunded_amount' => $order->payment->refunded_amount,
+                    'paid_at' => $order->payment->paid_at,
+                ] : null,
+                'returns' => $order->returns->map(fn (\App\Models\OrderReturn $return) => [
+                    'id' => $return->id,
+                    'return_number' => $return->return_number,
+                    'status' => $return->status,
+                    'status_name' => __("returns.status.{$return->status}"),
+                    'requested_at' => $return->requested_at,
+                ])->values(),
                 'timeline' => $order->statusHistories->map(fn (OrderStatusHistory $entry) => [
                     'previous_status' => $entry->previous_status,
                     'new_status' => $entry->new_status,

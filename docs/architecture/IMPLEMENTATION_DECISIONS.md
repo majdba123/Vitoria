@@ -141,6 +141,38 @@ only registered provider**, because COD is the only method the repository actual
 configures. No third-party gateway is stubbed, mocked, or presented as working — §11
 forbids fake gateways, and a fake one is worse than none because it looks integrated.
 
+A payment settles in exactly one place — `OrderStatusService::transition()`, when an
+order reaches `completed` — so every completion path (vendor, admin) settles it the
+same way. `Admin\OrderController::markCompleted()` previously wrote `status` directly,
+bypassing the state machine *and* payment settlement; it was rewired through
+`OrderStatusService` as part of this decision, since a completion path that skips
+settlement would leave COD payments permanently `pending`.
+
+---
+
+## D11 — Float parameters cannot be bound into a numeric SQLite comparison
+
+**Evidence:** `RefundService::complete()`'s cumulative-refund cap
+(`payments.refunded_amount`) was first written as
+`whereRaw('(amount - refunded_amount) >= ?', [$amount])`. Every call failed with
+"amount exceeds" even when the numbers were exactly equal. Laravel's `Connection::bindValues()`
+binds any non-integer, non-resource value — including PHP floats — as `PDO::PARAM_STR`.
+SQLite's type-ordering rule places any TEXT value above every NUMERIC value regardless of
+content, so `200.0 >= '200'` evaluates false unconditionally, independent of the actual
+numbers.
+
+**Decision:** where a decimal amount must appear inside a raw numeric comparison against
+a computed column, format it (`number_format($amount, 2, '.', '')`) and interpolate it
+into the SQL text rather than binding it. `$amount` in this path is always a
+trusted, server-computed decimal — never user input — so this carries the same
+justification D1 already established for interpolating an integer quantity into
+`DB::raw("quantity - {$quantity}")`. A bound parameter remains correct and preferred for
+every other case (equality checks, `IN` lists, anything not embedded in raw arithmetic).
+
+**How this was caught:** `PaymentsReturnsRefundsTest::it initiates and completes a
+refund, settling the payment` failed against the bound-parameter version and passes
+against the interpolated one — the test, not inspection, found it.
+
 ---
 
 ## D10 — Search: indexed SQL, no search engine
@@ -158,10 +190,14 @@ anchored indexed lookups on `name`, localized names, `commercial_name`, `sku`, a
 
 ## Deferred — not built, not documented as built
 
-§11 payments · §12 returns · §13 refunds · §14 shipping · §19 invoices · §20 vendor
-ledger · §22 vendor staff · §23 RBAC tables · §24 vendor documents · §25 product
-documents · §29 comparison · §33 notification preferences · §35 audit log · §36 reports
-· §37 exports · §38 CMS · §39 SEO · §40–52 UI redesign.
+§11 payments, §12 returns, and §13 refunds are now implemented — see
+[COMMERCE_ARCHITECTURE.md §12–14](COMMERCE_ARCHITECTURE.md#12-payments-phase-c) and
+[TEST_COVERAGE.md](../testing/TEST_COVERAGE.md).
+
+Still deferred: §14 shipping · §19 invoices · §20 vendor ledger · §22 vendor staff ·
+§23 RBAC tables · §24 vendor documents · §25 product documents · §29 comparison ·
+§33 notification preferences · §35 audit log · §36 reports · §37 exports · §38 CMS ·
+§39 SEO · §40–52 UI redesign.
 
 These remain open scope. Their absence is stated here so no reader mistakes a plan for
 an implementation.

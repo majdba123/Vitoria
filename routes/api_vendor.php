@@ -37,6 +37,11 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::patch('orders/{orderId}/cancel', [\App\Http\Controllers\Api\Vendor\OrderController::class, 'cancel'])->middleware('throttle:api.write')->name('orders.cancel');
     Route::get('commission-stats', [\App\Http\Controllers\Api\Vendor\CommissionController::class, 'show'])->name('commission.stats');
 
+    Route::get('returns', [\App\Http\Controllers\Api\Vendor\ReturnController::class, 'index'])->name('returns.index');
+    Route::get('returns/{returnId}', [\App\Http\Controllers\Api\Vendor\ReturnController::class, 'show'])->name('returns.show');
+    Route::patch('returns/{returnId}/status', [\App\Http\Controllers\Api\Vendor\ReturnController::class, 'updateStatus'])->middleware('throttle:api.write')->name('returns.status');
+    Route::post('returns/{returnId}/refund', [\App\Http\Controllers\Api\Vendor\ReturnController::class, 'refund'])->middleware('throttle:api.write')->name('returns.refund');
+
     Route::get('products/{product}/photos', [ProductPhotoController::class, 'index'])->name('products.photos.index');
     Route::post('products/{product}/photos', [ProductPhotoController::class, 'store'])->middleware('throttle:uploads')->name('products.photos.store');
     Route::post('products/{product}/photos/update', [ProductPhotoController::class, 'updatePhotos'])->middleware('throttle:uploads')->name('products.photos.update');

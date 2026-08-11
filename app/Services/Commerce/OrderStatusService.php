@@ -54,6 +54,7 @@ class OrderStatusService
 
     public function __construct(
         private readonly NotificationService $notificationService,
+        private readonly PaymentService $paymentService,
     ) {}
 
     /**
@@ -125,6 +126,18 @@ class OrderStatusService
         });
 
         $order->refresh();
+
+        if ($to === Order::STATUS_COMPLETED) {
+            // COD settles when the courier hands over the goods and collects
+            // cash — i.e. exactly when fulfilment reaches its terminal state.
+            // This is the only place a payment is marked paid, so every path
+            // that completes an order (vendor, employee, admin) settles it.
+            $order->loadMissing('payment');
+
+            if ($order->payment) {
+                $this->paymentService->markPaid($order->payment);
+            }
+        }
 
         $this->notificationService->notifyOrderStatusUpdated($order, $to);
 
