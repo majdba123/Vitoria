@@ -144,7 +144,7 @@ class ProductService
     /**
      * @param  array<string, mixed>  $filters
      */
-    protected function applyListFilters(\Illuminate\Database\Eloquent\Builder $query, array $filters, bool $allowVendorFilter): void
+    protected function applyListFilters(\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Relations\HasMany $query, array $filters, bool $allowVendorFilter): void
     {
         if ($allowVendorFilter && ! empty($filters['vendor_id'])) {
             $query->where('vendor_id', (int) $filters['vendor_id']);

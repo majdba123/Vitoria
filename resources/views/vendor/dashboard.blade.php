@@ -118,7 +118,7 @@
 
 @push('scripts')
 <script>
-document.addEventListener('vendor-ready', async function () {
+document.addEventListener('DOMContentLoaded', async function () {
     await loadDashboard();
 
     async function loadDashboard() {
@@ -131,15 +131,17 @@ document.addEventListener('vendor-ready', async function () {
 
             const products = productsRes.data.data || [];
             const ordersMeta = ordersRes.data.meta || {};
-            const profile = profileRes.data.data || {};
+            const profileData = profileRes.data.data || {};
+            const profileUser = profileData.user || {};
+            const profileVendor = profileData.vendor || {};
 
-            document.getElementById('vendor-welcome').textContent = profile.store_name || @json(__('vendor.dashboard_heading'));
+            document.getElementById('vendor-welcome').textContent = profileVendor.store_name || @json(__('vendor.dashboard_heading'));
             document.getElementById('stat-products').textContent = productsRes.data.meta?.total ?? products.length;
             document.getElementById('stat-active-products').textContent = products.filter(product => product.is_active).length;
             document.getElementById('stat-orders').textContent = ordersMeta.total ?? 0;
-            document.getElementById('store-status').textContent = profile.is_active ? @json(__('common.active')) : @json(__('common.inactive'));
+            document.getElementById('store-status').textContent = profileVendor.is_active ? @json(__('common.active')) : @json(__('common.inactive'));
 
-            renderStoreInfo(profile);
+            renderStoreInfo(profileUser, profileVendor);
             renderRecentProducts(products);
         } catch (error) {
             showDashboardLoadError();
@@ -163,12 +165,12 @@ document.addEventListener('vendor-ready', async function () {
         document.getElementById('vendor-dashboard-retry-btn')?.addEventListener('click', loadDashboard);
     }
 
-    function renderStoreInfo(profile) {
+    function renderStoreInfo(profileUser, profileVendor) {
         const items = [
-            [@json(__('vendor.store_name_label')), profile.store_name || '—'],
-            [@json(__('vendor.owner_name_label')), profile.owner_name || profile.name || '—'],
-            [@json(__('vendor.city_label')), profile.city?.name || '—'],
-            [@json(__('vendor.email_label')), profile.email || '—'],
+            [@json(__('vendor.store_name_label')), profileVendor.store_name || '—'],
+            [@json(__('vendor.owner_name_label')), profileUser.name || '—'],
+            [@json(__('vendor.city_label')), profileUser.city?.name || '—'],
+            [@json(__('vendor.email_label')), profileUser.email || '—'],
         ];
 
         document.getElementById('store-info').innerHTML = items.map(([label, value]) => `

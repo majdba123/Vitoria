@@ -1,7 +1,7 @@
 <?php
 
-return array (
-  'arabic' => 'العربية',
-  'english' => 'English',
-  'choose_language' => 'Choose language',
-);
+return [
+    'arabic' => 'العربية',
+    'english' => 'English',
+    'choose_language' => 'Choose language',
+];

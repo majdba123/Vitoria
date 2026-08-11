@@ -22,6 +22,7 @@ class VendorProfileController extends Controller
     public function show(Request $request): JsonResponse
     {
         $user = $request->user();
+        $user->loadMissing('city');
         $vendor = Vendor::query()
             ->where('user_id', $user->id)
             ->with('categories')

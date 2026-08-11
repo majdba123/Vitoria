@@ -186,3 +186,25 @@ test('product update rejects photo identifiers that do not belong to the same pr
         'photo_ids.0',
     ]);
 });
+
+test('vendor can list their own products without a server error', function () {
+    $vendor = Vendor::factory()->create([
+        'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
+    ]);
+    $vendor->user->update(['type' => User::TYPE_VENDOR]);
+    Sanctum::actingAs($vendor->user);
+
+    $category = Category::query()->create([
+        'name' => 'Agriculture Inputs',
+        'type' => Category::TYPE_AGRICULTURE,
+    ]);
+    $vendor->categories()->sync([$category->id]);
+
+    Product::factory()->for($vendor)->create([
+        'category_id' => $category->id,
+    ]);
+
+    $this->getJson('/api/vendor/products?per_page=5')
+        ->assertOk()
+        ->assertJsonCount(1, 'data');
+});
