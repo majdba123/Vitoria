@@ -4,16 +4,20 @@ namespace App\Http\Controllers\Api\Vendor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Services\Commerce\CartException;
+use App\Services\Commerce\OrderCancellationService;
+use App\Services\Commerce\OrderStatusService;
 use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
     public function __construct(
         protected NotificationService $notificationService,
+        protected OrderStatusService $orderStatusService,
+        protected OrderCancellationService $cancellationService,
     ) {}
 
     /**
@@ -103,63 +107,81 @@ class OrderController extends Controller
     }
 
     /**
-     * Cancel a vendor order.
+     * Move a vendor order forward through fulfilment (spec §8).
+     *
+     * The vendor may only submit a status the state machine allows from the
+     * order's current status, and only one their actor type permits. An
+     * arbitrary status in the request body is rejected by OrderStatusService.
      */
-    public function cancel(Request $request, int $orderId): JsonResponse
+    public function updateStatus(Request $request, int $orderId): JsonResponse
     {
-        $vendor = $request->user()?->vendor;
-        if (! $vendor) {
-            abort(403, 'Vendor profile not found.');
-        }
+        $validated = $request->validate([
+            'status' => ['required', 'string', Rule::in(array_keys(Order::TRANSITIONS))],
+            'notes' => ['nullable', 'string', 'max:500'],
+        ]);
 
-        $order = Order::query()
-            ->where('vendor_id', $vendor->id)
-            ->findOrFail($orderId);
-
-        if ($order->status === Order::STATUS_COMPLETED) {
-            return response()->json([
-                'message' => 'Completed orders cannot be cancelled.',
-            ], 422);
-        }
-
-        if ($order->status === Order::STATUS_CANCELLED) {
-            return response()->json([
-                'message' => 'Order is already cancelled.',
-            ]);
-        }
-
-        DB::transaction(function () use ($order): void {
-            $order->update([
-                'status' => Order::STATUS_CANCELLED,
-            ]);
-
-            $this->restoreOrderQuantities($order);
-        });
+        $order = Order::query()->findOrFail($orderId);
+        $this->authorize('updateStatus', $order);
 
         try {
-            Cache::tags(['products'])->flush();
-        } catch (\Exception $e) {
-            // Silently fail if cache driver doesn't support tags
+            $order = $this->orderStatusService->transition(
+                $order,
+                $validated['status'],
+                $request->user(),
+                'vendor',
+                notes: $validated['notes'] ?? null,
+            );
+        } catch (CartException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
         }
 
-        $this->notificationService->notifyOrderStatusUpdated($order, Order::STATUS_CANCELLED);
-
         return response()->json([
-            'message' => 'Order cancelled successfully.',
+            'message' => __('orders.transition_success'),
             'data' => [
                 'id' => $order->id,
                 'status' => $order->status,
+                'status_name' => __("orders.status.{$order->status}"),
             ],
         ]);
     }
 
-    private function restoreOrderQuantities(Order $order): void
+    /**
+     * Cancel a vendor order.
+     *
+     * Delegates to OrderCancellationService so vendor cancellations use the
+     * same exactly-once stock restoration as customer cancellations. The
+     * previous implementation duplicated the restore loop and carried the same
+     * double-restore race (audit R1).
+     */
+    public function cancel(Request $request, int $orderId): JsonResponse
     {
-        $order->load('items');
-        foreach ($order->items as $item) {
-            \App\Models\Product::query()
-                ->where('id', $item->product_id)
-                ->increment('quantity', $item->quantity);
+        $validated = $request->validate([
+            'reason' => ['nullable', 'string', Rule::in(Order::CANCEL_REASONS)],
+            'notes' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $order = Order::query()->findOrFail($orderId);
+        $this->authorize('cancel', $order);
+
+        try {
+            $order = $this->cancellationService->cancel(
+                $order,
+                $request->user(),
+                'vendor',
+                $validated['reason'] ?? 'vendor_issue',
+                $validated['notes'] ?? null,
+            );
+        } catch (CartException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
         }
+
+        return response()->json([
+            'message' => __('orders.cancelled_success'),
+            'data' => [
+                'id' => $order->id,
+                'status' => $order->status,
+                'cancelled_at' => $order->cancelled_at,
+            ],
+        ]);
     }
 }

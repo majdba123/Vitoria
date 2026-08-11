@@ -35,6 +35,27 @@ Route::middleware('web')->prefix('products')->as('products.')->group(function ()
 
 /*
 |--------------------------------------------------------------------------
+| Cart (guest + authenticated)
+|--------------------------------------------------------------------------
+|
+| Deliberately outside the auth group: guests must be able to build a cart
+| before signing in, and it is merged into their account at login (spec §5).
+| Guests are identified by the web session, so the `web` middleware — and the
+| session it establishes — is required here.
+|
+*/
+Route::middleware('web')->prefix('cart')->as('cart.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\CartController::class, 'show'])->name('show');
+    Route::post('/items', [\App\Http\Controllers\Api\CartController::class, 'store'])->middleware('throttle:api.write')->name('items.store');
+    Route::patch('/items', [\App\Http\Controllers\Api\CartController::class, 'update'])->middleware('throttle:api.write')->name('items.update');
+    Route::delete('/items/{productId}', [\App\Http\Controllers\Api\CartController::class, 'destroy'])->middleware('throttle:api.write')->name('items.destroy');
+    Route::delete('/', [\App\Http\Controllers\Api\CartController::class, 'clear'])->middleware('throttle:api.write')->name('clear');
+    Route::post('/coupon', [\App\Http\Controllers\Api\CartController::class, 'applyCoupon'])->middleware('throttle:api.write')->name('coupon.apply');
+    Route::delete('/coupon', [\App\Http\Controllers\Api\CartController::class, 'removeCoupon'])->middleware('throttle:api.write')->name('coupon.remove');
+});
+
+/*
+|--------------------------------------------------------------------------
 | Contact (public submit)
 |--------------------------------------------------------------------------
 */
@@ -96,7 +117,19 @@ Route::middleware(['auth:sanctum', 'throttle:api.authenticated'])->group(functio
     Route::get('/orders', [\App\Http\Controllers\Api\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{orderId}', [\App\Http\Controllers\Api\OrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{orderId}/cancel', [\App\Http\Controllers\Api\OrderController::class, 'cancel'])->middleware('throttle:api.write')->name('orders.cancel');
+    // DEPRECATED: client-supplied items[]. Use POST /api/checkout instead.
     Route::post('/orders/checkout', [\App\Http\Controllers\Api\OrderController::class, 'store'])->middleware('throttle:orders.write')->name('orders.checkout');
+
+    Route::prefix('addresses')->as('addresses.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\UserAddressController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Api\UserAddressController::class, 'store'])->middleware('throttle:api.write')->name('store');
+        Route::patch('/{address}', [\App\Http\Controllers\Api\UserAddressController::class, 'update'])->middleware('throttle:api.write')->name('update');
+        Route::delete('/{address}', [\App\Http\Controllers\Api\UserAddressController::class, 'destroy'])->middleware('throttle:api.write')->name('destroy');
+        Route::patch('/{address}/default', [\App\Http\Controllers\Api\UserAddressController::class, 'setDefault'])->middleware('throttle:api.write')->name('default');
+    });
+
+    Route::get('/checkout/summary', [\App\Http\Controllers\Api\CheckoutController::class, 'summary'])->name('checkout.summary');
+    Route::post('/checkout', [\App\Http\Controllers\Api\CheckoutController::class, 'store'])->middleware('throttle:orders.write')->name('checkout.store');
 
     Route::get('/notifications', [\App\Http\Controllers\Api\NotificationController::class, 'index'])->name('notifications.index');
     Route::patch('/notifications/{notification}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markRead'])->middleware('throttle:notifications.write')->name('notifications.read');

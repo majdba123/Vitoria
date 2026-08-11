@@ -33,6 +33,7 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::post('profile', [\App\Http\Controllers\Api\Vendor\VendorProfileController::class, 'update'])->middleware(['throttle:api.write', 'throttle:uploads'])->name('profile.update');
     Route::get('orders', [\App\Http\Controllers\Api\Vendor\OrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{orderId}', [\App\Http\Controllers\Api\Vendor\OrderController::class, 'show'])->name('orders.show');
+    Route::patch('orders/{orderId}/status', [\App\Http\Controllers\Api\Vendor\OrderController::class, 'updateStatus'])->middleware('throttle:api.write')->name('orders.status');
     Route::patch('orders/{orderId}/cancel', [\App\Http\Controllers\Api\Vendor\OrderController::class, 'cancel'])->middleware('throttle:api.write')->name('orders.cancel');
     Route::get('commission-stats', [\App\Http\Controllers\Api\Vendor\CommissionController::class, 'show'])->name('commission.stats');
 

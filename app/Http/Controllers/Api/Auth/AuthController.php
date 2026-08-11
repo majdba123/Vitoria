@@ -8,6 +8,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\Auth\UserResource;
 use App\Models\User;
 use App\Services\Auth\AuthService;
+use App\Services\Commerce\CartService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -56,6 +57,13 @@ class AuthController extends Controller
             $request->session()->regenerate();
         }
         $this->persistLocale($request, $result['user']->locale);
+
+        // Carry anything the visitor added before signing in into their account
+        // cart (spec §5). session()->regenerate() rotates the id but keeps the
+        // payload, so the guest cart token is still readable here.
+        if ($request->hasSession()) {
+            app(CartService::class)->mergeGuestCartIntoUser($request, $result['user']);
+        }
 
         return response()->json([
             'message' => __('Logged in successfully.'),
