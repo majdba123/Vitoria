@@ -226,3 +226,33 @@ vendor's order gets 403, and a customer reading another customer's order gets 40
 | GET | `/api/checkout/summary` | user |
 | POST | `/api/checkout` | user |
 | PATCH | `/api/vendor/orders/{orderId}/status` | vendor |
+| GET | `/checkout` (web page) | user |
+
+---
+
+## 11. Storefront
+
+`resources/js/cart.js` replaced the inline localStorage cart that previously
+lived in `layouts/app.blade.php`, plus a second shadow implementation in
+`vendors/show.blade.php`. There is now one cart in the browser and it is a thin
+client over `/api/cart`:
+
+- no pricing logic, no `localStorage` writes
+- `addToCart(id, name, price, photo)` keeps its old signature so the ~6 existing
+  call sites did not need editing — but **only the id is used**, which removes
+  any path for a client-supplied price to reach the server
+- line controls are delegated event handlers reading `data-product-id`, not
+  inline `onclick` handlers carrying interpolated values
+- every response replaces local state wholesale; a rejected mutation triggers a
+  resync so the UI cannot drift from the database
+- the `+` control disables at the product's available quantity, and the server
+  rejects the request anyway if the client ignores that
+
+`resources/js/pages/checkout.js` + `resources/views/checkout/index.blade.php`
+implement the checkout page. It is deliberately **single-page, not a five-step
+wizard**: the whole flow is address, review, payment, and a stepper would hide
+the total behind a "next" button on mobile for no benefit. Address creation is
+inline so the shopper is never bounced out of checkout.
+
+The cart modal's button no longer places an order — it navigates to `/checkout`,
+because an order now requires a delivery address.

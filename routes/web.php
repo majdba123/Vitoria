@@ -68,6 +68,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{id}', function (string $id) {
         return view('orders.show', ['orderId' => $id]);
     })->name('orders.show');
+
+    Route::get('/checkout', function () {
+        return view('checkout.index', [
+            'addressLabels' => \App\Models\UserAddress::LABELS,
+        ]);
+    })->name('checkout');
 });
 
 /*

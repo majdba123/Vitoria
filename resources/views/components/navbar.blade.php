@@ -66,7 +66,7 @@
             {{-- Profile Dropdown (shown when authenticated) --}}
             <div id="profile-wrap" class="relative hidden">
                 <button id="profile-btn" class="flex items-center gap-2.5 rounded-lg border border-transparent px-2 py-1.5 hover:bg-gray-50 dark:hover:bg-white/5">
-                    <div id="profile-avatar" class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-400 to-brand-600">
+                    <div id="profile-avatar" class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-brand-600">
                         <span id="profile-initial" class="text-sm font-bold text-white">?</span>
                     </div>
                     <div class="hidden sm:block text-start">
@@ -81,7 +81,7 @@
                     {{-- User Info Header --}}
                     <div class="border-b border-gray-100 bg-gray-50/80 px-5 py-4 dark:border-gray-800 dark:bg-gray-800/50">
                         <div class="flex items-center gap-3">
-                            <div id="dd-avatar" class="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-400 to-brand-600">
+                            <div id="dd-avatar" class="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-600">
                                 <span id="dd-initial" class="text-base font-bold text-white">?</span>
                             </div>
                             <div class="min-w-0 flex-1">
@@ -144,8 +144,8 @@
 
     {{-- Mobile Drawer --}}
     <div id="mobile-drawer" class="fixed inset-0 z-[60] hidden" role="dialog" aria-modal="true" aria-labelledby="mobile-menu-title">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeMobileMenu()"></div>
-        <div class="mobile-drawer-shell absolute right-0 top-0 flex h-full w-80 max-w-[88vw] flex-col border-l bg-white shadow-2xl dark:bg-gray-900 rtl:right-auto rtl:left-0 rtl:border-l-0 rtl:border-r" style="border-color: var(--color-border);">
+        <div class="absolute inset-0 bg-black/45" onclick="closeMobileMenu()"></div>
+        <div class="mobile-drawer-shell absolute right-0 top-0 flex h-full w-80 max-w-[88vw] flex-col border-l bg-white dark:bg-gray-900 rtl:right-auto rtl:left-0 rtl:border-l-0 rtl:border-r" style="border-color: var(--color-border);">
             <div class="flex items-center justify-between border-b border-gray-200/70 px-5 py-4 dark:border-gray-800">
                 <span id="mobile-menu-title" class="text-lg font-extrabold text-gray-900 dark:text-white">{{ __('nav.menu') }}</span>
                 <button onclick="closeMobileMenu()" class="rounded-xl p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="{{ __('nav.close_menu') }}"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
@@ -154,7 +154,7 @@
             {{-- Mobile Profile Section --}}
             <div id="mobile-profile" class="hidden border-b border-gray-200/70 px-5 py-4 dark:border-gray-800">
                 <div class="flex items-center gap-3">
-                    <div id="mob-avatar" class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-400 to-brand-600">
+                    <div id="mob-avatar" class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-600">
                         <span id="mob-initial" class="text-sm font-bold text-white">?</span>
                     </div>
                     <div class="min-w-0 flex-1">
@@ -163,18 +163,18 @@
                     </div>
                 </div>
                 <div class="mt-3 flex gap-2">
-                    <a href="{{ route('profile') }}" onclick="closeMobileMenu()" class="flex-1 rounded-2xl border border-gray-200 py-2 text-center text-xs font-bold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">{{ __('common.profile') }}</a>
-                    <a id="mob-dashboard-link" href="#" onclick="closeMobileMenu()" class="hidden flex-1 rounded-2xl border border-gray-200 py-2 text-center text-xs font-bold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">{{ __('nav.dashboard') }}</a>
+                    <a href="{{ route('profile') }}" onclick="closeMobileMenu()" class="flex-1 rounded-xl border border-gray-200 py-2 text-center text-xs font-bold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">{{ __('common.profile') }}</a>
+                    <a id="mob-dashboard-link" href="#" onclick="closeMobileMenu()" class="hidden flex-1 rounded-xl border border-gray-200 py-2 text-center text-xs font-bold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">{{ __('nav.dashboard') }}</a>
                 </div>
             </div>
 
             <div class="flex-1 overflow-y-auto px-5 py-4">
                 <div class="space-y-1">
-                    <a href="{{ route('products.index') }}" onclick="closeMobileMenu()" class="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
+                    <a href="{{ route('products.index') }}" onclick="closeMobileMenu()" class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
                         <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
                         {{ __('nav.products') }}
                     </a>
-                    <a href="{{ route('categories.index') }}" onclick="closeMobileMenu()" class="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
+                    <a href="{{ route('categories.index') }}" onclick="closeMobileMenu()" class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
                         <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6z"/></svg>
                         {{ __('nav.categories') }}
                     </a>
@@ -677,7 +677,7 @@ async function loadNavCategories() {
         }
 
         list.innerHTML = cats.map(c => `
-            <button type="button" data-cat-id="${c.id}" class="mega-cat-btn group flex w-full items-center gap-3 rounded-2xl px-4 py-2.5 text-left text-sm transition-all hover:bg-white dark:hover:bg-gray-800"
+            <button type="button" data-cat-id="${c.id}" class="mega-cat-btn group flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-left text-sm transition-all hover:bg-white dark:hover:bg-gray-800"
                     onclick="showNavSubs(${c.id}, this)">
                 <div class="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 ring-1 ring-gray-200/50 dark:bg-gray-800 dark:ring-gray-700">
                     ${categoryThumbHtml(c, false)}
@@ -690,7 +690,7 @@ async function loadNavCategories() {
         mobileCats.innerHTML = cats.map(c => {
             const subCount = Array.isArray(c.subcategories) ? c.subcategories.length : 0;
             return `
-            <div class="mobile-category-card rounded-2xl border border-gray-200/80 bg-white/70 p-2 dark:border-gray-800 dark:bg-gray-950/60">
+            <div class="mobile-category-card rounded-xl border border-gray-200/80 bg-white/70 p-2 dark:border-gray-800 dark:bg-gray-950/60">
                 <button type="button" class="mobile-category-trigger flex w-full items-center gap-3 rounded-xl px-2 py-2.5 text-left text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800" data-mobile-cat="${c.id}">
                     <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
                         ${categoryThumbHtml(c, true)}
@@ -789,14 +789,12 @@ window.toggleMobileCategory = function (catId) {
 window.showNavSubs = function(catId, btn) {
     document.querySelectorAll('.mega-cat-btn').forEach(el => {
         el.classList.remove('is-active', 'bg-white', 'dark:bg-gray-800', 'text-brand-700', 'dark:text-brand-300');
-        el.style.boxShadow = '';
         const arrow = el.querySelector('svg:last-child');
         if (arrow) {
             arrow.style.transform = '';
         }
     });
     btn.classList.add('is-active', 'bg-white', 'dark:bg-gray-800', 'text-brand-700', 'dark:text-brand-300');
-    btn.style.boxShadow = 'inset 3px 0 0 #10b981';
     const activeArrow = btn.querySelector('svg:last-child');
     if (activeArrow) {
         activeArrow.style.transform = 'translateX(2px)';
@@ -819,13 +817,13 @@ window.showNavSubs = function(catId, btn) {
     const subGrid = subs.length
         ? `<div class="grid gap-2 sm:grid-cols-2">
             ${subs.map((subcategory) => `
-                <a href="/products?category_id=${cat.id}&subcategory_id=${subcategory.id}" class="mega-subcard group flex items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-brand-500 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">
+                <a href="/products?category_id=${cat.id}&subcategory_id=${subcategory.id}" class="mega-subcard group flex items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-brand-500 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">
                     <span class="truncate">${_esc(subLabel(subcategory))}</span>
                     <svg class="h-4 w-4 shrink-0 text-gray-300 transition group-hover:text-brand-500 rtl:-scale-x-100 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                 </a>
             `).join('')}
         </div>`
-        : `<div class="rounded-2xl border border-dashed border-gray-200 px-4 py-6 text-sm text-gray-400 dark:border-gray-700 dark:text-gray-500">${_esc(window.__navStrings.no_subcategories || '')}</div>`;
+        : `<div class="rounded-xl border border-dashed border-gray-200 px-4 py-6 text-sm text-gray-400 dark:border-gray-700 dark:text-gray-500">${_esc(window.__navStrings.no_subcategories || '')}</div>`;
     panel.innerHTML = `
         <div class="mb-5 flex items-center justify-between gap-3">
             <div>
@@ -837,7 +835,7 @@ window.showNavSubs = function(catId, btn) {
                 <svg class="h-3.5 w-3.5 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
             </a>
         </div>
-        <div class="mb-4 rounded-2xl border border-dashed border-gray-200 px-4 py-3 text-xs font-medium text-gray-500 dark:border-gray-700 dark:text-gray-400">
+        <div class="mb-4 rounded-xl border border-dashed border-gray-200 px-4 py-3 text-xs font-medium text-gray-500 dark:border-gray-700 dark:text-gray-400">
             ${_esc(window.__navStrings.browse_subcategories || '')}
         </div>`;
     panel.innerHTML += subGrid;
@@ -850,20 +848,13 @@ window.showNavSubs = function(catId, btn) {
     );
 };
 
-function updateCartBadge(animate) {
-    try {
-        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        const badge = document.getElementById('cart-badge');
-        if (!badge) return;
-        const total = cart.reduce((s, i) => s + (i.quantity || 1), 0);
-        if (total > 0) { badge.textContent = total > 99 ? '99+' : total; badge.classList.remove('hidden'); if (animate) { badge.classList.add('animate-bounce'); setTimeout(() => badge.classList.remove('animate-bounce'), 600); } }
-        else { badge.classList.add('hidden'); }
-    } catch (e) {}
+// The badge reflects the server cart, which resources/js/cart.js owns and
+// renders. This is a no-op shim kept only because updateNavbar() and a few
+// older call sites still invoke it (spec §5).
+function updateCartBadge() {
+    window.refreshCart?.();
 }
 
-window.addEventListener('cartUpdated', () => updateCartBadge(true));
-window.addEventListener('storage', (e) => { if (e.key === 'cart') updateCartBadge(); });
-updateCartBadge();
 window.updateCartBadge = updateCartBadge;
 
 document.getElementById('nav-search-form')?.addEventListener('submit', function (e) {
