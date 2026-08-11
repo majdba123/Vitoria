@@ -39,7 +39,7 @@ class RegisterRequest extends FormRequest
         return [
             'account_type' => ['nullable', 'string', 'in:user,vendor'],
             'name' => ['required', 'string', 'max:255'],
-            'phone_number' => ['required', 'string', 'max:20', 'unique:users,phone_number'],
+            'phone_number' => ['required', 'string', 'max:20', 'regex:/^\+?[0-9]{8,15}$/', 'unique:users,phone_number'],
             'national_id' => ['required', 'string', 'max:50', 'unique:users,national_id'],
             'age' => ['required', 'integer', 'min:1', 'max:120'],
             'membership_number' => ['required', 'string', 'max:100', 'unique:users,membership_number'],
@@ -79,6 +79,7 @@ class RegisterRequest extends FormRequest
     {
         return [
             'phone_number.required' => 'Phone number is required.',
+            'phone_number.regex' => 'Please provide a valid phone number.',
             'phone_number.unique' => 'This phone number is already registered.',
             'national_id.required' => 'National ID is required.',
             'national_id.unique' => 'This national ID is already registered.',

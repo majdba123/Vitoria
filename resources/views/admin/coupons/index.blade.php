@@ -78,10 +78,12 @@
                 <div>
                     <label for="code" class="form-label">Code</label>
                     <input id="code" class="form-input" placeholder="SAVE10">
+                    <p class="form-error" id="code-error"></p>
                 </div>
                 <div>
                     <label for="title" class="form-label">Title</label>
                     <input id="title" class="form-input" placeholder="Welcome Discount">
+                    <p class="form-error" id="title-error"></p>
                 </div>
                 <div>
                     <label for="discount_type" class="form-label">Type</label>
@@ -89,22 +91,27 @@
                         <option value="percentage">Percentage</option>
                         <option value="fixed">Fixed</option>
                     </select>
+                    <p class="form-error" id="discount_type-error"></p>
                 </div>
                 <div>
                     <label for="discount_value" class="form-label">Value</label>
-                    <input id="discount_value" type="number" step="0.01" class="form-input" placeholder="10">
+                    <input id="discount_value" type="number" step="0.01" max="100" class="form-input" placeholder="10">
+                    <p class="form-error" id="discount_value-error"></p>
                 </div>
                 <div>
                     <label for="starts_at" class="form-label">Start Date & Time</label>
                     <input id="starts_at" type="datetime-local" step="60" class="form-input">
+                    <p class="form-error" id="starts_at-error"></p>
                 </div>
                 <div>
                     <label for="ends_at" class="form-label">End Date & Time</label>
                     <input id="ends_at" type="datetime-local" step="60" class="form-input">
+                    <p class="form-error" id="ends_at-error"></p>
                 </div>
                 <div>
                     <label for="usage_limit" class="form-label">Usage Limit</label>
                     <input id="usage_limit" type="number" min="1" class="form-input" placeholder="Optional">
+                    <p class="form-error" id="usage_limit-error"></p>
                 </div>
                 <div class="flex items-end gap-3">
                     <label for="is_active" class="form-label mb-0">Active</label>
@@ -117,6 +124,7 @@
             <div>
                 <label for="description" class="form-label">Description</label>
                 <textarea id="description" rows="3" class="form-textarea" placeholder="Optional description"></textarea>
+                <p class="form-error" id="description-error"></p>
             </div>
             <div class="flex justify-end gap-2 border-t border-gray-100 pt-4 dark:border-gray-800">
                 <button type="button" class="btn-secondary btn-sm" onclick="closeCouponModal()">Cancel</button>
@@ -137,8 +145,17 @@ document.addEventListener('DOMContentLoaded', function () {
     $('open-create-modal').addEventListener('click', () => openCouponModal());
     $('btn-apply').addEventListener('click', () => { page = 1; loadCoupons(); });
     $('coupon-form').addEventListener('submit', submitCoupon);
+    $('discount_type').addEventListener('change', () => toggleDiscountValueMax());
 
     loadCoupons();
+
+    function toggleDiscountValueMax() {
+        if ($('discount_type').value === 'percentage') {
+            $('discount_value').setAttribute('max', '100');
+        } else {
+            $('discount_value').removeAttribute('max');
+        }
+    }
 
     async function loadCoupons() {
         $('loading').classList.remove('hidden');
@@ -201,6 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.openCouponModal = function(coupon = null) {
         $('coupon-form').reset();
+        clearFieldErrors();
         $('coupon-id').value = '';
         $('is_active').checked = true;
         $('modal-title').textContent = coupon ? 'Edit Coupon' : 'Create Coupon';
@@ -216,6 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
             $('starts_at').value = toDateInput(coupon.starts_at);
             $('ends_at').value = toDateInput(coupon.ends_at);
         }
+        toggleDiscountValueMax();
         $('coupon-modal').classList.remove('hidden');
         $('coupon-modal').classList.add('flex');
         couponDialog.open();
@@ -229,6 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function submitCoupon(e) {
         e.preventDefault();
+        clearFieldErrors();
         const id = $('coupon-id').value;
         const payload = {
             code: $('code').value.trim(),
@@ -241,6 +261,11 @@ document.addEventListener('DOMContentLoaded', function () {
             usage_limit: $('usage_limit').value || null,
             is_active: $('is_active').checked,
         };
+
+        if (payload.discount_type === 'percentage' && Number(payload.discount_value) > 100) {
+            showFieldError('discount_value', 'Percentage discount cannot be greater than 100.');
+            return;
+        }
 
         const submitButton = e.target.querySelector('button[type="submit"]');
         submitButton.disabled = true;
@@ -258,13 +283,33 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (error) {
             const errors = error.response?.data?.errors;
             if (errors) {
-                showAlert('coupon-alert', Object.values(errors).flat().join(', '));
+                Object.entries(errors).forEach(([field, messages]) => {
+                    showFieldError(field, Array.isArray(messages) ? messages[0] : messages);
+                });
             } else {
                 showAlert('coupon-alert', error.response?.data?.message || 'Failed to save coupon.');
             }
         } finally {
             submitButton.disabled = false;
         }
+    }
+
+    function clearFieldErrors() {
+        document.querySelectorAll('#coupon-form .form-error').forEach((element) => {
+            element.classList.add('hidden');
+            element.textContent = '';
+        });
+    }
+
+    function showFieldError(field, message) {
+        const errorElement = $(field + '-error');
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+            return;
+        }
+
+        showAlert('coupon-alert', message);
     }
 
     window.deleteCoupon = async function(id) {

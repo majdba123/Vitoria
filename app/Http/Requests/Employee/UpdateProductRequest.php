@@ -21,7 +21,7 @@ class UpdateProductRequest extends FormRequest
             'name_ar' => ['sometimes', 'nullable', 'string', 'max:255'],
             'name_en' => ['sometimes', 'nullable', 'string', 'max:255'],
             'description' => ['sometimes', 'nullable', 'string', 'max:2000'],
-            'status' => ['sometimes', 'nullable', Rule::in(['pending', 'approved', 'rejected'])],
+            'status' => ['required', Rule::in(['pending', 'approved', 'rejected'])],
             'rejection_reason' => ['sometimes', 'nullable', 'string', 'max:2000', Rule::requiredIf(fn (): bool => $this->input('status') === 'rejected')],
         ];
     }

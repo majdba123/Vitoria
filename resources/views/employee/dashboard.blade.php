@@ -174,16 +174,39 @@
 document.addEventListener('employee-ready', function () {
     const categoryStats = document.getElementById('category-stats');
     const typeStats = document.getElementById('type-stats');
+    const reloadBtn = document.getElementById('reload-dashboard-btn');
+    let reloadInFlight = false;
 
-    document.getElementById('reload-dashboard-btn').addEventListener('click', loadDashboard);
+    reloadBtn.addEventListener('click', loadDashboard);
 
     loadDashboard();
 
     async function loadDashboard() {
-        await Promise.all([loadStats(), loadDistribution()]);
+        if (reloadInFlight) {
+            return;
+        }
+
+        reloadInFlight = true;
+        reloadBtn.disabled = true;
+
+        try {
+            await Promise.all([loadStats(), loadDistribution()]);
+        } finally {
+            reloadInFlight = false;
+            reloadBtn.disabled = false;
+        }
     }
 
     async function loadStats() {
+        const statIds = [
+            'stat-total-products',
+            'stat-pending-products',
+            'stat-approved-products',
+            'stat-rejected-products',
+            'stat-active-products',
+            'stat-inactive-products',
+        ];
+
         try {
             const [overview, pending, approved, rejected, active, inactive] = await Promise.all([
                 window.axios.get('/api/employee/products?per_page=1'),
@@ -200,7 +223,15 @@ document.addEventListener('employee-ready', function () {
             document.getElementById('stat-rejected-products').textContent = rejected.data.meta?.total ?? 0;
             document.getElementById('stat-active-products').textContent = active.data.meta?.total ?? 0;
             document.getElementById('stat-inactive-products').textContent = inactive.data.meta?.total ?? 0;
-        } catch (error) {}
+        } catch (error) {
+            statIds.forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = '—';
+                    el.title = '{{ __('common.generic_error') }}';
+                }
+            });
+        }
     }
 
     async function loadDistribution() {

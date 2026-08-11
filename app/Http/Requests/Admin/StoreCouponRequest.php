@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Http\Requests\Admin\Concerns\NormalizesDateTimeInputs;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreCouponRequest extends FormRequest
 {
@@ -34,7 +35,7 @@ class StoreCouponRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
             'discount_type' => ['required', 'string', 'in:percentage,fixed'],
-            'discount_value' => ['required', 'numeric', 'min:0'],
+            'discount_value' => ['required', 'numeric', 'min:0', Rule::when($this->discount_type === 'percentage', ['max:100'])],
             'starts_at' => ['nullable', 'date'],
             'ends_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
             'is_active' => ['sometimes', 'boolean'],

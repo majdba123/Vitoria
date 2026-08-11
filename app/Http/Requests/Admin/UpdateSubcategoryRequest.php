@@ -31,4 +31,18 @@ class UpdateSubcategoryRequest extends FormRequest
             'name_en' => ['sometimes', 'required', 'string', 'max:255', Rule::unique('subcategories', 'name_en')->ignore($subcategoryId)->where(fn ($query) => $query->where('category_id', $categoryId))],
         ];
     }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'category_id.exists' => 'Please select a valid parent category.',
+            'name_ar.unique' => 'This Arabic name is already used in this category.',
+            'name_en.unique' => 'This English name is already used in this category.',
+        ];
+    }
 }

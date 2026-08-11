@@ -119,27 +119,48 @@
 @push('scripts')
 <script>
 document.addEventListener('vendor-ready', async function () {
-    try {
-        const [productsRes, ordersRes, profileRes] = await Promise.all([
-            window.axios.get('/api/vendor/products?per_page=5'),
-            window.axios.get('/api/vendor/orders?per_page=1'),
-            window.axios.get('/api/vendor/profile'),
-        ]);
+    await loadDashboard();
 
-        const products = productsRes.data.data || [];
-        const ordersMeta = ordersRes.data.meta || {};
-        const profile = profileRes.data.data || {};
+    async function loadDashboard() {
+        try {
+            const [productsRes, ordersRes, profileRes] = await Promise.all([
+                window.axios.get('/api/vendor/products?per_page=5'),
+                window.axios.get('/api/vendor/orders?per_page=1'),
+                window.axios.get('/api/vendor/profile'),
+            ]);
 
-        document.getElementById('vendor-welcome').textContent = profile.store_name || @json(__('vendor.dashboard_heading'));
-        document.getElementById('stat-products').textContent = productsRes.data.meta?.total ?? products.length;
-        document.getElementById('stat-active-products').textContent = products.filter(product => product.is_active).length;
-        document.getElementById('stat-orders').textContent = ordersMeta.total ?? 0;
-        document.getElementById('store-status').textContent = profile.is_active ? @json(__('common.active')) : @json(__('common.inactive'));
+            const products = productsRes.data.data || [];
+            const ordersMeta = ordersRes.data.meta || {};
+            const profile = profileRes.data.data || {};
 
-        renderStoreInfo(profile);
-        renderRecentProducts(products);
-    } catch (error) {
-        document.getElementById('recent-products').innerHTML = '<p class="py-8 text-center text-sm text-red-500">' + @json(__('vendor.failed_notifications')) + '</p>';
+            document.getElementById('vendor-welcome').textContent = profile.store_name || @json(__('vendor.dashboard_heading'));
+            document.getElementById('stat-products').textContent = productsRes.data.meta?.total ?? products.length;
+            document.getElementById('stat-active-products').textContent = products.filter(product => product.is_active).length;
+            document.getElementById('stat-orders').textContent = ordersMeta.total ?? 0;
+            document.getElementById('store-status').textContent = profile.is_active ? @json(__('common.active')) : @json(__('common.inactive'));
+
+            renderStoreInfo(profile);
+            renderRecentProducts(products);
+        } catch (error) {
+            showDashboardLoadError();
+        }
+    }
+
+    function showDashboardLoadError() {
+        const message = @json(__('vendor.failed_notifications'));
+
+        document.getElementById('recent-products').innerHTML = '<p class="py-8 text-center text-sm text-red-500">' + message + '</p>';
+        document.getElementById('store-info').innerHTML = `
+            <div class="sm:col-span-2 rounded-xl border border-red-200/70 bg-red-50/70 p-4 text-center text-sm text-red-500 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
+                <p>${message}</p>
+                <button type="button" id="vendor-dashboard-retry-btn" class="mt-2 text-xs font-bold underline">${@json(__('common.refresh'))}</button>
+            </div>
+        `;
+        document.getElementById('store-status').textContent = '—';
+        document.getElementById('stat-products').textContent = '—';
+        document.getElementById('stat-active-products').textContent = '—';
+        document.getElementById('stat-orders').textContent = '—';
+        document.getElementById('vendor-dashboard-retry-btn')?.addEventListener('click', loadDashboard);
     }
 
     function renderStoreInfo(profile) {

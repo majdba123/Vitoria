@@ -120,6 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
         'noCompletedOrdersFound' => __('vendor.js_no_completed_orders_found'),
         'unknownCategory' => __('vendor.js_unknown_category'),
         'noTrendData' => __('vendor.js_no_trend_data'),
+        'retryLabel' => __('common.refresh'),
     ]) !!};
     const formatter = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 });
     loadStats();
@@ -152,8 +153,29 @@ document.addEventListener('DOMContentLoaded', function () {
             renderTrend(trend);
         } catch (error) {
             const message = error.response?.data?.message || i18n.failedLoadCommissionStats;
-            showAlert('commission-alert', message);
+            showAlert('commission-alert', message, false);
+            showStatsLoadError(message);
         }
+    }
+
+    function showStatsLoadError(message) {
+        ['stat-completed-total', 'stat-commission-total', 'stat-paid-amount', 'stat-remaining-amount', 'paid-amount-box', 'remaining-amount-box'].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.textContent = '—';
+            }
+        });
+
+        const body = document.getElementById('category-breakdown-body');
+        body.innerHTML = `
+            <tr>
+                <td colspan="4" class="py-6 text-center text-sm text-red-500 dark:text-red-400">
+                    <p>${escapeHtml(message)}</p>
+                    <button type="button" id="commission-stats-retry-btn" class="mt-2 text-xs font-bold underline">${escapeHtml(i18n.retryLabel)}</button>
+                </td>
+            </tr>
+        `;
+        document.getElementById('commission-stats-retry-btn')?.addEventListener('click', loadStats);
     }
 
     function renderCategoryBreakdown(rows) {
@@ -225,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function showAlert(id, message) {
+    function showAlert(id, message, autoDismiss = true) {
         const box = document.getElementById(id);
         const messageEl = document.getElementById(`${id}-message`);
         if (!box || !messageEl) {
@@ -233,7 +255,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         messageEl.textContent = message;
         box.classList.remove('hidden');
-        setTimeout(() => box.classList.add('hidden'), 4000);
+        if (autoDismiss) {
+            setTimeout(() => box.classList.add('hidden'), 4000);
+        }
     }
 
     function escapeHtml(text) {

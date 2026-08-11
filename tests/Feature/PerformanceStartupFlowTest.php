@@ -83,6 +83,35 @@ test('startup and profile timezone validation reject unsupported values', functi
         ->assertJsonValidationErrors(['timezone']);
 });
 
+test('profile update rejects a malformed phone number', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    $this->postJson('/api/profile', [
+        'phone_number' => 'not-a-phone',
+    ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['phone_number']);
+});
+
+test('registration rejects a malformed phone number', function () {
+    $response = $this->postJson('/api/auth/register', [
+        'account_type' => 'user',
+        'name' => 'Bad Phone User',
+        'phone_number' => 'abc123',
+        'national_id' => '9990000001',
+        'age' => 30,
+        'membership_number' => 'MEM-BADPHONE-1',
+        'city_id' => \App\Models\City::query()->create(['name' => 'Bad Phone City'])->id,
+        'email' => 'bad-phone@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors(['phone_number']);
+});
+
 test('logged in startup flow stores timezone on user profile', function () {
     $user = User::factory()->create(['timezone' => null]);
     $this->actingAs($user);
@@ -161,6 +190,21 @@ test('checkout failure does not create orders or decrement stock', function () {
 
     $this->assertDatabaseCount('orders', 0);
     expect($set['product']->refresh()->quantity)->toBe(1);
+});
+
+test('checkout rejects an item quantity above the allowed maximum', function () {
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+    $set = performanceProductSet(quantity: 500);
+
+    $this->postJson('/api/orders/checkout', [
+        'items' => [
+            ['product_id' => $set['product']->id, 'quantity' => 101],
+        ],
+    ])->assertUnprocessable()
+        ->assertJsonValidationErrors(['items.0.quantity']);
+
+    $this->assertDatabaseCount('orders', 0);
 });
 
 test('product photo upload is removed when product transaction fails', function () {

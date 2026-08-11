@@ -36,7 +36,6 @@ class LoginRequest extends FormRequest
     {
         return [
             'phone_number.required' => 'Phone number is required.',
-            'national_id.required' => 'National ID is required.',
         ];
     }
 }

@@ -119,6 +119,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const vendorId = {{ (int) $vendorId }};
     const formatter = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 });
     let latestPaidAmount = 0;
+    let latestCommissionTotal = 0;
 
     loadStats();
 
@@ -131,6 +132,13 @@ document.addEventListener('DOMContentLoaded', function () {
         if (Number.isNaN(paidAmount) || paidAmount < 0) {
             showAlert('commission-alert', 'Paid amount must be zero or greater.');
             return;
+        }
+
+        if (paidAmount > latestCommissionTotal) {
+            const confirmed = window.confirm(`This paid amount (${formatMoney(paidAmount)}) exceeds the commission total (${formatMoney(latestCommissionTotal)}) and will result in a negative remaining amount. Continue anyway?`);
+            if (!confirmed) {
+                return;
+            }
         }
 
         submitButton.disabled = true;
@@ -166,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('vendor-title').textContent = `${vendor.store_name || 'Vendor'} — Commission Dashboard`;
 
             latestPaidAmount = Number(financials.paid_amount || vendor.paid_amount || 0);
+            latestCommissionTotal = Number(financials.commission_total || 0);
             document.getElementById('paid_amount').value = latestPaidAmount;
 
             setMoney('stat-completed-total', financials.completed_order_total || 0);
@@ -182,8 +191,29 @@ document.addEventListener('DOMContentLoaded', function () {
             renderTrend(trend);
         } catch (error) {
             const message = error.response?.data?.message || 'Failed to load commission statistics.';
-            showAlert('commission-alert', message);
+            showAlert('commission-alert', message, false);
+            showStatsLoadError(message);
         }
+    }
+
+    function showStatsLoadError(message) {
+        ['stat-completed-total', 'stat-commission-total', 'stat-paid-amount', 'stat-remaining-amount'].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.textContent = '—';
+            }
+        });
+
+        const body = document.getElementById('category-breakdown-body');
+        body.innerHTML = `
+            <tr>
+                <td colspan="4" class="py-6 text-center text-sm text-red-500">
+                    <p>${escapeHtml(message)}</p>
+                    <button type="button" id="commission-stats-retry-btn" class="mt-2 text-xs font-bold underline">Retry</button>
+                </td>
+            </tr>
+        `;
+        document.getElementById('commission-stats-retry-btn')?.addEventListener('click', loadStats);
     }
 
     function renderCategoryBreakdown(rows) {
@@ -255,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function showAlert(id, message) {
+    function showAlert(id, message, autoDismiss = true) {
         const box = document.getElementById(id);
         const messageEl = document.getElementById(`${id}-message`);
         if (!box || !messageEl) {
@@ -263,7 +293,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         messageEl.textContent = message;
         box.classList.remove('hidden');
-        setTimeout(() => box.classList.add('hidden'), 4000);
+        if (autoDismiss) {
+            setTimeout(() => box.classList.add('hidden'), 4000);
+        }
     }
 
     function escapeHtml(text) {

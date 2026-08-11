@@ -155,6 +155,8 @@
                                     <textarea id="review-body" name="body" rows="4" class="form-textarea" placeholder="{{ __('products.review_placeholder') }}"></textarea>
                                 </div>
 
+                                <p id="review-error" class="form-error"></p>
+
                                 <button type="submit" id="review-submit-btn" class="btn-primary">{{ __('products.review_submit') }}</button>
                             </form>
                         </div>
@@ -584,6 +586,12 @@
 
                 $('review-form').addEventListener('submit', function (event) {
                     event.preventDefault();
+                    const errorElement = $('review-error');
+                    if (errorElement) {
+                        errorElement.textContent = '';
+                        errorElement.classList.add('hidden');
+                    }
+
                     const rating = parseInt(ratingInput.value, 10);
                     if (rating < 1 || rating > 5) {
                         alert(i18n.reviewRatingHint || '');
@@ -614,7 +622,12 @@
                         if (error.response?.status === 422) {
                             message = i18n.reviewValidationError || message;
                         }
-                        alert(message);
+                        if (errorElement) {
+                            errorElement.textContent = message;
+                            errorElement.classList.remove('hidden');
+                        } else {
+                            alert(message);
+                        }
                     });
                 });
             }

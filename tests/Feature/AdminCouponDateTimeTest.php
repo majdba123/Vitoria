@@ -56,3 +56,36 @@ test('admin coupon create normalizes date only values to include time', function
     expect($coupon->starts_at?->format('Y-m-d H:i:s'))->toBe('2026-07-01 00:00:00')
         ->and($coupon->ends_at?->format('Y-m-d H:i:s'))->toBe('2026-07-05 23:59:00');
 });
+
+test('admin coupon create rejects a percentage discount value over 100', function () {
+    couponAdmin();
+
+    $response = $this->postJson('/api/admin/coupons', [
+        'code' => 'OVER100',
+        'title' => 'Invalid Percentage Coupon',
+        'discount_type' => 'percentage',
+        'discount_value' => 150,
+        'is_active' => true,
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('discount_value');
+
+    expect(Coupon::query()->where('code', 'OVER100')->exists())->toBeFalse();
+});
+
+test('admin coupon update rejects a code that already belongs to another coupon', function () {
+    couponAdmin();
+
+    Coupon::factory()->create(['code' => 'EXISTING']);
+    $coupon = Coupon::factory()->create(['code' => 'CHANGEME']);
+
+    $response = $this->putJson('/api/admin/coupons/'.$coupon->id, [
+        'code' => 'EXISTING',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors('code');
+
+    expect($coupon->fresh()->code)->toBe('CHANGEME');
+});

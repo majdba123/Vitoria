@@ -95,6 +95,7 @@ document.addEventListener('syndicate-ready', async function () {
     let currentPage = 1;
     let lastPage = 1;
     let overview = {};
+    let sectionRequestId = 0;
 
     document.getElementById('main-prev')?.addEventListener('click', function () {
         if (currentPage > 1) loadSection(currentPage - 1);
@@ -104,23 +105,50 @@ document.addEventListener('syndicate-ready', async function () {
         if (currentPage < lastPage) loadSection(currentPage + 1);
     });
 
-    try {
-        const overviewRes = await window.axios.get('/api/syndicate/overview');
-        overview = overviewRes.data.data || {};
-        renderHeader(overview.syndicate || {});
-        renderOverview(overview);
-        await loadSection(1);
-    } catch (error) {
-        showLoadError(error, @json(__('syndicate.load_failed')));
+    await loadOverview();
+
+    async function loadOverview() {
+        try {
+            const overviewRes = await window.axios.get('/api/syndicate/overview');
+            overview = overviewRes.data.data || {};
+            renderHeader(overview.syndicate || {});
+            renderOverview(overview);
+            await loadSection(1);
+        } catch (error) {
+            showOverviewLoadError();
+            showLoadError(error, @json(__('syndicate.load_failed')), loadOverview);
+        }
+    }
+
+    function showOverviewLoadError() {
+        const grid = document.getElementById('overview-grid');
+        if (!grid) {
+            return;
+        }
+
+        grid.innerHTML = `
+            <div class="stat-tile card-body sm:col-span-2 xl:col-span-4">
+                <p class="text-center text-sm text-red-500 dark:text-red-300">${esc(@json(__('syndicate.load_failed')))}</p>
+                <button type="button" id="overview-retry-btn" class="mx-auto mt-3 block text-xs font-bold text-brand-600 underline dark:text-brand-300">${esc(@json(__('common.refresh')))}</button>
+            </div>
+        `;
+        document.getElementById('overview-retry-btn')?.addEventListener('click', loadOverview);
     }
 
     async function loadSection(page) {
+        const requestId = ++sectionRequestId;
         list.innerHTML = '<p class="py-8 text-center text-sm text-gray-400">' + @json(__('syndicate.loading_data')) + '</p>';
         document.getElementById('main-count').classList.add('hidden');
+        setPaginationDisabled(true);
 
         try {
             const params = ['categories', 'vendors', 'products', 'orders'].includes(endpoint) ? { page, per_page: 15 } : {};
             const sectionRes = await window.axios.get('/api/syndicate/' + endpoint, { params });
+
+            if (requestId !== sectionRequestId) {
+                return;
+            }
+
             const payload = sectionRes.data.data || {};
             const meta = sectionRes.data.meta || payload.meta || {};
 
@@ -129,7 +157,26 @@ document.addEventListener('syndicate-ready', async function () {
             renderSection(section, payload, meta);
             renderPagination(meta);
         } catch (error) {
-            showLoadError(error, @json(__('syndicate.load_failed_section')));
+            if (requestId !== sectionRequestId) {
+                return;
+            }
+
+            showLoadError(error, @json(__('syndicate.load_failed_section')), () => loadSection(page));
+        } finally {
+            if (requestId === sectionRequestId) {
+                setPaginationDisabled(false);
+            }
+        }
+    }
+
+    function setPaginationDisabled(disabled) {
+        const prevBtn = document.getElementById('main-prev');
+        const nextBtn = document.getElementById('main-next');
+        if (prevBtn) {
+            prevBtn.disabled = disabled || currentPage <= 1;
+        }
+        if (nextBtn) {
+            nextBtn.disabled = disabled || currentPage >= lastPage;
         }
     }
 
@@ -248,8 +295,16 @@ document.addEventListener('syndicate-ready', async function () {
         return @json(__('syndicate.type_default'));
     }
 
-    function showLoadError(error, message) {
-        document.getElementById('main-list').innerHTML = `<p class="py-8 text-center text-sm text-red-500">${esc(message)}</p>`;
+    function showLoadError(error, message, retryFn) {
+        const retryButton = retryFn
+            ? `<button type="button" id="main-list-retry-btn" class="mt-2 block text-xs font-bold text-brand-600 underline dark:text-brand-300">${esc(@json(__('common.refresh')))}</button>`
+            : '';
+
+        document.getElementById('main-list').innerHTML = `<div class="py-8 text-center text-sm text-red-500">${esc(message)}${retryButton}</div>`;
+
+        if (retryFn) {
+            document.getElementById('main-list-retry-btn')?.addEventListener('click', retryFn);
+        }
     }
 });
 </script>

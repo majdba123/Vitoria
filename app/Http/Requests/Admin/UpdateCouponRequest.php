@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Http\Requests\Admin\Concerns\NormalizesDateTimeInputs;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateCouponRequest extends FormRequest
 {
@@ -30,11 +31,11 @@ class UpdateCouponRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => ['sometimes', 'nullable', 'string', 'max:60'],
+            'code' => ['sometimes', 'nullable', 'string', 'max:60', Rule::unique('coupons', 'code')->ignore($this->route('coupon'))],
             'title' => ['sometimes', 'nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
             'discount_type' => ['sometimes', 'nullable', 'string', 'in:percentage,fixed'],
-            'discount_value' => ['sometimes', 'nullable', 'numeric', 'min:0'],
+            'discount_value' => ['sometimes', 'nullable', 'numeric', 'min:0', Rule::when($this->discount_type === 'percentage', ['max:100'])],
             'starts_at' => ['nullable', 'date'],
             'ends_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
             'is_active' => ['sometimes', 'nullable', 'boolean'],

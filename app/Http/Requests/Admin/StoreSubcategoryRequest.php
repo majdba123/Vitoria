@@ -28,4 +28,18 @@ class StoreSubcategoryRequest extends FormRequest
             'name_en' => ['required', 'string', 'max:255', Rule::unique('subcategories', 'name_en')->where(fn ($query) => $query->where('category_id', (int) $this->input('category_id')))],
         ];
     }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'category_id.exists' => 'Please select a valid parent category.',
+            'name_ar.unique' => 'This Arabic name is already used in this category.',
+            'name_en.unique' => 'This English name is already used in this category.',
+        ];
+    }
 }

@@ -352,6 +352,7 @@
             'noGapData' => __('admin.no_gap_data'),
             'noGrowthData' => __('admin.no_growth_data'),
             'dashboardLoadFailed' => __('admin.dashboard_load_failed'),
+            'retryLabel' => __('common.refresh'),
             'typeAgriculture' => __('admin.type_agriculture'),
             'typeVeterinary' => __('admin.type_veterinary'),
             'typeBoth' => __('admin.type_both'),
@@ -368,39 +369,169 @@
         document.addEventListener('DOMContentLoaded', async function () {
             const adminDashboardI18n = @json($adminDashboardStrings);
 
-            try {
-                const [usersRes, vendorsRes, productsRes, categoryStatsRes, overviewRes] = await Promise.all([
-                    window.axios.get('/api/admin/users?page=1'),
-                    window.axios.get('/api/admin/vendors?page=1'),
-                    window.axios.get('/api/admin/products?page=1&per_page=5'),
-                    window.axios.get('/api/admin/dashboard/vendor-category-stats'),
-                    window.axios.get('/api/admin/dashboard/overview'),
-                ]);
+            // Per-endpoint state so a single failed request doesn't blank out data
+            // that other, successful requests already provided (e.g. the overview
+            // endpoint can supply vendor/product totals even if those endpoints fail).
+            let usersData = null;
+            let vendorsData = null;
+            let productsData = null;
+            let overviewData = null;
 
-                const overview = overviewRes.data.data || {};
+            async function fetchUsers() {
+                try {
+                    const res = await window.axios.get('/api/admin/users?page=1');
+                    usersData = res.data;
+                } catch (error) {
+                    usersData = null;
+                }
+                renderUsersStat();
+            }
 
-                document.getElementById('stat-users').textContent = usersRes.data.meta?.total ?? '0';
-                document.getElementById('stat-vendors').textContent = overview.total_vendors ?? vendorsRes.data.meta?.total ?? 0;
-                document.getElementById('stat-syndicates').textContent = overview.total_syndicates ?? 0;
+            async function fetchVendors() {
+                try {
+                    const res = await window.axios.get('/api/admin/vendors?page=1');
+                    vendorsData = res.data;
+                } catch (error) {
+                    vendorsData = null;
+                }
+                renderVendorStats();
+            }
 
-                const vendors = vendorsRes.data.data || [];
+            async function fetchProducts() {
+                try {
+                    const res = await window.axios.get('/api/admin/products?page=1&per_page=5');
+                    productsData = res.data;
+                } catch (error) {
+                    productsData = null;
+                }
+                renderProductStats();
+                renderRecentProductsSection();
+            }
+
+            async function fetchCategoryStats() {
+                try {
+                    const res = await window.axios.get('/api/admin/dashboard/vendor-category-stats');
+                    renderVendorCategoryStats(res.data.data || []);
+                } catch (error) {
+                    renderSectionFailure('vendor-category-stats', adminDashboardI18n.dashboardLoadFailed, fetchCategoryStats);
+                }
+            }
+
+            async function fetchOverview() {
+                try {
+                    const res = await window.axios.get('/api/admin/dashboard/overview');
+                    overviewData = res.data.data || {};
+                    renderOverview(overviewData);
+                } catch (error) {
+                    overviewData = null;
+                }
+                renderVendorStats();
+                renderProductStats();
+                renderRecentProductsSection();
+            }
+
+            function getRecentProducts() {
+                if (overviewData?.recent_products) {
+                    return overviewData.recent_products;
+                }
+                if (productsData?.data) {
+                    return productsData.data;
+                }
+
+                return null;
+            }
+
+            function renderUsersStat() {
+                if (!usersData) {
+                    renderStatFailure('stat-users', fetchUsers);
+                    return;
+                }
+
+                document.getElementById('stat-users').textContent = usersData.meta?.total ?? '0';
+            }
+
+            function renderVendorStats() {
+                const overviewTotal = overviewData?.total_vendors;
+                const overviewActive = overviewData?.active_vendors;
+                const overviewInactive = overviewData?.inactive_vendors;
+
+                if (overviewTotal === undefined && !vendorsData) {
+                    const retry = () => Promise.all([fetchVendors(), fetchOverview()]);
+                    renderStatFailure('stat-vendors', retry);
+                    renderStatFailure('stat-active-vendors', retry);
+                    renderStatFailure('stat-inactive-vendors', retry);
+                    return;
+                }
+
+                const vendors = vendorsData?.data || [];
                 const pageActiveVendors = vendors.filter((vendor) => vendor.is_active).length;
                 const pageInactiveVendors = vendors.length - pageActiveVendors;
 
-                document.getElementById('stat-active-vendors').textContent = overview.active_vendors ?? pageActiveVendors;
-                document.getElementById('stat-inactive-vendors').textContent = overview.inactive_vendors ?? pageInactiveVendors;
-                document.getElementById('stat-products').textContent = overview.total_products ?? productsRes.data.meta?.total ?? 0;
+                document.getElementById('stat-vendors').textContent = overviewTotal ?? vendorsData?.meta?.total ?? 0;
+                document.getElementById('stat-active-vendors').textContent = overviewActive ?? pageActiveVendors;
+                document.getElementById('stat-inactive-vendors').textContent = overviewInactive ?? pageInactiveVendors;
 
-                const products = overview.recent_products || productsRes.data.data || [];
-                document.getElementById('stat-active-products').textContent = overview.active_products ?? products.filter((product) => product.is_active).length;
-
-                renderVendorCategoryStats(categoryStatsRes.data.data || []);
-                renderOverview(overview);
-                renderRecentProducts(products);
-            } catch (error) {
-                document.getElementById('vendor-category-stats').innerHTML = emptyState(adminDashboardI18n.dashboardLoadFailed, 'danger');
-                document.getElementById('recent-products').innerHTML = emptyState(adminDashboardI18n.dashboardLoadFailed, 'danger');
+                if (overviewData) {
+                    document.getElementById('stat-syndicates').textContent = overviewData.total_syndicates ?? 0;
+                } else {
+                    renderStatFailure('stat-syndicates', fetchOverview);
+                }
             }
+
+            function renderProductStats() {
+                const overviewTotal = overviewData?.total_products;
+                const overviewActive = overviewData?.active_products;
+
+                if (overviewTotal === undefined && !productsData) {
+                    const retry = () => Promise.all([fetchProducts(), fetchOverview()]);
+                    renderStatFailure('stat-products', retry);
+                    renderStatFailure('stat-active-products', retry);
+                    return;
+                }
+
+                const products = getRecentProducts() || [];
+                document.getElementById('stat-products').textContent = overviewTotal ?? productsData?.meta?.total ?? 0;
+                document.getElementById('stat-active-products').textContent = overviewActive ?? products.filter((product) => product.is_active).length;
+            }
+
+            function renderRecentProductsSection() {
+                const products = getRecentProducts();
+
+                if (products === null) {
+                    renderSectionFailure('recent-products', adminDashboardI18n.dashboardLoadFailed, () => Promise.all([fetchProducts(), fetchOverview()]));
+                    return;
+                }
+
+                renderRecentProducts(products);
+            }
+
+            function renderStatFailure(elementId, retryFn) {
+                const el = document.getElementById(elementId);
+                if (!el) {
+                    return;
+                }
+
+                el.innerHTML = `<span class="block text-sm font-bold text-red-500 dark:text-red-300">${esc(adminDashboardI18n.dashboardLoadFailed)}</span><button type="button" class="stat-retry-btn mt-1 text-xs font-bold text-brand-600 underline dark:text-brand-300">${esc(adminDashboardI18n.retryLabel)}</button>`;
+                el.querySelector('.stat-retry-btn').addEventListener('click', () => retryFn());
+            }
+
+            function renderSectionFailure(containerId, message, retryFn) {
+                const container = document.getElementById(containerId);
+                if (!container) {
+                    return;
+                }
+
+                container.innerHTML = `<div class="rounded-2xl border px-4 py-6 text-center text-sm font-medium text-red-500 border-red-200/70 bg-red-50/70 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300"><p>${esc(message)}</p><button type="button" class="section-retry-btn mt-2 font-bold underline">${esc(adminDashboardI18n.retryLabel)}</button></div>`;
+                container.querySelector('.section-retry-btn').addEventListener('click', () => retryFn());
+            }
+
+            await Promise.allSettled([
+                fetchUsers(),
+                fetchVendors(),
+                fetchProducts(),
+                fetchCategoryStats(),
+                fetchOverview(),
+            ]);
 
             function renderRecentProducts(products) {
                 const container = document.getElementById('recent-products');

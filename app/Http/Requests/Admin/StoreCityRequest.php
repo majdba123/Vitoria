@@ -26,4 +26,16 @@ class StoreCityRequest extends FormRequest
             'name' => ['required', 'string', 'max:255', Rule::unique('cities', 'name')],
         ];
     }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.unique' => 'This city name is already registered.',
+        ];
+    }
 }
