@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ShippingMethod;
 use App\Models\User;
 use App\Models\UserAddress;
 use App\Services\NotificationService;
@@ -28,6 +29,8 @@ class CheckoutService
         private readonly OrderStatusService $orderStatusService,
         private readonly NotificationService $notificationService,
         private readonly PaymentService $paymentService,
+        private readonly ShippingService $shippingService,
+        private readonly InvoiceService $invoiceService,
     ) {}
 
     /**
@@ -36,14 +39,23 @@ class CheckoutService
      *                                     `POST /api/orders/checkout` endpoint,
      *                                     which predates the address book and is
      *                                     still used by shipped mobile clients.
+     * @param  string|null  $shippingMethod  Defaults to standard delivery when
+     *                                       omitted, so the legacy endpoint and
+     *                                       any existing client need no changes.
      * @return Collection<int, Order> one order per vendor represented in the cart
      *
      * @throws CartException on any customer-actionable rejection
      */
-    public function place(Cart $cart, User $user, ?UserAddress $address, string $paymentMethod): Collection
+    public function place(Cart $cart, User $user, ?UserAddress $address, string $paymentMethod, ?string $shippingMethod = null): Collection
     {
         if (! in_array($paymentMethod, $this->availablePaymentMethods(), true)) {
             throw new CartException(__('cart.payment_method_unavailable'));
+        }
+
+        $shippingMethod ??= ShippingMethod::STANDARD;
+
+        if (! in_array($shippingMethod, ShippingMethod::CODES, true)) {
+            throw new CartException(__('shipping.method_invalid'));
         }
 
         if ($address && $address->user_id !== $user->id) {
@@ -71,7 +83,7 @@ class CheckoutService
             throw new CartException(__('cart.coupon_invalid'));
         }
 
-        $orders = DB::transaction(function () use ($address, $cart, $coupon, $paymentMethod, $subtotal, $summary, $user) {
+        $orders = DB::transaction(function () use ($address, $cart, $coupon, $paymentMethod, $shippingMethod, $subtotal, $summary, $user) {
             $lines = collect($summary['items']);
             $byVendor = $lines->groupBy('vendor_id');
 
@@ -88,10 +100,12 @@ class CheckoutService
                 $vendorSubtotal = (float) $vendorSubtotals->get($vendorId, 0);
                 $vendorDiscount = (float) $discountByVendor->get($vendorId, 0);
 
-                // Shipping and tax are structurally present but zero: no rate
-                // exists in the business configuration yet (decisions D7, and
-                // shipping is deferred). They are not invented here.
-                $shipping = 0.0;
+                // Real mechanism, zero by default: no shipping rate or tax
+                // rate exists in the business configuration yet (decisions
+                // D7, D12). Shipping is quoted per vendor order, the same
+                // way the coupon discount is split per vendor order.
+                $shippingQuote = $this->shippingService->quoteFor($address?->governorate, $shippingMethod, $vendorSubtotal);
+                $shipping = $shippingQuote['amount'];
                 $tax = 0.0;
                 $grandTotal = max(round($vendorSubtotal - $vendorDiscount + $shipping + $tax, 2), 0);
 
@@ -145,6 +159,8 @@ class CheckoutService
                 $order->update(['items_count' => $itemsCount]);
                 $this->orderStatusService->recordInitial($order, $user);
                 $this->paymentService->createForOrder($order, $user, $paymentMethod);
+                $this->shippingService->createShipmentForOrder($order, $shippingMethod, $shippingQuote['zone']);
+                $this->invoiceService->createForOrder($order);
 
                 $created[] = $order;
             }

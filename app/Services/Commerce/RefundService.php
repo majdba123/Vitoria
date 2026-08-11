@@ -28,6 +28,7 @@ class RefundService
 {
     public function __construct(
         private readonly NotificationService $notificationService,
+        private readonly VendorLedgerService $vendorLedgerService,
     ) {}
 
     /**
@@ -188,6 +189,12 @@ class RefundService
                 'completed_at' => now(),
                 'provider_reference' => $providerReference,
             ]);
+
+            // Only the vendor's own money moving; the platform's commission
+            // on the original sale is not clawed back here (spec §20 lists
+            // no such rule, and inventing one would be a real accounting
+            // decision, not a mechanical one).
+            $this->vendorLedgerService->recordRefund($refund);
 
             if ($refund->orderReturn && $refund->orderReturn->status === OrderReturn::STATUS_RECEIVED) {
                 // Closes the loop the return started: money moved, so the

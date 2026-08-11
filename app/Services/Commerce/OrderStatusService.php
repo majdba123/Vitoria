@@ -55,6 +55,8 @@ class OrderStatusService
     public function __construct(
         private readonly NotificationService $notificationService,
         private readonly PaymentService $paymentService,
+        private readonly ShippingService $shippingService,
+        private readonly VendorLedgerService $vendorLedgerService,
     ) {}
 
     /**
@@ -127,6 +129,11 @@ class OrderStatusService
 
         $order->refresh();
 
+        // Keeps the shipment's delivery-tracking status in step with the
+        // order's own fulfilment status (spec §14). Best-effort by design —
+        // see ShippingService::syncFromOrderStatus.
+        $this->shippingService->syncFromOrderStatus($order, $to, $actor, $actorType);
+
         if ($to === Order::STATUS_COMPLETED) {
             // COD settles when the courier hands over the goods and collects
             // cash — i.e. exactly when fulfilment reaches its terminal state.
@@ -137,6 +144,11 @@ class OrderStatusService
             if ($order->payment) {
                 $this->paymentService->markPaid($order->payment);
             }
+
+            // Likewise the only place a sale lands on the vendor ledger
+            // (spec §20) — the commission rate is captured now, not
+            // recomputed later if the category's rate changes.
+            $this->vendorLedgerService->recordSale($order);
         }
 
         $this->notificationService->notifyOrderStatusUpdated($order, $to);

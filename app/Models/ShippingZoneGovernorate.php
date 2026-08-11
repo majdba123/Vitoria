@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class ShippingZoneGovernorate extends Model
+{
+    /**
+     * @var list<string>
+     */
+    protected $fillable = [
+        'shipping_zone_id',
+        'governorate',
+    ];
+
+    public function zone(): BelongsTo
+    {
+        return $this->belongsTo(ShippingZone::class, 'shipping_zone_id');
+    }
+}

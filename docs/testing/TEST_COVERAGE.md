@@ -3,12 +3,13 @@
 Last run: 2026-08-12 · `php artisan test`
 
 ```
-Tests:    207 passed (1219 assertions)
-Duration: 76.24s
+Tests:    220 passed (1324 assertions)
+Duration: 64.90s
 ```
 
-Baseline before this program: 145 passed (913 assertions). **62 tests added, 0
-regressions** (45 from Phase B, 17 from Phase C — payments, returns, refunds).
+Baseline before this program: 145 passed (913 assertions). **75 tests added, 0
+regressions** (45 from Phase B; 17 from payments/returns/refunds; 13 from
+shipping/invoices/vendor ledger).
 
 The checkout flow was additionally exercised end-to-end in a real browser
 against the dev server — guest cart → login merge → address creation → order
@@ -164,6 +165,26 @@ Covers spec §11–§13 (Phase C).
 | caps a refund at what remains available on the payment | amount above `refundableAmount()` rejected before a refund row is created |
 | only an admin can complete or cancel a refund | vendor hitting the admin completion route gets 403 |
 
+### `tests/Feature/ShippingInvoicesLedgerTest.php` — 13 tests
+
+Covers spec §14, §19, §20.
+
+| Test | Property proved |
+|---|---|
+| creates a pending shipment at checkout with the seeded zero rate | shipment created in the checkout transaction, default rate is 0 |
+| **keeps the shipment status in lockstep with order fulfilment** | 5 order transitions → shipment ends `delivered`, 4 shipment events logged |
+| lets a vendor report a failed delivery and then a return to the vendor | `failed` → `returned`; a second `failed` from `returned` is refused (terminal) |
+| stops a vendor from managing another vendor's shipment | 403 |
+| **applies a real, non-zero shipping rate once an admin configures one** | seeded rate is 0; after `PATCH .../shipping/rates/{id}`, a fresh checkout's `grand_total` includes exactly the configured 1500 — proves the mechanism is real, not hardcoded |
+| creates an invoice snapshot matching the order totals at checkout | `invoice.grand_total` equals `order.grand_total`; number starts `INV-` |
+| only the invoice owner, its vendor, or an admin may view it | 403 for a stranger, 200 for the owner |
+| requires ownership to open the printable invoice page | web route: 403 for a stranger, 200 + visible invoice number for the owner |
+| **records a sale and its commission using the category rate captured at completion** | 200 subtotal, 10% category commission → sale credit 200, commission debit 20, summary net_earnings 180 |
+| does not record a sale twice for the same order | calling `recordSale()` again on an already-recorded order is a no-op |
+| **records a refund on the ledger and reduces the outstanding balance** | full return→refund flow; refund debit 100 drops net_earnings to −10, outstanding floored to 0 |
+| **caps a settlement at the outstanding balance and records it on the ledger** | settling 999 against a 200 balance is rejected; settling 150 succeeds and outstanding drops to 50 |
+| records a manual admin adjustment on the ledger | a credit adjustment raises net_earnings by exactly its amount |
+
 ---
 
 ## Not yet covered
@@ -171,9 +192,9 @@ Covers spec §11–§13 (Phase C).
 These areas have no tests because the features are not implemented. Listed so the
 gap is explicit rather than implied by omission:
 
-shipping · invoices · vendor ledger · settlements · vendor staff · RBAC tables ·
-vendor verification documents · product documents · product comparison ·
-notification preferences · admin audit log · reports · exports · CMS · SEO.
+vendor staff · RBAC tables · vendor verification documents · product documents ·
+product comparison · notification preferences · admin audit log · reports · exports ·
+CMS · SEO.
 
 ## Known gaps in what *is* implemented
 

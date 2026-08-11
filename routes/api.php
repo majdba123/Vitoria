@@ -69,6 +69,8 @@ Route::middleware(['web', 'cache.response:120'])->group(function () {
         Route::get('/{vendor}', [\App\Http\Controllers\Api\VendorController::class, 'show'])->name('public.show');
     });
 
+    Route::get('shipping/methods', [\App\Http\Controllers\Api\ShippingController::class, 'methods'])->name('shipping.methods');
+
     Route::prefix('categories')->as('categories.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'index'])->name('public.index');
         Route::get('/{category}', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'show'])->name('public.show');
@@ -125,6 +127,11 @@ Route::middleware(['auth:sanctum', 'throttle:api.authenticated'])->group(functio
         Route::get('/', [\App\Http\Controllers\Api\OrderReturnController::class, 'index'])->name('index');
         Route::get('/{returnId}', [\App\Http\Controllers\Api\OrderReturnController::class, 'show'])->name('show');
         Route::patch('/{returnId}/cancel', [\App\Http\Controllers\Api\OrderReturnController::class, 'cancel'])->middleware('throttle:api.write')->name('cancel');
+    });
+
+    Route::prefix('invoices')->as('invoices.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\InvoiceController::class, 'index'])->name('index');
+        Route::get('/{invoiceId}', [\App\Http\Controllers\Api\InvoiceController::class, 'show'])->name('show');
     });
 
     Route::prefix('addresses')->as('addresses.')->group(function () {

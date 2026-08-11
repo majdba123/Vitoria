@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\ShippingMethod;
 use App\Models\UserAddress;
 use App\Services\Commerce\CartException;
 use App\Services\Commerce\CartService;
@@ -75,6 +76,7 @@ class CheckoutController extends Controller
         $validated = $request->validate([
             'address_id' => ['required', 'integer'],
             'payment_method' => ['required', 'string', Rule::in($this->checkoutService->availablePaymentMethods())],
+            'shipping_method' => ['nullable', 'string', Rule::in(ShippingMethod::CODES)],
         ]);
 
         $user = $request->user();
@@ -87,7 +89,7 @@ class CheckoutController extends Controller
         $cart = $this->cartService->resolve($request);
 
         try {
-            $orders = $this->checkoutService->place($cart, $user, $address, $validated['payment_method']);
+            $orders = $this->checkoutService->place($cart, $user, $address, $validated['payment_method'], $validated['shipping_method'] ?? null);
         } catch (CartException $exception) {
             return response()->json(['message' => $exception->getMessage()], 422);
         } catch (\Throwable $exception) {

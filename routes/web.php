@@ -74,6 +74,13 @@ Route::middleware('auth')->group(function () {
             'addressLabels' => \App\Models\UserAddress::LABELS,
         ]);
     })->name('checkout');
+
+    Route::get('/invoices/{invoice}/print', function (\App\Models\Invoice $invoice) {
+        $invoice->load(['order.items', 'vendor:id,store_name', 'user:id,name']);
+        abort_unless(\Illuminate\Support\Facades\Gate::allows('view', $invoice), 403);
+
+        return view('invoices.print', ['invoice' => $invoice]);
+    })->name('invoices.print');
 });
 
 /*

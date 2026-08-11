@@ -75,6 +75,24 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::post('refunds', [\App\Http\Controllers\Api\Admin\RefundController::class, 'store'])->middleware('throttle:api.write')->name('refunds.store');
     Route::patch('refunds/{refundId}/complete', [\App\Http\Controllers\Api\Admin\RefundController::class, 'complete'])->middleware('throttle:api.write')->name('refunds.complete');
     Route::patch('refunds/{refundId}/cancel', [\App\Http\Controllers\Api\Admin\RefundController::class, 'cancel'])->middleware('throttle:api.write')->name('refunds.cancel');
+
+    Route::get('invoices', [\App\Http\Controllers\Api\Admin\InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('invoices/{invoiceId}', [\App\Http\Controllers\Api\Admin\InvoiceController::class, 'show'])->name('invoices.show');
+
+    Route::get('shipments', [\App\Http\Controllers\Api\Admin\ShipmentController::class, 'index'])->name('shipments.index');
+    Route::get('shipments/{shipmentId}', [\App\Http\Controllers\Api\Admin\ShipmentController::class, 'show'])->name('shipments.show');
+    Route::patch('shipments/{shipmentId}/failed', [\App\Http\Controllers\Api\Admin\ShipmentController::class, 'markFailed'])->middleware('throttle:api.write')->name('shipments.failed');
+    Route::patch('shipments/{shipmentId}/returned', [\App\Http\Controllers\Api\Admin\ShipmentController::class, 'markReturned'])->middleware('throttle:api.write')->name('shipments.returned');
+
+    Route::get('shipping/zones', [\App\Http\Controllers\Api\Admin\ShippingConfigController::class, 'zones'])->name('shipping.zones');
+    Route::get('shipping/methods', [\App\Http\Controllers\Api\Admin\ShippingConfigController::class, 'methods'])->name('shipping.methods');
+    Route::patch('shipping/rates/{rateId}', [\App\Http\Controllers\Api\Admin\ShippingConfigController::class, 'updateRate'])->middleware('throttle:api.write')->name('shipping.rates.update');
+
+    Route::get('vendors/{vendor}/ledger', [\App\Http\Controllers\Api\Admin\LedgerController::class, 'index'])->name('vendors.ledger.index');
+    Route::get('vendors/{vendor}/ledger/summary', [\App\Http\Controllers\Api\Admin\LedgerController::class, 'summary'])->name('vendors.ledger.summary');
+    Route::post('vendors/{vendor}/ledger/adjustments', [\App\Http\Controllers\Api\Admin\LedgerController::class, 'adjust'])->middleware('throttle:api.write')->name('vendors.ledger.adjust');
+    Route::get('vendors/{vendor}/settlements', [\App\Http\Controllers\Api\Admin\SettlementController::class, 'index'])->name('vendors.settlements.index');
+    Route::post('vendors/{vendor}/settlements', [\App\Http\Controllers\Api\Admin\SettlementController::class, 'store'])->middleware('throttle:api.write')->name('vendors.settlements.store');
     Route::post('notifications/send', [\App\Http\Controllers\Api\Admin\NotificationController::class, 'send'])->middleware('throttle:notifications.write')->name('notifications.send');
 
     Route::get('contact-messages', [\App\Http\Controllers\Api\Admin\ContactMessageController::class, 'index'])->name('contact-messages.index');

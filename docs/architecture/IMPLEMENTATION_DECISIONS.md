@@ -188,16 +188,90 @@ anchored indexed lookups on `name`, localized names, `commercial_name`, `sku`, a
 
 ---
 
+## D12 — Shipping: real mechanism, zero rate by default
+
+**Decision:** `shipping_zones`, `shipping_zone_governorates`, `shipping_methods`,
+`shipping_rates`, `shipments`, `shipment_events` — no warehouse or inventory concept
+(D1 is untouched). Three methods are seeded (`standard_delivery`, `express_delivery`,
+`vendor_delivery`); `pickup` is not implemented, for the same reason D4 excluded it —
+no pickup business model exists in the repository.
+
+**Rates default to 0.** No real shipping rate exists in the business configuration,
+and §63's final quality gate explicitly forbids "fake shipping... behaviour" —
+exactly the reasoning D7 already applied to tax. The seeded default zone's rates are
+0 for every method; an admin can set a real one via `PATCH /api/admin/shipping/rates/{id}`,
+and `ShippingService` will apply whatever is configured, including 0.
+
+**Why seeded in the migration, not a Seeder class:** `.github/workflows/deploy.yml`
+runs `php artisan migrate --force` on every deploy and never `db:seed`. A Seeder
+populating the default zone/methods would work in every local/CI environment and
+silently never run in production, leaving checkout with no zone to resolve to. The
+migration's `up()` inserts the rows directly.
+
+**Shipment status is a separate entity from order status**, not a duplicate state
+machine: the happy path (`preparing`/`shipped`/`out_for_delivery`/`delivered`) is
+driven automatically from `OrderStatusService::transition()`, so there is one source
+of truth for that part. `failed` and `returned` exist only on the shipment — a
+delivery attempt failing is a courier-side fact that does not by itself cancel the
+order, and the order's own state machine has no equivalent states to reuse.
+
+---
+
+## D13 — Invoices: no PDF dependency added
+
+**Decision:** one `invoices` row per order, created inside the checkout transaction,
+snapshotting figures that are already immutable at that point (D8). It exists for a
+stable `invoice_number` sequence and an explicit `issued_at`, not as a second source
+of truth for the amounts.
+
+**No PDF library was added to `composer.json`.** None existed in the repository, and
+`AGENTS.md` — Laravel Boost's own project guidelines — states plainly: "Do not change
+the application's dependencies without approval." §19 makes a PDF conditional on
+existing tooling supporting it "safely"; it doesn't, so `GET /invoices/{id}/print`
+renders a self-contained, print-styled HTML page instead. A browser's native
+print-to-PDF satisfies the requirement without an unreviewed new dependency.
+
+---
+
+## D14 — Vendor ledger replaces live-recomputed commission
+
+**Evidence:** `Vendor\CommissionController` and `Admin\VendorCommissionController`
+both compute commission **live, on every request**, from each order item's
+category's *current* `commission` rate, compared against `vendors.paid_amount` — a
+single mutable scalar with no record of when or why it changed. A category rate
+change retroactively rewrites every past vendor's historical commission, which is
+not a property a financial record should have (spec §20's own framing: "not
+sufficient as the only financial history").
+
+**Decision:** `vendor_ledger_entries` (immutable — a correction is a new
+`adjustment` entry, never an edit) + `vendor_settlements`. Entries are written at
+exactly two already-exactly-once business events: order completion
+(`OrderStatusService::transition()`, via `VendorLedgerService::recordSale()`) and
+refund completion (`RefundService::complete()`, via `recordRefund()`). The
+commission rate is captured at that moment and frozen — never recomputed later.
+
+**`vendors.paid_amount` and the two existing commission-stats endpoints are left
+in place, untouched, not migrated.** Rewriting them would be the destructive
+migration §60 forbids, and nothing currently reads `paid_amount` incorrectly — they
+are superseded by the ledger for new reporting, not broken by its addition.
+
+**Settlements are capped at outstanding balance** (`recordSettlement()` computes
+`summary()` first and rejects an amount that would push the balance negative) —
+the same "never overdraw" reasoning D11 established for refunds against a payment,
+applied to a vendor's balance against the platform.
+
+---
+
 ## Deferred — not built, not documented as built
 
-§11 payments, §12 returns, and §13 refunds are now implemented — see
-[COMMERCE_ARCHITECTURE.md §12–14](COMMERCE_ARCHITECTURE.md#12-payments-phase-c) and
+§11 payments, §12 returns, §13 refunds, §14 shipping, §19 invoices, and §20 vendor
+ledger/settlements are now implemented — see
+[COMMERCE_ARCHITECTURE.md §12–17](COMMERCE_ARCHITECTURE.md#12-payments-phase-c) and
 [TEST_COVERAGE.md](../testing/TEST_COVERAGE.md).
 
-Still deferred: §14 shipping · §19 invoices · §20 vendor ledger · §22 vendor staff ·
-§23 RBAC tables · §24 vendor documents · §25 product documents · §29 comparison ·
-§33 notification preferences · §35 audit log · §36 reports · §37 exports · §38 CMS ·
-§39 SEO · §40–52 UI redesign.
+Still deferred: §22 vendor staff · §23 RBAC tables · §24 vendor documents · §25 product
+documents · §29 comparison · §33 notification preferences · §35 audit log · §36 reports ·
+§37 exports · §38 CMS · §39 SEO · §40–52 UI redesign.
 
 These remain open scope. Their absence is stated here so no reader mistakes a plan for
 an implementation.

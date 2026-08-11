@@ -77,6 +77,8 @@ class OrderController extends Controller
                 'statusHistories',
                 'payment',
                 'returns',
+                'shipment.method',
+                'shipment.events',
             ])
             ->findOrFail($orderId);
 
@@ -93,6 +95,22 @@ class OrderController extends Controller
                     'amount' => $order->payment->amount,
                     'refunded_amount' => $order->payment->refunded_amount,
                     'paid_at' => $order->payment->paid_at,
+                ] : null,
+                'shipment' => $order->shipment ? [
+                    'status' => $order->shipment->status,
+                    'status_name' => __("shipping.status.{$order->shipment->status}"),
+                    'method_name' => $order->shipment->method ? __("shipping.method.{$order->shipment->method->code}") : null,
+                    'tracking_number' => $order->shipment->tracking_number,
+                    'carrier_name' => $order->shipment->carrier_name,
+                    'shipped_at' => $order->shipment->shipped_at,
+                    'delivered_at' => $order->shipment->delivered_at,
+                    'events' => $order->shipment->events->map(fn (\App\Models\ShipmentEvent $event) => [
+                        'previous_status' => $event->previous_status,
+                        'new_status' => $event->new_status,
+                        'status_name' => __("shipping.status.{$event->new_status}"),
+                        'notes' => $event->notes,
+                        'created_at' => $event->created_at,
+                    ])->values(),
                 ] : null,
                 'returns' => $order->returns->map(fn (\App\Models\OrderReturn $return) => [
                     'id' => $return->id,

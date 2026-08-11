@@ -255,4 +255,20 @@ class Order extends Model
     {
         return $this->hasMany(OrderReturn::class);
     }
+
+    /**
+     * This order's delivery tracking record (spec §14).
+     */
+    public function shipment(): HasOne
+    {
+        return $this->hasOne(Shipment::class);
+    }
+
+    /**
+     * This order's immutable accounting snapshot (spec §19).
+     */
+    public function invoice(): HasOne
+    {
+        return $this->hasOne(Invoice::class);
+    }
 }

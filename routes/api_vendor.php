@@ -42,6 +42,18 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::patch('returns/{returnId}/status', [\App\Http\Controllers\Api\Vendor\ReturnController::class, 'updateStatus'])->middleware('throttle:api.write')->name('returns.status');
     Route::post('returns/{returnId}/refund', [\App\Http\Controllers\Api\Vendor\ReturnController::class, 'refund'])->middleware('throttle:api.write')->name('returns.refund');
 
+    Route::get('invoices', [\App\Http\Controllers\Api\Vendor\InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('invoices/{invoiceId}', [\App\Http\Controllers\Api\Vendor\InvoiceController::class, 'show'])->name('invoices.show');
+
+    Route::get('shipments', [\App\Http\Controllers\Api\Vendor\ShipmentController::class, 'index'])->name('shipments.index');
+    Route::get('shipments/{shipmentId}', [\App\Http\Controllers\Api\Vendor\ShipmentController::class, 'show'])->name('shipments.show');
+    Route::patch('shipments/{shipmentId}/tracking', [\App\Http\Controllers\Api\Vendor\ShipmentController::class, 'updateTracking'])->middleware('throttle:api.write')->name('shipments.tracking');
+    Route::patch('shipments/{shipmentId}/failed', [\App\Http\Controllers\Api\Vendor\ShipmentController::class, 'markFailed'])->middleware('throttle:api.write')->name('shipments.failed');
+    Route::patch('shipments/{shipmentId}/returned', [\App\Http\Controllers\Api\Vendor\ShipmentController::class, 'markReturned'])->middleware('throttle:api.write')->name('shipments.returned');
+
+    Route::get('ledger', [\App\Http\Controllers\Api\Vendor\LedgerController::class, 'index'])->name('ledger.index');
+    Route::get('ledger/summary', [\App\Http\Controllers\Api\Vendor\LedgerController::class, 'summary'])->name('ledger.summary');
+
     Route::get('products/{product}/photos', [ProductPhotoController::class, 'index'])->name('products.photos.index');
     Route::post('products/{product}/photos', [ProductPhotoController::class, 'store'])->middleware('throttle:uploads')->name('products.photos.store');
     Route::post('products/{product}/photos/update', [ProductPhotoController::class, 'updatePhotos'])->middleware('throttle:uploads')->name('products.photos.update');

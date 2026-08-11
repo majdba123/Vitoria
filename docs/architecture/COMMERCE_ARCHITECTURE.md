@@ -1,8 +1,9 @@
 # Vetora — Commerce Architecture
 
-Scope: what is **implemented and tested** as of Phase C (payments, returns,
-refunds — §12–14 below — added on top of the Phase B cart/checkout/lifecycle
-work in §1–11). Deferred work is listed in
+Scope: what is **implemented and tested** as of Phase C. §1–11 cover the
+Phase B cart/checkout/lifecycle work; §12–14 cover payments, returns and
+refunds; §15–17 cover shipping, invoices and the vendor ledger, added on top
+of that same checkout transaction. Deferred work is listed in
 [IMPLEMENTATION_DECISIONS.md](IMPLEMENTATION_DECISIONS.md) and is not described here.
 
 ---
@@ -236,6 +237,16 @@ vendor's order gets 403, and a customer reading another customer's order gets 40
 | POST | `/api/vendor/returns/{id}/refund` | vendor |
 | GET · PATCH | `/api/admin/returns`, `/api/admin/returns/{id}/status` | admin |
 | GET · POST · PATCH | `/api/admin/refunds`, `/api/admin/refunds/{id}/complete`, `/cancel` | admin |
+| GET | `/api/shipping/methods?governorate=&subtotal=` | public |
+| GET · PATCH | `/api/vendor/shipments`, `/{id}/tracking`, `/{id}/failed`, `/{id}/returned` | vendor |
+| GET · PATCH | `/api/admin/shipments`, `/{id}/failed`, `/{id}/returned` | admin |
+| GET · PATCH | `/api/admin/shipping/zones`, `/methods`, `/rates/{id}` | admin |
+| GET | `/api/invoices`, `/api/invoices/{id}` | user |
+| GET | `/api/vendor/invoices`, `/api/admin/invoices` | vendor · admin |
+| GET | `/invoices/{id}/print` (web page) | user |
+| GET | `/api/vendor/ledger`, `/api/vendor/ledger/summary` | vendor |
+| GET · POST | `/api/admin/vendors/{id}/ledger`, `/summary`, `/ledger/adjustments` | admin |
+| GET · POST | `/api/admin/vendors/{id}/settlements` | admin |
 
 ---
 
@@ -377,3 +388,135 @@ payment`, which would not pass against the bound-parameter version.
 - Settling money is admin-only (`RefundPolicy::manage`): a vendor may request a
   refund for a return it owns (`OrderReturnPolicy::initiateRefund`), but only an
   admin can complete or cancel one.
+
+---
+
+## 15. Shipping (Phase C)
+
+`shipping_zones` + `shipping_zone_governorates` + `shipping_methods` +
+`shipping_rates` + `shipments` + `shipment_events`. No warehouse or inventory
+concept is involved — this is delivery cost and tracking against the same
+`products.quantity` model D1 already established.
+
+**Rates default to zero (decision D12).** The shipping migration seeds three
+methods (`standard_delivery`, `express_delivery`, `vendor_delivery` — no
+`pickup`, since no pickup business model exists in the repository, same
+reasoning as D4) and a single catch-all zone, all at rate 0, directly in the
+migration's `up()` — production only ever runs `migrate --force`
+(`.github/workflows/deploy.yml`), never `db:seed`, so a Seeder class would
+never populate a live database. The mechanism is real (`ShippingService`,
+`shipping_rates`, admin can `PATCH /api/admin/shipping/rates/{id}`); the
+number is configuration, not an invented business rule — the same reasoning
+D7 already applied to tax, and required by §63 ("no fake shipping... behaviour").
+
+**Zone resolution.** `user_addresses`/`orders` carry a free-text
+`governorate` (no geography master table exists), so `shipping_zone_governorates`
+maps that string to a zone rather than introducing a new hierarchy. An
+unmatched governorate — or none at all, for the legacy checkout endpoint —
+falls back to the seeded default zone.
+
+**Shipment status is deliberately a separate entity from order status,** kept
+in lockstep for the happy path only:
+
+```
+pending ──▶ preparing ──▶ shipped ──▶ out_for_delivery ──▶ delivered
+   │            │             │              │
+   └────────────┴─────────────┴──────────────┴──▶ failed ──▶ returned
+                                                       └──▶ out_for_delivery (retry)
+```
+
+`OrderStatusService::transition()` calls `ShippingService::syncFromOrderStatus()`
+on every order transition, which advances the shipment exactly when the
+mapped order status is reached (`preparing`→`preparing`, …,
+`completed`→`delivered`). This is best-effort by design: a shipment-side
+quirk must never block an order transition that is already committed, so
+failures there are swallowed, not thrown. `failed` and `returned` exist only
+on the shipment, set through dedicated vendor/admin actions
+(`PATCH .../shipments/{id}/failed`, `/returned`) — a failed delivery attempt
+is a courier-side fact, not by itself an order cancellation.
+
+A cancelled order does **not** drive its shipment to any terminal state:
+`cancelled` is not in `Shipment::TRANSITIONS`' target list because it is not
+one of the spec's seven enumerated shipment statuses, and inventing an eighth
+was not done. A cancelled order's shipment simply stops changing.
+
+---
+
+## 16. Invoices (Phase C)
+
+One `invoices` row per order, created inside the same checkout transaction as
+the order (`InvoiceService::createForOrder()`, called right after the
+payment and shipment). Every figure it snapshots — subtotal, discount,
+shipping, tax, grand total, payment method — is already final and immutable
+at that point (decision D8), so there is no later moment (confirmation,
+delivery) that would make a differently-timed invoice more accurate.
+
+Not a second source of truth for the amounts: it exists for a stable,
+sequential `invoice_number` distinct from `order_number`, and an explicit
+`issued_at`, both of which accounting treats differently from an operational
+order id.
+
+**No PDF library was added.** None was present in `composer.json`, and
+`AGENTS.md` (Laravel Boost's project guidelines) is explicit: "Do not change
+the application's dependencies without approval." §19 asks for a printable
+invoice and a PDF "if existing PDF tooling supports it safely" — it doesn't,
+so `GET /invoices/{id}/print` renders a self-contained, print-styled HTML
+page (`resources/views/invoices/print.blade.php`) with its own inline CSS,
+independent of the app's main layout. The browser's native print-to-PDF
+covers the PDF requirement without an unreviewed new dependency.
+
+---
+
+## 17. Vendor ledger and settlements (Phase C)
+
+`vendor_ledger_entries` (immutable — never updated or deleted; a correction is
+a new `adjustment` entry) + `vendor_settlements`. Replaces `vendors.paid_amount`
+as the vendor's financial history — that column is left in place, untouched,
+not migrated, and simply stops being read once `VendorLedgerService` is the
+source of truth (rewriting it would be exactly the destructive migration §60
+forbids).
+
+**Why the old approach was insufficient (the audit finding driving this
+section):** `Vendor\CommissionController` and `Admin\VendorCommissionController`
+both recomputed commission *live*, on every request, from each order item's
+category's **current** `commission` rate. If a category's rate changed, every
+past vendor's historical commission changed retroactively with it — not a
+property a financial record should have. Those two endpoints are left as-is
+(nothing reads `paid_amount` incorrectly today; they are just now superseded,
+not broken) while the ledger becomes the authoritative history going forward.
+
+**Entries are written at exactly two points**, both already-exactly-once
+business events:
+
+- `VendorLedgerService::recordSale()` — from `OrderStatusService::transition()`,
+  the single place an order reaches `completed`. Writes a `sale` credit
+  (the order's subtotal) and, if the category commission rate is non-zero at
+  that moment, a `commission` debit — computed once and frozen, never
+  recalculated later. A defensive existence check guards against a second
+  call, though the order's own terminal-state transition already makes that
+  practically unreachable.
+- `VendorLedgerService::recordRefund()` — from `RefundService::complete()`,
+  itself exactly-once per refund (decision D1's pattern applied to money).
+  Writes a `refund` debit for the refunded amount. The platform's commission
+  on the original sale is not clawed back — §20 specifies no such rule, and
+  inventing one would be an accounting decision, not a mechanical one.
+
+**Settlements** (`VendorLedgerService::recordSettlement()`) are admin-only,
+capped at the vendor's current outstanding balance so a payout can never push
+the balance negative, and always write both a `vendor_settlements` row (method,
+reference, notes) and a matching `settlement`-type ledger entry in one
+transaction. **Adjustments** (`recordAdjustment()`) are the only route for a
+manual correction — an admin can credit or debit a vendor with a description,
+but can never edit or delete a past entry.
+
+**The six figures the vendor finance screen shows**, computed by
+`VendorLedgerService::summary()` from a single grouped aggregate query:
+
+| Figure | Computed as |
+|---|---|
+| Gross Sales | sum of `sale` credits |
+| Commission | sum of `commission` debits |
+| Refunds | sum of `refund` debits |
+| Net Earnings | Gross Sales − Commission − Refunds ± Adjustments |
+| Settled | sum of `settlement` debits |
+| Outstanding | max(Net Earnings − Settled, 0) |
