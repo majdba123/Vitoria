@@ -2,7 +2,11 @@
 name: Deploy to Production
 
 on:
-  push:
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
     branches:
       - main
 
@@ -10,15 +14,18 @@ jobs:
   deploy:
     name: Deploy to Server
     runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.3'
           extensions: mbstring, xml, ctype, json, bcmath, curl, zip, pdo, mysql
           coverage: none
 
@@ -39,20 +46,24 @@ jobs:
 
       - name: Deploy to Server via SSH
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
+          envs: DEPLOY_SHA
           script: |
+            set -e
             cd /var/www/MSZ
 
             # Fix git ownership issue
             git config --global --add safe.directory /var/www/MSZ
 
-            # Force update to match GitHub (prevents conflicts)
+            # Force update to the exact commit CI passed on (not just whatever origin/main is at SSH time)
             git fetch origin
-            git reset --hard origin/main
+            git reset --hard "$DEPLOY_SHA"
 
             # Install/update Composer dependencies
             composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
@@ -61,11 +72,16 @@ jobs:
             npm ci
             npm run build
 
-            # Run Laravel optimizations
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            php artisan event:cache
+            # Back up the database before migrating (best effort; does not block deploy on failure)
+            mkdir -p storage/backups
+            set -a; source .env; set +a
+            if [ -n "$DB_DATABASE" ] && command -v mysqldump >/dev/null 2>&1; then
+              mysqldump -h"${DB_HOST:-127.0.0.1}" -P"${DB_PORT:-3306}" -u"$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" \
+                | gzip > "storage/backups/pre-deploy-$(date +%Y%m%d%H%M%S).sql.gz" \
+                || echo "WARNING: database backup failed, continuing deploy"
+            else
+              echo "WARNING: mysqldump unavailable or DB_DATABASE unset, skipping pre-deploy backup"
+            fi
 
             # Run migrations
             php artisan migrate --force
@@ -73,15 +89,26 @@ jobs:
             # Restart queue workers (if using)
             php artisan queue:restart
 
-            # Clear and rebuild caches
-            php artisan optimize:clear
+            # Rebuild caches (do NOT run optimize:clear after this — it wipes what we just built)
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan event:cache
+
             # Fix permissions
             chown -R www-data:www-data .
             chmod -R 775 storage
             chmod -R 775 bootstrap/cache
 
             # Restart services
-            systemctl reload php8.2-fpm
+            systemctl reload php8.3-fpm
             systemctl reload nginx
+
+            # Verify the app actually came back up before declaring success (APP_URL comes from the server's own .env)
+            if [ -n "${APP_URL:-}" ]; then
+              curl -fsS "${APP_URL%/}/up" > /dev/null
+            else
+              echo "WARNING: APP_URL not found in .env, skipping post-deploy health check"
+            fi
 
             echo "Deployment completed successfully!"

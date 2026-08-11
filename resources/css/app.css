@@ -148,6 +148,14 @@
         background: var(--dashboard-bg);
     }
 
+    .skip-link {
+        @apply fixed start-4 top-4 z-[200] -translate-y-24 rounded-xl bg-ink-900 px-4 py-3 font-bold text-white shadow-xl;
+    }
+
+    .skip-link:focus-visible {
+        @apply translate-y-0;
+    }
+
     ::selection {
         @apply bg-brand-500/20 text-ink-900;
     }
@@ -192,6 +200,21 @@
     textarea:focus-visible {
         outline: none;
         box-shadow: var(--site-ring);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+            scroll-behavior: auto !important;
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
     }
 }
 

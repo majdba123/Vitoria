@@ -145,6 +145,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
+    const i18n = {!! json_encode(['avatarAlt' => __('common.avatar_alt'), 'logoAlt' => __('common.logo_alt')]) !!};
     const vendorId = '{{ $vendorId }}';
 
     try {
@@ -169,11 +170,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('vendor-avatar-initials').textContent = (ownerName || 'V').charAt(0).toUpperCase();
 
         if (vendor.user?.avatar_url) {
-            document.getElementById('vendor-avatar-display').innerHTML = `<img src="${vendor.user.avatar_url}" alt="Avatar" class="h-full w-full object-cover">`;
+            document.getElementById('vendor-avatar-display').innerHTML = `<img src="${esc(vendor.user.avatar_url)}" alt="${esc(i18n.avatarAlt)}" class="h-full w-full object-cover">`;
         }
 
         if (vendor.logo_url) {
-            document.getElementById('vendor-logo-display').innerHTML = `<img src="${vendor.logo_url}" alt="Logo" class="h-full w-full object-cover">`;
+            document.getElementById('vendor-logo-display').innerHTML = `<img src="${esc(vendor.logo_url)}" alt="${esc(i18n.logoAlt)}" class="h-full w-full object-cover">`;
         }
 
         document.getElementById('vendor-status-badge').innerHTML = statusBadge(vendor);

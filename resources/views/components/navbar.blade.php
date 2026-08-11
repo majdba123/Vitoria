@@ -45,13 +45,13 @@
                 {{-- Language Switcher --}}
                 <x-language-switcher />
                 {{-- Dark Mode Toggle --}}
-                <button id="theme-toggle" class="nav-action-btn relative flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/40 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" title="{{ __('nav.toggle_theme_aria') }}">
+                <button id="theme-toggle" type="button" class="nav-action-btn relative hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/40 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200 sm:flex" aria-label="{{ __('nav.toggle_theme_aria') }}" title="{{ __('nav.toggle_theme_aria') }}">
                     <svg id="icon-sun" class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
                     <svg id="icon-moon" class="h-5 w-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
                 </button>
 
                 {{-- Cart --}}
-                <button id="nav-cart" class="nav-action-btn relative flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/40 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" onclick="window.showCart && window.showCart()" title="{{ __('nav.cart') }}">
+                <button id="nav-cart" type="button" class="nav-action-btn relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/40 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" onclick="window.showCart && window.showCart()" aria-label="{{ __('nav.cart') }}" title="{{ __('nav.cart') }}">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
                     <span id="cart-badge" class="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold leading-none text-white shadow hidden"></span>
                 </button>
@@ -133,7 +133,7 @@
                 </div>
 
                 {{-- Mobile Hamburger --}}
-                <button id="mobile-btn" class="nav-action-btn flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 hover:border-white/40 hover:bg-white/70 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 lg:hidden">
+                <button id="mobile-btn" type="button" class="nav-action-btn flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-transparent text-gray-500 hover:border-white/40 hover:bg-white/70 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 md:hidden" aria-label="{{ __('nav.menu') }}" aria-controls="mobile-drawer" aria-expanded="false">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
                 </button>
             </div>
@@ -141,11 +141,11 @@
     </nav>
 
     {{-- Mobile Drawer --}}
-    <div id="mobile-drawer" class="fixed inset-0 z-[60] hidden">
+    <div id="mobile-drawer" class="fixed inset-0 z-[60] hidden" role="dialog" aria-modal="true" aria-labelledby="mobile-menu-title">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeMobileMenu()"></div>
         <div class="mobile-drawer-shell absolute right-0 top-0 flex h-full w-80 max-w-[88vw] flex-col border-l border-white/40 bg-white/92 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/94 rtl:right-auto rtl:left-0 rtl:border-l-0 rtl:border-r" style="animation:slideInRight .25s cubic-bezier(.22,1,.36,1);">
             <div class="flex items-center justify-between border-b border-gray-200/70 px-5 py-4 dark:border-gray-800">
-                <span class="text-lg font-extrabold text-gray-900 dark:text-white">{{ __('nav.menu') }}</span>
+                <span id="mobile-menu-title" class="text-lg font-extrabold text-gray-900 dark:text-white">{{ __('nav.menu') }}</span>
                 <button onclick="closeMobileMenu()" class="rounded-xl p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="{{ __('nav.close_menu') }}"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
             </div>
 
@@ -275,14 +275,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('mobile-btn')?.addEventListener('click', () => {
         document.getElementById('mobile-drawer').classList.remove('hidden');
+        document.getElementById('mobile-btn').setAttribute('aria-expanded', 'true');
         document.body.style.overflow = 'hidden';
+        document.querySelector('#mobile-drawer button')?.focus();
     });
 });
 
 function closeMobileMenu() {
     document.getElementById('mobile-drawer').classList.add('hidden');
+    document.getElementById('mobile-btn')?.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
+    document.getElementById('mobile-btn')?.focus();
 }
+
+document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && !document.getElementById('mobile-drawer')?.classList.contains('hidden')) {
+        closeMobileMenu();
+    }
+});
 
 function initMegaMenu() {
     const btn = document.getElementById('mega-btn'), panel = document.getElementById('mega-panel'), chevron = document.getElementById('mega-chevron');
@@ -390,7 +400,7 @@ function updateNavbar() {
         if (typeof loadNotificationDropdown === 'function') loadNotificationDropdown(1);
         fetchAndSetUser();
     } else {
-        el('nav-guest')?.classList.remove('hidden');
+        el('nav-guest')?.classList.add('hidden');
         el('nav-guest')?.classList.add('sm:flex');
         el('profile-wrap')?.classList.add('hidden');
         el('mobile-guest-footer')?.classList.remove('hidden');

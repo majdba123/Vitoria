@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Syndicate;
 use App\Models\User;
 use App\Models\Vendor;
+use App\Services\ApplicationCacheService;
 use Illuminate\Support\Facades\Cache;
 use Laravel\Sanctum\Sanctum;
 
@@ -107,6 +108,31 @@ test('admin can create a syndicate agent', function () {
         'name' => 'North Agriculture Syndicate',
         'type' => Category::TYPE_AGRICULTURE,
         'status' => Syndicate::STATUS_ACTIVE,
+    ]);
+});
+
+test('admin syndicate creation rejects svg logo uploads', function () {
+    syndicateAdmin();
+
+    $response = $this->post('/api/admin/syndicates', [
+        'name' => 'Svg Syndicate',
+        'email' => 'svg-syndicate@example.com',
+        'phone' => '0993999030',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+        'type' => Category::TYPE_AGRICULTURE,
+        'status' => Syndicate::STATUS_ACTIVE,
+        'logo' => \Illuminate\Http\UploadedFile::fake()->createWithContent(
+            'syndicate.svg',
+            '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'
+        ),
+    ], ['Accept' => 'application/json']);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['logo']);
+
+    $this->assertDatabaseMissing('users', [
+        'email' => 'svg-syndicate@example.com',
     ]);
 });
 
@@ -318,7 +344,8 @@ test('syndicate dashboard page renders the professional workspace shell', functi
 });
 
 test('admin dashboard overview includes syndicate statistics', function () {
-    Cache::forget('admin_dashboard_overview');
+    Cache::forget(ApplicationCacheService::DASHBOARD_ADMIN_STATS);
+    Cache::forget(ApplicationCacheService::ADMIN_DASHBOARD_LEGACY);
     syndicateAdmin();
 
     Syndicate::factory()->agriculture()->create(['status' => Syndicate::STATUS_ACTIVE]);

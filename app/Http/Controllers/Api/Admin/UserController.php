@@ -120,6 +120,12 @@ class UserController extends Controller
      */
     public function destroy(User $user): JsonResponse
     {
+        if ($user->orders()->exists() || $user->reviews()->exists()) {
+            return response()->json([
+                'message' => __('This user cannot be deleted while they still have order or review history.'),
+            ], 422);
+        }
+
         $this->userService->delete($user);
 
         return response()->json([

@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreSubcategoryRequest;
 use App\Http\Requests\Admin\UpdateSubcategoryRequest;
 use App\Models\Subcategory;
+use App\Services\Import\CsvImportException;
+use App\Services\Import\Importers\SubcategoryImporter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SubcategoryController extends Controller
 {
@@ -79,6 +82,32 @@ class SubcategoryController extends Controller
 
         return response()->json([
             'message' => __('Subcategory deleted successfully.'),
+        ]);
+    }
+
+    public function importTemplate(): StreamedResponse
+    {
+        return (new SubcategoryImporter)->template();
+    }
+
+    public function import(Request $request): JsonResponse
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:csv,txt', 'max:5120'],
+        ]);
+
+        try {
+            $result = (new SubcategoryImporter)->import($request->file('file'));
+        } catch (CsvImportException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        }
+
+        return response()->json([
+            'message' => __(':created of :total subcategories imported successfully.', [
+                'created' => $result['created'],
+                'total' => $result['total_rows'],
+            ]),
+            'data' => $result,
         ]);
     }
 }

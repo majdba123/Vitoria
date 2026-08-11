@@ -58,7 +58,7 @@
                                 <div id="avatar-display" class="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-100 to-brand-200 text-4xl font-bold text-brand-600 shadow-lg ring-4 ring-white">
                                     <span id="avatar-initials">V</span>
                                 </div>
-                                <label for="avatar-input" class="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/50 opacity-0 transition-all duration-200 group-hover:opacity-100">
+                                <label for="avatar-input" tabindex="0" role="button" aria-label="Change profile photo" class="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/50 opacity-0 transition-all duration-200 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-white/60">
                                     <div class="text-center">
                                         <svg class="mx-auto h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.04l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
                                         <span class="mt-1 block text-[10px] font-medium text-white/80">Change</span>
@@ -76,7 +76,7 @@
                                 <div id="logo-display" class="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-gray-100 to-gray-200 shadow-lg ring-4 ring-white">
                                     <svg class="h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.15c0 .415.336.75.75.75z"/></svg>
                                 </div>
-                                <label for="logo-input" class="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/50 opacity-0 transition-all duration-200 group-hover:opacity-100">
+                                <label for="logo-input" tabindex="0" role="button" aria-label="Change store logo" class="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/50 opacity-0 transition-all duration-200 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-white/60">
                                     <div class="text-center">
                                         <svg class="mx-auto h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.04l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
                                         <span class="mt-1 block text-[10px] font-medium text-white/80">Change</span>
@@ -219,15 +219,27 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function setCircleImage(containerId, url) {
-        document.getElementById(containerId).innerHTML = `<img src="${url}" alt="" class="h-full w-full object-cover">`;
+    function setCircleImage(containerId, url, alt) {
+        document.getElementById(containerId).innerHTML = `<img src="${url}" alt="${alt || ''}" class="h-full w-full object-cover">`;
     }
+
+    function activateOnKey(labelEl) {
+        labelEl && labelEl.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                document.getElementById(labelEl.getAttribute('for')).click();
+            }
+        });
+    }
+
+    activateOnKey(document.querySelector('label[for="avatar-input"]'));
+    activateOnKey(document.querySelector('label[for="logo-input"]'));
 
     document.getElementById('avatar-input').addEventListener('change', function (e) {
         avatarFile = e.target.files[0];
         if (avatarFile) {
             const reader = new FileReader();
-            reader.onload = ev => setCircleImage('avatar-display', ev.target.result);
+            reader.onload = ev => setCircleImage('avatar-display', ev.target.result, 'Profile photo preview');
             reader.readAsDataURL(avatarFile);
         }
     });
@@ -236,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
         logoFile = e.target.files[0];
         if (logoFile) {
             const reader = new FileReader();
-            reader.onload = ev => setCircleImage('logo-display', ev.target.result);
+            reader.onload = ev => setCircleImage('logo-display', ev.target.result, 'Store logo preview');
             reader.readAsDataURL(logoFile);
         }
     });

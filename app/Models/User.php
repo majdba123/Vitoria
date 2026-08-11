@@ -150,6 +150,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Product reviews written by this user.
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    /**
      * Admin notifications this user has marked as read (pivot has read_at).
      */
     public function notificationReads(): BelongsToMany

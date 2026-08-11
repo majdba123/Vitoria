@@ -54,7 +54,7 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('profile.upload_avatar') }}</p>
-                        <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">JPG, PNG or GIF. Max 2MB.</p>
+                        <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">{{ __('profile.avatar_hint') }}</p>
                         <button id="avatar-remove" class="mt-2 hidden text-xs font-bold text-red-500 hover:text-red-700 dark:hover:text-red-400">{{ __('profile.remove_photo') }}</button>
                     </div>
                 </div>
@@ -80,16 +80,16 @@
                         <p id="err-phone_number" class="mt-1 hidden text-xs text-red-500"></p>
                     </div>
                     <div>
-                        <label for="p-timezone" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Timezone</label>
+                        <label for="p-timezone" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('profile.timezone') }}</label>
                         <select id="p-timezone" class="form-select"></select>
                         <p id="err-timezone" class="mt-1 hidden text-xs text-red-500"></p>
                     </div>
                     <div>
-                        <label for="p-preferred-product-type" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">نوع المنتجات المفضل</label>
+                        <label for="p-preferred-product-type" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('profile.preferred_product_type') }}</label>
                         <select id="p-preferred-product-type" class="form-select">
-                            <option value="">اختر النوع</option>
-                            <option value="agriculture">زراعي</option>
-                            <option value="veterinary">بيطري</option>
+                            <option value="">{{ __('profile.select_type') }}</option>
+                            <option value="agriculture">{{ __('profile.type_agriculture') }}</option>
+                            <option value="veterinary">{{ __('profile.type_veterinary') }}</option>
                         </select>
                         <p id="err-preferred_product_type" class="mt-1 hidden text-xs text-red-500"></p>
                     </div>
@@ -97,7 +97,7 @@
                     {{-- Read-only fields --}}
                     <div class="info-grid rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800/50">
                         <div>
-                            <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Account Type</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">{{ __('profile.account_type') }}</p>
                             <p id="p-type" class="mt-0.5 text-sm font-bold text-gray-900 dark:text-white">—</p>
                         </div>
                         <div>
@@ -108,7 +108,7 @@
 
                     <div id="save-alert" class="hidden items-center gap-3 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
                         <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <span>Profile updated successfully!</span>
+                        <span>{{ __('profile.updated_success') }}</span>
                     </div>
                     <div id="save-error" class="hidden items-center gap-3 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:bg-red-500/10 dark:text-red-400">
                         <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>

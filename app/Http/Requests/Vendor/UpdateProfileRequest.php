@@ -25,6 +25,7 @@ class UpdateProfileRequest extends FormRequest
             'phone_number' => ['sometimes', 'nullable', 'string', 'max:20', Rule::unique('users', 'phone_number')->ignore($userId)],
             'national_id' => ['sometimes', 'nullable', 'string', 'max:50', Rule::unique('users', 'national_id')->ignore($userId)],
             'password' => ['nullable', 'string', 'min:6'],
+            'current_password' => ['required_with:password', 'string'],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],
             'store_name' => ['sometimes', 'nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],

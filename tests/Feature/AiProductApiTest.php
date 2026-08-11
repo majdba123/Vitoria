@@ -99,7 +99,7 @@ test('ai product api supports filters for subcategory product type and search', 
         'name' => 'Nitro AI',
         'name_ar' => 'نيترو',
         'name_en' => 'Nitro AI',
-        'status' => Product::STATUS_PENDING,
+        'status' => Product::STATUS_APPROVED,
         'is_active' => true,
         'quantity' => 5,
     ]);
@@ -137,12 +137,52 @@ test('ai product api supports filters for subcategory product type and search', 
         'agricultural_product_type' => 'seed',
     ]);
 
-    $this->getJson('/api/ai/products?subcategory_id='.$fertilizerSubcategory->id.'&product_type=fertilizer&search=Nitro&status=pending')
+    $this->getJson('/api/ai/products?subcategory_id='.$fertilizerSubcategory->id.'&product_type=fertilizer&search=Nitro')
         ->assertOk()
         ->assertJsonPath('meta.total', 1)
         ->assertJsonPath('data.0.id', $fertilizer->id)
         ->assertJsonPath('filters.product_type', 'fertilizer')
         ->assertJsonPath('filters.search', 'Nitro');
+});
+
+test('ai product api never exposes pending, rejected, or inactive products regardless of query filters', function () {
+    Sanctum::actingAs(User::factory()->create());
+
+    $category = Category::query()->create([
+        'name' => 'AI Visibility Agriculture',
+        'type' => Category::TYPE_AGRICULTURE,
+    ]);
+
+    $vendor = Vendor::factory()->create([
+        'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
+    ]);
+    $vendor->categories()->sync([$category->id]);
+
+    $pending = Product::factory()->for($vendor)->create([
+        'category_id' => $category->id,
+        'status' => Product::STATUS_PENDING,
+        'is_active' => true,
+    ]);
+
+    $rejected = Product::factory()->for($vendor)->create([
+        'category_id' => $category->id,
+        'status' => Product::STATUS_REJECTED,
+        'is_active' => true,
+    ]);
+
+    $inactive = Product::factory()->for($vendor)->create([
+        'category_id' => $category->id,
+        'status' => Product::STATUS_APPROVED,
+        'is_active' => false,
+    ]);
+
+    // A malicious/naive client trying the old query shape that used to leak visibility.
+    $response = $this->getJson('/api/ai/products?status=pending&is_active=0&per_page=50')
+        ->assertOk();
+
+    $ids = collect($response->json('data'))->pluck('id');
+
+    expect($ids)->not->toContain($pending->id, $rejected->id, $inactive->id);
 });
 
 test('ai product separate agriculture and veterinary list endpoints force category type', function () {

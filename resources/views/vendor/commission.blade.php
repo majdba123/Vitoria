@@ -1,44 +1,44 @@
 @extends('layouts.vendor')
 
 @section('title', 'Commission — Vetora Vendor')
-@section('page-title', 'Commission Statistics')
+@section('page-title', __('vendor.commission_title'))
 
 @section('content')
 <div class="space-y-4">
     <x-alert type="error" id="commission-alert" />
 
     <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">Vendor Financial Analytics</p>
-        <h2 id="vendor-title" class="mt-1 text-2xl font-black text-gray-900 dark:text-white">My Commission Dashboard</h2>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Commission is calculated by category commission on completed orders only.</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">{{ __('vendor.financial_analytics_label') }}</p>
+        <h2 id="vendor-title" class="mt-1 text-2xl font-black text-gray-900 dark:text-white">{{ __('vendor.commission_dashboard_heading') }}</h2>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">{{ __('vendor.commission_dashboard_copy') }}</p>
     </div>
 
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Completed Orders Total</p>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('vendor.completed_orders_total') }}</p>
             <p id="stat-completed-total" class="mt-2 text-2xl font-black text-gray-900 dark:text-white">—</p>
         </div>
         <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Commission Total</p>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('vendor.commission_total_label') }}</p>
             <p id="stat-commission-total" class="mt-2 text-2xl font-black text-brand-600">—</p>
         </div>
         <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Paid to You</p>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('vendor.paid_to_you') }}</p>
             <p id="stat-paid-amount" class="mt-2 text-2xl font-black text-emerald-600">—</p>
         </div>
         <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Remaining</p>
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('vendor.remaining_label') }}</p>
             <p id="stat-remaining-amount" class="mt-2 text-2xl font-black text-rose-600">—</p>
         </div>
     </div>
 
     <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
         <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <h3 class="text-base font-black text-gray-900 dark:text-white">Order Status Statistics</h3>
+            <h3 class="text-base font-black text-gray-900 dark:text-white">{{ __('vendor.order_status_statistics') }}</h3>
             <div class="mt-4 space-y-3">
                 <div>
                     <div class="mb-1 flex items-center justify-between text-xs">
-                        <span class="font-semibold text-gray-700 dark:text-gray-300">Pending</span>
+                        <span class="font-semibold text-gray-700 dark:text-gray-300">{{ __('vendor.status_pending') }}</span>
                         <span id="status-pending-meta" class="font-bold text-amber-600">—</span>
                     </div>
                     <div class="h-2.5 rounded-full bg-gray-100 dark:bg-gray-800">
@@ -47,7 +47,7 @@
                 </div>
                 <div>
                     <div class="mb-1 flex items-center justify-between text-xs">
-                        <span class="font-semibold text-gray-700 dark:text-gray-300">Completed</span>
+                        <span class="font-semibold text-gray-700 dark:text-gray-300">{{ __('vendor.status_completed') }}</span>
                         <span id="status-completed-meta" class="font-bold text-emerald-600">—</span>
                     </div>
                     <div class="h-2.5 rounded-full bg-gray-100 dark:bg-gray-800">
@@ -56,7 +56,7 @@
                 </div>
                 <div>
                     <div class="mb-1 flex items-center justify-between text-xs">
-                        <span class="font-semibold text-gray-700 dark:text-gray-300">Cancelled</span>
+                        <span class="font-semibold text-gray-700 dark:text-gray-300">{{ __('vendor.status_cancelled') }}</span>
                         <span id="status-cancelled-meta" class="font-bold text-rose-600">—</span>
                     </div>
                     <div class="h-2.5 rounded-full bg-gray-100 dark:bg-gray-800">
@@ -67,15 +67,15 @@
         </div>
 
         <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <h3 class="text-base font-black text-gray-900 dark:text-white">Payment Summary</h3>
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">These values are managed by admin settlement.</p>
+            <h3 class="text-base font-black text-gray-900 dark:text-white">{{ __('vendor.payment_summary') }}</h3>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('vendor.payment_summary_copy') }}</p>
             <div class="mt-4 grid grid-cols-1 gap-3 text-sm">
                 <div class="rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50">
-                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Paid Amount</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('vendor.paid_amount_label') }}</p>
                     <p id="paid-amount-box" class="mt-1 text-lg font-black text-emerald-600">—</p>
                 </div>
                 <div class="rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50">
-                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Remaining Amount</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('vendor.remaining_amount_label') }}</p>
                     <p id="remaining-amount-box" class="mt-1 text-lg font-black text-rose-600">—</p>
                 </div>
             </div>
@@ -83,20 +83,20 @@
     </div>
 
     <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <h3 class="text-base font-black text-gray-900 dark:text-white">Commission by Category</h3>
+        <h3 class="text-base font-black text-gray-900 dark:text-white">{{ __('vendor.commission_by_category') }}</h3>
         <div class="mt-4 overflow-x-auto">
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>Category</th>
-                        <th>Commission %</th>
-                        <th>Sales Total</th>
-                        <th>Commission Amount</th>
+                        <th>{{ __('vendor.th_category') }}</th>
+                        <th>{{ __('vendor.th_commission_percent') }}</th>
+                        <th>{{ __('vendor.th_sales_total') }}</th>
+                        <th>{{ __('vendor.th_commission_amount') }}</th>
                     </tr>
                 </thead>
                 <tbody id="category-breakdown-body">
                     <tr>
-                        <td colspan="4" class="py-6 text-center text-sm text-gray-500">Loading...</td>
+                        <td colspan="4" class="py-6 text-center text-sm text-gray-500 dark:text-gray-400">{{ __('vendor.loading') }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -104,7 +104,7 @@
     </div>
 
     <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <h3 class="text-base font-black text-gray-900 dark:text-white">Last 7 Days Completed Orders</h3>
+        <h3 class="text-base font-black text-gray-900 dark:text-white">{{ __('vendor.last_7_days_completed_orders') }}</h3>
         <div id="orders-trend" class="mt-4 grid grid-cols-7 gap-2"></div>
     </div>
 </div>
@@ -113,6 +113,14 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const i18n = {!! json_encode([
+        'myStoreFallback' => __('vendor.my_store_fallback'),
+        'commissionDashboardSuffix' => __('vendor.commission_dashboard_suffix'),
+        'failedLoadCommissionStats' => __('vendor.js_failed_load_commission_stats'),
+        'noCompletedOrdersFound' => __('vendor.js_no_completed_orders_found'),
+        'unknownCategory' => __('vendor.js_unknown_category'),
+        'noTrendData' => __('vendor.js_no_trend_data'),
+    ]) !!};
     const formatter = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 });
     loadStats();
 
@@ -127,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const categoryBreakdown = data.category_breakdown || [];
             const trend = data.completed_orders_last_7_days || [];
 
-            document.getElementById('vendor-title').textContent = `${vendor.store_name || 'My Store'} — Commission Dashboard`;
+            document.getElementById('vendor-title').textContent = `${vendor.store_name || i18n.myStoreFallback} — ${i18n.commissionDashboardSuffix}`;
             setMoney('stat-completed-total', financials.completed_order_total || 0);
             setMoney('stat-commission-total', financials.commission_total || 0);
             setMoney('stat-paid-amount', financials.paid_amount || 0);
@@ -143,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
             renderCategoryBreakdown(categoryBreakdown);
             renderTrend(trend);
         } catch (error) {
-            const message = error.response?.data?.message || 'Failed to load commission statistics.';
+            const message = error.response?.data?.message || i18n.failedLoadCommissionStats;
             showAlert('commission-alert', message);
         }
     }
@@ -151,13 +159,13 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderCategoryBreakdown(rows) {
         const body = document.getElementById('category-breakdown-body');
         if (!rows.length) {
-            body.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-sm text-gray-500">No completed orders found.</td></tr>';
+            body.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-sm text-gray-500 dark:text-gray-400">${escapeHtml(i18n.noCompletedOrdersFound)}</td></tr>`;
             return;
         }
 
         body.innerHTML = rows.map(row => `
             <tr>
-                <td class="text-sm font-semibold text-gray-900 dark:text-white">${escapeHtml(row.category_name || 'Unknown')}</td>
+                <td class="text-sm font-semibold text-gray-900 dark:text-white">${escapeHtml(row.category_name || i18n.unknownCategory)}</td>
                 <td class="text-sm text-gray-600 dark:text-gray-300">${Number(row.commission_rate || 0).toFixed(2)}%</td>
                 <td class="text-sm font-semibold text-gray-900 dark:text-white">${formatMoney(row.sales_total || 0)}</td>
                 <td class="text-sm font-semibold text-brand-600">${formatMoney(row.commission_amount || 0)}</td>
@@ -168,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderTrend(points) {
         const wrap = document.getElementById('orders-trend');
         if (!points.length) {
-            wrap.innerHTML = '<p class="col-span-7 text-sm text-gray-500">No trend data available.</p>';
+            wrap.innerHTML = `<p class="col-span-7 text-sm text-gray-500 dark:text-gray-400">${escapeHtml(i18n.noTrendData)}</p>`;
             return;
         }
 

@@ -68,7 +68,7 @@
     <div class="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900">
         <div class="mb-4 flex items-center justify-between">
             <h3 id="modal-title" class="text-lg font-bold text-gray-900 dark:text-white">Create Coupon</h3>
-            <button type="button" onclick="closeCouponModal()" class="rounded-md p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800">
+            <button type="button" onclick="closeCouponModal()" aria-label="Close" class="rounded-md p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
@@ -76,38 +76,38 @@
             <input type="hidden" id="coupon-id">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                    <label class="form-label">Code</label>
+                    <label for="code" class="form-label">Code</label>
                     <input id="code" class="form-input" placeholder="SAVE10">
                 </div>
                 <div>
-                    <label class="form-label">Title</label>
+                    <label for="title" class="form-label">Title</label>
                     <input id="title" class="form-input" placeholder="Welcome Discount">
                 </div>
                 <div>
-                    <label class="form-label">Type</label>
+                    <label for="discount_type" class="form-label">Type</label>
                     <select id="discount_type" class="form-input">
                         <option value="percentage">Percentage</option>
                         <option value="fixed">Fixed</option>
                     </select>
                 </div>
                 <div>
-                    <label class="form-label">Value</label>
+                    <label for="discount_value" class="form-label">Value</label>
                     <input id="discount_value" type="number" step="0.01" class="form-input" placeholder="10">
                 </div>
                 <div>
-                    <label class="form-label">Start Date & Time</label>
+                    <label for="starts_at" class="form-label">Start Date & Time</label>
                     <input id="starts_at" type="datetime-local" step="60" class="form-input">
                 </div>
                 <div>
-                    <label class="form-label">End Date & Time</label>
+                    <label for="ends_at" class="form-label">End Date & Time</label>
                     <input id="ends_at" type="datetime-local" step="60" class="form-input">
                 </div>
                 <div>
-                    <label class="form-label">Usage Limit</label>
+                    <label for="usage_limit" class="form-label">Usage Limit</label>
                     <input id="usage_limit" type="number" min="1" class="form-input" placeholder="Optional">
                 </div>
                 <div class="flex items-end gap-3">
-                    <label class="form-label mb-0">Active</label>
+                    <label for="is_active" class="form-label mb-0">Active</label>
                     <label class="toggle-switch">
                         <input type="checkbox" id="is_active" checked>
                         <span class="toggle-slider"></span>
@@ -115,7 +115,7 @@
                 </div>
             </div>
             <div>
-                <label class="form-label">Description</label>
+                <label for="description" class="form-label">Description</label>
                 <textarea id="description" rows="3" class="form-textarea" placeholder="Optional description"></textarea>
             </div>
             <div class="flex justify-end gap-2 border-t border-gray-100 pt-4 dark:border-gray-800">
@@ -132,6 +132,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const $ = id => document.getElementById(id);
     let page = 1;
+    const couponDialog = window.wireAccessibleDialog($('coupon-modal'), () => window.closeCouponModal(), { labelledBy: 'modal-title' });
 
     $('open-create-modal').addEventListener('click', () => openCouponModal());
     $('btn-apply').addEventListener('click', () => { page = 1; loadCoupons(); });
@@ -217,11 +218,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         $('coupon-modal').classList.remove('hidden');
         $('coupon-modal').classList.add('flex');
+        couponDialog.open();
     };
 
     window.closeCouponModal = function() {
         $('coupon-modal').classList.add('hidden');
         $('coupon-modal').classList.remove('flex');
+        couponDialog.close();
     };
 
     async function submitCoupon(e) {
@@ -238,6 +241,9 @@ document.addEventListener('DOMContentLoaded', function () {
             usage_limit: $('usage_limit').value || null,
             is_active: $('is_active').checked,
         };
+
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
 
         try {
             if (id) {
@@ -256,6 +262,8 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 showAlert('coupon-alert', error.response?.data?.message || 'Failed to save coupon.');
             }
+        } finally {
+            submitButton.disabled = false;
         }
     }
 

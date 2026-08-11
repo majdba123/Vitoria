@@ -209,6 +209,7 @@
             'reviewLoginRequired' => __('products.review_login_required'),
             'reviewValidationError' => __('products.review_validation_error'),
             'loading' => __('common.loading'),
+            'close' => __('common.close'),
             'page' => __('nav.page'),
             'of' => __('nav.of'),
             'prev' => __('nav.prev'),
@@ -221,6 +222,9 @@
             const selectedType = @json(auth()->user()?->preferred_product_type ?? session('preferred_product_type', request()->cookie('preferred_product_type', '')));
             const i18n = @json($productShowStrings);
             const $ = (id) => document.getElementById(id);
+            let currentReviewsPage = 1;
+            let lastReviewsPage = 1;
+            const reviewsPerPage = 5;
 
             function esc(value) {
                 if (!value) {
@@ -315,34 +319,85 @@
                 }
 
                 $('photo-count').textContent = `${photos.length} ${photos.length === 1 ? (i18n.photoSingle || '') : (i18n.photosCount || '')}`.trim();
-                $('product-photos').innerHTML = photos.length
-                    ? photos.map((photo) => {
+
+                const photosContainer = $('product-photos');
+                photosContainer.innerHTML = '';
+
+                if (photos.length) {
+                    photos.forEach((photo) => {
                         const url = photo.url || `/storage/${photo.path}`;
-                        return `<button type="button" onclick="window._setPrimary('${esc(url)}', '${esc(product.name)}');window._setActiveThumb(this)" class="storefront-thumb-button ${photo.is_primary ? 'is-active' : ''}" aria-label="${esc(product.name || '')}">
-                            <img src="${esc(url)}" alt="">
-                        </button>`;
-                    }).join('')
-                    : `<p class="py-4 text-xs text-gray-400 dark:text-gray-500">${esc(i18n.noAdditionalPhotos || '')}</p>`;
 
-                window._setPrimary = function (url, name) {
-                    renderPrimaryPhoto(url, name);
-                };
+                        const button = document.createElement('button');
+                        button.type = 'button';
+                        button.className = `storefront-thumb-button ${photo.is_primary ? 'is-active' : ''}`;
+                        button.setAttribute('aria-label', product.name || '');
 
-                window._setActiveThumb = function (button) {
-                    document.querySelectorAll('.storefront-thumb-button').forEach((item) => item.classList.remove('is-active'));
-                    button.classList.add('is-active');
-                };
+                        const img = document.createElement('img');
+                        img.src = url;
+                        img.alt = `${product.name || ''} thumbnail`;
+                        button.appendChild(img);
+
+                        button.addEventListener('click', function () {
+                            renderPrimaryPhoto(url, product.name);
+                            document.querySelectorAll('.storefront-thumb-button').forEach((item) => item.classList.remove('is-active'));
+                            button.classList.add('is-active');
+                        });
+
+                        photosContainer.appendChild(button);
+                    });
+                } else {
+                    const empty = document.createElement('p');
+                    empty.className = 'py-4 text-xs text-gray-400 dark:text-gray-500';
+                    empty.textContent = i18n.noAdditionalPhotos || '';
+                    photosContainer.appendChild(empty);
+                }
 
                 window._viewLarge = function (url, name) {
+                    const previouslyFocused = document.activeElement;
                     const modal = document.createElement('div');
                     modal.className = 'fixed inset-0 z-[80] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm';
-                    modal.innerHTML = `<div class="relative max-h-[90vh] max-w-[90vw]"><img src="${url}" class="max-h-[90vh] max-w-[90vw] rounded-2xl object-contain" alt="${esc(name || '')}"><button type="button" class="absolute -right-2 -top-2 flex h-10 w-10 items-center justify-center rounded-full bg-white text-gray-900 shadow-xl hover:scale-110 transition-transform"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button></div>`;
+                    modal.setAttribute('role', 'dialog');
+                    modal.setAttribute('aria-modal', 'true');
+                    modal.setAttribute('aria-label', name || '');
+
+                    const wrap = document.createElement('div');
+                    wrap.className = 'relative max-h-[90vh] max-w-[90vw]';
+
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = name || '';
+                    img.className = 'max-h-[90vh] max-w-[90vw] rounded-2xl object-contain';
+
+                    const closeBtn = document.createElement('button');
+                    closeBtn.type = 'button';
+                    closeBtn.setAttribute('aria-label', i18n.close);
+                    closeBtn.className = 'absolute -right-2 -top-2 flex h-10 w-10 items-center justify-center rounded-full bg-white text-gray-900 shadow-xl hover:scale-110 transition-transform';
+                    closeBtn.innerHTML = '<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>';
+
+                    wrap.appendChild(img);
+                    wrap.appendChild(closeBtn);
+                    modal.appendChild(wrap);
+
+                    function close() {
+                        modal.remove();
+                        document.removeEventListener('keydown', onKeydown);
+                        previouslyFocused?.focus?.();
+                    }
+
+                    function onKeydown(event) {
+                        if (event.key === 'Escape') {
+                            close();
+                        }
+                    }
+
                     modal.addEventListener('click', function (event) {
                         if (event.target === modal || event.target.closest('button')) {
-                            modal.remove();
+                            close();
                         }
                     });
+                    document.addEventListener('keydown', onKeydown);
                     document.body.appendChild(modal);
+                    closeBtn.focus();
                 };
 
                 $('show-loading').classList.add('hidden');
@@ -361,7 +416,17 @@
             }
 
             function renderPrimaryPhoto(url, name) {
-                $('primary-photo-container').innerHTML = `<img src="${esc(url)}" alt="${esc(name || '')}" class="cursor-zoom-in transition-transform duration-300 hover:scale-[1.03]" onclick="window._viewLarge('${esc(url)}', '${esc(name || '')}')" loading="eager">`;
+                const container = $('primary-photo-container');
+                container.innerHTML = '';
+
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = name || '';
+                img.loading = 'eager';
+                img.className = 'cursor-zoom-in transition-transform duration-300 hover:scale-[1.03]';
+                img.addEventListener('click', () => window._viewLarge(url, name));
+
+                container.appendChild(img);
             }
 
             function formatDateOnly(value) {
@@ -401,10 +466,6 @@
                 }
                 return html;
             }
-
-            let currentReviewsPage = 1;
-            let lastReviewsPage = 1;
-            const reviewsPerPage = 5;
 
             function loadReviews(page) {
                 const listElement = $('reviews-list');

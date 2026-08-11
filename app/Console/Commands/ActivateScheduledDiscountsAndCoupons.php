@@ -51,11 +51,11 @@ class ActivateScheduledDiscountsAndCoupons extends Command
             ->where('discount_percentage', '>', 0)
             ->where(function ($query) use ($now) {
                 $query->whereNull('discount_starts_at')
-                    ->orWhere('discount_starts_at', '<=', $now);
+                    ->orWhereDate('discount_starts_at', '<=', $now->toDateString());
             })
             ->where(function ($query) use ($now) {
                 $query->whereNull('discount_ends_at')
-                    ->orWhere('discount_ends_at', '>=', $now);
+                    ->orWhereDate('discount_ends_at', '>=', $now->toDateString());
             })
             ->update(['discount_status' => Product::DISCOUNT_STATUS_ACTIVE]);
 

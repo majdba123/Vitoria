@@ -31,6 +31,7 @@ class CommissionController extends Controller
         $completedOrders = Order::query()
             ->where('vendor_id', $vendor->id)
             ->whereIn('status', [Order::STATUS_CONFIRMED, Order::STATUS_COMPLETED])
+            ->where('created_at', '>=', now()->subDays(365))
             ->with([
                 'items:id,order_id,product_id,line_total',
                 'items.product:id,category_id',

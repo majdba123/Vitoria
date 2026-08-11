@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreCityRequest;
 use App\Http\Requests\Admin\UpdateCityRequest;
 use App\Models\City;
+use App\Services\Import\CsvImportException;
+use App\Services\Import\Importers\CityImporter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CityController extends Controller
 {
@@ -81,6 +84,32 @@ class CityController extends Controller
 
         return response()->json([
             'message' => __('City deleted successfully.'),
+        ]);
+    }
+
+    public function importTemplate(): StreamedResponse
+    {
+        return (new CityImporter)->template();
+    }
+
+    public function import(Request $request): JsonResponse
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:csv,txt', 'max:5120'],
+        ]);
+
+        try {
+            $result = (new CityImporter)->import($request->file('file'));
+        } catch (CsvImportException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        }
+
+        return response()->json([
+            'message' => __(':created of :total cities imported successfully.', [
+                'created' => $result['created'],
+                'total' => $result['total_rows'],
+            ]),
+            'data' => $result,
         ]);
     }
 }

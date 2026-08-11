@@ -7,11 +7,14 @@ use App\Http\Requests\Admin\StoreCategoryRequest;
 use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Models\Category;
 use App\Services\ApplicationCacheService;
+use App\Services\Import\CsvImportException;
+use App\Services\Import\Importers\CategoryImporter;
 use App\Services\SelectedProductTypeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CategoryController extends Controller
 {
@@ -140,12 +143,48 @@ class CategoryController extends Controller
 
     public function destroy(Category $category): JsonResponse
     {
-        $this->deleteCategoryImages($category);
+        if ($category->products()->exists()) {
+            return response()->json([
+                'message' => __('This category cannot be deleted while it still has products assigned to it.'),
+            ], 422);
+        }
 
         DB::transaction(fn () => $category->delete());
 
+        $this->deleteCategoryImages($category);
+
         return response()->json([
             'message' => __('Category deleted successfully.'),
+        ]);
+    }
+
+    public function importTemplate(): StreamedResponse
+    {
+        return (new CategoryImporter)->template();
+    }
+
+    public function import(Request $request): JsonResponse
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:csv,txt', 'max:5120'],
+        ]);
+
+        try {
+            $result = (new CategoryImporter)->import($request->file('file'));
+        } catch (CsvImportException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        }
+
+        if ($result['created'] > 0) {
+            $this->cacheService->flushCategories();
+        }
+
+        return response()->json([
+            'message' => __(':created of :total categories imported successfully.', [
+                'created' => $result['created'],
+                'total' => $result['total_rows'],
+            ]),
+            'data' => $result,
         ]);
     }
 

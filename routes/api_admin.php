@@ -23,6 +23,14 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('throttle:api.authenticated')->group(function () {
     Route::get('dashboard/vendor-category-stats', [DashboardController::class, 'vendorCategoryStats'])->middleware('throttle:dashboard.stats')->name('dashboard.vendor-category-stats');
     Route::get('dashboard/overview', [DashboardController::class, 'overview'])->middleware('throttle:dashboard.stats')->name('dashboard.overview');
+    Route::get('cities/import/template', [\App\Http\Controllers\Api\Admin\CityController::class, 'importTemplate'])->name('cities.import-template');
+    Route::post('cities/import', [\App\Http\Controllers\Api\Admin\CityController::class, 'import'])->middleware('throttle:uploads')->name('cities.import');
+    Route::get('categories/import/template', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'importTemplate'])->name('categories.import-template');
+    Route::post('categories/import', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'import'])->middleware('throttle:uploads')->name('categories.import');
+    Route::get('subcategories/import/template', [\App\Http\Controllers\Api\Admin\SubcategoryController::class, 'importTemplate'])->name('subcategories.import-template');
+    Route::post('subcategories/import', [\App\Http\Controllers\Api\Admin\SubcategoryController::class, 'import'])->middleware('throttle:uploads')->name('subcategories.import');
+    Route::get('products/import/template', [ProductController::class, 'importTemplate'])->name('products.import-template');
+    Route::post('products/import', [ProductController::class, 'import'])->middleware('throttle:uploads')->name('products.import');
     Route::patch('syndicates/{syndicate}/toggle-active', [SyndicateController::class, 'toggleActive'])->middleware('throttle:api.write')->name('syndicates.toggle-active');
     Route::apiResource('syndicates', SyndicateController::class)->except(['index', 'show'])->middleware('throttle:api.write');
     Route::apiResource('syndicates', SyndicateController::class)->only(['index', 'show']);

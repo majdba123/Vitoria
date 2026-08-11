@@ -1,5 +1,5 @@
 {{-- ═══ Cart Slide-over ═══ --}}
-<div id="cart-modal" class="fixed inset-0 z-[70] hidden">
+<div id="cart-modal" class="fixed inset-0 z-[70] hidden" role="dialog" aria-modal="true" aria-labelledby="cart-modal-title">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="window.closeCartModal && window.closeCartModal()"></div>
     <div class="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-white shadow-2xl dark:bg-gray-900" style="animation:slideInRight .3s cubic-bezier(.22,1,.36,1);">
         {{-- Header --}}
@@ -7,11 +7,11 @@
             <div class="flex items-center gap-3">
                 <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-500/10"><svg class="h-5 w-5 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/></svg></div>
                 <div>
-                    <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ __('cart.shopping_cart') }}</h3>
+                    <h2 id="cart-modal-title" class="text-base font-bold text-gray-900 dark:text-white">{{ __('cart.shopping_cart') }}</h2>
                     <p class="text-xs text-gray-500 dark:text-gray-400" id="cart-item-count" data-item="{{ __('common.item') }}" data-items="{{ __('common.items') }}">0 {{ __('common.items') }}</p>
                 </div>
             </div>
-            <button onclick="window.closeCartModal && window.closeCartModal()" class="rounded-xl p-2.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+            <button type="button" onclick="window.closeCartModal && window.closeCartModal()" class="flex h-11 w-11 items-center justify-center rounded-xl text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300" aria-label="{{ __('nav.close_menu') }}"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
         </div>
         {{-- Items --}}
         <div class="flex-1 overflow-y-auto px-6 py-4 hide-scrollbar">

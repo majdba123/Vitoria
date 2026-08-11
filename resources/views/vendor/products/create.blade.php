@@ -1,7 +1,7 @@
 @extends('layouts.vendor')
 
 @section('title', 'Add Product')
-@section('page-title', 'Add Product')
+@section('page-title', __('vendor.create_product_title'))
 
 @section('content')
 <div class="mx-auto max-w-3xl">
@@ -13,9 +13,9 @@
         <x-products.photo-upload color="emerald" />
 
         <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-            <a href="{{ route('vendor.products.index') }}" class="btn-secondary">Cancel</a>
+            <a href="{{ route('vendor.products.index') }}" class="btn-secondary">{{ __('common.cancel') }}</a>
             <button type="submit" id="create-btn" class="btn-primary">
-                <span id="create-btn-text">Create Product</span>
+                <span id="create-btn-text">{{ __('vendor.create_product_btn') }}</span>
                 <svg id="create-spinner" class="hidden h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
             </button>
         </div>
@@ -27,6 +27,22 @@
 <x-products.photo-upload-script color="emerald" alertId="create-alert" />
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
+    const i18n = {!! json_encode([
+        'selectCategory' => __('vendor.select_category'),
+        'selectSubcategory' => __('vendor.select_subcategory'),
+        'selectProductType' => __('vendor.select_product_type'),
+        'failedLoadCategories' => __('vendor.failed_load_categories'),
+        'notSelectedYet' => __('vendor.not_selected_yet'),
+        'chooseCategoryHint' => __('vendor.choose_category_hint'),
+        'agricultureFieldsHint' => __('vendor.agriculture_fields_hint'),
+        'veterinaryFieldsHint' => __('vendor.veterinary_fields_hint'),
+        'creatingProduct' => __('vendor.creating_product'),
+        'createProductBtn' => __('vendor.create_product_btn'),
+        'productCreatedSuccess' => __('vendor.product_created_success'),
+        'validationFailed' => __('vendor.validation_failed'),
+        'unexpectedError' => __('vendor.unexpected_error'),
+        'remove' => __('common.remove'),
+    ]) !!};
     const form = document.getElementById('create-form');
     const categorySelect = document.getElementById('category_id');
     const subcategorySelect = document.getElementById('subcategory_id');
@@ -126,7 +142,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     try {
         const res = await window.axios.get(`${baseApiPath}/allowed-categories`);
         const categories = res.data.data || [];
-        categorySelect.innerHTML = '<option value="">Select category...</option>' +
+        categorySelect.innerHTML = `<option value="">${esc(i18n.selectCategory)}</option>` +
             categories.map(category => `<option value="${category.id}" data-type="${esc(category.type || '')}" data-subcategories='${JSON.stringify(category.subcategories || []).replace(/'/g, '&#39;')}'>${esc(category.name)}</option>`).join('');
         if (savedCategoryId) {
             categorySelect.value = savedCategoryId;
@@ -137,7 +153,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
         syncProductTypeSections();
     } catch (e) {
-        categorySelect.innerHTML = '<option value="">Failed to load categories</option>';
+        categorySelect.innerHTML = `<option value="">${esc(i18n.failedLoadCategories)}</option>`;
     }
 
     form.addEventListener('submit', async function (e) {
@@ -171,7 +187,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             localStorage.removeItem(STORAGE_KEY);
-            showAlert('create-success', 'Product created successfully! Redirecting...');
+            showAlert('create-success', i18n.productCreatedSuccess);
             setTimeout(() => { window.location.href = '{{ route("vendor.products.index") }}'; }, 800);
         } catch (error) {
             handleErrors(error);
@@ -183,7 +199,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     function toggleLoading(l) {
         document.getElementById('create-btn').disabled = l;
         document.getElementById('create-spinner').classList.toggle('hidden', !l);
-        document.getElementById('create-btn-text').textContent = l ? 'Creating...' : 'Create Product';
+        document.getElementById('create-btn-text').textContent = l ? i18n.creatingProduct : i18n.createProductBtn;
     }
 
     function clearErrors() {
@@ -208,10 +224,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                     el.classList.remove('hidden');
                 }
             }
-            showAlert('create-alert', 'Validation failed: ' + Object.values(errors).flat().join(', '));
+            showAlert('create-alert', i18n.validationFailed + ' ' + Object.values(errors).flat().join(', '));
             return;
         }
-        showAlert('create-alert', error.response?.data?.message || error.message || 'An unexpected error occurred.');
+        showAlert('create-alert', error.response?.data?.message || error.message || i18n.unexpectedError);
     }
 
     function appendDetailFields(formData) {
@@ -254,8 +270,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         productSelectionState.classList.toggle('hidden', !hasCategory);
 
         if (!hasCategory) {
-            productSelectionStateBadge.textContent = 'Not selected yet';
-            productSelectionStateText.textContent = 'Choose the category and product type to reveal only the required fields.';
+            productSelectionStateBadge.textContent = i18n.notSelectedYet;
+            productSelectionStateText.textContent = i18n.chooseCategoryHint;
             return;
         }
 
@@ -266,8 +282,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         productSelectionStateBadge.textContent = `${normalizedCategoryType} • ${normalizedProductType}`;
         productSelectionStateText.textContent = categoryType === 'agriculture'
-            ? 'Agricultural fields now depend on the selected product type from the list.'
-            : 'Veterinary fields are now limited to the selected category only.';
+            ? i18n.agricultureFieldsHint
+            : i18n.veterinaryFieldsHint;
     }
 
     function syncSubcategoryOptions() {
@@ -283,14 +299,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         if (!Array.isArray(subcategories) || subcategories.length === 0) {
             subcategoryFieldWrap.classList.add('hidden');
-            subcategorySelect.innerHTML = '<option value="">Select subcategory...</option>';
+            subcategorySelect.innerHTML = `<option value="">${esc(i18n.selectSubcategory)}</option>`;
             subcategorySelect.value = '';
             subcategorySelect.disabled = true;
             return;
         }
 
         subcategoryFieldWrap.classList.remove('hidden');
-        subcategorySelect.innerHTML = '<option value="">Select subcategory...</option>' +
+        subcategorySelect.innerHTML = `<option value="">${esc(i18n.selectSubcategory)}</option>` +
             subcategories.map((subcategory) => `<option value="${subcategory.id}">${esc(subcategory.name_ar || subcategory.name_en || '')}</option>`).join('');
         subcategorySelect.disabled = false;
         if (subcategories.some((subcategory) => String(subcategory.id) === String(currentValue))) {
@@ -322,7 +338,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const options = productTypeOptions[type] || [];
             const currentValue = productTypeProxy.value || savedProductType;
             productTypeProxyWrap.classList.toggle('hidden', options.length === 0);
-            productTypeProxy.innerHTML = '<option value="">Select product type from the list</option>' +
+            productTypeProxy.innerHTML = `<option value="">${esc(i18n.selectProductType)}</option>` +
                 options.map((option) => `<option value="${option.value}">${option.label}</option>`).join('');
             productTypeProxy.disabled = options.length === 0;
             productTypeProxy.value = options.some((option) => option.value === currentValue)
@@ -367,7 +383,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         item.className = 'flex items-center gap-2';
         item.innerHTML = `
             <input type="text" class="form-input" data-array-item-input placeholder="${escapeHtml(placeholder)}">
-            <button type="button" class="btn-danger btn-xs shrink-0" data-array-remove>Remove</button>
+            <button type="button" class="btn-danger btn-xs shrink-0" data-array-remove>${escapeHtml(i18n.remove)}</button>
         `;
         item.querySelector('[data-array-item-input]').value = value || '';
         item.querySelector('[data-array-remove]').addEventListener('click', () => item.remove());

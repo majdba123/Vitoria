@@ -384,19 +384,11 @@
                 document.getElementById('stat-syndicates').textContent = overview.total_syndicates ?? 0;
 
                 const vendors = vendorsRes.data.data || [];
-                let active = 0;
-                let inactive = 0;
+                const pageActiveVendors = vendors.filter((vendor) => vendor.is_active).length;
+                const pageInactiveVendors = vendors.length - pageActiveVendors;
 
-                vendors.forEach((vendor) => {
-                    if (vendor.is_active) {
-                        active++;
-                    } else {
-                        inactive++;
-                    }
-                });
-
-                document.getElementById('stat-active-vendors').textContent = active;
-                document.getElementById('stat-inactive-vendors').textContent = inactive;
+                document.getElementById('stat-active-vendors').textContent = overview.active_vendors ?? pageActiveVendors;
+                document.getElementById('stat-inactive-vendors').textContent = overview.inactive_vendors ?? pageInactiveVendors;
                 document.getElementById('stat-products').textContent = overview.total_products ?? productsRes.data.meta?.total ?? 0;
 
                 const products = overview.recent_products || productsRes.data.data || [];

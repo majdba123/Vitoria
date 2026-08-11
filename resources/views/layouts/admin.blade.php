@@ -468,6 +468,67 @@
                 });
             });
         }
+
+        /**
+         * Wires a modal/dialog element with role="dialog", a focus trap, and
+         * Escape-to-close. Call .open() right after showing the modal and
+         * .close() right before hiding it.
+         */
+        window.wireAccessibleDialog = function (modal, closeFn, options) {
+            options = options || {};
+            modal.setAttribute('role', 'dialog');
+            modal.setAttribute('aria-modal', 'true');
+            if (options.labelledBy) {
+                modal.setAttribute('aria-labelledby', options.labelledBy);
+            }
+
+            let previouslyFocused = null;
+
+            function focusableElements() {
+                return Array.from(modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+                    .filter((el) => !el.disabled && el.offsetParent !== null);
+            }
+
+            function onKeydown(event) {
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    closeFn();
+                    return;
+                }
+
+                if (event.key === 'Tab') {
+                    const focusable = focusableElements();
+                    if (!focusable.length) {
+                        return;
+                    }
+                    const first = focusable[0];
+                    const last = focusable[focusable.length - 1];
+
+                    if (event.shiftKey && document.activeElement === first) {
+                        event.preventDefault();
+                        last.focus();
+                    } else if (!event.shiftKey && document.activeElement === last) {
+                        event.preventDefault();
+                        first.focus();
+                    }
+                }
+            }
+
+            return {
+                open: function () {
+                    previouslyFocused = document.activeElement;
+                    document.addEventListener('keydown', onKeydown);
+                    const focusable = focusableElements();
+                    (focusable[0] || modal).focus();
+                },
+                close: function () {
+                    document.removeEventListener('keydown', onKeydown);
+                    if (previouslyFocused && previouslyFocused.focus) {
+                        previouslyFocused.focus();
+                    }
+                },
+            };
+        };
     </script>
 
     @stack('scripts')

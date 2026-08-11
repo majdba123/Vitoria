@@ -93,6 +93,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
+    const i18n = {!! json_encode(['avatarAlt' => __('common.avatar_alt')]) !!};
     const userId = '{{ $userId }}';
 
     try {
@@ -132,7 +133,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('edit-link').href = '/admin/users/' + userId + '/edit';
 
         if (user.avatar_url) {
-            document.getElementById('user-avatar').innerHTML = `<img src="${esc(user.avatar_url)}" alt="Avatar" class="h-full w-full object-cover">`;
+            document.getElementById('user-avatar').innerHTML = `<img src="${esc(user.avatar_url)}" alt="${esc(i18n.avatarAlt)}" class="h-full w-full object-cover">`;
         }
     }
 

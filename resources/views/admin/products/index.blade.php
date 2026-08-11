@@ -4,70 +4,78 @@
 @endphp
 
 @section('title', 'Products — Vetora Admin')
-@section('page-title', 'Products')
+@section('page-title', __('admin.manage_products_title'))
 
 @section('content')
 <div class="content-stack">
     {{-- Page Header --}}
     <div class="page-header mb-0">
-        <p class="text-sm text-gray-500">Manage all products across vendors.</p>
-        <a href="{{ route('admin.products.create') }}" class="btn-primary btn-sm w-full shrink-0 sm:w-auto">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-            Add Product
-        </a>
+        <p class="text-sm text-gray-500">{{ __('admin.manage_products_copy') }}</p>
+        <div class="flex flex-wrap items-center gap-2">
+            <x-csv-import
+                id="products"
+                label="Products"
+                template-url="/api/admin/products/import/template"
+                import-url="/api/admin/products/import"
+            />
+            <a href="{{ route('admin.products.create') }}" class="btn-primary btn-sm w-full shrink-0 sm:w-auto">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                {{ __('admin.add_product') }}
+            </a>
+        </div>
     </div>
 
     {{-- Filters --}}
     <div class="filter-panel">
         <div class="filter-grid-wide">
                 <div>
-                    <label for="filter-vendor" class="form-label">Filter by Vendor</label>
+                    <label for="filter-vendor" class="form-label">{{ __('admin.filter_by_vendor') }}</label>
                     <select id="filter-vendor" class="form-select">
-                        <option value="">All Vendors</option>
+                        <option value="">{{ __('admin.all_vendors') }}</option>
                     </select>
                 </div>
                 <div>
-                    <label for="filter-product-status" class="form-label">Filter by Product Status</label>
+                    <label for="filter-product-status" class="form-label">{{ __('admin.filter_by_product_status') }}</label>
                     <select id="filter-product-status" class="form-select">
-                        <option value="">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
+                        <option value="">{{ __('admin.all_status') }}</option>
+                        <option value="pending">{{ __('admin.status_pending') }}</option>
+                        <option value="approved">{{ __('admin.status_approved') }}</option>
+                        <option value="rejected">{{ __('admin.status_rejected') }}</option>
                     </select>
                 </div>
                 <div>
-                    <label for="filter-category-type" class="form-label">Filter by Type</label>
+                    <label for="filter-category-type" class="form-label">{{ __('admin.filter_by_type') }}</label>
                     <select id="filter-category-type" class="form-select">
-                        <option value="">All Types</option>
-                        <option value="agriculture">Agriculture</option>
-                        <option value="veterinary">Veterinary</option>
+                        <option value="">{{ __('admin.all_types') }}</option>
+                        <option value="agriculture">{{ __('admin.type_agriculture') }}</option>
+                        <option value="veterinary">{{ __('admin.type_veterinary') }}</option>
                     </select>
                 </div>
                 <div>
-                    <label for="filter-category" class="form-label">Filter by Category</label>
+                    <label for="filter-category" class="form-label">{{ __('admin.filter_by_category') }}</label>
                     <select id="filter-category" class="form-select">
-                        <option value="">All Categories</option>
+                        <option value="">{{ __('admin.all_categories') }}</option>
                     </select>
                 </div>
                 <div>
-                    <label for="filter-status" class="form-label">Filter by Active</label>
+                    <label for="filter-status" class="form-label">{{ __('admin.filter_by_active') }}</label>
                     <select id="filter-status" class="form-select">
-                        <option value="">All</option>
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
+                        <option value="">{{ __('admin.all') }}</option>
+                        <option value="1">{{ __('common.active') }}</option>
+                        <option value="0">{{ __('common.inactive') }}</option>
                     </select>
                 </div>
                 <div>
-                    <label for="filter-discount" class="form-label">Filter by Discount</label>
+                    <label for="filter-discount" class="form-label">{{ __('admin.filter_by_discount') }}</label>
                     <select id="filter-discount" class="form-select">
-                        <option value="">All</option>
-                        <option value="1">With Discount</option>
-                        <option value="0">Without Discount</option>
+                        <option value="">{{ __('admin.all') }}</option>
+                        <option value="1">{{ __('admin.with_discount') }}</option>
+                        <option value="0">{{ __('admin.without_discount') }}</option>
                     </select>
                 </div>
                 <div class="filter-actions">
-                    <button id="apply-filters" class="btn-primary btn-sm w-full sm:w-auto">Apply Filters</button>
-                    <button id="clear-filters" class="btn-secondary btn-sm w-full sm:w-auto">Clear</button>
+                    <button id="apply-filters" class="btn-primary btn-sm w-full sm:w-auto">{{ __('admin.apply_filters') }}</button>
+                    <button id="clear-filters" class="btn-secondary btn-sm w-full sm:w-auto">{{ __('admin.clear_filters') }}</button>
                 </div>
         </div>
     </div>
@@ -78,17 +86,17 @@
     {{-- Loading --}}
     <div id="products-loading" class="py-16 text-center">
         <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500"></div>
-        <p class="mt-3 text-sm text-gray-500">Loading products...</p>
+        <p class="mt-3 text-sm text-gray-500">{{ __('admin.loading_products') }}</p>
     </div>
 
     {{-- Empty State --}}
     <div id="products-empty" class="hidden">
         <div class="card py-16 text-center">
             <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
-            <h3 class="mt-3 text-sm font-semibold text-gray-900">No products yet</h3>
-            <p class="mt-1 text-sm text-gray-500">Add a product for a vendor to get started.</p>
+            <h3 class="mt-3 text-sm font-semibold text-gray-900">{{ __('admin.no_products_yet') }}</h3>
+            <p class="mt-1 text-sm text-gray-500">{{ __('admin.add_product_for_vendor_hint') }}</p>
             <div class="mt-5">
-                <a href="{{ route('admin.products.create') }}" class="btn-primary btn-sm">Add Product</a>
+                <a href="{{ route('admin.products.create') }}" class="btn-primary btn-sm">{{ __('admin.add_product') }}</a>
             </div>
         </div>
     </div>
@@ -100,8 +108,8 @@
         <div class="mt-4 flex flex-col items-center gap-3 border-t border-gray-100 px-4 py-3 sm:flex-row sm:justify-between">
             <p id="products-info" class="text-xs text-gray-500"></p>
             <div class="flex gap-2">
-                <button id="prev-page" class="btn-secondary btn-xs" disabled>Prev</button>
-                <button id="next-page" class="btn-secondary btn-xs" disabled>Next</button>
+                <button id="prev-page" class="btn-secondary btn-xs" disabled>{{ __('nav.prev') }}</button>
+                <button id="next-page" class="btn-secondary btn-xs" disabled>{{ __('nav.next') }}</button>
             </div>
         </div>
     </div>
@@ -111,17 +119,17 @@
 <div id="delete-modal" class="mobile-dialog">
     <div class="mobile-dialog-card">
         <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100">
-                <svg class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/10">
+                <svg class="h-5 w-5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
             </div>
             <div>
-                <h3 class="text-base font-semibold text-gray-900">Delete Product</h3>
-                <p class="mt-0.5 text-sm text-gray-500">This action cannot be undone.</p>
+                <h3 id="delete-modal-title" class="text-base font-semibold text-gray-900 dark:text-white">{{ __('admin.delete_product_title') }}</h3>
+                <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{{ __('admin.action_cannot_be_undone') }}</p>
             </div>
         </div>
         <div class="mt-5 flex justify-end gap-2">
-            <button id="delete-cancel" class="btn-secondary btn-sm">Cancel</button>
-            <button id="delete-confirm" class="btn-danger btn-sm">Delete</button>
+            <button id="delete-cancel" class="btn-secondary btn-sm">{{ __('common.cancel') }}</button>
+            <button id="delete-confirm" class="btn-danger btn-sm">{{ __('admin.delete') }}</button>
         </div>
     </div>
 </div>
@@ -130,8 +138,36 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
+    const i18n = {!! json_encode([
+        'allVendors' => __('admin.all_vendors'),
+        'allCategories' => __('admin.all_categories'),
+        'active' => __('common.active'),
+        'inactive' => __('common.inactive'),
+        'noCommercialName' => __('admin.no_commercial_name'),
+        'noDescription' => __('admin.no_description'),
+        'qty' => __('admin.qty_label'),
+        'approvalStatus' => __('admin.approval_status_label'),
+        'statusPending' => __('admin.status_pending'),
+        'statusApproved' => __('admin.status_approved'),
+        'statusRejected' => __('admin.status_rejected'),
+        'show' => __('admin.show'),
+        'reviews' => __('admin.reviews'),
+        'edit' => __('common.edit'),
+        'remove' => __('admin.remove'),
+        'page' => __('nav.page'),
+        'of' => __('nav.of'),
+        'total' => __('vendor.total_label'),
+        'failedLoadVendors' => __('admin.js_failed_load_vendors'),
+        'failedLoadProducts' => __('admin.js_failed_load_products'),
+        'failedToggleStatus' => __('admin.js_failed_toggle_status'),
+        'statusUpdated' => __('admin.js_status_updated'),
+        'failedUpdateStatus' => __('admin.js_failed_update_status'),
+        'productDeleted' => __('admin.js_product_deleted'),
+        'failedDeleteProduct' => __('admin.js_failed_delete_product'),
+    ]) !!};
     let currentPage = 1;
     let deleteId = null;
+    const deleteDialog = window.wireAccessibleDialog(document.getElementById('delete-modal'), closeDeleteModal, { labelledBy: 'delete-modal-title' });
     const vendorSelect = document.getElementById('filter-vendor');
     const productStatusSelect = document.getElementById('filter-product-status');
     const categoryTypeSelect = document.getElementById('filter-category-type');
@@ -152,14 +188,20 @@ document.addEventListener('DOMContentLoaded', async function () {
     try {
         const vendorsRes = await window.axios.get('/api/admin/vendors?per_page=100');
         const vendors = vendorsRes.data.data || [];
-        vendorSelect.innerHTML = '<option value="">All Vendors</option>' +
+        vendorSelect.innerHTML = `<option value="">${esc(i18n.allVendors)}</option>` +
             vendors.map(v => `<option value="${v.id}">${esc(v.store_name)}</option>`).join('');
     } catch (e) {
-        console.error('Failed to load vendors:', e);
+        console.error(i18n.failedLoadVendors, e);
     }
     await loadCategories();
 
     loadProducts();
+
+    window.addEventListener('csv-import:done', function (event) {
+        if (event.detail && event.detail.id === 'products') {
+            loadProducts();
+        }
+    });
 
     document.getElementById('prev-page').addEventListener('click', () => { if (currentPage > 1) { currentPage--; loadProducts(); } });
     document.getElementById('next-page').addEventListener('click', () => { currentPage++; loadProducts(); });
@@ -217,8 +259,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             renderProducts(res.data.data);
             renderPagination(res.data.meta);
         } catch (e) {
-            console.error('Failed to load products:', e);
-            showAlert('products-alert', e.response?.data?.message || 'Failed to load products.');
+            console.error(i18n.failedLoadProducts, e);
+            showAlert('products-alert', e.response?.data?.message || i18n.failedLoadProducts);
         } finally {
             showLoading(false);
         }
@@ -247,48 +289,48 @@ document.addEventListener('DOMContentLoaded', async function () {
                     <div class="absolute right-2 top-2">
                         <button onclick="toggleProductStatus(${p.id})" class="badge ${p.is_active ? 'badge-success' : 'badge-danger'} shadow-lg text-[10px]">
                             <span class="mr-1 inline-block h-1.5 w-1.5 rounded-full ${p.is_active ? 'bg-emerald-500' : 'bg-red-500'}"></span>
-                            ${p.is_active ? 'Active' : 'Inactive'}
+                            ${p.is_active ? esc(i18n.active) : esc(i18n.inactive)}
                         </button>
                     </div>
                     ${p.has_active_discount ? `<div class="absolute left-2 top-2 rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold text-white shadow-lg">-${parseFloat(p.discount_percentage || 0).toFixed(0)}%</div>` : ''}
                 </div>
                 <div class="card-body">
                     <h3 class="text-base font-semibold text-gray-900 line-clamp-1">${esc(p.name)}</h3>
-                    <p class="mt-1 text-xs text-gray-500 line-clamp-1">${esc(p.commercial_name || p.category?.name || 'No commercial name')}</p>
-                    <p class="mt-1 text-xs text-gray-500 line-clamp-2">${esc(p.description || 'No description')}</p>
+                    <p class="mt-1 text-xs text-gray-500 line-clamp-1">${esc(p.commercial_name || p.category?.name || i18n.noCommercialName)}</p>
+                    <p class="mt-1 text-xs text-gray-500 line-clamp-2">${esc(p.description || i18n.noDescription)}</p>
                     <div class="mt-3 flex items-center justify-between">
                         <div>
                             ${p.has_active_discount
                                 ? `<p class="text-lg font-bold text-red-600">$${parseFloat(p.discounted_price || p.price || 0).toFixed(2)}</p><p class="text-xs text-gray-400 line-through">$${parseFloat(p.price || 0).toFixed(2)}</p>`
                                 : `<p class="text-lg font-bold text-gray-900">$${parseFloat(p.price || 0).toFixed(2)}</p>`
                             }
-                            <p class="text-xs text-gray-500">Qty: ${p.quantity}</p>
+                            <p class="text-xs text-gray-500">${esc(i18n.qty)}: ${p.quantity}</p>
                         </div>
                     </div>
                     <div class="mt-3 border-t border-gray-100 pt-3">
-                        <label class="mb-1.5 block text-xs font-medium text-gray-500">Approval Status:</label>
+                        <label class="mb-1.5 block text-xs font-medium text-gray-500">${esc(i18n.approvalStatus)}</label>
                         <select onchange="updateProductStatus(${p.id}, this.value)" data-original-value="${p.status || 'pending'}" class="w-full form-input text-xs py-1.5 px-2">
-                            <option value="pending" ${p.status === 'pending' ? 'selected' : ''}>Pending</option>
-                            <option value="approved" ${p.status === 'approved' ? 'selected' : ''}>Approved</option>
-                            <option value="rejected" ${p.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                            <option value="pending" ${p.status === 'pending' ? 'selected' : ''}>${esc(i18n.statusPending)}</option>
+                            <option value="approved" ${p.status === 'approved' ? 'selected' : ''}>${esc(i18n.statusApproved)}</option>
+                            <option value="rejected" ${p.status === 'rejected' ? 'selected' : ''}>${esc(i18n.statusRejected)}</option>
                         </select>
                     </div>
                     <div class="mt-4 flex flex-wrap gap-2 border-t border-gray-100 pt-3">
                         <a href="/admin/products/${p.id}" class="btn-secondary btn-xs flex-1 text-center min-w-0">
                             <svg class="h-3.5 w-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            Show
+                            ${esc(i18n.show)}
                         </a>
-                        <a href="/admin/products/${p.id}/reviews" class="btn-secondary btn-xs flex-1 text-center min-w-0" title="Reviews">
+                        <a href="/admin/products/${p.id}/reviews" class="btn-secondary btn-xs flex-1 text-center min-w-0" title="${esc(i18n.reviews)}">
                             <svg class="h-3.5 w-3.5 inline" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            Reviews
+                            ${esc(i18n.reviews)}
                         </a>
                         <a href="/admin/products/${p.id}/edit" class="btn-primary btn-xs flex-1 text-center min-w-0">
                             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
-                            Edit
+                            ${esc(i18n.edit)}
                         </a>
                         <button onclick="openDeleteModal(${p.id})" class="btn-danger btn-xs flex-1">
                             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
-                            Remove
+                            ${esc(i18n.remove)}
                         </button>
                     </div>
                 </div>
@@ -298,7 +340,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     function renderPagination(meta) {
         currentPage = meta.current_page; // Sync currentPage with server response
-        document.getElementById('products-info').textContent = `Page ${meta.current_page} of ${meta.last_page} · ${meta.total} total`;
+        document.getElementById('products-info').textContent = `${i18n.page} ${meta.current_page} ${i18n.of} ${meta.last_page} · ${meta.total} ${i18n.total}`;
         document.getElementById('prev-page').disabled = meta.current_page <= 1;
         document.getElementById('next-page').disabled = meta.current_page >= meta.last_page;
     }
@@ -309,7 +351,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             showAlert('products-success', res.data.message);
             loadProducts();
         } catch (e) {
-            showAlert('products-alert', e.response?.data?.message || 'Failed to toggle status.');
+            showAlert('products-alert', e.response?.data?.message || i18n.failedToggleStatus);
         }
     };
     
@@ -322,13 +364,13 @@ document.addEventListener('DOMContentLoaded', async function () {
             const res = await window.axios.patch('/api/admin/products/' + id + '/status', {
                 status: status
             });
-            showAlert('products-success', res.data.message || 'Status updated successfully.');
+            showAlert('products-success', res.data.message || i18n.statusUpdated);
             select.dataset.originalValue = status;
             // Update badge class
             select.className = select.className.replace(/badge-(success|danger|warning)/g, '');
             select.classList.add(getStatusBadgeClass(status));
         } catch (e) {
-            showAlert('products-alert', e.response?.data?.message || 'Failed to update status.');
+            showAlert('products-alert', e.response?.data?.message || i18n.failedUpdateStatus);
             select.value = originalValue; // Reset to original value
             loadProducts(); // Reload on error to reset dropdown
         } finally {
@@ -345,23 +387,29 @@ document.addEventListener('DOMContentLoaded', async function () {
     window.openDeleteModal = function (id) {
         deleteId = id;
         const m = document.getElementById('delete-modal'); m.classList.remove('hidden'); m.classList.add('flex');
+        deleteDialog.open();
     };
 
     function closeDeleteModal() {
         deleteId = null;
         const m = document.getElementById('delete-modal'); m.classList.add('hidden'); m.classList.remove('flex');
+        deleteDialog.close();
     }
 
     async function confirmDelete() {
         if (!deleteId) return;
+        const confirmButton = document.getElementById('delete-confirm');
+        confirmButton.disabled = true;
         try {
             await window.axios.delete('/api/admin/products/' + deleteId);
             closeDeleteModal();
-            showAlert('products-success', 'Product deleted.');
+            showAlert('products-success', i18n.productDeleted);
             loadProducts();
         } catch (e) {
             closeDeleteModal();
-            showAlert('products-alert', e.response?.data?.message || 'Failed to delete.');
+            showAlert('products-alert', e.response?.data?.message || i18n.failedDeleteProduct);
+        } finally {
+            confirmButton.disabled = false;
         }
     }
 
@@ -382,7 +430,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
             const res = await window.axios.get('/api/admin/categories' + (params.toString() ? '?' + params.toString() : ''));
             const categories = res.data.data || [];
-            categorySelect.innerHTML = '<option value="">All Categories</option>' +
+            categorySelect.innerHTML = `<option value="">${esc(i18n.allCategories)}</option>` +
                 categories.map(category => `<option value="${category.id}">${esc(category.name)}</option>`).join('');
         } catch (error) {
             console.error('Failed to load categories:', error);

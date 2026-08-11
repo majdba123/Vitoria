@@ -143,13 +143,14 @@ document.addEventListener('syndicate-ready', async function () {
     function renderOverview(data) {
         const sales = data.sales_stats || {};
         const orders = data.order_stats || {};
+        const merchants = data.merchant_stats || {};
         const cards = [
-            { label: @json(__('syndicate.vendors')), value: data.total_vendors || 0 },
+            { label: @json(__('syndicate.vendors')), value: data.total_merchants || 0 },
             { label: @json(__('syndicate.products')), value: data.total_products || 0 },
             { label: @json(__('syndicate.orders')), value: orders.total_orders || 0 },
-            { label: @json(__('syndicate.sales')), value: sales.total_sales_amount || 0 },
+            { label: @json(__('syndicate.sales')), value: sales.total_sales || 0 },
             { label: @json(__('syndicate.categories')), value: data.total_categories || 0 },
-            { label: @json(__('common.active')), value: data.active_vendors || 0 },
+            { label: @json(__('common.active')), value: merchants.active_merchants || 0 },
             { label: @json(__('common.pending')), value: orders.pending_orders || 0 },
             { label: @json(__('common.completed')), value: orders.completed_orders || 0 },
         ];
@@ -168,7 +169,7 @@ document.addEventListener('syndicate-ready', async function () {
         const container = document.getElementById('quick-summary');
         const rows = [
             [@json(__('syndicate.categories')), data.total_categories || 0],
-            [@json(__('syndicate.vendors')), data.total_vendors || 0],
+            [@json(__('syndicate.vendors')), data.total_merchants || 0],
             [@json(__('syndicate.products')), data.total_products || 0],
         ];
         container.innerHTML = rows.map(([label, value]) => `
@@ -181,7 +182,7 @@ document.addEventListener('syndicate-ready', async function () {
 
     function renderSideList(data) {
         const container = document.getElementById('side-list');
-        const rows = (data.top_categories || data.top_vendors || []).slice(0, 5);
+        const rows = (data.top_selling_categories || data.top_merchants_by_sales || []).slice(0, 5);
         if (!rows.length) {
             container.innerHTML = '<p class="py-6 text-center text-sm text-gray-400">' + @json(__('common.no_data')) + '</p>';
             return;
@@ -190,10 +191,10 @@ document.addEventListener('syndicate-ready', async function () {
         container.innerHTML = rows.map((row, index) => `
             <div class="list-panel flex items-center justify-between gap-3">
                 <div class="min-w-0">
-                    <p class="truncate text-sm font-semibold text-gray-900 dark:text-white">${esc(row.name || row.title || ('#' + (index + 1)))}</p>
+                    <p class="truncate text-sm font-semibold text-gray-900 dark:text-white">${esc(row.name || row.store_name || ('#' + (index + 1)))}</p>
                     <p class="mt-1 text-xs text-gray-500">${esc(sectionLabels[section] || '')}</p>
                 </div>
-                <span class="badge badge-brand">${esc(row.total_sales || row.products_count || row.orders_count || row.count || 0)}</span>
+                <span class="badge badge-brand">${esc(row.sales_total || row.products_count || row.orders_count || row.count || 0)}</span>
             </div>
         `).join('');
     }

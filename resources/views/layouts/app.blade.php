@@ -32,6 +32,7 @@
     data-session-auth="{{ auth()->check() ? '1' : '0' }}"
     class="min-h-screen text-gray-900 antialiased transition-colors duration-300 dark:text-gray-100"
 >
+    <a href="#main-content" class="skip-link">{{ __('common.skip_to_content') }}</a>
     @php
         $appStrings = [
             'fav_added' => __('common.added_to_favourites'),
@@ -50,7 +51,7 @@
 
     <x-navbar />
 
-    <main class="relative isolate">
+    <main id="main-content" class="relative isolate" tabindex="-1">
         <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 bg-gradient-to-b from-white/45 to-transparent dark:from-white/5"></div>
         @yield('content')
     </main>
@@ -58,12 +59,12 @@
     {{-- ═══ Global Cart Modal ═══ --}}
     <x-home.cart-modal />
 
-    <div id="startup-modal" class="fixed inset-0 z-[100] hidden bg-gray-950/70 p-4 backdrop-blur-sm">
+    <div id="startup-modal" class="fixed inset-0 z-[100] hidden bg-gray-950/70 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="startup-title">
         <div class="mx-auto flex min-h-full max-w-xl items-center justify-center">
             <div class="modal-shell w-full">
                 <div class="border-b border-gray-100 px-6 py-5 dark:border-gray-800">
                     <p class="text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400">Vetora</p>
-                    <h2 id="startup-title" class="mt-1 text-xl font-black text-gray-900 dark:text-white">{{ "\u{0627}\u{0636}\u{0628}\u{0637} \u{062a}\u{0641}\u{0636}\u{064a}\u{0644}\u{0627}\u{062a}\u{0643}" }}</h2>
+                    <h2 id="startup-title" class="mt-1 text-xl font-black text-gray-900 dark:text-white">{{ __('startup.modal_title') }}</h2>
                 </div>
                 <div class="px-6 py-5">
                     <div class="mb-5 grid grid-cols-2 gap-2">
@@ -72,27 +73,27 @@
                     </div>
                     <div id="startup-location-step" class="space-y-4">
                         <div>
-                            <label for="startup-location" class="mb-1.5 block text-sm font-bold text-gray-800 dark:text-gray-200">{{ "\u{0627}\u{0644}\u{0639}\u{0646}\u{0648}\u{0627}\u{0646} \u{0623}\u{0648} \u{062a}\u{0641}\u{0636}\u{064a}\u{0644} \u{0627}\u{0644}\u{0645}\u{0648}\u{0642}\u{0639}" }}</label>
-                            <input id="startup-location" type="text" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="&#1575;&#1604;&#1605;&#1583;&#1610;&#1606;&#1577;&#1548; &#1575;&#1604;&#1605;&#1606;&#1591;&#1602;&#1577;&#1548; &#1571;&#1608; &#1578;&#1601;&#1590;&#1610;&#1604; &#1575;&#1604;&#1578;&#1608;&#1589;&#1610;&#1604;">
+                            <label for="startup-location" class="mb-1.5 block text-sm font-bold text-gray-800 dark:text-gray-200">{{ __('startup.location_label') }}</label>
+                            <input id="startup-location" type="text" class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="{{ __('startup.location_placeholder') }}">
                         </div>
                         <button type="button" id="startup-use-browser-location" class="inline-flex items-center gap-2 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-brand-500/10">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
-                            استخدام موقع المتصفح
+                            {{ __('startup.use_browser_location') }}
                         </button>
                         <input id="startup-latitude" type="hidden">
                         <input id="startup-longitude" type="hidden">
                     </div>
                     <div id="startup-timezone-step" class="hidden space-y-4">
                         <div>
-                            <label for="startup-timezone" class="mb-1.5 block text-sm font-bold text-gray-800 dark:text-gray-200">{{ "\u{0627}\u{0644}\u{0645}\u{0646}\u{0637}\u{0642}\u{0629} \u{0627}\u{0644}\u{0632}\u{0645}\u{0646}\u{064a}\u{0629}" }}</label>
+                            <label for="startup-timezone" class="mb-1.5 block text-sm font-bold text-gray-800 dark:text-gray-200">{{ __('startup.timezone_label') }}</label>
                             <select id="startup-timezone" class="form-select"></select>
                         </div>
                     </div>
-                    <p id="startup-error" class="mt-4 hidden rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300"></p>
+                    <p id="startup-error" class="mt-4 hidden rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300" role="alert" aria-live="assertive"></p>
                 </div>
                 <div class="flex items-center justify-between gap-3 border-t border-gray-100 px-6 py-4 dark:border-gray-800">
-                    <button type="button" id="startup-back" class="hidden rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800">{{ "\u{0631}\u{062c}\u{0648}\u{0639}" }}</button>
-                    <button type="button" id="startup-next" class="ms-auto rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-black text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">{{ "\u{0645}\u{062a}\u{0627}\u{0628}\u{0639}\u{0629}" }}</button>
+                    <button type="button" id="startup-back" class="hidden rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800">{{ __('startup.back') }}</button>
+                    <button type="button" id="startup-next" class="ms-auto rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-black text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">{{ __('startup.next') }}</button>
                 </div>
             </div>
         </div>
@@ -302,16 +303,16 @@
 
         document.getElementById('startup-use-browser-location')?.addEventListener('click', function () {
             if (!navigator.geolocation) {
-                showError('موقع المتصفح غير متاح.');
+                showError(@js(__('startup.browser_location_unavailable')));
                 return;
             }
 
             navigator.geolocation.getCurrentPosition(function(position) {
                 document.getElementById('startup-latitude').value = position.coords.latitude;
                 document.getElementById('startup-longitude').value = position.coords.longitude;
-                document.getElementById('startup-location').value = '\u062a\u0645 \u0627\u062e\u062a\u064a\u0627\u0631 \u0645\u0648\u0642\u0639 \u0627\u0644\u0645\u062a\u0635\u0641\u062d';
+                document.getElementById('startup-location').value = @js(__('startup.browser_location_selected'));
             }, function() {
-                showError('تعذر قراءة موقع المتصفح. يمكنك كتابة الموقع يدوياً.');
+                showError(@js(__('startup.browser_location_failed')));
             }, { enableHighAccuracy: false, timeout: 6000 });
         });
 
@@ -496,14 +497,20 @@
             }
         };
 
-        window.showCart = function(){window._refreshCartDisplay();hideOrderSuccessState();showCartBackendMessage('');const m=document.getElementById('cart-modal');if(m){m.classList.remove('hidden');document.body.style.overflow='hidden';}};
+        window.showCart = function(){window._refreshCartDisplay();hideOrderSuccessState();showCartBackendMessage('');const m=document.getElementById('cart-modal');if(m){m.classList.remove('hidden');document.body.style.overflow='hidden';m.querySelector('button')?.focus();}};
         window.closeCartModal = function(){
             hideOrderSuccessState();
             showCartBackendMessage('');
             const m=document.getElementById('cart-modal');
             if(m){m.classList.add('hidden');}
             document.body.style.overflow='';
+            document.getElementById('nav-cart')?.focus();
         };
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && !document.getElementById('cart-modal')?.classList.contains('hidden')) {
+                window.closeCartModal();
+            }
+        });
         document.addEventListener('DOMContentLoaded', function () {
             const checkoutBtn = document.getElementById('checkout-btn');
             if (checkoutBtn) {

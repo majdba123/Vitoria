@@ -38,6 +38,14 @@
     </div>
 
     <div id="orders-list" class="hidden space-y-3"></div>
+
+    <div id="orders-pagination" class="hidden items-center justify-between border-t border-gray-100 pt-3 dark:border-gray-800">
+        <p id="orders-page-info" class="text-xs text-gray-500"></p>
+        <div class="flex gap-2">
+            <button id="orders-prev" class="btn-secondary btn-xs">Prev</button>
+            <button id="orders-next" class="btn-secondary btn-xs">Next</button>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -66,6 +74,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         loadOrders();
     });
 
+    $('orders-prev').addEventListener('click', () => { if (state.page > 1) { state.page--; loadOrders(); } });
+    $('orders-next').addEventListener('click', () => { state.page++; loadOrders(); });
+
     async function loadOrders() {
         $('orders-loading').classList.remove('hidden');
         try {
@@ -75,17 +86,31 @@ document.addEventListener('DOMContentLoaded', async function () {
             if ($('f-category').value) params.set('category_id', $('f-category').value);
             const response = await window.axios.get('/api/vendor/orders?' + params.toString());
             const orders = response.data.data || [];
+            const meta = response.data.meta || {};
+
             if (!orders.length) {
                 $('orders-empty').classList.remove('hidden');
                 $('orders-list').classList.add('hidden');
+                $('orders-pagination').classList.add('hidden');
                 return;
             }
             $('orders-empty').classList.add('hidden');
             $('orders-list').classList.remove('hidden');
             $('orders-list').innerHTML = orders.map(order => `<article class="card"><div class="card-body"><p class="text-sm font-bold text-gray-900">${esc(order.order_number || ('Order #' + order.id))}</p><p class="mt-1 text-xs text-gray-500">${esc(order.user?.name || 'Unknown user')}</p><div class="mt-4 flex justify-end"><a href="/vendor/orders/${order.id}" class="btn-secondary btn-xs">View Details</a></div></div></article>`).join('');
+
+            if (meta.last_page > 1) {
+                $('orders-pagination').classList.remove('hidden');
+                $('orders-pagination').classList.add('flex');
+                $('orders-page-info').textContent = `Page ${meta.current_page} of ${meta.last_page} · ${meta.total} orders`;
+                $('orders-prev').disabled = meta.current_page <= 1;
+                $('orders-next').disabled = meta.current_page >= meta.last_page;
+            } else {
+                $('orders-pagination').classList.add('hidden');
+            }
         } catch (e) {
             $('orders-empty').classList.remove('hidden');
             $('orders-list').classList.add('hidden');
+            $('orders-pagination').classList.add('hidden');
         } finally {
             $('orders-loading').classList.add('hidden');
         }

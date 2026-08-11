@@ -453,7 +453,8 @@ class ProductService
      */
     protected function flushProductCache(): void
     {
-        Cache::forget('admin_dashboard_overview');
+        Cache::forget(\App\Services\ApplicationCacheService::DASHBOARD_ADMIN_STATS);
+        Cache::forget(\App\Services\ApplicationCacheService::ADMIN_DASHBOARD_LEGACY);
 
         try {
             Cache::tags(['products'])->flush();

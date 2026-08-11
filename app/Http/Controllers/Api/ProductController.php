@@ -16,6 +16,8 @@ use App\Models\Product;
 use App\Models\ProductPhoto;
 use App\Models\User;
 use App\Models\Vendor;
+use App\Services\Import\CsvImportException;
+use App\Services\Import\Importers\ProductImporter;
 use App\Services\NotificationService;
 use App\Services\ProductService;
 use App\Services\SelectedProductTypeService;
@@ -24,6 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProductController extends Controller
 {
@@ -400,6 +403,51 @@ class ProductController extends Controller
         return response()->json([
             'message' => __('Product deleted successfully.'),
         ]);
+    }
+
+    public function importTemplate(Request $request): StreamedResponse
+    {
+        $forVendor = $this->isVendorRequest($request);
+
+        return (new ProductImporter($this->productService, $forVendor))->template();
+    }
+
+    public function import(Request $request): JsonResponse
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:csv,txt', 'max:5120'],
+        ]);
+
+        $context = [];
+
+        if ($this->isVendorRequest($request)) {
+            $vendor = $request->user()->vendor;
+            if (! $vendor) {
+                abort(403, __('Vendor profile not found.'));
+            }
+            $context['vendor'] = $vendor;
+        }
+
+        try {
+            $result = (new ProductImporter($this->productService, $this->isVendorRequest($request)))->import($request->file('file'), $context);
+        } catch (CsvImportException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        }
+
+        return response()->json([
+            'message' => __(':created of :total products imported successfully.', [
+                'created' => $result['created'],
+                'total' => $result['total_rows'],
+            ]),
+            'data' => $result,
+        ]);
+    }
+
+    protected function isVendorRequest(Request $request): bool
+    {
+        $user = $request->user();
+
+        return $user !== null && $user->type === User::TYPE_VENDOR;
     }
 
     protected function validateCategoryBelongsToVendor(?Vendor $vendor, int $categoryId): void

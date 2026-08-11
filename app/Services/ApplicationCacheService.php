@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Category;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class ApplicationCacheService
 {
@@ -19,7 +20,13 @@ class ApplicationCacheService
             return $tags === []
                 ? Cache::remember($key, $ttl, $callback)
                 : Cache::tags($tags)->remember($key, $ttl, $callback);
-        } catch (\Exception) {
+        } catch (\Exception $exception) {
+            Log::warning('Tagged cache remember failed; falling back to uncached execution.', [
+                'tags' => $tags,
+                'key' => $key,
+                'exception' => $exception->getMessage(),
+            ]);
+
             return $callback();
         }
     }

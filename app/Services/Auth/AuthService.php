@@ -70,7 +70,8 @@ class AuthService
             throw $exception;
         }
 
-        Cache::forget('admin_dashboard_overview');
+        Cache::forget(\App\Services\ApplicationCacheService::DASHBOARD_ADMIN_STATS);
+        Cache::forget(\App\Services\ApplicationCacheService::ADMIN_DASHBOARD_LEGACY);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 

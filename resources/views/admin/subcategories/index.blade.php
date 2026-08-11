@@ -1,15 +1,23 @@
 @extends('layouts.admin')
 
 @section('title', 'Subcategories - Vetora Admin')
-@section('page-title', 'Subcategories')
+@section('page-title', __('admin.subcategories_heading'))
 
 @section('content')
 <div class="content-stack">
     <div class="page-header mb-0">
         <div>
-            <p class="text-sm text-gray-500">Manage subcategories for each category.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('admin.manage_subcategories_copy') }}</p>
         </div>
-        <a href="{{ route('admin.subcategories.create') }}" class="btn-primary btn-sm w-full shrink-0 sm:w-auto">Add Subcategory</a>
+        <div class="flex flex-wrap items-center gap-2">
+            <x-csv-import
+                id="subcategories"
+                label="Subcategories"
+                template-url="/api/admin/subcategories/import/template"
+                import-url="/api/admin/subcategories/import"
+            />
+            <a href="{{ route('admin.subcategories.create') }}" class="btn-primary btn-sm w-full shrink-0 sm:w-auto">{{ __('admin.add_subcategory') }}</a>
+        </div>
     </div>
 
     <x-alert type="error" id="subcategories-alert" />
@@ -17,34 +25,34 @@
     <div class="card">
         <div class="card-body grid grid-cols-1 gap-4 lg:grid-cols-4">
             <div class="lg:col-span-2">
-                <label for="subcategory-search" class="form-label">Search</label>
-                <input id="subcategory-search" type="text" class="form-input" placeholder="Search by Arabic or English name">
+                <label for="subcategory-search" class="form-label">{{ __('admin.search_label') }}</label>
+                <input id="subcategory-search" type="text" class="form-input" placeholder="{{ __('admin.search_by_arabic_english_name') }}">
             </div>
             <div>
-                <label for="subcategory-type" class="form-label">Category Type</label>
+                <label for="subcategory-type" class="form-label">{{ __('admin.category_type_label') }}</label>
                 <select id="subcategory-type" class="form-select">
-                    <option value="">All types</option>
-                    <option value="agriculture">Agriculture</option>
-                    <option value="veterinary">Veterinary</option>
+                    <option value="">{{ __('admin.all_types_plain') }}</option>
+                    <option value="agriculture">{{ __('admin.type_agriculture') }}</option>
+                    <option value="veterinary">{{ __('admin.type_veterinary') }}</option>
                 </select>
             </div>
             <div>
-                <label for="subcategory-category" class="form-label">Parent Category</label>
+                <label for="subcategory-category" class="form-label">{{ __('admin.parent_category_label') }}</label>
                 <select id="subcategory-category" class="form-select">
-                    <option value="">All categories</option>
+                    <option value="">{{ __('admin.all_categories_plain') }}</option>
                 </select>
             </div>
         </div>
     </div>
 
     <div id="subcategories-loading" class="py-16 text-center">
-        <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500"></div>
-        <p class="mt-3 text-sm text-gray-500">Loading subcategories...</p>
+        <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500 dark:border-gray-700 dark:border-t-brand-400"></div>
+        <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">{{ __('admin.loading_subcategories') }}</p>
     </div>
 
-    <div id="subcategories-empty" class="hidden rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center">
-        <h3 class="text-base font-semibold text-gray-900">No subcategories found</h3>
-        <p class="mt-2 text-sm text-gray-500">Try another filter or create a new subcategory.</p>
+    <div id="subcategories-empty" class="hidden rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center dark:border-gray-700 dark:bg-gray-900">
+        <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ __('admin.no_subcategories_found') }}</h3>
+        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ __('admin.try_another_filter') }}</p>
     </div>
 
     <div id="subcategories-grid" class="hidden grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
@@ -54,6 +62,18 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
+    const i18n = {!! json_encode([
+        'allCategories' => __('admin.all_categories_plain'),
+        'failedLoadCategories' => __('admin.js_failed_load_categories_plain'),
+        'productsCountSuffix' => __('admin.products_count_suffix'),
+        'parentCategory' => __('admin.parent_category_label'),
+        'view' => __('admin.view'),
+        'edit' => __('common.edit'),
+        'delete' => __('common.delete'),
+        'failedLoadSubcategories' => __('admin.js_failed_load_subcategories'),
+        'confirmDeleteSubcategory' => __('admin.js_confirm_delete_subcategory'),
+        'failedDeleteSubcategory' => __('admin.js_failed_delete_subcategory'),
+    ]) !!};
     const grid = document.getElementById('subcategories-grid');
     const loading = document.getElementById('subcategories-loading');
     const emptyState = document.getElementById('subcategories-empty');
@@ -77,10 +97,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         try {
             const response = await window.axios.get('/api/admin/categories?per_page=100');
             const categories = response.data.data || [];
-            categorySelect.innerHTML = '<option value="">All categories</option>' +
+            categorySelect.innerHTML = `<option value="">${escapeHtml(i18n.allCategories)}</option>` +
                 categories.map((category) => `<option value="${category.id}">${escapeHtml(category.name)}</option>`).join('');
         } catch (error) {
-            categorySelect.innerHTML = '<option value="">Failed to load categories</option>';
+            categorySelect.innerHTML = `<option value="">${escapeHtml(i18n.failedLoadCategories)}</option>`;
         }
     }
 
@@ -113,20 +133,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                     <div class="card-body">
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0 flex-1">
-                                <p class="text-xs font-semibold uppercase tracking-wide text-brand-600">${escapeHtml(subcategory.category?.type || '-')}</p>
-                                <h3 class="mt-2 truncate text-lg font-bold text-gray-900">${escapeHtml(subcategory.name_ar || '-')}</h3>
-                                <p class="mt-1 truncate text-sm text-gray-500">${escapeHtml(subcategory.name_en || '-')}</p>
+                                <p class="text-xs font-semibold uppercase tracking-wide text-brand-600 dark:text-brand-400">${escapeHtml(subcategory.category?.type || '-')}</p>
+                                <h3 class="mt-2 truncate text-lg font-bold text-gray-900 dark:text-white">${escapeHtml(subcategory.name_ar || '-')}</h3>
+                                <p class="mt-1 truncate text-sm text-gray-500 dark:text-gray-400">${escapeHtml(subcategory.name_en || '-')}</p>
                             </div>
-                            <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">${subcategory.products_count || 0} products</span>
+                            <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300">${subcategory.products_count || 0} ${escapeHtml(i18n.productsCountSuffix)}</span>
                         </div>
-                        <div class="mt-4 rounded-2xl bg-gray-50 px-4 py-3">
-                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">Parent Category</p>
-                            <p class="mt-1 text-sm font-semibold text-gray-900">${escapeHtml(subcategory.category?.name || '-')}</p>
+                        <div class="mt-4 rounded-2xl bg-gray-50 px-4 py-3 dark:bg-gray-800/60">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">${escapeHtml(i18n.parentCategory)}</p>
+                            <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">${escapeHtml(subcategory.category?.name || '-')}</p>
                         </div>
                         <div class="mt-4 flex gap-2">
-                            <a href="/admin/subcategories/${subcategory.id}" class="btn-secondary btn-sm flex-1">View</a>
-                            <a href="/admin/subcategories/${subcategory.id}/edit" class="btn-primary btn-sm">Edit</a>
-                            <button type="button" data-delete-id="${subcategory.id}" class="btn-danger btn-sm">Delete</button>
+                            <a href="/admin/subcategories/${subcategory.id}" class="btn-secondary btn-sm flex-1">${escapeHtml(i18n.view)}</a>
+                            <a href="/admin/subcategories/${subcategory.id}/edit" class="btn-primary btn-sm">${escapeHtml(i18n.edit)}</a>
+                            <button type="button" data-delete-id="${subcategory.id}" class="btn-danger btn-sm">${escapeHtml(i18n.delete)}</button>
                         </div>
                     </div>
                 </article>
@@ -136,9 +156,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         } catch (error) {
             loading.classList.add('hidden');
             alert.classList.remove('hidden');
-            document.getElementById('subcategories-alert-message').textContent = error.response?.data?.message || 'Failed to load subcategories.';
+            document.getElementById('subcategories-alert-message').textContent = error.response?.data?.message || i18n.failedLoadSubcategories;
         }
     }
+
+    window.addEventListener('csv-import:done', function (event) {
+        if (event.detail && event.detail.id === 'subcategories') {
+            loadSubcategories();
+        }
+    });
 
     grid.addEventListener('click', async function (event) {
         const button = event.target.closest('[data-delete-id]');
@@ -147,7 +173,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
 
         const subcategoryId = button.getAttribute('data-delete-id');
-        if (!window.confirm('Delete this subcategory?')) {
+        if (!window.confirm(i18n.confirmDeleteSubcategory)) {
             return;
         }
 
@@ -156,7 +182,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             await loadSubcategories();
         } catch (error) {
             alert.classList.remove('hidden');
-            document.getElementById('subcategories-alert-message').textContent = error.response?.data?.message || 'Failed to delete subcategory.';
+            document.getElementById('subcategories-alert-message').textContent = error.response?.data?.message || i18n.failedDeleteSubcategory;
         }
     });
 

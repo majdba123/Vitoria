@@ -10,7 +10,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class VendorProfileController extends Controller
 {
@@ -61,6 +63,14 @@ class VendorProfileController extends Controller
         $vendor = Vendor::query()->where('user_id', $user->id)->first();
         $data = $request->validated();
 
+        if (! empty($data['password'])) {
+            if (! $user->password || ! Hash::check($data['current_password'], $user->password)) {
+                throw ValidationException::withMessages([
+                    'current_password' => [__('The provided password is incorrect.')],
+                ]);
+            }
+        }
+
         return DB::transaction(function () use ($user, $vendor, $data, $request) {
             $userFields = [];
 
@@ -70,8 +80,11 @@ class VendorProfileController extends Controller
                 }
             }
 
+            $passwordChanged = false;
+
             if (! empty($data['password'])) {
                 $userFields['password'] = $data['password'];
+                $passwordChanged = true;
             }
 
             if ($request->hasFile('avatar')) {
@@ -83,6 +96,13 @@ class VendorProfileController extends Controller
 
             if ($userFields) {
                 $user->update($userFields);
+            }
+
+            if ($passwordChanged) {
+                $currentToken = $request->user()->currentAccessToken();
+                if ($currentToken) {
+                    $user->tokens()->where('id', '!=', $currentToken->id)->delete();
+                }
             }
 
             if ($vendor) {

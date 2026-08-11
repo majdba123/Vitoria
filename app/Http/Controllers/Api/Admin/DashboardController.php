@@ -160,6 +160,8 @@ class DashboardController extends Controller
             return [
                 'total_categories' => $totalCategories,
                 'total_vendors' => $totalVendors,
+                'active_vendors' => Vendor::query()->where('is_active', true)->count(),
+                'inactive_vendors' => Vendor::query()->where('is_active', false)->count(),
                 'total_products' => $totalProducts,
                 'total_syndicates' => $totalSyndicates,
                 'active_syndicates' => Syndicate::query()->where('status', Syndicate::STATUS_ACTIVE)->count(),

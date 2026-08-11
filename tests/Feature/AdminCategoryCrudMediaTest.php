@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -62,6 +63,26 @@ test('admin category crud uses one uploaded image everywhere', function () {
     Storage::disk('public')->assertExists($category->logo);
 });
 
+test('admin category creation rejects svg logo uploads', function () {
+    Storage::fake('public');
+    actingAsAdminForCategoryCrud();
+
+    $response = $this->post('/api/admin/categories', [
+        'name' => 'Svg Seeds',
+        'type' => Category::TYPE_AGRICULTURE,
+        'commission' => 5,
+        'logo' => UploadedFile::fake()->createWithContent(
+            'category.svg',
+            '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'
+        ),
+    ], ['Accept' => 'application/json']);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['logo']);
+
+    expect(Category::query()->where('name', 'Svg Seeds')->exists())->toBeFalse();
+});
+
 test('empty category type filter returns all categories for admin and public endpoints', function () {
     actingAsAdminForCategoryCrud();
 
@@ -120,6 +141,39 @@ test('admin can open and list veterinary categories without storefront type rest
         ->pluck('id');
 
     expect($categoryIds)->toContain($agricultureCategory->id, $veterinaryCategory->id);
+});
+
+test('admin cannot delete a category that still has products assigned to it', function () {
+    actingAsAdminForCategoryCrud();
+
+    $category = Category::query()->create([
+        'name' => 'Category With Products',
+        'type' => Category::TYPE_AGRICULTURE,
+        'commission' => 5,
+    ]);
+
+    $product = Product::factory()->create(['category_id' => $category->id]);
+
+    $this->deleteJson('/api/admin/categories/'.$category->id)
+        ->assertStatus(422);
+
+    expect(Category::query()->find($category->id))->not->toBeNull()
+        ->and(Product::query()->find($product->id))->not->toBeNull();
+});
+
+test('admin can delete a category once it has no products left', function () {
+    actingAsAdminForCategoryCrud();
+
+    $category = Category::query()->create([
+        'name' => 'Empty Category',
+        'type' => Category::TYPE_AGRICULTURE,
+        'commission' => 5,
+    ]);
+
+    $this->deleteJson('/api/admin/categories/'.$category->id)
+        ->assertOk();
+
+    expect(Category::query()->find($category->id))->toBeNull();
 });
 
 test('project source no longer contains legacy category-layer references', function () {

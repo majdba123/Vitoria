@@ -396,10 +396,16 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     function setPrimaryPhoto(url, label, order) {
         element('primary-photo-container').innerHTML = `
-            <img src="${escapeHtml(url)}" alt="${escapeHtml(label)}" class="h-full w-full object-contain p-5 transition duration-500 group-hover:scale-[1.02] cursor-zoom-in" onclick="window.openVendorProductPhoto(${JSON.stringify(url)})">
+            <button type="button" class="h-full w-full cursor-zoom-in" aria-label="${escapeHtml(ui.photo)}">
+                <img src="${escapeHtml(url)}" alt="${escapeHtml(label)}" class="h-full w-full object-contain p-5 transition duration-500 group-hover:scale-[1.02]">
+            </button>
             <div class="absolute left-4 top-4 inline-flex items-center rounded-full bg-slate-950/80 px-3 py-1.5 text-xs font-semibold text-white shadow-lg">${escapeHtml(label)} ${escapeHtml(ui.photo)}</div>
             <div class="absolute right-4 top-4 inline-flex items-center rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-lg">${escapeHtml(ui.sort)} ${order}</div>
         `;
+
+        element('primary-photo-container').querySelector('button').addEventListener('click', function () {
+            window.openVendorProductPhoto(url);
+        });
     }
 
     function renderParameterSection(sectionId, gridId, payload, config) {
@@ -550,9 +556,14 @@ document.addEventListener('DOMContentLoaded', async function () {
             existing.remove();
         }
 
+        const previouslyFocused = document.activeElement;
+
         const modal = document.createElement('div');
         modal.id = 'vendor-product-photo-modal';
         modal.className = 'fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/85 px-4 py-6 backdrop-blur-sm';
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+        modal.setAttribute('aria-label', ui.photo);
         modal.innerHTML = `
             <div class="relative max-h-[92vh] max-w-[92vw]">
                 <img src="${escapeHtml(url)}" alt="${escapeHtml(ui.photo)}" class="max-h-[92vh] max-w-[92vw] rounded-[28px] bg-white object-contain shadow-2xl">
@@ -562,13 +573,29 @@ document.addEventListener('DOMContentLoaded', async function () {
             </div>
         `;
 
+        function close() {
+            modal.remove();
+            document.removeEventListener('keydown', onKeydown);
+            if (previouslyFocused && previouslyFocused.focus) {
+                previouslyFocused.focus();
+            }
+        }
+
+        function onKeydown(event) {
+            if (event.key === 'Escape') {
+                close();
+            }
+        }
+
         modal.addEventListener('click', function (event) {
             if (event.target === modal || event.target.closest('button')) {
-                modal.remove();
+                close();
             }
         });
 
+        document.addEventListener('keydown', onKeydown);
         document.body.appendChild(modal);
+        modal.querySelector('button').focus();
     };
 });
 </script>

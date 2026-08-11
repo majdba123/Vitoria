@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'skip_to_content' => 'Skip to main content',
     'loading' => 'Loading...',
     'save' => 'Save',
     'saved' => 'Saved successfully.',
@@ -53,4 +54,6 @@ return [
     'not_specified' => 'Not specified',
     'no_data' => 'No data available.',
     'completed' => 'Completed',
+    'avatar_alt' => 'Avatar',
+    'logo_alt' => 'Logo',
 ];

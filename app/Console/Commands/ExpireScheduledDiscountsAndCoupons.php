@@ -40,7 +40,7 @@ class ExpireScheduledDiscountsAndCoupons extends Command
         $expiredDiscounts = Product::query()
             ->where('discount_status', Product::DISCOUNT_STATUS_ACTIVE)
             ->whereNotNull('discount_ends_at')
-            ->where('discount_ends_at', '<', $now)
+            ->whereDate('discount_ends_at', '<', $now->toDateString())
             ->update(['discount_status' => Product::DISCOUNT_STATUS_EXPIRED]);
 
         if ($expiredDiscounts > 0) {

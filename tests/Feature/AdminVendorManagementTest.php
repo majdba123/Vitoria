@@ -2,9 +2,12 @@
 
 use App\Models\Category;
 use App\Models\City;
+use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductReview;
 use App\Models\User;
 use App\Models\Vendor;
+use App\Services\ApplicationCacheService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
@@ -268,7 +271,8 @@ test('admin dashboard vendor category statistics are grouped by category', funct
 });
 
 test('admin dashboard overview includes vendor type category type and recent vendor statistics', function () {
-    Cache::forget('admin_dashboard_overview');
+    Cache::forget(ApplicationCacheService::DASHBOARD_ADMIN_STATS);
+    Cache::forget(ApplicationCacheService::ADMIN_DASHBOARD_LEGACY);
     actingAsAdmin();
     $agricultureCategory = Category::query()->create([
         'name' => 'Overview Agriculture',
@@ -292,12 +296,16 @@ test('admin dashboard overview includes vendor type category type and recent ven
 
     Product::factory()->for($agricultureVendor)->create([
         'name' => 'Overview Agriculture Product',
+        'name_ar' => 'Overview Agriculture Product',
+        'name_en' => 'Overview Agriculture Product',
         'category_id' => $agricultureCategory->id,
         'status' => Product::STATUS_APPROVED,
         'is_active' => true,
     ]);
     Product::factory()->for($bothVendor)->inactive()->create([
         'name' => 'Overview Veterinary Product',
+        'name_ar' => 'Overview Veterinary Product',
+        'name_en' => 'Overview Veterinary Product',
         'category_id' => $veterinaryCategory->id,
         'status' => Product::STATUS_PENDING,
     ]);
@@ -359,4 +367,47 @@ test('admin can approve a pending merchant and make it active', function () {
 
     expect($vendor->status)->toBe(Vendor::STATUS_ACTIVE)
         ->and($vendor->is_active)->toBeTrue();
+});
+
+test('admin can delete a user with no orders or reviews', function () {
+    actingAsAdmin();
+    $user = User::factory()->create();
+
+    $this->deleteJson('/api/admin/users/'.$user->id)
+        ->assertOk()
+        ->assertJsonPath('message', __('User deleted successfully.'));
+
+    $this->assertDatabaseMissing('users', ['id' => $user->id]);
+});
+
+test('admin cannot delete a user who still has order history', function () {
+    actingAsAdmin();
+    $user = User::factory()->create();
+    $order = Order::factory()->for($user)->create();
+
+    $this->deleteJson('/api/admin/users/'.$user->id)
+        ->assertStatus(422)
+        ->assertJsonPath('message', __('This user cannot be deleted while they still have order or review history.'));
+
+    $this->assertDatabaseHas('users', ['id' => $user->id]);
+    $this->assertDatabaseHas('orders', ['id' => $order->id]);
+});
+
+test('admin cannot delete a user who still has review history', function () {
+    actingAsAdmin();
+    $user = User::factory()->create();
+    $product = Product::factory()->create();
+    $review = ProductReview::query()->create([
+        'product_id' => $product->id,
+        'user_id' => $user->id,
+        'rating' => 5,
+        'body' => 'Great product',
+    ]);
+
+    $this->deleteJson('/api/admin/users/'.$user->id)
+        ->assertStatus(422)
+        ->assertJsonPath('message', __('This user cannot be deleted while they still have order or review history.'));
+
+    $this->assertDatabaseHas('users', ['id' => $user->id]);
+    $this->assertDatabaseHas('product_reviews', ['id' => $review->id]);
 });
