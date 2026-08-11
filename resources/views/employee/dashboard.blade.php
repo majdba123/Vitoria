@@ -24,7 +24,7 @@
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">{{ __('employee.total_products') }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('employee.total_products') }}</p>
                     <p class="text-lg font-bold text-gray-900 dark:text-white" id="stat-total-products">0</p>
                 </div>
             </div>
@@ -36,7 +36,7 @@
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m6 2.25a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">{{ __('employee.active_products_label') }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('employee.active_products_label') }}</p>
                     <p class="text-lg font-bold text-sky-600" id="stat-active-products">0</p>
                 </div>
             </div>
@@ -48,7 +48,7 @@
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">{{ __('employee.approved_products') }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('employee.approved_products') }}</p>
                     <p class="text-lg font-bold text-emerald-600" id="stat-approved-products">0</p>
                 </div>
             </div>
@@ -60,7 +60,7 @@
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">{{ __('employee.pending_products') }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('employee.pending_products') }}</p>
                     <p class="text-lg font-bold text-amber-600" id="stat-pending-products">0</p>
                 </div>
             </div>
@@ -72,7 +72,7 @@
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">{{ __('employee.rejected_products') }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('employee.rejected_products') }}</p>
                     <p class="text-lg font-bold text-rose-600" id="stat-rejected-products">0</p>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636A9 9 0 0 1 5.636 18.364M5.636 5.636A9 9 0 0 0 18.364 18.364M5.636 5.636 18.364 18.364"/></svg>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">{{ __('employee.inactive_products_label') }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('employee.inactive_products_label') }}</p>
                     <p class="text-lg font-bold text-slate-600" id="stat-inactive-products">0</p>
                 </div>
             </div>

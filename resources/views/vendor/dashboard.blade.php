@@ -24,7 +24,7 @@
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">{{ __('vendor.store_status') }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('vendor.store_status') }}</p>
                     <p class="text-lg font-bold text-gray-900 dark:text-white" id="store-status">{{ __('common.loading') }}</p>
                 </div>
             </div>
@@ -36,7 +36,7 @@
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">{{ __('vendor.total_products') }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('vendor.total_products') }}</p>
                     <p class="text-lg font-bold text-gray-900 dark:text-white" id="stat-products">0</p>
                 </div>
             </div>
@@ -48,7 +48,7 @@
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">{{ __('vendor.active_products') }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('vendor.active_products') }}</p>
                     <p class="text-lg font-bold text-emerald-600" id="stat-active-products">0</p>
                 </div>
             </div>
@@ -60,7 +60,7 @@
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/></svg>
                 </div>
                 <div>
-                    <p class="text-sm text-gray-500">{{ __('vendor.orders') }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('vendor.orders') }}</p>
                     <p class="text-lg font-bold text-gray-900 dark:text-white" id="stat-orders">0</p>
                 </div>
             </div>
@@ -81,8 +81,8 @@
             <div class="card-body">
                 <div id="recent-products" class="space-y-3">
                     <div class="py-8 text-center">
-                        <div class="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-emerald-500"></div>
-                        <p class="mt-2 text-sm text-gray-500">{{ __('common.loading') }}</p>
+                        <div class="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-emerald-500 dark:border-gray-700"></div>
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ __('common.loading') }}</p>
                     </div>
                 </div>
             </div>
@@ -109,7 +109,7 @@
         </div>
         <div class="card-body">
             <div id="store-info" class="grid gap-3 sm:grid-cols-2">
-                <p class="text-sm text-gray-500">{{ __('common.loading') }}</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('common.loading') }}</p>
             </div>
         </div>
     </div>

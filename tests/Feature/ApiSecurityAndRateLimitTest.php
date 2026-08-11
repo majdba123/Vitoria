@@ -125,3 +125,38 @@ it('changes vendor password with correct current_password and revokes other toke
         ->getJson('/api/vendor/profile')
         ->assertStatus(401);
 });
+
+it('logout does not crash when authenticated via the session-cookie guard', function (): void {
+    $user = User::factory()->create();
+
+    // Session-cookie auth (not a bearer token) makes Sanctum::currentAccessToken()
+    // return a TransientToken, which has no delete()/id - this must not crash.
+    $this->actingAs($user)
+        ->postJson('/api/auth/logout')
+        ->assertOk();
+});
+
+it('vendor password change does not crash when authenticated via the session-cookie guard', function (): void {
+    $vendor = Vendor::factory()->create();
+    $vendor->user->update([
+        'type' => User::TYPE_VENDOR,
+        'password' => Hash::make('old-secret-123'),
+    ]);
+
+    $otherToken = $vendor->user->createToken('other-device')->plainTextToken;
+
+    $this->actingAs($vendor->user)
+        ->postJson('/api/vendor/profile', [
+            'password' => 'new-secret-456',
+            'current_password' => 'old-secret-123',
+        ])
+        ->assertOk();
+
+    expect(Hash::check('new-secret-456', $vendor->user->fresh()->password))->toBeTrue();
+
+    // With no bearer token to preserve, every existing token for the user is revoked.
+    app('auth')->forgetGuards();
+    $this->withHeader('Authorization', 'Bearer '.$otherToken)
+        ->getJson('/api/vendor/profile')
+        ->assertStatus(401);
+});

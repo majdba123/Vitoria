@@ -101,8 +101,13 @@ class VendorProfileController extends Controller
 
             if ($passwordChanged) {
                 $currentToken = $request->user()->currentAccessToken();
-                if ($currentToken) {
+
+                if ($currentToken instanceof \Laravel\Sanctum\PersonalAccessToken) {
                     $user->tokens()->where('id', '!=', $currentToken->id)->delete();
+                } else {
+                    // Authenticated via the session-cookie guard (no bearer token to preserve) -
+                    // revoke every existing bearer token since none of them belongs to this request.
+                    $user->tokens()->delete();
                 }
             }
 

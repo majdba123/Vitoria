@@ -4,13 +4,11 @@
         <div class="flex min-h-[72px] items-center gap-2 px-1.5 py-2 sm:gap-3 sm:px-2 lg:px-4">
             {{-- Logo --}}
             <a href="{{ url('/') }}" class="flex shrink-0 items-center">
-                <div class="nav-logo-shell rounded-[20px] bg-white px-3 py-2 shadow-sm ring-1 ring-gray-200 dark:ring-white/10">
-                    <img
-                        src="{{ asset('images/vetora-logo.jpg') }}"
-                        alt="Vetora"
-                        class="h-9 w-auto object-contain sm:h-10"
-                    >
-                </div>
+                <img
+                    src="{{ asset('images/vetora-logo-transparent.png') }}"
+                    alt="Vetora"
+                    class="h-10 w-auto object-contain sm:h-12"
+                >
             </a>
 
             {{-- Desktop Category Button --}}

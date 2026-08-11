@@ -47,7 +47,7 @@
             <div class="card-body flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 dark:border-gray-800">
                 <div>
                     <h3 class="text-base font-black text-gray-900 dark:text-white" id="main-title">{{ __('syndicate.records_title') }}</h3>
-                    <p id="main-subtitle" class="mt-1 text-xs text-gray-500">{{ __('syndicate.records_subtitle') }}</p>
+                    <p id="main-subtitle" class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('syndicate.records_subtitle') }}</p>
                 </div>
                 <span id="main-count" class="badge badge-brand hidden"></span>
             </div>
@@ -55,7 +55,7 @@
                 <p class="py-8 text-center text-sm text-gray-400">{{ __('syndicate.loading_data') }}</p>
             </div>
             <div id="main-pagination" class="hidden items-center justify-between border-t border-gray-100 px-4 py-3 text-sm dark:border-gray-800">
-                <p id="main-page-info" class="text-xs text-gray-500"></p>
+                <p id="main-page-info" class="text-xs text-gray-500 dark:text-gray-400"></p>
                 <div class="flex gap-2">
                     <button id="main-prev" type="button" class="btn-secondary btn-xs">{{ __('syndicate.prev') }}</button>
                     <button id="main-next" type="button" class="btn-secondary btn-xs">{{ __('syndicate.next') }}</button>
@@ -67,7 +67,7 @@
             <div class="card">
                 <div class="card-body border-b border-gray-100 dark:border-gray-800">
                     <h3 class="text-base font-black text-gray-900 dark:text-white">{{ __('syndicate.top_performance') }}</h3>
-                    <p class="mt-1 text-xs text-gray-500">{{ __('syndicate.top_performance_copy') }}</p>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('syndicate.top_performance_copy') }}</p>
                 </div>
                 <div id="side-list" class="card-body space-y-3"></div>
             </div>
@@ -239,7 +239,7 @@ document.addEventListener('syndicate-ready', async function () {
             <div class="list-panel flex items-center justify-between gap-3">
                 <div class="min-w-0">
                     <p class="truncate text-sm font-semibold text-gray-900 dark:text-white">${esc(row.name || row.store_name || ('#' + (index + 1)))}</p>
-                    <p class="mt-1 text-xs text-gray-500">${esc(sectionLabels[section] || '')}</p>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${esc(sectionLabels[section] || '')}</p>
                 </div>
                 <span class="badge badge-brand">${esc(row.sales_total || row.products_count || row.orders_count || row.count || 0)}</span>
             </div>
@@ -269,7 +269,7 @@ document.addEventListener('syndicate-ready', async function () {
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <p class="truncate text-sm font-bold text-gray-900 dark:text-white">${esc(item.name || item.title || item.id || '—')}</p>
-                        <p class="mt-1 text-xs text-gray-500">${esc(item.description || item.email || item.status || '')}</p>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${esc(item.description || item.email || item.status || '')}</p>
                     </div>
                     <span class="badge badge-brand">${esc(item.products_count || item.orders_count || item.total_sales || item.id || '')}</span>
                 </div>

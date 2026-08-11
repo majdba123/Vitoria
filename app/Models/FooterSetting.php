@@ -30,7 +30,7 @@ class FooterSetting extends Model
         }
 
         return self::create([
-            'about_description' => 'Your trusted online marketplace. Discover quality products from verified vendors, delivered to your doorstep.',
+            'about_description' => __('home.tagline'),
         ]);
     }
 }
