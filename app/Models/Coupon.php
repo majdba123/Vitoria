@@ -32,7 +32,11 @@ class Coupon extends Model
         'ends_at',
         'is_active',
         'status',
+        'min_order_subtotal',
+        'max_discount_amount',
         'usage_limit',
+        'per_user_limit',
+        'first_order_only',
         'used_count',
         'created_by_user_id',
     ];
@@ -48,7 +52,11 @@ class Coupon extends Model
             'ends_at' => 'datetime',
             'is_active' => 'boolean',
             'status' => 'string',
+            'min_order_subtotal' => 'decimal:2',
+            'max_discount_amount' => 'decimal:2',
             'usage_limit' => 'integer',
+            'per_user_limit' => 'integer',
+            'first_order_only' => 'boolean',
             'used_count' => 'integer',
         ];
     }

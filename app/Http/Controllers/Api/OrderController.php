@@ -151,9 +151,62 @@ class OrderController extends Controller
     }
 
     /**
-     * Create checkout orders split by vendor.
+     * Legacy checkout: accepts a client-supplied `items[]` array.
+     *
+     * DEPRECATED in favour of POST /api/checkout, which uses the server cart
+     * and requires a delivery address. Retained because shipped mobile clients
+     * still call it. It now writes those items into the caller's server cart
+     * and delegates to CheckoutService, so there is exactly one code path that
+     * decrements product quantity (decision D1).
+     *
+     * Orders created here carry no address snapshot.
      */
     public function store(StoreOrderRequest $request): JsonResponse
+    {
+        $user = $request->user();
+        $cart = $this->cartService->resolve($request);
+
+        try {
+            $this->cartService->clear($cart);
+
+            foreach ($request->validated('items') as $item) {
+                $cart = $this->cartService->add($cart, (int) $item['product_id'], (int) $item['quantity']);
+            }
+
+            $couponCode = trim((string) $request->validated('coupon_code', ''));
+
+            if ($couponCode !== '') {
+                $summary = $this->cartService->summarize($cart);
+                $coupon = $this->couponService->resolveUsable($couponCode, $user, (float) $summary['subtotal']);
+
+                if (! $coupon) {
+                    return response()->json(['message' => __('cart.coupon_invalid')], 422);
+                }
+
+                $cart->forceFill(['coupon_code' => $coupon->code])->save();
+                $cart = $cart->fresh();
+            }
+
+            $orders = $this->checkoutService->place($cart, $user, null, 'cash');
+        } catch (CartException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        } catch (\Throwable $exception) {
+            Log::error('Checkout transaction failed.', [
+                'user_id' => $user->id,
+                'exception' => $exception,
+            ]);
+
+            return response()->json(['message' => __('cart.checkout_failed')], 500);
+        }
+
+        return $this->checkoutResponse($orders);
+    }
+
+    /**
+     * Superseded implementation, kept only as reference during migration.
+     * No route points at it.
+     */
+    private function legacyStore(StoreOrderRequest $request): JsonResponse
     {
         $user = $request->user();
         $paymentWay = 'cash';

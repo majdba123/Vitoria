@@ -150,6 +150,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Saved delivery addresses, default first.
+     */
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(UserAddress::class)->orderByDesc('is_default')->orderByDesc('id');
+    }
+
+    /**
+     * The user's persistent server-side cart.
+     */
+    public function cart(): HasOne
+    {
+        return $this->hasOne(Cart::class);
+    }
+
+    /**
      * Product reviews written by this user.
      */
     public function reviews(): HasMany

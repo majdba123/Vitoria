@@ -22,4 +22,24 @@ return [
     'checkout_success_fallback' => 'Checkout completed successfully.',
     'remove_line' => 'Remove',
     'processing_checkout' => 'Processing…',
+
+    // Server-side cart and checkout rejections. These are shown to the
+    // customer verbatim, so they must stay actionable and must not leak
+    // internal state.
+    'empty' => 'Your cart is empty.',
+    'product_unavailable' => 'This product is no longer available.',
+    'item_not_in_cart' => 'That item is not in your cart.',
+    'insufficient_stock' => 'Only :available left of :product.',
+    'quantity_too_large' => 'You can order at most :max of a single item.',
+    'stock_taken' => ':product just sold out. Please review your cart.',
+    'coupon_invalid' => 'This coupon is not valid for your cart.',
+    'coupon_exhausted' => 'This coupon has just reached its usage limit.',
+    'coupon_applied' => 'Coupon applied.',
+    'coupon_removed' => 'Coupon removed.',
+    'address_invalid' => 'Please choose a valid delivery address.',
+    'payment_method_unavailable' => 'That payment method is not available.',
+    'items_removed_notice' => 'Some items were removed because they are no longer available.',
+    'items_adjusted_notice' => 'Some quantities were reduced to match available stock.',
+    'updated' => 'Cart updated.',
+    'cleared' => 'Cart cleared.',
 ];

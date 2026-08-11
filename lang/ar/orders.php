@@ -1,0 +1,38 @@
+<?php
+
+return [
+
+    'status' => [
+        'pending' => 'قيد الانتظار',
+        'confirmed' => 'مؤكد',
+        'preparing' => 'قيد التجهيز',
+        'shipped' => 'تم الشحن',
+        'out_for_delivery' => 'قيد التوصيل',
+        'completed' => 'مكتمل',
+        'cancelled' => 'ملغى',
+    ],
+
+    'cancel_reason' => [
+        'customer_changed_mind' => 'غيّرت رأيي',
+        'wrong_order' => 'طلبت المنتج الخطأ',
+        'unavailable_product' => 'المنتج غير متوفر',
+        'vendor_issue' => 'مشكلة لدى البائع',
+        'delivery_issue' => 'مشكلة في التوصيل',
+        'payment_issue' => 'مشكلة في الدفع',
+        'duplicate_order' => 'طلب مكرر',
+        'other' => 'أخرى',
+    ],
+
+    'transition_not_permitted' => 'لا يُسمح لك بإجراء هذا التغيير.',
+    'transition_invalid' => 'لا يمكن نقل الطلب من :from إلى :to.',
+    'transition_conflict' => 'تم تحديث هذا الطلب من قِبل شخص آخر. يُرجى تحديث الصفحة والمحاولة مجدداً.',
+    'transition_success' => 'تم تحديث حالة الطلب.',
+    'cancel_reason_invalid' => 'يُرجى اختيار سبب إلغاء صالح.',
+    'already_cancelled' => 'هذا الطلب ملغى بالفعل.',
+    'not_cancellable' => 'لا يمكن إلغاء طلب حالته :status.',
+    'cancelled_success' => 'تم إلغاء الطلب.',
+    'placed_success' => 'تم إنشاء طلبك.',
+    'placed_success_multi' => 'تم إنشاء طلبك على شكل :count طلبات منفصلة حسب البائع.',
+    'timeline' => 'مسار الطلب',
+    'order_placed' => 'تم إنشاء الطلب',
+];
