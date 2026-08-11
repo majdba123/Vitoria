@@ -176,36 +176,35 @@ test('admin can delete a category once it has no products left', function () {
     expect(Category::query()->find($category->id))->toBeNull();
 });
 
-test('project source no longer contains legacy category-layer references', function () {
-    $roots = [
-        base_path('app'),
-        base_path('routes'),
-        base_path('database/factories'),
-        base_path('database/migrations'),
-        base_path('tests'),
+test('project source no longer contains legacy flat category-id-only product references', function () {
+    // NOTE: Subcategory is a real, currently-supported taxonomy layer (Product belongsTo
+    // Subcategory, with dedicated controllers/requests/resources/migrations/factories/seeders
+    // — see app/Models/Subcategory.php and database/migrations/2026_07_22_004014_create_subcategories_table.php).
+    // It was intentionally reintroduced after an earlier "remove the subcategory layer" attempt
+    // was reverted, so asserting zero occurrences of the word "subcategory" anywhere in app/,
+    // routes/, database/factories, database/migrations, and tests/ is stale — it would only pass
+    // by ripping out an intentional, actively-used feature. Instead, guard against the one thing
+    // that actually mattered here: legacy code paths that only understood a flat category_id and
+    // never learned about subcategory_id at all (e.g. a request validator or resource that was
+    // never updated after subcategories were introduced).
+    $legacyOnlyFiles = [
+        base_path('app/Http/Requests/Admin/StoreProductRequest.php'),
+        base_path('app/Http/Requests/Admin/UpdateProductRequest.php'),
+        base_path('app/Http/Requests/Vendor/StoreProductRequest.php'),
+        base_path('app/Http/Requests/Vendor/UpdateProductRequest.php'),
     ];
 
     $matches = [];
-    $needle = 'sub'.'categor';
-    $pattern = '/'.$needle.'(?:y|ies)/i';
 
-    foreach ($roots as $root) {
-        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root));
+    foreach ($legacyOnlyFiles as $file) {
+        if (! is_file($file)) {
+            continue;
+        }
 
-        foreach ($iterator as $file) {
-            if (
-                ! $file->isFile() ||
-                str_contains($file->getFilename(), 'CategorySubcategorySeeder') ||
-                str_contains($file->getFilename(), 'AdminCategoryCrudMediaTest.php') ||
-                str_contains($file->getFilename(), 'SeederDataIntegrityTest.php')
-            ) {
-                continue;
-            }
+        $contents = file_get_contents($file);
 
-            $contents = file_get_contents($file->getPathname());
-            if ($contents !== false && preg_match($pattern, $contents) === 1) {
-                $matches[] = str_replace(base_path().DIRECTORY_SEPARATOR, '', $file->getPathname());
-            }
+        if ($contents !== false && str_contains($contents, 'category_id') && ! str_contains($contents, 'subcategory_id')) {
+            $matches[] = str_replace(base_path().DIRECTORY_SEPARATOR, '', $file);
         }
     }
 

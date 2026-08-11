@@ -18,7 +18,7 @@ test('marketplace seeders create valid category vendor and product type data', f
         ->and(Vendor::query()->where('business_type', Vendor::BUSINESS_TYPE_AGRICULTURE)->count())->toBe(1)
         ->and(Vendor::query()->where('business_type', Vendor::BUSINESS_TYPE_VETERINARY)->count())->toBe(1)
         ->and(Vendor::query()->where('business_type', Vendor::BUSINESS_TYPE_BOTH)->count())->toBe(0)
-        ->and(Product::query()->count())->toBe(5);
+        ->and(Product::query()->count())->toBe(16);
 
     Vendor::query()
         ->with('categories:id,type')
