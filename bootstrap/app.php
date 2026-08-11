@@ -22,29 +22,33 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
-        api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         channels: __DIR__.'/../routes/channels.php',
         health: '/up',
         then: function () {
+            Route::middleware('api')
+                ->prefix('api')
+                ->as('api.')
+                ->group(base_path('routes/api.php'));
+
             Route::middleware(['api', 'auth:sanctum', 'admin'])
                 ->prefix('api/admin')
-                ->as('admin.')
+                ->as('api.admin.')
                 ->group(base_path('routes/api_admin.php'));
 
             Route::middleware(['api', 'auth:sanctum', 'vendor'])
                 ->prefix('api/vendor')
-                ->as('vendor.')
+                ->as('api.vendor.')
                 ->group(base_path('routes/api_vendor.php'));
 
             Route::middleware(['api', 'auth:sanctum', 'syndicate'])
                 ->prefix('api/syndicate')
-                ->as('syndicate.')
+                ->as('api.syndicate.')
                 ->group(base_path('routes/api_syndicate.php'));
 
             Route::middleware(['api', 'auth:sanctum', 'employee'])
                 ->prefix('api/employee')
-                ->as('employee.')
+                ->as('api.employee.')
                 ->group(base_path('routes/api_employee.php'));
         },
     )
