@@ -20,7 +20,7 @@ return new class extends Migration
             // One active cart per user, one per guest session.
             $table->unique('user_id');
             $table->unique('session_token');
-            // Expiry sweep scans by inactivity.
+            // Abandoned guest carts are swept by inactivity.
             $table->index('last_activity_at');
         });
 
