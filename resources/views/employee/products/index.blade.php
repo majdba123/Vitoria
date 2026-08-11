@@ -24,9 +24,9 @@
     <div class="workspace-hero">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <span class="eyebrow bg-white/10 text-white ring-1 ring-inset ring-white/10">{{ __('employee.workspace') }}</span>
-                <h2 class="mt-4 text-2xl font-black sm:text-3xl">{{ $employeePageTitle }}</h2>
-                <p class="mt-2 max-w-2xl text-sm leading-7 text-slate-300">{{ $employeePageCopy }}</p>
+                <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-600 dark:text-brand-300">{{ __('employee.workspace') }}</p>
+                <h2 class="mt-2 text-2xl font-bold text-gray-950 dark:text-white">{{ $employeePageTitle }}</h2>
+                <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">{{ $employeePageCopy }}</p>
             </div>
             <div class="flex gap-2">
                 <a href="{{ route('employee.dashboard') }}" class="btn-secondary btn-sm">{{ __('employee.back_dashboard') }}</a>
@@ -52,9 +52,22 @@
                 </div>
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0">
             <x-alert type="error" id="products-alert" />
-            <div id="products-grid" class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
+            <div class="overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>{{ __('employee.all_products') }}</th>
+                            <th>{{ __('admin.categories') }}</th>
+                            <th>{{ __('employee.status') }}</th>
+                            <th class="text-end">{{ __('products.fields.price') }}</th>
+                            <th class="text-end">{{ __('admin.th_actions') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-grid"></tbody>
+                </table>
+            </div>
             <div id="products-empty" class="hidden py-16 text-center text-sm text-gray-400">{{ __('employee.no_products') }}</div>
         </div>
     </div>
@@ -83,7 +96,7 @@ document.addEventListener('employee-ready', function () {
 
     async function loadProducts() {
         try {
-            grid.innerHTML = '<div class="col-span-full py-10 text-center text-sm text-gray-400">{{ __('common.loading') }}</div>';
+            grid.innerHTML = '<tr><td colspan="5" class="py-10 text-center text-sm text-gray-400">{{ __('common.loading') }}</td></tr>';
             empty.classList.add('hidden');
             alertBox.classList.add('hidden');
 
@@ -101,26 +114,13 @@ document.addEventListener('employee-ready', function () {
             }
 
             grid.innerHTML = products.map((product) => `
-                <div class="group overflow-hidden rounded-[28px] border border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-xl dark:border-gray-800 dark:bg-gray-950/70">
-                    <div class="aspect-[4/3] overflow-hidden bg-gray-100">
-                        <img src="${product.first_photo_url || '/images/product-placeholder.svg'}" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" alt="">
-                    </div>
-                    <div class="space-y-3 p-4">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="min-w-0">
-                                <p class="truncate text-sm font-bold text-gray-900 dark:text-white">${escapeHtml(product.name || '')}</p>
-                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${escapeHtml(product.category?.name || '')}</p>
-                            </div>
-                            <span class="badge ${badgeClass(product.status)}">${escapeHtml(product.status || '')}</span>
-                        </div>
-                        <p class="line-clamp-2 text-sm text-gray-600 dark:text-gray-300">${escapeHtml(product.description || '')}</p>
-                        ${product.status === 'rejected' && product.rejection_reason ? `<div class="rounded-2xl bg-rose-50 px-3 py-2 text-xs text-rose-700 dark:bg-rose-500/10 dark:text-rose-300">${escapeHtml(product.rejection_reason)}</div>` : ''}
-                        <div class="flex items-center justify-between gap-2">
-                            <span class="text-sm font-bold text-gray-900 dark:text-white">${escapeHtml(product.price || '')}</span>
-                            <a href="{{ url('/employee/products') }}/${product.id}/edit" class="btn-primary btn-sm">{{ __('employee.review_product') }}</a>
-                        </div>
-                    </div>
-                </div>
+                <tr>
+                    <td><div class="flex min-w-56 items-center gap-3"><img src="${product.first_photo_url || '/images/product-placeholder.svg'}" class="h-10 w-10 shrink-0 border border-gray-200 object-cover dark:border-gray-700" alt=""><div><p class="font-semibold text-gray-950 dark:text-white">${escapeHtml(product.name || '')}</p>${product.status === 'rejected' && product.rejection_reason ? `<p class="mt-0.5 max-w-xs truncate text-xs text-red-600 dark:text-red-400">${escapeHtml(product.rejection_reason)}</p>` : ''}</div></div></td>
+                    <td class="text-gray-600 dark:text-gray-300">${escapeHtml(product.category?.name || '—')}</td>
+                    <td><span class="badge ${badgeClass(product.status)}">${escapeHtml(product.status || '')}</span></td>
+                    <td class="text-end font-semibold text-gray-950 dark:text-white" dir="ltr">${escapeHtml(product.price || '')}</td>
+                    <td class="text-end"><a href="{{ url('/employee/products') }}/${product.id}/edit" class="btn-secondary btn-xs">{{ __('employee.review_product') }}</a></td>
+                </tr>
             `).join('');
         } catch (error) {
             grid.innerHTML = '';

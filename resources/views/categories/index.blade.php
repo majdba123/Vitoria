@@ -2,31 +2,34 @@
 @section('title', __('categories.page_title') . ' ' . __('site.meta_title_separator') . ' ' . __('site.meta_title_suffix'))
 
 @section('content')
-<div class="bg-transparent">
-    <div class="border-b border-white/40 bg-white/60 backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
-        <div class="page-shell py-3">
-            <nav class="page-breadcrumb">
-                <a href="{{ route('home') }}" class="hover:text-brand-600 dark:hover:text-brand-400">{{ __('nav.home') }}</a>
-                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-                <span class="font-medium text-gray-900 dark:text-white">{{ __('categories.page_heading') }}</span>
-            </nav>
+<div class="catalog-page-band">
+    <div class="page-shell py-3">
+        <nav class="page-breadcrumb" aria-label="{{ __('categories.page_heading') }}">
+            <a href="{{ route('home') }}" class="hover:text-brand-600 dark:hover:text-brand-400">{{ __('nav.home') }}</a>
+            <svg class="h-3 w-3 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            <span class="page-breadcrumb-current">{{ __('categories.page_heading') }}</span>
+        </nav>
+    </div>
+</div>
+
+<div class="page-shell">
+    <div class="commerce-section-header">
+        <div>
+            <p class="commerce-kicker">Vetora Marketplace</p>
+            <h1 class="commerce-title mt-1">{{ __('categories.page_heading') }}</h1>
+            <p class="commerce-copy">{{ __('categories.page_subtitle') }}</p>
+        </div>
+        <div class="flex flex-wrap gap-2" aria-label="{{ __('nav.all_types') }}">
+            <button type="button" data-type-filter="" class="category-type-filter btn-secondary btn-sm">{{ __('nav.all_types') }}</button>
+            <button type="button" data-type-filter="agriculture" class="category-type-filter btn-secondary btn-sm">{{ __('home.type_agriculture_short') }}</button>
+            <button type="button" data-type-filter="veterinary" class="category-type-filter btn-secondary btn-sm">{{ __('home.type_veterinary_short') }}</button>
         </div>
     </div>
 
-    <div class="page-shell">
-        <h1 class="text-2xl font-black text-gray-900 sm:text-3xl dark:text-white">{{ __('categories.page_heading') }}</h1>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('categories.page_subtitle') }}</p>
-        <div class="filter-panel mt-5 flex flex-wrap gap-2">
-            <button type="button" data-type-filter="" class="category-type-filter rounded-xl border border-brand-500 bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-sm">الكل</button>
-            <button type="button" data-type-filter="agriculture" class="category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">زراعي</button>
-            <button type="button" data-type-filter="veterinary" class="category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">بيطري</button>
-        </div>
-
-        <div id="loading" class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            <div class="skeleton h-48 rounded-2xl"></div><div class="skeleton h-48 rounded-2xl"></div><div class="skeleton h-48 rounded-2xl"></div>
-        </div>
-        <div id="grid" class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"></div>
+    <div id="loading" class="grid grid-cols-1 gap-4 lg:grid-cols-2" aria-live="polite">
+        <div class="skeleton h-40 rounded-xl"></div><div class="skeleton h-40 rounded-xl"></div><div class="skeleton h-40 rounded-xl"></div><div class="skeleton h-40 rounded-xl"></div>
     </div>
+    <div id="grid" class="grid grid-cols-1 gap-4 lg:grid-cols-2"></div>
 </div>
 @endsection
 
@@ -45,80 +48,70 @@ document.addEventListener('DOMContentLoaded', async function() {
         ? initialType
         : @json(auth()->user()?->preferred_product_type ?? session('preferred_product_type', request()->cookie('preferred_product_type', '')));
 
-    function esc(s) {
-        if (!s) return '';
-        const d = document.createElement('div');
-        d.textContent = s;
-        return d.innerHTML;
+    function esc(value) {
+        if (!value) return '';
+        const element = document.createElement('div');
+        element.textContent = value;
+        return element.innerHTML;
     }
 
-    function categoryImageUrl(cat) {
-        if (cat.image_url) return cat.image_url;
-        if (cat.logo) return '/storage/' + cat.logo;
-        if (cat.icon) return '/storage/' + cat.icon;
+    function categoryImageUrl(category) {
+        if (category.image_url) return category.image_url;
+        if (category.logo) return '/storage/' + category.logo;
+        if (category.icon) return '/storage/' + category.icon;
         return '';
     }
 
     function typedPageHref(path) {
         const parsed = new URL(path, window.location.origin);
-        if (selectedType !== null) {
-            parsed.searchParams.set('type', selectedType);
-        }
+        if (selectedType !== null && selectedType !== '') parsed.searchParams.set('type', selectedType);
         return parsed.pathname + parsed.search;
     }
 
     function setActiveTypeButton() {
         document.querySelectorAll('.category-type-filter').forEach(button => {
             const active = button.dataset.typeFilter === selectedType;
-            button.className = active
-                ? 'category-type-filter rounded-xl border border-brand-500 bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-sm'
-                : 'category-type-filter rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm hover:border-brand-300 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300';
+            button.className = active ? 'category-type-filter btn-primary btn-sm' : 'category-type-filter btn-secondary btn-sm';
+            button.setAttribute('aria-pressed', active ? 'true' : 'false');
         });
     }
 
-    function categoryThumbInner(cat) {
-        const imageUrl = categoryImageUrl(cat);
-        if (imageUrl) {
-            return `<img src="${esc(imageUrl)}" class="h-full w-full object-cover" alt="" loading="lazy">`;
-        }
-        return `<div class="shop-thumb-fallback"><svg class="h-8 w-8 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581"/></svg></div>`;
+    function categoryMedia(category) {
+        const imageUrl = categoryImageUrl(category);
+        if (imageUrl) return `<img src="${esc(imageUrl)}" alt="${esc(category.name)}" loading="lazy">`;
+        return `<div class="flex h-full items-center justify-center text-brand-500"><svg class="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581"/></svg></div>`;
     }
 
-    function commissionLine(pct) {
-        return (catPageI18n.commission || '').replace(':count', String(pct));
+    function commissionLine(percentage) {
+        return (catPageI18n.commission || '').replace(':count', String(percentage));
     }
 
     async function loadCategories() {
         document.getElementById('loading').classList.remove('hidden');
         document.getElementById('grid').innerHTML = '';
         setActiveTypeButton();
-        const params = new URLSearchParams({ per_page: '100' });
-        if (selectedType) {
-            params.set('type', selectedType);
-        }
+
+        const query = new URLSearchParams({ per_page: '100' });
+        if (selectedType) query.set('type', selectedType);
+
         const nextUrl = new URL(window.location.href);
-        if (selectedType) {
-            nextUrl.searchParams.set('type', selectedType);
-        } else {
-            nextUrl.searchParams.delete('type');
-        }
+        selectedType ? nextUrl.searchParams.set('type', selectedType) : nextUrl.searchParams.delete('type');
         window.history.replaceState({}, '', nextUrl.pathname + nextUrl.search);
-        const res = await axios.get('/api/categories?' + params.toString());
-        const cats = res.data.data || [];
+
+        const response = await axios.get('/api/categories?' + query.toString());
+        const categories = response.data.data || [];
         document.getElementById('loading').classList.add('hidden');
-        document.getElementById('grid').innerHTML = cats.map(cat => `
-            <div class="cat-card overflow-hidden rounded-2xl border border-gray-200/80 bg-white dark:border-gray-800 dark:bg-gray-900">
-                <a href="${typedPageHref('/categories/' + cat.id)}" class="flex h-full items-center gap-4 p-5 focus:outline-none focus:ring-4 focus:ring-brand-500/15">
-                    <div class="shop-thumb-box h-20 w-20 ring-1 ring-brand-200/50 dark:ring-brand-500/20">
-                        ${categoryThumbInner(cat)}
-                    </div>
+        document.getElementById('grid').innerHTML = categories.map(category => `
+            <article class="category-directory-card">
+                <div class="category-directory-media">${categoryMedia(category)}</div>
+                <a href="${typedPageHref('/categories/' + category.id)}" class="flex min-w-0 items-center gap-4 p-5 focus:outline-none focus:ring-2 focus:ring-brand-500/30">
                     <div class="min-w-0 flex-1">
-                        <h2 class="text-base font-bold text-gray-900 dark:text-white">${esc(cat.name)}</h2>
-                        <p class="mt-0.5 text-xs text-gray-400">${esc(commissionLine(cat.commission))}</p>
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">${esc(category.name)}</h2>
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${esc(commissionLine(category.commission))}</p>
                     </div>
-                    <svg class="h-5 w-5 shrink-0 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                    <svg class="h-5 w-5 shrink-0 text-gray-400 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                 </a>
-            </div>`).join('');
+            </article>`).join('');
     }
 
     document.querySelectorAll('.category-type-filter').forEach(button => {
@@ -130,8 +123,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     try {
         await loadCategories();
-    } catch (e) {
-        document.getElementById('loading').innerHTML = '<p class="text-sm text-gray-400">' + esc(catPageI18n.loadErr || '') + '</p>';
+    } catch (error) {
+        document.getElementById('loading').innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">' + esc(catPageI18n.loadErr || '') + '</p>';
     }
 });
 </script>

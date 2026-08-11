@@ -3,10 +3,10 @@
 @section('title', 'Vendor Details — Vetora')
 
 @section('content')
-<div class="mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 lg:px-8">
+<div class="page-shell">
     <nav class="mb-6 flex items-center gap-2 text-sm text-gray-500">
         <a href="{{ route('home') }}" class="hover:text-gray-700 transition-colors">Home</a>
-        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+        <svg class="h-4 w-4 rtl:-scale-x-100" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
         <span class="text-gray-900 font-medium">Vendor</span>
     </nav>
 
@@ -18,19 +18,19 @@
     </div>
 
     <div id="vendor-content" class="hidden">
-        {{-- Vendor Header Card --}}
-        <div class="mb-8 overflow-hidden rounded-2xl bg-gradient-to-br from-brand-600 via-brand-700 to-brand-800 shadow-2xl ring-1 ring-brand-500/20">
-            <div class="px-8 py-12">
+        <div class="mb-10 border-y border-gray-200 dark:border-gray-800">
+            <div class="py-10">
                 <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
                     <div class="flex-shrink-0">
-                        <div id="vendor-logo" class="shop-thumb-box h-32 w-32 bg-white ring-4 ring-white/30 shadow-2xl transition-transform hover:scale-105">
+                        <div id="vendor-logo" class="shop-thumb-box h-28 w-28 border border-gray-200 bg-white dark:border-gray-700">
                             <!-- Logo will be inserted here -->
                         </div>
                     </div>
-                    <div class="flex-1 text-center sm:text-left">
-                        <h1 id="vendor-name" class="text-4xl font-bold text-white mb-3"></h1>
-                        <p id="vendor-description" class="mt-2 text-lg text-white/90 leading-relaxed"></p>
-                        <div id="vendor-address" class="mt-4 flex items-center justify-center gap-2 text-sm text-white/80 sm:justify-start">
+                    <div class="flex-1 text-center sm:text-start">
+                        <p class="commerce-kicker">{{ __('stores.details_title') }}</p>
+                        <h1 id="vendor-name" class="mb-3 mt-2 text-4xl font-bold text-gray-950 dark:text-white"></h1>
+                        <p id="vendor-description" class="mt-2 max-w-2xl text-base leading-relaxed text-gray-600 dark:text-gray-300"></p>
+                        <div id="vendor-address" class="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500 sm:justify-start dark:text-gray-400">
                             <svg class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -42,8 +42,7 @@
             </div>
         </div>
 
-        {{-- Products Section --}}
-        <div class="rounded-2xl bg-white p-6 shadow-xl ring-1 ring-gray-200/50">
+        <div>
             <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-900">Products</h2>
@@ -58,7 +57,7 @@
                 </div>
             </div>
 
-            <div id="vendor-products-grid" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></div>
+            <div id="vendor-products-grid" class="grid grid-cols-2 gap-x-3 gap-y-7 sm:grid-cols-3 lg:grid-cols-4"></div>
 
             <div id="vendor-products-empty" class="hidden text-center py-12">
                 <svg class="mx-auto h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -107,7 +106,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Set vendor info
         document.getElementById('vendor-name').textContent = vendor.store_name;
-        document.getElementById('vendor-description').textContent = vendor.description || 'Quality products from a trusted vendor';
+        document.getElementById('vendor-description').textContent = vendor.description || '';
         if (vendor.address) {
             document.getElementById('vendor-address-text').textContent = vendor.address;
         } else {
@@ -155,36 +154,34 @@ document.addEventListener('DOMContentLoaded', async function () {
                     productsEmpty.classList.remove('hidden');
                 } else {
                     productsGrid.innerHTML = data.map(product => `
-                        <div class="group relative overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-gray-200 transition-all duration-300 hover:shadow-2xl hover:ring-brand-500/50 hover:-translate-y-1">
+                        <article class="commerce-product-card">
                             <div class="shop-card-media">
                                 <img src="${esc(product.first_photo_url || '/images/product-placeholder.svg')}"
                                      alt="${esc(product.name)}"
                                      class="shop-card-media-img"
                                      loading="lazy"
                                      onerror="this.onerror=null;this.src='/images/product-placeholder.svg'">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-                                ${product.quantity <= 0 ? `<div class="absolute top-3 right-3 rounded-full bg-red-500 px-3 py-1.5 text-xs font-bold text-white shadow-xl">Out of Stock</div>` : ''}
-                                ${product.has_active_discount ? `<div class="absolute top-3 left-3 rounded-full bg-red-500 px-3 py-1.5 text-xs font-bold text-white shadow-xl">-${parseFloat(product.discount_percentage || 0).toFixed(0)}%</div>` : ''}
+                                ${product.quantity <= 0 ? `<div class="absolute end-2 top-2 badge badge-danger">Out of Stock</div>` : ''}
+                                ${product.has_active_discount ? `<div class="absolute start-2 top-2 badge badge-danger">-${parseFloat(product.discount_percentage || 0).toFixed(0)}%</div>` : ''}
                             </div>
-                            <div class="p-6">
-                                <h3 class="mb-2 text-lg font-bold text-gray-900 line-clamp-2 transition-colors group-hover:text-brand-600">${esc(product.name)}</h3>
-                                <p class="mb-4 text-sm text-gray-600 line-clamp-2 leading-relaxed">${esc(product.description || 'No description available')}</p>
-                                <div class="mb-4 flex items-center justify-between border-t border-gray-100 pt-4">
-                                    <div>
-                                        <span class="text-2xl font-bold ${product.has_active_discount ? 'text-red-600' : 'text-brand-600'}">${parseFloat(product.has_active_discount ? product.discounted_price : product.price).toFixed(2)}</span>
-                                        <span class="text-sm text-gray-500"> SYP</span>
-                                        ${product.has_active_discount ? `<span class="ml-2 text-xs text-gray-400 line-through">${parseFloat(product.price).toFixed(2)} SYP</span>` : ''}
+                            <div class="commerce-product-body">
+                                <h3 class="commerce-product-title line-clamp-2">${esc(product.name)}</h3>
+                                <p class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600 dark:text-gray-400">${esc(product.description || 'No description available')}</p>
+                                <div class="mt-4 border-t border-gray-200 pt-3 dark:border-gray-800">
+                                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                                        <span class="commerce-product-price ${product.has_active_discount ? 'text-red-600 dark:text-red-400' : ''}">${parseFloat(product.has_active_discount ? product.discounted_price : product.price).toFixed(2)} <small>SYP</small></span>
+                                        ${product.has_active_discount ? `<span class="text-xs tabular-nums text-gray-400 line-through">${parseFloat(product.price).toFixed(2)} SYP</span>` : ''}
                                     </div>
-                                    <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">${product.quantity} available</span>
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${product.quantity} available</p>
                                 </div>
-                                <div class="flex gap-2">
-                                    <a href="/products/${product.id}" class="flex-1 btn-secondary text-center text-sm font-semibold transition-all hover:bg-gray-100">View</a>
+                                <div class="mt-4 flex gap-2">
+                                    <a href="/products/${product.id}" class="btn-secondary btn-sm flex-1 justify-center text-center">View</a>
                                     <button data-product-id="${product.id}"
                                             data-product-name="${esc(product.name)}"
                                             data-product-price="${product.has_active_discount ? product.discounted_price : product.price}"
                                             data-product-photo="${esc(product.first_photo_url || '')}"
                                             onclick="handleAddToCartFromCard(this)"
-                                            class="flex-1 btn-primary text-sm font-semibold shadow-md transition-all hover:shadow-lg ${product.quantity <= 0 ? 'opacity-50 cursor-not-allowed' : ''}"
+                                            class="btn-primary btn-sm flex-1 justify-center ${product.quantity <= 0 ? 'cursor-not-allowed opacity-50' : ''}"
                                             ${product.quantity <= 0 ? 'disabled' : ''}>
                                         <span class="flex items-center justify-center gap-1.5">
                                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -195,7 +192,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     </button>
                                 </div>
                             </div>
-                        </div>
+                        </article>
                     `).join('');
                 }
 

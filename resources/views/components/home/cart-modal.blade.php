@@ -1,4 +1,5 @@
 {{-- ═══ Cart Slide-over ═══ --}}
+<aside aria-label="{{ __('cart.shopping_cart') }}">
 <div id="cart-modal" class="fixed inset-0 z-[70] hidden" role="dialog" aria-modal="true" aria-labelledby="cart-modal-title">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="window.closeCartModal && window.closeCartModal()"></div>
     <div class="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-white shadow-2xl dark:bg-gray-900" style="animation:slideInRight .3s cubic-bezier(.22,1,.36,1);">
@@ -28,7 +29,7 @@
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
                         <div class="min-w-0 flex-1">
-                            <h4 class="text-sm font-black text-emerald-800 dark:text-emerald-300">{{ __('cart.order_success_title') }}</h4>
+                            <h3 class="text-sm font-bold text-emerald-800 dark:text-emerald-300">{{ __('cart.order_success_title') }}</h3>
                             <p id="cart-order-success-message" class="mt-1 text-xs font-medium leading-relaxed text-emerald-700 dark:text-emerald-300">{{ __('cart.order_success_message') }}</p>
                             <p id="cart-order-success-note" class="mt-1 text-[11px] text-emerald-700/80 dark:text-emerald-300/80">{{ __('cart.order_success_note') }}</p>
                         </div>
@@ -63,3 +64,4 @@
         </div>
     </div>
 </div>
+</aside>

@@ -5,30 +5,15 @@
 @section('content')
 <section class="workspace-shell workspace-section">
     <div class="grid min-h-[calc(100vh-11rem)] items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-        <div class="relative overflow-hidden rounded-[34px] border border-white/40 bg-gradient-to-br from-ink-900 via-ink-800 to-ink-700 p-8 text-white shadow-2xl shadow-ink-900/30 dark:border-white/10 sm:p-10">
-            <div class="absolute inset-0 soft-grid opacity-20"></div>
-            <div class="absolute -left-10 top-10 h-36 w-36 rounded-full bg-brand-400/25 blur-3xl"></div>
-            <div class="absolute bottom-0 right-0 h-44 w-44 rounded-full bg-blue-400/15 blur-3xl"></div>
-            <div class="relative">
-                <span class="eyebrow bg-white/10 text-brand-100">{{ __('auth.vetora_access') }}</span>
-                <h1 class="mt-6 font-display text-4xl font-extrabold leading-tight sm:text-5xl">{{ __('auth.workspace_title') }}</h1>
-                <p class="mt-5 max-w-xl text-base leading-8 text-white/72">{{ __('auth.workspace_copy') }}</p>
-
-                <div class="mt-8 grid gap-4 sm:grid-cols-3">
-                    <div class="rounded-[24px] border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
-                        <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-white/45">{{ __('auth.workspace_customers') }}</p>
-                        <p class="mt-2 text-sm text-white/75">{{ __('auth.workspace_customers_copy') }}</p>
-                    </div>
-                    <div class="rounded-[24px] border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
-                        <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-white/45">{{ __('auth.workspace_vendors') }}</p>
-                        <p class="mt-2 text-sm text-white/75">{{ __('auth.workspace_vendors_copy') }}</p>
-                    </div>
-                    <div class="rounded-[24px] border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
-                        <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-white/45">{{ __('auth.workspace_syndicates') }}</p>
-                        <p class="mt-2 text-sm text-white/75">{{ __('auth.workspace_syndicates_copy') }}</p>
-                    </div>
-                </div>
-            </div>
+        <div class="border-y-2 border-ink-900 py-10 text-ink-900 dark:border-white dark:text-white sm:py-14">
+            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300">{{ __('auth.vetora_access') }}</p>
+            <h1 class="mt-5 max-w-2xl font-display text-4xl font-bold leading-tight sm:text-5xl">{{ __('auth.workspace_title') }}</h1>
+            <p class="mt-5 max-w-xl text-base leading-8 text-ink-500 dark:text-slate-400">{{ __('auth.workspace_copy') }}</p>
+            <dl class="mt-9 grid gap-5 border-t border-gray-200 pt-6 sm:grid-cols-3 dark:border-gray-800">
+                <div><dt class="text-sm font-semibold">{{ __('auth.workspace_customers') }}</dt><dd class="mt-1 text-sm leading-6 text-ink-500 dark:text-slate-400">{{ __('auth.workspace_customers_copy') }}</dd></div>
+                <div><dt class="text-sm font-semibold">{{ __('auth.workspace_vendors') }}</dt><dd class="mt-1 text-sm leading-6 text-ink-500 dark:text-slate-400">{{ __('auth.workspace_vendors_copy') }}</dd></div>
+                <div><dt class="text-sm font-semibold">{{ __('auth.workspace_syndicates') }}</dt><dd class="mt-1 text-sm leading-6 text-ink-500 dark:text-slate-400">{{ __('auth.workspace_syndicates_copy') }}</dd></div>
+            </dl>
         </div>
 
         <div class="auth-shell">
@@ -71,7 +56,7 @@
                 </form>
             </div>
 
-            <div class="mt-8 flex items-center justify-between rounded-[24px] border border-gray-200/80 bg-gray-50/70 px-5 py-4 text-sm dark:border-gray-800 dark:bg-gray-900/50">
+            <div class="mt-8 flex items-center justify-between border-t border-gray-200 pt-5 text-sm dark:border-gray-800">
                 <p class="text-ink-500 dark:text-slate-400">{{ __('auth.dont_have_account') }}</p>
                 <a href="{{ route('register') }}" class="font-bold text-brand-600 hover:text-brand-500">{{ __('auth.create_one') }}</a>
             </div>

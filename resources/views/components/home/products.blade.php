@@ -1,11 +1,11 @@
 {{-- ═══ Latest Products — Shows last 5, links to full page ═══ --}}
 <section id="products" class="storefront-section scroll-mt-24 bg-white dark:bg-gray-950/70">
     <div class="page-shell py-0">
-        <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div class="commerce-section-header">
             <div>
-                <span class="eyebrow bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">{{ __('home.badge_new_arrivals') }}</span>
-                <h2 class="mt-3 text-3xl font-black tracking-tight text-gray-900 dark:text-white sm:text-4xl">{{ __('home.latest_products_title') }}</h2>
-                <p class="mt-2 max-w-2xl text-sm leading-7 text-gray-500 dark:text-gray-400">{{ __('home.latest_products_subtitle') }}</p>
+                <p class="commerce-kicker">{{ __('home.badge_new_arrivals') }}</p>
+                <h2 class="commerce-title">{{ __('home.latest_products_title') }}</h2>
+                <p class="commerce-copy">{{ __('home.latest_products_subtitle') }}</p>
             </div>
             <a id="home-products-view-all" href="/products" class="hidden items-center gap-1.5 rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-brand-600 active:scale-[.97] sm:inline-flex dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">
                 {{ __('common.view_all') }}
@@ -14,7 +14,7 @@
         </div>
 
         <div id="products-loading" class="responsive-shop-grid">
-            <div class="skeleton h-[25rem] rounded-[28px]"></div><div class="skeleton h-[25rem] rounded-[28px]"></div><div class="skeleton h-[25rem] rounded-[28px]"></div><div class="skeleton h-[25rem] rounded-[28px]"></div><div class="skeleton hidden h-[25rem] rounded-[28px] xl:block"></div>
+            <div class="skeleton h-[25rem]"></div><div class="skeleton h-[25rem]"></div><div class="skeleton h-[25rem]"></div><div class="skeleton h-[25rem]"></div><div class="skeleton hidden h-[25rem] xl:block"></div>
         </div>
         <div id="products-grid" class="responsive-shop-grid"></div>
         <div id="products-empty" class="hidden py-12 text-center text-sm text-gray-400 dark:text-gray-500">{{ __('home.no_products_yet') }}</div>

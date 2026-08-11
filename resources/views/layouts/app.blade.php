@@ -7,8 +7,8 @@
     <title>@yield('title', __('Vetora'))</title>
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
     <link rel="dns-prefetch" href="https://fonts.bunny.net">
-    <link rel="preload" href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|sora:600,700,800|ibm-plex-sans-arabic:400,500,600,700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|sora:600,700,800|ibm-plex-sans-arabic:400,500,600,700&display=swap" rel="stylesheet"></noscript>
+    <link rel="preload" href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|ibm-plex-sans-arabic:400,500,600,700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|ibm-plex-sans-arabic:400,500,600,700&display=swap" rel="stylesheet"></noscript>
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#030712" media="(prefers-color-scheme: dark)">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -52,13 +52,13 @@
     <x-navbar />
 
     <main id="main-content" class="relative isolate" tabindex="-1">
-        <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 bg-gradient-to-b from-white/45 to-transparent dark:from-white/5"></div>
         @yield('content')
     </main>
 
     {{-- ═══ Global Cart Modal ═══ --}}
     <x-home.cart-modal />
 
+    <aside aria-label="{{ __('startup.modal_title') }}">
     <div id="startup-modal" class="fixed inset-0 z-[100] hidden bg-gray-950/70 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="startup-title">
         <div class="mx-auto flex min-h-full max-w-xl items-center justify-center">
             <div class="modal-shell w-full">
@@ -98,18 +98,17 @@
             </div>
         </div>
     </div>
+    </aside>
 
     {{-- ═══ Footer ═══ --}}
     <footer class="mt-12 border-t border-white/30 bg-transparent dark:border-white/8">
         <div class="workspace-shell pb-10 pt-6">
-            <div class="surface-card overflow-hidden px-6 py-10 sm:px-8 lg:px-10">
+            <div class="px-2 py-8 sm:px-0">
             <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
                 {{-- Brand --}}
                 <div class="col-span-1 sm:col-span-2 lg:col-span-2">
                     <a href="{{ url('/') }}" class="inline-flex items-center gap-3 text-2xl font-black tracking-tight text-gray-900 dark:text-white">
-                        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 shadow-lg shadow-brand-500/20">
-                            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72"/></svg>
-                        </div>
+                        <img src="{{ asset('images/vetora-logo-transparent.png') }}" alt="" class="h-11 w-11 object-contain">
                         Vetora
                     </a>
                     <p class="mt-4 max-w-md text-sm leading-7 text-gray-500 dark:text-gray-400">
@@ -135,7 +134,7 @@
                 </div>
                 {{-- Quick Links --}}
                 <div>
-                    <h4 class="text-xs font-black uppercase tracking-[0.24em] text-gray-900 dark:text-gray-200">{{ __('footer.shop') }}</h4>
+                    <h3 class="text-xs font-semibold uppercase tracking-[0.12em] text-gray-900 dark:text-gray-200">{{ __('footer.shop') }}</h3>
                     <ul class="mt-4 space-y-3 text-sm">
                         <li><a href="{{ route('categories.index') }}" class="text-gray-500 transition-colors hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400">{{ __('nav.categories') }}</a></li>
                         <li><a href="{{ route('products.index') }}" class="text-gray-500 transition-colors hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400">{{ __('footer.all_products') }}</a></li>
@@ -143,7 +142,7 @@
                 </div>
                 {{-- Account --}}
                 <div>
-                    <h4 class="text-xs font-black uppercase tracking-[0.24em] text-gray-900 dark:text-gray-200">{{ __('footer.account') }}</h4>
+                    <h3 class="text-xs font-semibold uppercase tracking-[0.12em] text-gray-900 dark:text-gray-200">{{ __('footer.account') }}</h3>
                     <ul class="mt-4 space-y-3 text-sm">
                         <li><a href="{{ route('login') }}" class="text-gray-500 transition-colors hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400">{{ __('nav.sign_in') }}</a></li>
                         <li><a href="{{ route('register') }}" class="text-gray-500 transition-colors hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400">{{ __('footer.create_account') }}</a></li>
@@ -151,7 +150,7 @@
                 </div>
                 {{-- Contact --}}
                 <div>
-                    <h4 class="text-xs font-black uppercase tracking-[0.24em] text-gray-900 dark:text-gray-200">{{ __('footer.contact') }}</h4>
+                    <h3 class="text-xs font-semibold uppercase tracking-[0.12em] text-gray-900 dark:text-gray-200">{{ __('footer.contact') }}</h3>
                     <ul class="mt-4 space-y-3 text-sm">
                         <li><a href="{{ route('home') }}#contact" class="text-gray-500 transition-colors hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400">{{ __('footer.contact_us') }}</a></li>
                         @if(!empty($footerSettings->contact_email))
@@ -217,6 +216,7 @@
         function updateFavBtn(btn, isFav) {
             const svg = btn.querySelector('svg');
             if (!svg) return;
+            btn.setAttribute('aria-pressed', isFav ? 'true' : 'false');
             if (isFav) {
                 svg.setAttribute('fill', 'currentColor');
                 btn.classList.add('text-red-500');

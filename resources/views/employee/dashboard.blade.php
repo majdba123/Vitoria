@@ -92,7 +92,7 @@
     </div>
 
     <div class="grid grid-cols-1 gap-4 xl:grid-cols-4">
-        <a href="{{ route('employee.products.index') }}" class="card transition-all hover:-translate-y-0.5 hover:shadow-xl">
+        <a href="{{ route('employee.products.index') }}" class="card border-s-2 border-s-brand-500 transition-colors hover:bg-gray-50 dark:hover:bg-gray-900">
             <div class="card-body flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-400">{{ __('employee.status_summary') }}</p>
@@ -101,7 +101,7 @@
                 <span class="badge badge-brand">{{ __('employee.open_tab') }}</span>
             </div>
         </a>
-        <a href="{{ route('employee.products.index', ['status' => 'approved']) }}" class="card transition-all hover:-translate-y-0.5 hover:shadow-xl">
+        <a href="{{ route('employee.products.index', ['status' => 'approved']) }}" class="card border-s-2 border-s-emerald-500 transition-colors hover:bg-gray-50 dark:hover:bg-gray-900">
             <div class="card-body flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-400">{{ __('employee.status_summary') }}</p>
@@ -110,7 +110,7 @@
                 <span class="badge badge-success">{{ __('employee.open_tab') }}</span>
             </div>
         </a>
-        <a href="{{ route('employee.products.index', ['status' => 'pending']) }}" class="card transition-all hover:-translate-y-0.5 hover:shadow-xl">
+        <a href="{{ route('employee.products.index', ['status' => 'pending']) }}" class="card border-s-2 border-s-amber-500 transition-colors hover:bg-gray-50 dark:hover:bg-gray-900">
             <div class="card-body flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-400">{{ __('employee.status_summary') }}</p>
@@ -119,7 +119,7 @@
                 <span class="badge badge-warning">{{ __('employee.open_tab') }}</span>
             </div>
         </a>
-        <a href="{{ route('employee.products.index', ['status' => 'rejected']) }}" class="card transition-all hover:-translate-y-0.5 hover:shadow-xl">
+        <a href="{{ route('employee.products.index', ['status' => 'rejected']) }}" class="card border-s-2 border-s-red-500 transition-colors hover:bg-gray-50 dark:hover:bg-gray-900">
             <div class="card-body flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-400">{{ __('employee.status_summary') }}</p>
@@ -287,7 +287,7 @@ document.addEventListener('employee-ready', function () {
                     <span class="text-sm font-bold text-cyan-600 dark:text-cyan-300">${value}</span>
                 </div>
                 <div class="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
-                    <div class="h-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-600" style="width:${Math.max((value / maxValue) * 100, 8)}%"></div>
+                    <div class="h-full rounded-full bg-brand-500" style="width:${Math.max((value / maxValue) * 100, 8)}%"></div>
                 </div>
             </div>
         `).join('');
@@ -311,12 +311,7 @@ document.addEventListener('employee-ready', function () {
 
         const total = rows.reduce((sum, row) => sum + row[1], 0);
         typeStats.innerHTML = rows.map(([label, value], index) => {
-            const colors = [
-                'from-emerald-500 to-green-600',
-                'from-cyan-500 to-blue-600',
-                'from-amber-500 to-orange-500',
-                'from-rose-500 to-pink-600',
-            ];
+            const colors = ['bg-emerald-500', 'bg-brand-500', 'bg-amber-500', 'bg-rose-500'];
             const colorClass = colors[index % colors.length];
             const percent = total > 0 ? Math.round((value / total) * 100) : 0;
 
@@ -330,7 +325,7 @@ document.addEventListener('employee-ready', function () {
                         <span class="inline-flex h-12 min-w-12 items-center justify-center rounded-2xl bg-gray-100 px-3 text-sm font-bold text-gray-900 dark:bg-gray-800 dark:text-white">${value}</span>
                     </div>
                     <div class="mt-3 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
-                        <div class="h-full rounded-full bg-gradient-to-r ${colorClass}" style="width:${Math.max(percent, 8)}%"></div>
+                        <div class="h-full rounded-full ${colorClass}" style="width:${Math.max(percent, 8)}%"></div>
                     </div>
                 </div>
             `;

@@ -13,7 +13,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', __('syndicate.dashboard') . ' - Vetora')</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|sora:600,700,800|ibm-plex-sans-arabic:400,500,600,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|ibm-plex-sans-arabic:400,500,600,700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
     <script>
@@ -46,29 +46,23 @@
     class="dashboard-body min-h-screen font-sans text-gray-900 antialiased dark:text-gray-100"
 >
     <div id="syndicate-app" class="hidden">
-        <div id="sidebar-backdrop" class="fixed inset-0 z-40 hidden bg-gray-950/55 backdrop-blur-sm lg:hidden" onclick="closeSidebar()"></div>
+        <div id="sidebar-backdrop" class="fixed inset-0 z-40 hidden bg-gray-950/60 lg:hidden" onclick="closeSidebar()"></div>
         <aside id="syndicate-sidebar" class="dashboard-sidebar fixed inset-y-0 {{ $sidebarEdgeClass }} z-50 flex w-72 {{ $sidebarHiddenClass }} flex-col lg:translate-x-0">
             <div class="flex h-[88px] items-center gap-3 border-b border-white/8 px-6">
                 <a href="{{ route('syndicate.dashboard') }}" class="flex items-center gap-3 text-white">
-                    <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-teal-700 shadow-lg shadow-cyan-500/20">
-                        <i class="fa-solid fa-users-rays text-sm"></i>
+                    <span class="flex h-9 w-9 items-center justify-center border border-brand-300/30 bg-brand-500/15 text-brand-200">
+                        <i class="fa-solid fa-users-rays text-xs"></i>
                     </span>
                     <span>
                         <span class="block font-display text-xl font-extrabold">Vetora</span>
-                        <span class="mt-1 block text-[11px] font-extrabold uppercase tracking-[0.28em] text-cyan-200">{{ __('syndicate.workspace_label') }}</span>
+                        <span class="mt-1 block text-[11px] font-extrabold uppercase tracking-[0.28em] text-brand-200">{{ __('syndicate.workspace_label') }}</span>
                     </span>
                 </a>
-                <button onclick="closeSidebar()" class="{{ $closeMarginClass }} rounded-2xl p-2 text-gray-400 hover:bg-white/5 hover:text-white lg:hidden">
+                <button onclick="closeSidebar()" class="{{ $closeMarginClass }} p-2 text-gray-400 hover:bg-white/5 hover:text-white lg:hidden" aria-label="{{ __('common.close') }}">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
-            <div class="px-6 pt-5">
-                <div class="rounded-[24px] border border-white/8 bg-white/5 p-4 text-white/80">
-                    <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-white/45">{{ __('syndicate.sidebar_intro') }}</p>
-                    <p class="mt-2 text-sm leading-6 text-white/75">{{ __('syndicate.sidebar_intro_copy') }}</p>
-                </div>
-            </div>
-            <nav class="min-h-0 flex-1 overflow-y-auto px-4 py-5">
+            <nav class="min-h-0 flex-1 overflow-y-auto px-3 py-4">
                 <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-white/35">{{ __('syndicate.workspace') }}</p>
                 @foreach ($links as $link)
                     @php
@@ -87,12 +81,12 @@
         </aside>
         <div class="{{ $mainPaddingClass }}">
             <header class="dashboard-topbar sticky top-0 z-30">
-                <div class="workspace-shell flex h-[78px] items-center gap-4">
+                <div class="workspace-shell flex h-16 items-center gap-4">
                     <button type="button" id="sidebar-toggle" class="-m-2.5 flex h-10 w-10 items-center justify-center rounded-2xl text-gray-500 hover:bg-white/70 dark:hover:bg-white/5 lg:hidden">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
                     </button>
                     <div class="min-w-0 flex-1">
-                        <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-cyan-600 dark:text-cyan-300">{{ __('syndicate.workspace_label') }}</p>
+                        <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-brand-600 dark:text-brand-300">{{ __('syndicate.workspace_label') }}</p>
                         <h1 class="mt-1 truncate text-lg font-black text-gray-900 dark:text-white">@yield('page-title', __('syndicate.dashboard'))</h1>
                     </div>
                     <span id="syndicate-type-badge" class="badge badge-brand"></span>
@@ -104,9 +98,7 @@
     </div>
     <div id="syndicate-loading" class="flex min-h-screen items-center justify-center">
         <div class="text-center">
-            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-white/70 shadow-lg shadow-gray-900/5 backdrop-blur-md dark:bg-white/5 dark:shadow-black/20">
-                <div class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-cyan-500"></div>
-            </div>
+            <div class="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-brand-600 dark:border-gray-700 dark:border-t-brand-300"></div>
             <p class="mt-4 text-sm font-semibold text-gray-500">{{ __('syndicate.loading_access') }}</p>
         </div>
     </div>

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="bg-transparent">
-    <div class="border-b border-white/40 bg-white/60 backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
+    <div class="catalog-page-band">
         <div class="page-shell py-3">
             <nav class="page-breadcrumb">
                 <a href="{{ route('home') }}" class="hover:text-brand-600 dark:hover:text-brand-400">{{ __('nav.home') }}</a>
@@ -15,12 +15,20 @@
     </div>
 
     <div class="page-shell">
-        <div class="page-header">
-            <div>
-                <h1 class="text-2xl font-black text-gray-900 sm:text-3xl dark:text-white">{{ __('nav.products') }}</h1>
+        <div class="page-header mb-5">
+            <div class="min-w-0">
+                <p class="commerce-kicker">Vetora Marketplace</p>
+                <h1 class="commerce-title mt-1">{{ __('nav.products') }}</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400" id="result-count"></p>
             </div>
-            <div class="filter-panel grid w-full gap-3 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5">
+        </div>
+
+        <div class="catalog-toolbar">
+            <button id="mobile-filter-toggle" type="button" class="catalog-filter-toggle" aria-expanded="false" aria-controls="catalog-filters">
+                <span>{{ __('nav.apply_filters') }}</span>
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h18M6.75 12h10.5M10.5 19.5h3"/></svg>
+            </button>
+            <div id="catalog-filters" class="catalog-filter-drawer" data-mobile-collapsed="true">
                 <input id="f-search" type="search" class="form-input min-w-0" placeholder="{{ __('nav.search_products') }}">
                 <select id="f-category-type" class="form-select min-w-0">
                     <option value="">{{ __('nav.all_types') }}</option>
@@ -53,12 +61,13 @@
                 <button id="btn-apply" class="btn-primary w-full sm:w-auto">{{ __('nav.apply_filters') }}</button>
                 <button id="btn-clear" class="btn-secondary w-full sm:w-auto">{{ __('nav.clear_filters') }}</button>
             </div>
+            <div id="active-filter-summary" class="catalog-active-filters" aria-live="polite"></div>
         </div>
 
-        <div id="loading" class="responsive-shop-grid">
-            <div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton hidden h-80 rounded-2xl xl:block"></div>
+        <div id="loading" class="responsive-shop-grid mt-6">
+            <div class="skeleton aspect-square rounded-lg"></div><div class="skeleton aspect-square rounded-lg"></div><div class="skeleton aspect-square rounded-lg"></div><div class="skeleton aspect-square rounded-lg"></div><div class="skeleton hidden aspect-square rounded-lg xl:block"></div>
         </div>
-        <div id="grid" class="responsive-shop-grid"></div>
+        <div id="grid" class="responsive-shop-grid mt-6"></div>
         <div id="empty" class="empty-state hidden py-20">
             <svg class="mx-auto h-16 w-16 text-gray-200 dark:text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5"/></svg>
             <p class="mt-4 font-bold text-gray-600 dark:text-gray-400" id="empty-message">{{ __('nav.products_empty') }}</p>
@@ -102,6 +111,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     sort = params.get('sort') || '';
     search = params.get('search') || '';
     page = Number(params.get('page') || 1);
+
+    $('mobile-filter-toggle')?.addEventListener('click', function () {
+        const filters = $('catalog-filters');
+        const collapsed = filters.dataset.mobileCollapsed === 'true';
+        filters.dataset.mobileCollapsed = collapsed ? 'false' : 'true';
+        this.setAttribute('aria-expanded', collapsed ? 'true' : 'false');
+    });
 
     function esc(value) {
         if (!value) return '';
@@ -244,6 +260,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (search) query.append('search', search);
 
         syncUrl();
+        updateActiveFilterSummary();
 
         try {
             const response = await axios.get('/api/products?' + query.toString());
@@ -262,6 +279,17 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         $('loading').classList.add('hidden');
+    }
+
+    function updateActiveFilterSummary() {
+        const labels = [
+            search,
+            $('f-category-type').selectedOptions[0]?.textContent && categoryType ? $('f-category-type').selectedOptions[0].textContent : '',
+            $('f-category').selectedOptions[0]?.textContent && categoryId ? $('f-category').selectedOptions[0].textContent : '',
+            $('f-subcategory').selectedOptions[0]?.textContent && subcategoryId ? $('f-subcategory').selectedOptions[0].textContent : '',
+            $('f-sort').selectedOptions[0]?.textContent && sort ? $('f-sort').selectedOptions[0].textContent : '',
+        ].filter(Boolean);
+        $('active-filter-summary').textContent = labels.join(' · ');
     }
 
     function showEmpty(message) {
@@ -289,34 +317,36 @@ document.addEventListener('DOMContentLoaded', async function() {
         const barcode = Array.isArray(product.barcodes) && product.barcodes.length ? product.barcodes[0] : '';
         const displayPrice = parseFloat(product.has_active_discount ? product.discounted_price : product.price || 0).toLocaleString();
 
-        return `<div class="product-card overflow-hidden rounded-2xl border border-gray-200/80 bg-white dark:border-gray-800 dark:bg-gray-900">
+        const context = product.vendor?.store_name || subcategoryName || commercialName || categoryTypeLabel(product.category?.type);
+        return `<article class="commerce-product-card">
             <div class="relative">
-                <a href="/products/${product.id}"><div class="shop-card-media">
-                    <img src="${esc(photo)}" alt="${esc(product.name)}" class="shop-card-media-img" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}'">
-                    ${!inStock ? '<div class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70"><span class="rounded-full bg-red-100 px-3 py-1 text-[11px] font-bold text-red-600 dark:bg-red-500/10 dark:text-red-400">' + esc(t.soldOut || '') + '</span></div>' : ''}
-                    ${product.has_active_discount ? `<div class="absolute left-2.5 top-2.5 z-10 rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">-${parseFloat(product.discount_percentage || 0).toFixed(0)}%</div>` : ''}
+                <a href="/products/${product.id}"><div class="commerce-product-media">
+                    <img src="${esc(photo)}" alt="${esc(product.name)}" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}'">
+                    ${!inStock ? '<div class="absolute inset-x-0 bottom-0 bg-red-700 px-3 py-1.5 text-center text-[11px] font-semibold text-white">' + esc(t.soldOut || '') + '</div>' : ''}
+                    ${product.has_active_discount ? `<div class="absolute start-2.5 top-2.5 z-10 bg-red-700 px-2 py-1 text-[10px] font-semibold text-white">-${parseFloat(product.discount_percentage || 0).toFixed(0)}%</div>` : ''}
                 </div></a>
-                <button data-fav-btn="${product.id}" onclick="event.stopPropagation();window.toggleFav(${product.id},this)" class="absolute right-2.5 top-2.5 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur-sm transition-all hover:scale-110 dark:bg-gray-900/90 ${isFav ? 'text-red-500' : 'text-gray-400 dark:text-gray-500'}"><svg class="h-5 w-5" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="${isFav ? 'currentColor' : 'none'}"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg></button>
+                <button type="button" data-fav-btn="${product.id}" onclick="event.stopPropagation();window.toggleFav(${product.id},this)" aria-label="${esc(product.name)}" aria-pressed="${isFav ? 'true' : 'false'}" class="absolute end-2.5 top-2.5 z-10 flex h-11 w-11 items-center justify-center rounded-full border bg-white/95 dark:bg-gray-900/95 ${isFav ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'}" style="border-color:var(--color-border)"><svg class="h-5 w-5" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="${isFav ? 'currentColor' : 'none'}"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg></button>
             </div>
-            <div class="p-3 sm:p-4">
-                <a href="/products/${product.id}"><h3 class="line-clamp-2 text-sm font-bold leading-snug text-gray-900 hover:text-brand-600 dark:text-white dark:hover:text-brand-400">${esc(product.name)}</h3></a>
-                ${commercialName ? `<p class="mt-1.5 line-clamp-1 text-xs font-semibold text-gray-500 dark:text-gray-400">${esc(commercialName)}</p>` : ''}
-                <div class="mt-3 flex flex-wrap gap-2">
-                    ${product.category?.type ? `<span class="inline-flex rounded-full bg-brand-50 px-2.5 py-1 text-[10px] font-bold text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">${esc(categoryTypeLabel(product.category.type))}</span>` : ''}
-                    ${subcategoryName ? `<span class="inline-flex rounded-full bg-gray-100 px-2.5 py-1 text-[10px] font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-300">${esc(subcategoryName)}</span>` : ''}
-                    ${barcode ? `<span class="inline-flex rounded-full bg-gray-100 px-2.5 py-1 text-[10px] font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-300">${esc(barcode)}</span>` : ''}
-                </div>
+            <div class="commerce-product-body">
+                <p class="commerce-product-context">${esc(context)}</p>
+                <a href="/products/${product.id}"><h3 class="commerce-product-title">${esc(product.name)}</h3></a>
+                ${commercialName && commercialName !== context ? `<p class="mt-1 line-clamp-1 text-xs text-gray-500 dark:text-gray-400">${esc(commercialName)}</p>` : ''}
+                ${barcode ? `<p class="mt-1 truncate text-[11px] text-gray-400" dir="auto">${esc(barcode)}</p>` : ''}
                 <div class="mt-2 flex items-center gap-1.5 text-amber-400">${starStars(product.average_rating)}<span class="text-[11px] text-gray-400 dark:text-gray-500">${reviewCount ? esc((t.reviewsCount || '').replace(':count', String(reviewCount))) : ''}</span></div>
-                <div class="mt-2 flex items-baseline gap-1">
-                    <span class="text-lg font-black ${product.has_active_discount ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}">${displayPrice}</span><span class="text-[11px] text-gray-400">SYP</span>
+                <div class="mt-auto pt-4">
+                  <div class="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5" dir="auto">
+                    <span class="commerce-product-price ${product.has_active_discount ? 'text-red-700 dark:text-red-400' : ''}">${displayPrice}</span><span class="text-xs text-gray-500">SYP</span>
                     ${product.has_active_discount ? `<span class="text-[11px] text-gray-400 line-through">${parseFloat(product.price || 0).toLocaleString()} SYP</span>` : ''}
+                  </div>
+                  <div class="mt-3 flex items-center justify-between gap-2">
+                    <span class="text-xs font-medium ${inStock ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'}">${inStock ? esc(@json(__('nav.in_stock'))) : esc(t.soldOut || '')}</span>
+                    <button type="button" onclick="window.addToCart&&window.addToCart(${product.id},\`${esc(product.name)}\`,${product.has_active_discount ? product.discounted_price : product.price},\`${esc(photo)}\`)" class="commerce-product-action" ${!inStock ? 'disabled' : ''} aria-label="${esc(t.addCart || '')}: ${esc(product.name)}">
+                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/></svg>
+                    </button>
+                  </div>
                 </div>
-                <button onclick="window.addToCart&&window.addToCart(${product.id},\`${esc(product.name)}\`,${product.has_active_discount ? product.discounted_price : product.price},\`${esc(photo)}\`)" class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold ${inStock ? 'bg-gray-900 text-white hover:bg-brand-600 dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white active:scale-[.97]' : 'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600'}" ${!inStock ? 'disabled' : ''}>
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/></svg>
-                    ${inStock ? esc(t.addCart || '') : esc(t.soldOut || '')}
-                </button>
             </div>
-        </div>`;
+        </article>`;
     }
 
     function renderPagination(meta) {

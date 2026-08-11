@@ -1,24 +1,132 @@
 {{-- ═══ Navbar ═══ --}}
-<header class="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
-    <nav class="glass-panel nav-shell mx-auto max-w-screen-2xl rounded-[28px] border border-white/50 px-3 shadow-[0_24px_55px_-34px_rgba(5,150,105,0.35)] dark:border-white/10">
-        <div class="flex min-h-[72px] items-center gap-2 px-1.5 py-2 sm:gap-3 sm:px-2 lg:px-4">
-            {{-- Logo --}}
-            <a href="{{ url('/') }}" class="flex shrink-0 items-center">
-                <img
-                    src="{{ asset('images/vetora-logo-transparent.png') }}"
-                    alt="Vetora"
-                    class="h-10 w-auto object-contain sm:h-12"
-                >
-            </a>
+<header class="site-header">
+    <div class="site-header-main">
+        {{-- Logo --}}
+        <a href="{{ url('/') }}" class="flex shrink-0 items-center">
+            <img
+                src="{{ asset('images/vetora-logo-transparent.png') }}"
+                alt="Vetora"
+                class="h-9 w-auto object-contain sm:h-10"
+            >
+        </a>
 
-            {{-- Desktop Category Button --}}
-            <div class="relative hidden lg:block" id="mega-wrap">
-                <button id="mega-btn" class="nav-pill-btn flex items-center gap-2 rounded-2xl border border-white/40 bg-white/70 px-4 py-2.5 text-sm font-extrabold text-gray-700 shadow-sm hover:-translate-y-0.5 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:border-brand-500 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">
+        {{-- Marketplace search --}}
+        <form id="nav-search-form" class="site-header-search" role="search">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+            <input id="nav-search-input" type="search" name="search" placeholder="{{ __('nav.search_products') }}" aria-label="{{ __('nav.search_products') }}">
+        </form>
+
+        <div class="flex-1 md:hidden"></div>
+
+        {{-- Right Actions --}}
+        <div class="flex shrink-0 items-center gap-1">
+            {{-- Language Switcher --}}
+            <x-language-switcher />
+            {{-- Dark Mode Toggle --}}
+            <button id="theme-toggle" type="button" class="nav-action-btn relative hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-transparent text-gray-500 dark:text-gray-400 sm:flex" aria-label="{{ __('nav.toggle_theme_aria') }}" title="{{ __('nav.toggle_theme_aria') }}">
+                <svg id="icon-sun" class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
+                <svg id="icon-moon" class="h-5 w-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+            </button>
+
+            {{-- Cart --}}
+            <button id="nav-cart" type="button" class="nav-action-btn relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-transparent text-gray-500 dark:text-gray-400" onclick="window.showCart && window.showCart()" aria-label="{{ __('nav.cart') }}" title="{{ __('nav.cart') }}">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+                <span id="cart-badge" class="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold leading-none text-white shadow hidden"></span>
+            </button>
+
+            {{-- Notifications (authenticated only). data-context: customer | vendor | admin for notification links. --}}
+            <div id="nav-notifications-wrap" class="relative hidden" data-context="customer">
+                <button id="nav-notifications-btn" type="button" class="nav-action-btn relative flex h-10 w-10 items-center justify-center rounded-lg border border-transparent text-gray-500 dark:text-gray-400" title="{{ __('nav.notifications_aria') }}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
+                    <span id="notification-badge" class="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold leading-none text-white shadow hidden">0</span>
+                </button>
+                <div id="notification-dropdown" class="dropdown-panel absolute top-full z-50 mt-2 hidden flex max-h-[min(32rem,75vh)] w-[min(420px,95vw)] flex-col ltr:right-0 rtl:left-0">
+                    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800 shrink-0">
+                        <span class="text-[13px] font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('nav.notifications') }}</span>
+                        <button type="button" id="notification-mark-all-read" class="text-[11px] font-medium uppercase tracking-wider text-brand-600 hover:text-brand-700 dark:text-brand-400">{{ __('nav.mark_all_read') }}</button>
+                    </div>
+                    <div id="notification-list" class="overflow-y-auto flex-1 min-h-0 max-h-[min(24rem,55vh)]">
+                        <p class="px-4 py-10 text-center text-[13px] text-gray-400 dark:text-gray-500">{{ __('common.loading') }}</p>
+                    </div>
+                    <div id="notification-empty" class="hidden px-4 py-12 text-center text-[13px] text-gray-400 dark:text-gray-500 shrink-0">{{ __('nav.no_notifications') }}</div>
+                    <div id="notification-pagination" class="hidden border-t border-gray-100 dark:border-gray-800 px-3 py-2 flex items-center justify-between gap-2 shrink-0 bg-gray-50/50 dark:bg-gray-800/30">
+                        <button type="button" id="notification-prev" class="rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 disabled:opacity-50 disabled:pointer-events-none">{{ __('nav.prev') }}</button>
+                        <span id="notification-page-info" class="text-[11px] text-gray-500 dark:text-gray-400">{{ __('nav.page') }} 1 {{ __('nav.of') }} 1</span>
+                        <button type="button" id="notification-next" class="rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 disabled:opacity-50 disabled:pointer-events-none">{{ __('nav.next') }}</button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Guest Buttons (hidden when authenticated) --}}
+            <div id="nav-guest" class="hidden items-center gap-2 sm:flex">
+                <a href="{{ route('login') }}" class="nav-primary-link">{{ __('nav.sign_in') }}</a>
+                <a href="{{ route('register') }}" class="btn-primary btn-sm">{{ __('nav.register') }}</a>
+            </div>
+
+            {{-- Profile Dropdown (shown when authenticated) --}}
+            <div id="profile-wrap" class="relative hidden">
+                <button id="profile-btn" class="flex items-center gap-2.5 rounded-lg border border-transparent px-2 py-1.5 hover:bg-gray-50 dark:hover:bg-white/5">
+                    <div id="profile-avatar" class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-400 to-brand-600">
+                        <span id="profile-initial" class="text-sm font-bold text-white">?</span>
+                    </div>
+                    <div class="hidden sm:block text-start">
+                        <p id="profile-name" class="text-sm font-semibold leading-tight text-gray-900 dark:text-white"></p>
+                        <p id="profile-role" class="text-[10px] font-medium text-gray-400 dark:text-gray-500">{{ __('nav.customer') }}</p>
+                    </div>
+                    <svg class="h-3.5 w-3.5 text-gray-400 transition-transform duration-200" id="profile-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                </button>
+
+                {{-- Dropdown --}}
+                <div id="profile-dropdown" class="dropdown-panel absolute top-full z-50 mt-2 hidden w-72 ltr:right-0 rtl:left-0">
+                    {{-- User Info Header --}}
+                    <div class="border-b border-gray-100 bg-gray-50/80 px-5 py-4 dark:border-gray-800 dark:bg-gray-800/50">
+                        <div class="flex items-center gap-3">
+                            <div id="dd-avatar" class="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-400 to-brand-600">
+                                <span id="dd-initial" class="text-base font-bold text-white">?</span>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p id="dd-name" class="truncate text-sm font-bold text-gray-900 dark:text-white"></p>
+                                <p id="dd-email" class="truncate text-xs text-gray-500 dark:text-gray-400"></p>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- Menu Links --}}
+                    <div class="py-2">
+                        <a href="{{ route('profile') }}" class="flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                            {{ __('nav.my_profile') }}
+                        </a>
+                        <a id="dd-dashboard-link" href="#" class="hidden items-center gap-3 px-5 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6z"/></svg>
+                            {{ __('nav.dashboard') }}
+                        </a>
+                    </div>
+                    <div class="border-t border-gray-100 py-2 dark:border-gray-800">
+                        <button onclick="handleLogout()" class="flex w-full items-center gap-3 px-5 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
+                            {{ __('nav.sign_out') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Mobile Hamburger --}}
+            <button id="mobile-btn" type="button" class="nav-action-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-transparent text-gray-500 dark:text-gray-400 md:hidden" aria-label="{{ __('nav.menu') }}" aria-controls="mobile-drawer" aria-expanded="false">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+            </button>
+        </div>
+    </div>
+
+    {{-- Category / navigation layer --}}
+    <div class="site-header-category-bar hidden lg:block">
+        <div class="site-header-category-inner">
+            <div class="relative shrink-0" id="mega-wrap">
+                <button id="mega-btn" class="nav-primary-link font-semibold">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
                     {{ __('nav.categories') }}
                     <svg class="h-3.5 w-3.5 text-gray-400 transition-transform duration-200" id="mega-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
                 </button>
-                <div id="mega-panel" class="dropdown-panel absolute top-full z-50 mt-3 hidden w-[780px] ltr:left-0 rtl:right-0" style="animation:fadeIn .15s ease-out;">
+                <div id="mega-panel" class="dropdown-panel absolute top-full z-50 mt-2 hidden w-[780px] ltr:left-0 rtl:right-0">
                     <div class="flex" style="min-height:340px;">
                         <div id="mega-cats" class="w-64 shrink-0 overflow-y-auto border-e border-gray-100/80 bg-gray-50/70 py-2 dark:border-gray-800 dark:bg-gray-900/40">
                             <div class="px-5 py-8 text-center text-xs text-gray-400">{{ __('nav.loading_categories') }}</div>
@@ -29,119 +137,15 @@
                     </div>
                 </div>
             </div>
-
-            {{-- Desktop Links --}}
-            <div class="hidden items-center gap-1 md:flex">
-                <a href="{{ route('products.index') }}" class="nav-pill-btn rounded-2xl px-4 py-2.5 text-sm font-bold text-gray-600 transition-colors hover:bg-white/70 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white">{{ __('nav.products') }}</a>
-                <a href="{{ route('categories.index') }}" class="nav-pill-btn rounded-2xl px-4 py-2.5 text-sm font-bold text-gray-600 transition-colors hover:bg-white/70 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white">{{ __('nav.categories') }}</a>
-            </div>
-
-            <div class="flex-1"></div>
-
-            {{-- Right Actions --}}
-            <div class="flex items-center gap-2">
-                {{-- Language Switcher --}}
-                <x-language-switcher />
-                {{-- Dark Mode Toggle --}}
-                <button id="theme-toggle" type="button" class="nav-action-btn relative hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/40 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200 sm:flex" aria-label="{{ __('nav.toggle_theme_aria') }}" title="{{ __('nav.toggle_theme_aria') }}">
-                    <svg id="icon-sun" class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
-                    <svg id="icon-moon" class="h-5 w-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
-                </button>
-
-                {{-- Cart --}}
-                <button id="nav-cart" type="button" class="nav-action-btn relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/40 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" onclick="window.showCart && window.showCart()" aria-label="{{ __('nav.cart') }}" title="{{ __('nav.cart') }}">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
-                    <span id="cart-badge" class="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold leading-none text-white shadow hidden"></span>
-                </button>
-
-                {{-- Notifications (authenticated only). data-context: customer | vendor | admin for notification links. --}}
-                <div id="nav-notifications-wrap" class="relative hidden" data-context="customer">
-                    <button id="nav-notifications-btn" type="button" class="nav-action-btn relative flex h-10 w-10 items-center justify-center rounded-2xl border border-transparent text-gray-500 transition-colors hover:border-white/40 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200" title="{{ __('nav.notifications_aria') }}">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/></svg>
-                        <span id="notification-badge" class="absolute -right-0.5 -top-0.5 flex h-4.5 min-w-[18px] items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold leading-none text-white shadow hidden">0</span>
-                    </button>
-                    <div id="notification-dropdown" class="dropdown-panel absolute top-full z-50 mt-2 hidden flex max-h-[min(32rem,75vh)] w-[min(420px,95vw)] flex-col ltr:right-0 rtl:left-0" style="animation:fadeIn .15s ease-out;">
-                        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800 shrink-0">
-                            <span class="text-[13px] font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('nav.notifications') }}</span>
-                            <button type="button" id="notification-mark-all-read" class="text-[11px] font-medium uppercase tracking-wider text-brand-600 hover:text-brand-700 dark:text-brand-400">{{ __('nav.mark_all_read') }}</button>
-                        </div>
-                        <div id="notification-list" class="overflow-y-auto flex-1 min-h-0 max-h-[min(24rem,55vh)]">
-                            <p class="px-4 py-10 text-center text-[13px] text-gray-400 dark:text-gray-500">{{ __('common.loading') }}</p>
-                        </div>
-                        <div id="notification-empty" class="hidden px-4 py-12 text-center text-[13px] text-gray-400 dark:text-gray-500 shrink-0">{{ __('nav.no_notifications') }}</div>
-                        <div id="notification-pagination" class="hidden border-t border-gray-100 dark:border-gray-800 px-3 py-2 flex items-center justify-between gap-2 shrink-0 bg-gray-50/50 dark:bg-gray-800/30">
-                            <button type="button" id="notification-prev" class="rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 disabled:opacity-50 disabled:pointer-events-none">{{ __('nav.prev') }}</button>
-                            <span id="notification-page-info" class="text-[11px] text-gray-500 dark:text-gray-400">{{ __('nav.page') }} 1 {{ __('nav.of') }} 1</span>
-                            <button type="button" id="notification-next" class="rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 disabled:opacity-50 disabled:pointer-events-none">{{ __('nav.next') }}</button>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Guest Buttons (hidden when authenticated) --}}
-                <div id="nav-guest" class="hidden items-center gap-2 sm:flex">
-                    <a href="{{ route('login') }}" class="nav-pill-btn rounded-2xl px-4 py-2.5 text-sm font-bold text-gray-600 transition-colors hover:bg-white/70 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white">{{ __('nav.sign_in') }}</a>
-                    <a href="{{ route('register') }}" class="btn-primary btn-sm">{{ __('nav.register') }}</a>
-                </div>
-
-                {{-- Profile Dropdown (shown when authenticated) --}}
-                <div id="profile-wrap" class="relative hidden">
-                    <button id="profile-btn" class="flex items-center gap-2.5 rounded-2xl border border-transparent px-2.5 py-2 transition-all hover:border-white/40 hover:bg-white/70 dark:hover:border-white/10 dark:hover:bg-white/5">
-                        <div id="profile-avatar" class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-400 to-brand-600 ring-2 ring-white dark:ring-gray-800">
-                            <span id="profile-initial" class="text-sm font-bold text-white">?</span>
-                        </div>
-                        <div class="hidden sm:block text-start">
-                            <p id="profile-name" class="text-sm font-bold leading-tight text-gray-900 dark:text-white"></p>
-                            <p id="profile-role" class="text-[10px] font-medium text-gray-400 dark:text-gray-500">{{ __('nav.customer') }}</p>
-                        </div>
-                        <svg class="h-3.5 w-3.5 text-gray-400 transition-transform duration-200" id="profile-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
-                    </button>
-
-                    {{-- Dropdown --}}
-                    <div id="profile-dropdown" class="dropdown-panel absolute top-full z-50 mt-2 hidden w-72 ltr:right-0 rtl:left-0" style="animation:fadeIn .12s ease-out;">
-                        {{-- User Info Header --}}
-                        <div class="border-b border-gray-100 bg-gray-50/80 px-5 py-4 dark:border-gray-800 dark:bg-gray-800/50">
-                            <div class="flex items-center gap-3">
-                                <div id="dd-avatar" class="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-400 to-brand-600 ring-2 ring-white dark:ring-gray-700">
-                                    <span id="dd-initial" class="text-base font-bold text-white">?</span>
-                                </div>
-                                <div class="min-w-0 flex-1">
-                                    <p id="dd-name" class="truncate text-sm font-bold text-gray-900 dark:text-white"></p>
-                                    <p id="dd-email" class="truncate text-xs text-gray-500 dark:text-gray-400"></p>
-                                </div>
-                            </div>
-                        </div>
-                        {{-- Menu Links --}}
-                        <div class="py-2">
-                            <a href="{{ route('profile') }}" class="flex items-center gap-3 px-5 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800">
-                                <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
-                                {{ __('nav.my_profile') }}
-                            </a>
-                            <a id="dd-dashboard-link" href="#" class="hidden items-center gap-3 px-5 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800">
-                                <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6z"/></svg>
-                                {{ __('nav.dashboard') }}
-                            </a>
-                        </div>
-                        <div class="border-t border-gray-100 py-2 dark:border-gray-800">
-                            <button onclick="handleLogout()" class="flex w-full items-center gap-3 px-5 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
-                                {{ __('nav.sign_out') }}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Mobile Hamburger --}}
-                <button id="mobile-btn" type="button" class="nav-action-btn flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-transparent text-gray-500 hover:border-white/40 hover:bg-white/70 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 md:hidden" aria-label="{{ __('nav.menu') }}" aria-controls="mobile-drawer" aria-expanded="false">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
-                </button>
-            </div>
+            <a href="{{ route('products.index') }}" class="nav-primary-link">{{ __('nav.products') }}</a>
+            <a href="{{ route('categories.index') }}" class="nav-primary-link">{{ __('nav.categories') }}</a>
         </div>
-    </nav>
+    </div>
 
     {{-- Mobile Drawer --}}
     <div id="mobile-drawer" class="fixed inset-0 z-[60] hidden" role="dialog" aria-modal="true" aria-labelledby="mobile-menu-title">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeMobileMenu()"></div>
-        <div class="mobile-drawer-shell absolute right-0 top-0 flex h-full w-80 max-w-[88vw] flex-col border-l border-white/40 bg-white/92 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-gray-900/94 rtl:right-auto rtl:left-0 rtl:border-l-0 rtl:border-r" style="animation:slideInRight .25s cubic-bezier(.22,1,.36,1);">
+        <div class="mobile-drawer-shell absolute right-0 top-0 flex h-full w-80 max-w-[88vw] flex-col border-l bg-white shadow-2xl dark:bg-gray-900 rtl:right-auto rtl:left-0 rtl:border-l-0 rtl:border-r" style="border-color: var(--color-border);">
             <div class="flex items-center justify-between border-b border-gray-200/70 px-5 py-4 dark:border-gray-800">
                 <span id="mobile-menu-title" class="text-lg font-extrabold text-gray-900 dark:text-white">{{ __('nav.menu') }}</span>
                 <button onclick="closeMobileMenu()" class="rounded-xl p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="{{ __('nav.close_menu') }}"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
@@ -861,6 +865,12 @@ window.addEventListener('cartUpdated', () => updateCartBadge(true));
 window.addEventListener('storage', (e) => { if (e.key === 'cart') updateCartBadge(); });
 updateCartBadge();
 window.updateCartBadge = updateCartBadge;
+
+document.getElementById('nav-search-form')?.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const q = document.getElementById('nav-search-input')?.value.trim();
+    window.location.href = '{{ route("products.index") }}' + (q ? '?search=' + encodeURIComponent(q) : '');
+});
 
 async function handleLogout() {
     try { await window.axios.post('/api/auth/logout'); } catch (e) {}

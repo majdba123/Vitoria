@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="bg-transparent">
-    <div class="border-b border-white/40 bg-white/60 backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
+    <div class="catalog-page-band">
         <div class="page-shell py-3">
             <nav class="page-breadcrumb">
                 <a href="{{ route('home') }}" class="hover:text-brand-600 dark:hover:text-brand-400">{{ __('profile.home') }}</a>
@@ -47,7 +47,7 @@
                         <div id="avatar-preview" class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-400 to-brand-600 ring-4 ring-white shadow-lg dark:ring-gray-800">
                             <span id="avatar-initial" class="text-3xl font-black text-white">?</span>
                         </div>
-                        <label for="avatar-input" class="absolute -bottom-1 -right-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-brand-500 text-white shadow-lg transition-all hover:bg-brand-600 hover:scale-110">
+                        <label for="avatar-input" class="absolute -bottom-1 -right-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-brand-600 text-white transition-colors hover:bg-brand-700">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
                         </label>
                         <input type="file" id="avatar-input" class="hidden" accept="image/*">
@@ -402,7 +402,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             $('fav-grid').innerHTML = products.map(p => {
                 const photoUrl = p.first_photo_url || '';
                 return `<div class="group relative overflow-hidden rounded-xl border border-gray-200/80 bg-white transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900">
-                    <button onclick="removeFav(${p.id},this.closest('.group'))" class="absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-red-500 shadow-sm backdrop-blur-sm transition-all hover:scale-110 hover:bg-red-50 dark:bg-gray-900/90 dark:hover:bg-red-500/10" title="Remove from favourites">
+                    <button onclick="removeFav(${p.id},this.closest('.group'))" class="absolute end-2 top-2 z-10 flex h-10 w-10 items-center justify-center border border-gray-200 bg-white text-red-600 transition-colors hover:bg-red-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-red-500/10" title="Remove from favourites" aria-label="Remove from favourites">
                         <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"/></svg>
                     </button>
                     <a href="/products/${p.id}">
@@ -491,7 +491,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             </div>`;
         }).join('');
 
-        return `<article class="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800 dark:bg-gray-900">
+        return `<article class="overflow-hidden border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
             <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 bg-gray-50/80 px-4 py-3 dark:border-gray-800 dark:bg-gray-800/40">
                 <div>
                     <p><span class="inline-flex rounded-lg bg-gray-900 px-2.5 py-1 text-[11px] font-black text-white shadow-sm dark:bg-white dark:text-gray-900">${escH(order.order_number || ('Order #' + order.id))}</span></p>

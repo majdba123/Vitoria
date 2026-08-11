@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="bg-transparent">
-        <div class="border-b border-white/40 bg-white/60 backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
+        <div class="catalog-page-band">
             <div class="page-shell py-3">
                 <nav class="page-breadcrumb">
                     <a href="{{ route('home') }}" class="hover:text-brand-600 dark:hover:text-brand-400">{{ __('nav.home') }}</a>
@@ -23,7 +23,7 @@
             </div>
 
             <div id="show-content" class="hidden">
-                <div class="grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)]">
+                <div class="product-decision-layout">
                     <div class="space-y-4">
                         <div class="storefront-gallery-main">
                             <div id="primary-photo-container" class="absolute inset-0 flex items-center justify-center text-center text-sm font-medium text-gray-400 dark:text-gray-500">
@@ -31,11 +31,11 @@
                             </div>
                         </div>
 
-                        <div class="storefront-detail-panel">
+                        <div class="border-t border-gray-200 pt-5 dark:border-gray-800">
                             <div class="mb-4 flex items-center justify-between gap-3">
                                 <div>
-                                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">{{ __('products.media_badge') }}</p>
-                                    <h2 class="mt-2 text-lg font-black text-gray-900 dark:text-white">{{ __('products.gallery_title') }}</h2>
+                                    <p class="commerce-kicker">{{ __('products.media_badge') }}</p>
+                                    <h2 class="mt-2 text-lg font-bold text-gray-900 dark:text-white">{{ __('products.gallery_title') }}</h2>
                                 </div>
                                 <span id="photo-count" class="text-xs font-semibold text-gray-400 dark:text-gray-500"></span>
                             </div>
@@ -43,14 +43,14 @@
                         </div>
                     </div>
 
-                    <div class="space-y-4">
-                        <div class="storefront-detail-panel">
+                    <div class="product-decision-summary">
+                        <div class="border-b border-gray-200 pb-7 dark:border-gray-800">
                             <div class="flex flex-wrap items-start justify-between gap-4">
                                 <div class="min-w-0 flex-1">
-                                    <p class="text-[11px] font-black uppercase tracking-[0.24em] text-brand-600 dark:text-brand-300">{{ __('products.overview_badge') }}</p>
-                                    <h1 id="product-name" class="mt-3 text-3xl font-black leading-tight tracking-tight text-gray-900 dark:text-white sm:text-4xl"></h1>
+                                    <p class="commerce-kicker">{{ __('products.overview_badge') }}</p>
+                                    <h1 id="product-name" class="mt-3 text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white sm:text-4xl"></h1>
                                 </div>
-                                <button id="fav-detail-btn" onclick="window.toggleFav({{ $productId ?? 0 }},this)" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-gray-200 bg-white/80 text-gray-400 shadow-sm transition-all hover:scale-105 dark:border-gray-700 dark:bg-gray-900/80 dark:text-gray-500" data-fav-btn="{{ $productId ?? 0 }}">
+                                <button type="button" id="fav-detail-btn" onclick="window.toggleFav({{ $productId ?? 0 }},this)" class="flex h-11 w-11 shrink-0 items-center justify-center border border-gray-300 bg-white text-gray-500 transition-colors hover:border-brand-500 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-400" data-fav-btn="{{ $productId ?? 0 }}" aria-pressed="false" aria-label="{{ __('nav.favorites') }}">
                                     <svg class="h-6 w-6" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
                                 </button>
                             </div>
@@ -61,31 +61,31 @@
                             </div>
 
                             <div class="mt-5 flex flex-wrap items-end gap-3 border-b border-gray-100 pb-5 dark:border-gray-800">
-                                <span id="product-price" class="text-4xl font-black text-gray-900 dark:text-white"></span>
+                                <span id="product-price" class="text-4xl font-bold tabular-nums text-gray-900 dark:text-white"></span>
                                 <span class="pb-1 text-sm font-semibold text-gray-400">SYP</span>
                                 <span id="product-price-original" class="hidden pb-1 text-sm text-gray-400 line-through"></span>
                             </div>
 
                             <div class="storefront-spec-grid mt-5">
                                 <div class="storefront-spec-card">
-                                    <p class="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">{{ __('products.fields.category') }}</p>
-                                    <p id="product-category" class="mt-2 text-sm font-black text-gray-900 dark:text-white">—</p>
+                                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('products.fields.category') }}</p>
+                                    <p id="product-category" class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">—</p>
                                 </div>
                                 <div class="storefront-spec-card">
-                                    <p class="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">{{ __('products.fields.subcategory') }}</p>
-                                    <p id="product-subcategory" class="mt-2 text-sm font-black text-gray-900 dark:text-white">—</p>
+                                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('products.fields.subcategory') }}</p>
+                                    <p id="product-subcategory" class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">—</p>
                                 </div>
                                 <div class="storefront-spec-card">
-                                    <p class="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">{{ __('products.fields.quantity') }}</p>
-                                    <p id="product-quantity" class="mt-2 text-sm font-black text-gray-900 dark:text-white">—</p>
+                                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('products.fields.quantity') }}</p>
+                                    <p id="product-quantity" class="mt-1 text-sm font-semibold tabular-nums text-gray-900 dark:text-white">—</p>
                                 </div>
                                 <div class="storefront-spec-card">
-                                    <p class="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">{{ __('products.fields.vendor') }}</p>
-                                    <p id="product-vendor" class="mt-2 text-sm font-black text-gray-900 dark:text-white">—</p>
+                                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('products.fields.vendor') }}</p>
+                                    <p id="product-vendor" class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">—</p>
                                 </div>
                             </div>
 
-                            <div class="mt-5 rounded-[24px] border border-gray-200/80 bg-gray-50/80 p-4 dark:border-gray-800 dark:bg-gray-950/60">
+                            <div class="mt-5 border-y border-gray-200 py-4 dark:border-gray-800">
                                 <div class="flex flex-wrap items-start justify-between gap-4">
                                     <div>
                                         <p class="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">{{ __('products.discount_card_title') }}</p>
@@ -94,15 +94,15 @@
                                     <p id="product-availability"></p>
                                 </div>
                                 <div class="mt-4 grid gap-3 sm:grid-cols-3">
-                                    <div class="rounded-2xl bg-white px-4 py-3 dark:bg-gray-900/70">
+                                    <div class="border-s-2 border-gray-200 ps-3 dark:border-gray-700">
                                         <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-gray-400">{{ __('products.fields.discount_value') }}</p>
                                         <p id="product-discount-value" class="mt-1 text-sm font-black text-red-600 dark:text-red-400">—</p>
                                     </div>
-                                    <div class="rounded-2xl bg-white px-4 py-3 dark:bg-gray-900/70">
+                                    <div class="border-s-2 border-gray-200 ps-3 dark:border-gray-700">
                                         <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-gray-400">{{ __('products.fields.discount_starts') }}</p>
                                         <p id="product-discount-start" class="mt-1 text-sm font-black text-gray-900 dark:text-white">—</p>
                                     </div>
-                                    <div class="rounded-2xl bg-white px-4 py-3 dark:bg-gray-900/70">
+                                    <div class="border-s-2 border-gray-200 ps-3 dark:border-gray-700">
                                         <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-gray-400">{{ __('products.fields.discount_ends') }}</p>
                                         <p id="product-discount-end" class="mt-1 text-sm font-black text-gray-900 dark:text-white">—</p>
                                     </div>
@@ -110,7 +110,7 @@
                             </div>
 
                             <div class="mt-5 flex flex-col gap-3 sm:flex-row">
-                                <button id="add-to-cart-btn" class="flex-1 rounded-2xl bg-gray-900 px-5 py-3.5 text-sm font-black text-white transition-all hover:bg-brand-600 active:scale-[.98] dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white" disabled>
+                                <button id="add-to-cart-btn" class="btn-primary flex-1 py-3.5" disabled>
                                     <span class="flex items-center justify-center gap-2">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" /></svg>
                                         {{ __('products.add_to_cart_btn') }}
@@ -119,24 +119,24 @@
                             </div>
                         </div>
 
-                        <div class="storefront-detail-panel">
-                            <p class="text-[11px] font-black uppercase tracking-[0.24em] text-brand-600 dark:text-brand-300">{{ __('products.description_badge') }}</p>
-                            <h2 class="mt-2 text-lg font-black text-gray-900 dark:text-white">{{ __('products.description_title') }}</h2>
+                        <div class="border-b border-gray-200 py-7 dark:border-gray-800">
+                            <p class="commerce-kicker">{{ __('products.description_badge') }}</p>
+                            <h2 class="mt-2 text-lg font-bold text-gray-900 dark:text-white">{{ __('products.description_title') }}</h2>
                             <p id="product-description" class="mt-4 whitespace-pre-wrap text-sm leading-8 text-gray-600 dark:text-gray-300"></p>
                         </div>
                     </div>
                 </div>
 
                 <div id="reviews-section" class="mt-10 hidden">
-                    <div class="storefront-detail-panel">
+                    <div class="border-t border-gray-200 py-9 dark:border-gray-800">
                         <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
                             <div>
-                                <p class="text-[11px] font-black uppercase tracking-[0.24em] text-brand-600 dark:text-brand-300">{{ __('products.reviews') }}</p>
-                                <h2 class="mt-2 text-xl font-black text-gray-900 dark:text-white">{{ __('products.reviews') }} <span id="reviews-subtitle" class="text-sm font-normal text-gray-500 dark:text-gray-400"></span></h2>
+                                <p class="commerce-kicker">{{ __('products.reviews') }}</p>
+                                <h2 class="mt-2 text-xl font-bold text-gray-900 dark:text-white">{{ __('products.reviews') }} <span id="reviews-subtitle" class="text-sm font-normal text-gray-500 dark:text-gray-400"></span></h2>
                             </div>
                         </div>
 
-                        <div id="review-form-wrap" class="mb-8 hidden rounded-[24px] border border-gray-200/80 bg-gray-50/80 p-4 dark:border-gray-800 dark:bg-gray-950/60">
+                        <div id="review-form-wrap" class="mb-8 hidden border-y border-gray-200 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-950">
                             <form id="review-form" class="space-y-4">
                                 <div>
                                     <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300">{{ __('products.review_rating_label') }}</label>
@@ -161,7 +161,7 @@
                             </form>
                         </div>
 
-                        <div id="reviews-list" class="space-y-4"></div>
+                        <div id="reviews-list" class="divide-y divide-gray-200 dark:divide-gray-800"></div>
                         <div id="reviews-empty" class="hidden py-8 text-center text-sm text-gray-500 dark:text-gray-400">{{ __('products.no_reviews') }}</div>
                         <div id="reviews-pagination" class="mt-6 flex flex-wrap items-center justify-center gap-2"></div>
                     </div>
@@ -503,7 +503,7 @@
                         const deleteButton = canDelete ? `<button type="button" data-review-id="${review.id}" class="review-delete-btn text-xs font-bold text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">${esc(i18n.deleteReview || 'Delete')}</button>` : '';
 
                         listElement.innerHTML += `
-                            <div class="rounded-[24px] border border-gray-200/80 bg-white/80 p-4 dark:border-gray-800 dark:bg-gray-950/60" data-review-id="${review.id}">
+                            <article class="py-5" data-review-id="${review.id}">
                                 <div class="flex flex-wrap items-center justify-between gap-3">
                                     <div>
                                         <p class="text-sm font-black text-gray-900 dark:text-white">${userName}</p>
@@ -515,7 +515,7 @@
                                     </div>
                                 </div>
                                 ${body}
-                            </div>
+                            </article>
                         `;
                     });
 

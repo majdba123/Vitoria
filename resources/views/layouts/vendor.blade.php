@@ -12,7 +12,7 @@
     <title>@yield('title', __('vendor.workspace') . ' - Vetora')</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|sora:600,700,800|ibm-plex-sans-arabic:400,500,600,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|ibm-plex-sans-arabic:400,500,600,700&display=swap" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
@@ -35,13 +35,13 @@
     class="dashboard-body min-h-screen font-sans text-gray-900 antialiased transition-colors duration-300 dark:text-gray-100"
 >
     <div id="vendor-app" class="hidden">
-        <div id="sidebar-backdrop" class="fixed inset-0 z-40 hidden bg-gray-950/55 backdrop-blur-sm transition-opacity dark:bg-black/70 lg:hidden" onclick="closeSidebar()"></div>
+        <div id="sidebar-backdrop" class="fixed inset-0 z-40 hidden bg-gray-950/60 transition-opacity dark:bg-black/70 lg:hidden" onclick="closeSidebar()"></div>
 
         <x-vendor.sidebar />
 
         <div class="{{ $vendorMainPaddingClass }}">
             <header class="dashboard-topbar sticky top-0 z-30">
-                <div class="workspace-shell flex h-[78px] items-center gap-x-4">
+                <div class="workspace-shell flex h-16 items-center gap-x-4">
                     <button type="button" id="sidebar-toggle" class="-m-2.5 flex h-10 w-10 items-center justify-center rounded-2xl text-gray-500 hover:bg-white/70 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200 lg:hidden" aria-label="{{ __('vendor.open_sidebar') }}">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
                     </button>
@@ -114,9 +114,7 @@
 
     <div id="vendor-loading" class="flex min-h-screen items-center justify-center">
         <div class="text-center">
-            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-white/70 shadow-lg shadow-gray-900/5 backdrop-blur-md dark:bg-white/5 dark:shadow-black/20">
-                <div class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-emerald-500 dark:border-gray-700"></div>
-            </div>
+            <div class="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-brand-600 dark:border-gray-700 dark:border-t-brand-300"></div>
             <p class="mt-4 text-sm font-semibold text-gray-500 dark:text-gray-400">{{ __('vendor.loading_store') }}</p>
         </div>
     </div>

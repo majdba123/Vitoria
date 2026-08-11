@@ -16,27 +16,20 @@
 <aside id="employee-sidebar" class="dashboard-sidebar fixed inset-y-0 {{ $sidebarEdgeClass }} z-50 flex w-72 flex-col">
     <div class="flex h-[88px] items-center gap-3 border-b border-white/8 px-6">
         <a href="{{ route('employee.dashboard') }}" class="flex items-center gap-3 text-white">
-            <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-700 shadow-lg shadow-cyan-500/20">
-                <i class="fa-solid fa-clipboard-check text-sm"></i>
+            <span class="flex h-9 w-9 items-center justify-center border border-brand-300/30 bg-brand-500/15 text-brand-200">
+                <i class="fa-solid fa-clipboard-check text-xs"></i>
             </span>
             <span>
                 <span class="block font-display text-xl font-extrabold">Vetora</span>
-                <span class="mt-1 block text-[11px] font-extrabold uppercase tracking-[0.28em] text-cyan-200">{{ __('employee.workspace') }}</span>
+                <span class="mt-1 block text-[11px] font-extrabold uppercase tracking-[0.28em] text-brand-200">{{ __('employee.workspace') }}</span>
             </span>
         </a>
-        <button onclick="closeSidebar()" class="{{ $closeMarginClass }} rounded-2xl p-2 text-gray-400 hover:bg-white/5 hover:text-white lg:hidden">
+        <button onclick="closeSidebar()" class="{{ $closeMarginClass }} p-2 text-gray-400 hover:bg-white/5 hover:text-white lg:hidden" aria-label="{{ __('common.close') }}">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
     </div>
 
-    <div class="px-6 pt-5">
-        <div class="rounded-[24px] border border-white/8 bg-white/5 p-4 text-white/80">
-            <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-white/45">{{ __('employee.workspace') }}</p>
-            <p class="mt-2 text-sm leading-6 text-white/75">{{ __('employee.sidebar_copy') }}</p>
-        </div>
-    </div>
-
-    <nav class="min-h-0 flex-1 overflow-y-auto px-4 py-5">
+    <nav class="min-h-0 flex-1 overflow-y-auto px-3 py-4">
         @foreach ($groupedLinks as $group => $items)
             <div class="mb-6">
                 <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-white/35">{{ $group }}</p>

@@ -4,7 +4,7 @@
             <div class="grid gap-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
                 <div class="border-b border-gray-200/70 bg-gray-50/70 px-6 py-8 dark:border-gray-800 dark:bg-gray-900/40 lg:border-b-0 lg:border-e lg:px-8">
                     <span class="eyebrow">{{ __('home.contact') }}</span>
-                    <h2 class="mt-4 text-2xl font-black tracking-tight text-gray-900 dark:text-white sm:text-3xl">{{ __('home.contact_title') }}</h2>
+                    <h2 class="mt-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">{{ __('home.contact_title') }}</h2>
                     <p class="mt-3 text-sm leading-7 text-gray-500 dark:text-gray-400">{{ __('home.contact_subtitle') }}</p>
                 </div>
 

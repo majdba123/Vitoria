@@ -40,19 +40,19 @@
 
 @section('content')
 <div class="mx-auto max-w-7xl space-y-6">
-    <div id="product-loading" class="rounded-[28px] border border-slate-200/80 bg-white/90 px-6 py-20 text-center shadow-sm shadow-slate-200/40 backdrop-blur">
+    <div id="product-loading" class="border border-slate-200 bg-white px-6 py-20 text-center dark:border-gray-800 dark:bg-gray-900">
         <div class="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-brand-500"></div>
         <p class="mt-4 text-sm font-medium text-slate-500">{{ __('products.loading_details') }}</p>
     </div>
 
-    <div id="product-error" class="hidden rounded-[28px] border border-rose-200 bg-rose-50 px-6 py-14 text-center shadow-sm">
+    <div id="product-error" class="hidden border border-rose-200 bg-rose-50 px-6 py-14 text-center">
         <svg class="mx-auto h-12 w-12 text-rose-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 3.75h.007v.008H12v-.008zm9-3.758a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         <p class="mt-4 text-base font-bold text-rose-700">{{ __('products.load_failed') }}</p>
         <p class="mt-1 text-sm text-rose-600">{{ __('products.refresh_try_again') }}</p>
     </div>
 
     <div id="product-content" class="hidden space-y-6">
-        <section class="overflow-hidden rounded-[32px] border border-slate-200/80 bg-gradient-to-br from-slate-900 via-slate-800 to-brand-700 text-white shadow-xl shadow-slate-300/30">
+        <section class="overflow-hidden border border-slate-700 bg-slate-900 text-white">
             <div class="grid gap-8 px-6 py-7 lg:grid-cols-[minmax(0,1fr)_300px] lg:px-8">
                 <div class="space-y-5">
                     <div class="flex flex-wrap items-start justify-between gap-4">
@@ -77,26 +77,26 @@
                     </div>
 
                     <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                        <div class="rounded-2xl border border-white/10 bg-white/10 px-4 py-4 backdrop-blur">
+                        <div class="border-s border-white/20 px-4 py-2">
                             <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/50">{{ __('products.fields.price') }}</p>
                             <p id="product-price" class="mt-2 text-2xl font-black text-white">—</p>
                         </div>
-                        <div class="rounded-2xl border border-white/10 bg-white/10 px-4 py-4 backdrop-blur">
+                        <div class="border-s border-white/20 px-4 py-2">
                             <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/50">{{ __('products.fields.quantity') }}</p>
                             <p id="product-quantity" class="mt-2 text-2xl font-black text-white">—</p>
                         </div>
-                        <div class="rounded-2xl border border-white/10 bg-white/10 px-4 py-4 backdrop-blur">
+                        <div class="border-s border-white/20 px-4 py-2">
                             <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/50">{{ __('products.fields.registration') }}</p>
                             <p id="product-registration" class="mt-2 text-sm font-semibold text-white/90">—</p>
                         </div>
-                        <div class="rounded-2xl border border-white/10 bg-white/10 px-4 py-4 backdrop-blur">
+                        <div class="border-s border-white/20 px-4 py-2">
                             <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/50">{{ __('products.fields.barcodes') }}</p>
                             <p id="product-barcodes" class="mt-2 text-sm font-semibold text-white/90">—</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-[28px] border border-white/10 bg-white/10 p-5 backdrop-blur">
+                <div class="border-t border-white/15 p-5">
                     <p class="text-xs font-bold uppercase tracking-[0.3em] text-white/55">{{ __('products.vendor_snapshot_badge') }}</p>
                     <h2 class="mt-2 text-lg font-bold text-white">{{ __('products.vendor_snapshot_title') }}</h2>
 
@@ -124,7 +124,7 @@
 
         <div class="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,.85fr)]">
             <div class="space-y-6">
-                <section class="overflow-hidden rounded-[30px] border border-slate-200/80 bg-white shadow-sm shadow-slate-200/50">
+                <section class="overflow-hidden border border-slate-200 bg-white">
                     <div class="border-b border-slate-100 px-6 py-5">
                         <div class="flex flex-wrap items-center justify-between gap-3">
                             <div>
@@ -135,14 +135,14 @@
                         </div>
                     </div>
                     <div class="space-y-5 p-6">
-                        <div id="primary-photo-container" class="group relative flex aspect-[16/11] items-center justify-center overflow-hidden rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-slate-100">
+                        <div id="primary-photo-container" class="group relative flex aspect-[16/11] items-center justify-center overflow-hidden border border-slate-200 bg-slate-50">
                             <p class="text-sm font-medium text-slate-400">{{ __('products.no_primary_photo') }}</p>
                         </div>
                         <div id="product-photos" class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"></div>
                     </div>
                 </section>
 
-                <section class="overflow-hidden rounded-[30px] border border-slate-200/80 bg-white shadow-sm shadow-slate-200/50">
+                <section class="overflow-hidden border border-slate-200 bg-white">
                     <div class="border-b border-slate-100 px-6 py-5">
                         <p class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">{{ __('products.description_badge') }}</p>
                         <h2 class="mt-2 text-xl font-black text-slate-900">{{ __('products.vendor_description_title') }}</h2>
@@ -152,7 +152,7 @@
                     </div>
                 </section>
 
-                <section id="shared-section" class="overflow-hidden rounded-[30px] border border-slate-200/80 bg-white shadow-sm shadow-slate-200/50">
+                <section id="shared-section" class="overflow-hidden border border-slate-200 bg-white">
                     <div class="border-b border-slate-100 px-6 py-5">
                         <p class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">{{ __('products.shared_badge') }}</p>
                         <h2 class="mt-2 text-xl font-black text-slate-900">{{ __('products.shared_title') }}</h2>
@@ -160,7 +160,7 @@
                     <div id="shared-grid" class="grid gap-4 p-6 md:grid-cols-2"></div>
                 </section>
 
-                <section id="agriculture-section" class="hidden overflow-hidden rounded-[30px] border border-emerald-200/80 bg-white shadow-sm shadow-emerald-100/60">
+                <section id="agriculture-section" class="hidden overflow-hidden border border-emerald-200 bg-white">
                     <div class="border-b border-emerald-100 px-6 py-5">
                         <p class="text-xs font-bold uppercase tracking-[0.3em] text-emerald-500">{{ __('products.agriculture_badge') }}</p>
                         <h2 class="mt-2 text-xl font-black text-slate-900">{{ __('products.agriculture_title') }}</h2>
@@ -168,7 +168,7 @@
                     <div id="agriculture-grid" class="grid gap-4 p-6 md:grid-cols-2"></div>
                 </section>
 
-                <section id="veterinary-section" class="hidden overflow-hidden rounded-[30px] border border-sky-200/80 bg-white shadow-sm shadow-sky-100/60">
+                <section id="veterinary-section" class="hidden overflow-hidden border border-sky-200 bg-white">
                     <div class="border-b border-sky-100 px-6 py-5">
                         <p class="text-xs font-bold uppercase tracking-[0.3em] text-sky-500">{{ __('products.veterinary_badge') }}</p>
                         <h2 class="mt-2 text-xl font-black text-slate-900">{{ __('products.veterinary_title') }}</h2>
@@ -178,7 +178,7 @@
             </div>
 
             <aside class="space-y-6">
-                <section class="overflow-hidden rounded-[30px] border border-slate-200/80 bg-white shadow-sm shadow-slate-200/50">
+                <section class="overflow-hidden border border-slate-200 bg-white">
                     <div class="border-b border-slate-100 px-6 py-5">
                         <p class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">{{ __('products.summary_badge') }}</p>
                         <h2 class="mt-2 text-xl font-black text-slate-900">{{ __('products.summary_title') }}</h2>

@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         grid.innerHTML = products.map(p => {
             const photoUrl = p.first_photo_url || null;
             return `<div class="group card overflow-hidden border border-gray-200/70 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
-                <div class="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 sm:aspect-square">
+                <div class="relative aspect-[4/3] overflow-hidden bg-gray-100 sm:aspect-square dark:bg-gray-800">
                     ${photoUrl
                         ? `<div class="flex h-full w-full items-center justify-center p-2">
                             <img src="${photoUrl}" class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" alt="${esc(p.name)}">

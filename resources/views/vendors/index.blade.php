@@ -1,56 +1,82 @@
 @extends('layouts.app')
-@section('title', 'All Stores — Vetora')
+@section('title', __('stores.page_title') . ' ' . __('site.meta_title_separator') . ' Vetora')
 
 @section('content')
-<div class="bg-white dark:bg-gray-950">
-    <div class="border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
-        <div class="mx-auto max-w-screen-2xl px-4 py-3 sm:px-6 lg:px-8">
-            <nav class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                <a href="{{ route('home') }}" class="hover:text-brand-600">Home</a>
-                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-                <span class="font-medium text-gray-900 dark:text-white">All Stores</span>
-            </nav>
+<div class="catalog-page-band">
+    <div class="page-shell py-3">
+        <nav class="page-breadcrumb" aria-label="{{ __('stores.page_title') }}">
+            <a href="{{ route('home') }}" class="hover:text-brand-600">{{ __('nav.home') }}</a>
+            <svg class="h-3 w-3 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+            <span class="page-breadcrumb-current">{{ __('stores.page_title') }}</span>
+        </nav>
+    </div>
+</div>
+
+<div class="page-shell">
+    <div class="commerce-section-header">
+        <div>
+            <p class="commerce-kicker">Vetora Marketplace</p>
+            <h1 class="commerce-title mt-1">{{ __('stores.page_title') }}</h1>
+            <p class="commerce-copy">{{ __('stores.page_copy') }}</p>
         </div>
     </div>
-    <div class="mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 lg:px-8">
-        <h1 class="text-2xl font-black text-gray-900 sm:text-3xl dark:text-white">All Stores</h1>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Browse our trusted vendors</p>
 
-        <div id="loading" class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"><div class="skeleton h-52 rounded-2xl"></div><div class="skeleton h-52 rounded-2xl"></div><div class="skeleton h-52 rounded-2xl"></div></div>
-        <div id="grid" class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"></div>
-        <div id="empty" class="mt-8 hidden py-16 text-center text-sm text-gray-400">No stores available.</div>
+    <div id="loading" class="grid grid-cols-1 gap-4 lg:grid-cols-2" aria-live="polite">
+        <div class="skeleton h-32 rounded-xl"></div><div class="skeleton h-32 rounded-xl"></div><div class="skeleton h-32 rounded-xl"></div><div class="skeleton h-32 rounded-xl"></div>
     </div>
+    <div id="grid" class="grid grid-cols-1 gap-4 lg:grid-cols-2"></div>
+    <div id="empty" class="empty-state hidden">{{ __('stores.empty') }}</div>
 </div>
 @endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', async function() {
+    const strings = {
+        fallback: @json(__('stores.store_fallback')),
+        visit: @json(__('stores.visit_store')),
+        error: @json(__('stores.load_error')),
+    };
+
+    function esc(value) {
+        if (!value) return '';
+        const element = document.createElement('div');
+        element.textContent = value;
+        return element.innerHTML;
+    }
+
     try {
-        const res = await axios.get('/api/vendors');
-        const vendors = res.data.data || [];
+        const response = await axios.get('/api/vendors');
+        const vendors = response.data.data || [];
         document.getElementById('loading').classList.add('hidden');
-        if (!vendors.length) { document.getElementById('empty').classList.remove('hidden'); return; }
-        const colors = ['from-brand-400 to-brand-600','from-purple-400 to-purple-600','from-blue-400 to-blue-600','from-emerald-400 to-emerald-600','from-pink-400 to-pink-600'];
-        document.getElementById('grid').innerHTML = vendors.map(v => {
-            const hasLogo = v.logo && v.logo !== 'null';
-            const initial = v.store_name ? v.store_name.charAt(0).toUpperCase() : 'S';
-            const grad = colors[v.id % colors.length];
+        if (!vendors.length) {
+            document.getElementById('empty').classList.remove('hidden');
+            return;
+        }
+
+        document.getElementById('grid').innerHTML = vendors.map(vendor => {
+            const hasLogo = vendor.logo && vendor.logo !== 'null';
+            const initial = vendor.store_name ? vendor.store_name.charAt(0).toUpperCase() : 'V';
+            const location = vendor.city?.name || vendor.address || '';
+            const categories = Array.isArray(vendor.categories) ? vendor.categories.map(category => category.name).filter(Boolean).slice(0, 2).join(' · ') : '';
             return `
-            <a href="/vendors/${v.id}" class="vendor-card group overflow-hidden rounded-2xl border border-gray-200/80 bg-white dark:border-gray-800 dark:bg-gray-900">
-                <div class="relative h-40 overflow-hidden">
-                    ${hasLogo ? `<img src="${esc(v.logo)}" alt="" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">` : `<div class="flex h-full w-full items-center justify-center bg-gradient-to-br ${grad}"><span class="text-5xl font-black text-white/90">${esc(initial)}</span></div>`}
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-3 left-4 right-4"><h3 class="truncate text-base font-bold text-white">${esc(v.store_name)}</h3>${v.user?`<p class="text-xs text-white/70">by ${esc(v.user.name)}</p>`:''}</div>
-                </div>
-                <div class="flex items-center justify-between p-4">
-                    <p class="line-clamp-1 text-xs text-gray-500 dark:text-gray-400">${esc(v.description||'Visit our store')}</p>
-                    <svg class="h-4 w-4 shrink-0 text-gray-300 group-hover:text-brand-500 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                </div>
-            </a>`;
+                <a href="/vendors/${vendor.id}" class="vendor-directory-row group">
+                    <div class="vendor-mark">${hasLogo ? `<img src="${esc(vendor.logo)}" alt="${esc(vendor.store_name)}" loading="lazy">` : `<span>${esc(initial)}</span>`}</div>
+                    <div class="min-w-0">
+                        <h2 class="truncate text-lg font-bold text-gray-900 dark:text-white">${esc(vendor.store_name)}</h2>
+                        ${categories ? `<p class="mt-1 truncate text-xs font-medium text-brand-700 dark:text-brand-300">${esc(categories)}</p>` : ''}
+                        ${location ? `<p class="mt-1 truncate text-sm text-gray-500 dark:text-gray-400">${esc(location)}</p>` : ''}
+                        <p class="mt-2 line-clamp-2 text-sm leading-6 text-gray-600 dark:text-gray-300">${esc(vendor.description || strings.fallback)}</p>
+                    </div>
+                    <span class="inline-flex items-center gap-1.5 self-end text-sm font-semibold text-brand-700 dark:text-brand-300 sm:self-center">
+                        ${esc(strings.visit)}
+                        <svg class="h-4 w-4 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                    </span>
+                </a>`;
         }).join('');
-    } catch(e) { document.getElementById('loading').innerHTML = '<p class="text-sm text-gray-400">Could not load stores.</p>'; }
-    function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+    } catch (error) {
+        document.getElementById('loading').innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">' + esc(strings.error) + '</p>';
+    }
 });
 </script>
 @endpush

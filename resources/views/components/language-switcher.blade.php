@@ -4,6 +4,7 @@
 @php
     $current = app()->getLocale();
     $isAr = $current === 'ar';
+    $currentLabel = $isAr ? __('lang.arabic') : __('lang.english');
     $id = 'lang-switcher-' . bin2hex(random_bytes(4));
 @endphp
 <div class="relative" id="{{ $id }}">
@@ -11,7 +12,7 @@
         type="button"
         aria-haspopup="true"
         aria-expanded="false"
-        aria-label="{{ __('lang.choose_language') }}"
+        aria-label="{{ __('lang.choose_language') }} — {{ $currentLabel }}"
         data-lang-toggle
         class="{{ $variant === 'compact' ? 'h-8 w-8' : 'h-9 min-w-[2.25rem] px-2' }} flex items-center justify-center gap-1.5 rounded-xl text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
     >
