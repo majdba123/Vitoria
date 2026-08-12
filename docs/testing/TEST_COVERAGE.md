@@ -3,13 +3,13 @@
 Last run: 2026-08-12 · `php artisan test`
 
 ```
-Tests:    220 passed (1324 assertions)
-Duration: 64.90s
+Tests:    231 passed (1359 assertions)
+Duration: 49.40s
 ```
 
-Baseline before this program: 145 passed (913 assertions). **75 tests added, 0
+Baseline before this program: 145 passed (913 assertions). **86 tests added, 0
 regressions** (45 from Phase B; 17 from payments/returns/refunds; 13 from
-shipping/invoices/vendor ledger).
+shipping/invoices/vendor ledger; 11 from vendor staff/RBAC).
 
 The checkout flow was additionally exercised end-to-end in a real browser
 against the dev server — guest cart → login merge → address creation → order
@@ -185,6 +185,24 @@ Covers spec §14, §19, §20.
 | **caps a settlement at the outstanding balance and records it on the ledger** | settling 999 against a 200 balance is rejected; settling 150 succeeds and outstanding drops to 50 |
 | records a manual admin adjustment on the ledger | a credit adjustment raises net_earnings by exactly its amount |
 
+### `tests/Feature/VendorStaffRbacTest.php` — 11 tests
+
+Covers spec §22, §23 (vendor-scoped RBAC).
+
+| Test | Property proved |
+|---|---|
+| lets an owner add a staff member, who gains vendor-scoped access by role | Catalog Manager can browse products, cannot update order status |
+| lets an order manager update fulfilment but not manage the product catalog | role differentiation the other direction |
+| restricts a viewer to read-only access | no order update, no staff management |
+| **always grants the owner full access, independent of the permissions table** | no `vendor_members` row exists for the owner; `hasVendorPermission()` is true even for a made-up permission key |
+| rejects adding a staff member with no matching account | no invite-a-stranger-by-email flow |
+| rejects adding a user who owns another vendor as staff | an owner can't double as someone else's staff |
+| rejects adding a user who is already active staff at another vendor | one active membership at a time |
+| **revokes access when a staff member is removed** | `DELETE` sets `removed`; the same user immediately gets 403, and `managedVendor()` returns null |
+| reactivates a removed member instead of duplicating the row | re-adding updates the same row; count stays 1 |
+| isolates a staff member strictly to their own vendor | 403/404 on a foreign vendor's order |
+| lets finance staff view the ledger but not manage the product catalog | financial read access without catalog write access |
+
 ---
 
 ## Not yet covered
@@ -192,9 +210,8 @@ Covers spec §14, §19, §20.
 These areas have no tests because the features are not implemented. Listed so the
 gap is explicit rather than implied by omission:
 
-vendor staff · RBAC tables · vendor verification documents · product documents ·
-product comparison · notification preferences · admin audit log · reports · exports ·
-CMS · SEO.
+vendor verification documents · product documents · product comparison ·
+notification preferences · admin audit log · reports · exports · CMS · SEO.
 
 ## Known gaps in what *is* implemented
 

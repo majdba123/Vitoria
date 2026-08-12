@@ -269,16 +269,63 @@ applied to a vendor's balance against the platform.
 
 ---
 
+## D15 — Vendor staff: additive membership, owner untouched, permissions scoped to vendors only
+
+**Evidence:** `vendors.user_id` is a single owning user, read via `User::vendor(): HasOne`
+and re-derived independently in ~19 files (five policies, the `vendor` route middleware,
+and every `Api\Vendor\*` / vendor-branch controller) — always the same
+`$user->vendor?->id` idiom, never a shared helper.
+
+**Decision:** `vendor_members` is purely additive. The owner is **never** represented as
+a row in it — ownership stays exactly `vendors.user_id`, unmigrated, and
+`User::hasVendorPermission()` bypasses the permissions table unconditionally when
+`$vendor->user_id === $user->id`, so a missing or misconfigured role can never lock an
+owner out of their own store. `User::managedVendor()` resolves "the vendor this user may
+act on" — the owned vendor if one exists, otherwise the vendor of an active
+`vendor_members` row — and every one of those ~19 call sites was pointed at it instead of
+`vendor` directly. This was a mechanical, verified-by-full-suite sweep, not a schema
+change to `vendor()` itself: `vendor()` remains a real `hasOne`, so anything relying on
+its exact shape (e.g. vendor-registration's `Vendor::create(['user_id' => ...])`) is
+unaffected.
+
+`roles` / `permissions` / `role_permissions` are generic primitives (D3 deferred exactly
+this), but only `vendor_members.role_id` currently assigns one — there is no `user_roles`
+table, because admin/employee/syndicate/customer still have no differentiated-permission
+requirement. The six roles spec §22 lists are seeded directly in the migration's `up()`
+(production only runs `migrate --force`, per the pattern already established for shipping
+and the RBAC permission set), with `owner` seeded for completeness but never assignable
+via staff invite (`Role::INVITABLE_KEYS` excludes it) — assigning "Owner" through
+`vendor_members` would create a second, weaker path to full access that the bypass above
+makes redundant anyway.
+
+**Permission enforcement is scoped to where a role actually differs from another** —
+`orders.update`/`cancel`, `returns.review`/`refund`, `shipments.manage`,
+`products.manage`, `ledger.view`/`settlements.view`, `staff.manage`, `profile.manage`.
+Read access (`*.view`) is granted to every seeded role, so viewing is gated only by
+vendor ownership/membership, not a per-permission check — adding one there would be
+enforcement with no corresponding restriction to enforce.
+
+**Staff invitation requires an existing account** (looked up by email or phone). There is
+no invite-by-email-to-a-new-user flow with its own token/acceptance state machine — §22
+does not ask for one, and building it would be speculative. Adding a user flips their
+`type` to `TYPE_VENDOR` if it was not already (required for `EnsureUserIsVendor` to admit
+them at all); removing sets `status = 'removed'` rather than deleting the row, so
+re-adding the same person later reactivates one auditable row instead of creating a
+duplicate.
+
+---
+
 ## Deferred — not built, not documented as built
 
-§11 payments, §12 returns, §13 refunds, §14 shipping, §19 invoices, and §20 vendor
-ledger/settlements are now implemented — see
-[COMMERCE_ARCHITECTURE.md §12–17](COMMERCE_ARCHITECTURE.md#12-payments-phase-c) and
-[TEST_COVERAGE.md](../testing/TEST_COVERAGE.md).
+§11 payments, §12 returns, §13 refunds, §14 shipping, §19 invoices, §20 vendor
+ledger/settlements, §22 vendor staff, and the vendor-scoped slice of §23 RBAC are now
+implemented — see [COMMERCE_ARCHITECTURE.md §12–17](COMMERCE_ARCHITECTURE.md#12-payments-phase-c),
+[VENDOR_STAFF_RBAC.md](VENDOR_STAFF_RBAC.md), and [TEST_COVERAGE.md](../testing/TEST_COVERAGE.md).
 
-Still deferred: §22 vendor staff · §23 RBAC tables · §24 vendor documents · §25 product
-documents · §29 comparison · §33 notification preferences · §35 audit log · §36 reports ·
-§37 exports · §38 CMS · §39 SEO · §40–52 UI redesign.
+Still deferred: §23 RBAC for admin/employee/syndicate/customer (no requirement yet) ·
+§24 vendor documents · §25 product documents · §29 comparison · §33 notification
+preferences · §35 audit log · §36 reports · §37 exports · §38 CMS · §39 SEO · §40–52 UI
+redesign.
 
 These remain open scope. Their absence is stated here so no reader mistakes a plan for
 an implementation.
