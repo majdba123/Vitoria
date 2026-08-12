@@ -500,18 +500,52 @@ across every log line the request produces.
 
 ---
 
+## D21 — Reports and exports: computed on demand, no new schema
+
+**Evidence:** §36 (reports) and §37 (exports) ask for aggregate views over data that
+already exists in full — orders, order items, vendor ledger entries, products, vendors.
+There is no requirement for scheduled report generation, saved report definitions, or
+report snapshots that must survive independently of the underlying rows.
+
+**Decision:** `ReportService` runs plain aggregate queries (`sum`/`count`/`group by`)
+against `Order`, `OrderItem`, and `VendorLedgerEntry` on every request — no new tables,
+no cached/materialized report rows, no scheduled jobs. `Admin\ReportController` exposes
+three read endpoints: `GET /api/admin/reports/sales` (revenue and order count over a date
+range, grouped by day or month, plus a status breakdown), `GET /api/admin/reports/vendors`
+(per-vendor revenue alongside net vendor-ledger movement over the same range — kept as two
+separate figures rather than merged, since a ledger adjustment and an order's revenue are
+not interchangeable facts), and `GET /api/admin/reports/products` (top products by revenue
+within the range, using `order_items.line_total`, since that's what a customer actually
+paid — not the product's list price, which can have since changed).
+
+Cancelled orders are excluded from all three reports' totals — spec §8's existing state
+machine already treats a cancelled order as not-fulfilled, so counting its `grand_total`
+toward revenue would overstate real sales.
+
+**Exports reuse `App\Services\Import\CsvFile`**, the same streaming CSV helper already
+built for the CSV import templates (UTF-8 BOM, `fputcsv`, `text/csv` streamed response) —
+adding a second CSV library or hand-rolled writer would duplicate working code.
+`Admin\ExportController` exposes `GET /api/admin/exports/{orders,products,vendors}`, each
+accepting the same filter query parameters as the equivalent admin `index` endpoint (status,
+vendor, date range, category) and capped at 5,000 rows per request to keep a single export
+request bounded. Exports are not audit-logged: they are read-only downloads of data an admin
+can already see via the paginated index endpoints, not a state change (see D20 above for why
+only mutations are audit-logged).
+
+---
+
 ## Deferred — not built, not documented as built
 
 §11 payments, §12 returns, §13 refunds, §14 shipping, §19 invoices, §20 vendor
 ledger/settlements, §22 vendor staff, §23 RBAC (vendor-scoped), §24 vendor documents,
 §25 product documents, §29 product comparison, §33 notification preferences (in-app
-only), and §35 audit log are now implemented — see
+only), §35 audit log, §36 reports, and §37 exports are now implemented — see
 [COMMERCE_ARCHITECTURE.md §12–17](COMMERCE_ARCHITECTURE.md#12-payments-phase-c),
 [VENDOR_STAFF_RBAC.md](VENDOR_STAFF_RBAC.md), [VENDOR_DOCUMENTS.md](VENDOR_DOCUMENTS.md),
 [PRODUCT_DOCUMENTS.md](PRODUCT_DOCUMENTS.md), and [TEST_COVERAGE.md](../testing/TEST_COVERAGE.md).
 
 Still deferred: §23 RBAC for admin/employee/syndicate/customer (no requirement yet) ·
-§36 reports · §37 exports · §38 CMS · §39 SEO · §40–52 UI redesign.
+§38 CMS · §39 SEO · §40–52 UI redesign.
 
 These remain open scope. Their absence is stated here so no reader mistakes a plan for
 an implementation.

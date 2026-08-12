@@ -3,15 +3,15 @@
 Last run: 2026-08-12 · `php artisan test`
 
 ```
-Tests:    271 passed (1494 assertions)
-Duration: 84.03s
+Tests:    277 passed (1514 assertions)
+Duration: 79.48s
 ```
 
-Baseline before this program: 145 passed (913 assertions). **126 tests added, 0
+Baseline before this program: 145 passed (913 assertions). **132 tests added, 0
 regressions** (45 from Phase B; 17 from payments/returns/refunds; 13 from
 shipping/invoices/vendor ledger; 11 from vendor staff/RBAC; 11 from vendor documents;
 7 from product documents; 7 from notification preferences; 7 from product comparison;
-8 from the admin audit log).
+8 from the admin audit log; 6 from admin reports and exports).
 
 The checkout flow was additionally exercised end-to-end in a real browser
 against the dev server — guest cart → login merge → address creation → order
@@ -280,6 +280,19 @@ Covers spec §35.
 | lets an admin filter the audit log by entity type and action | every returned row matches both filters |
 | stamps a request id on every audit row written during a request | `AssignRequestId` middleware correlation confirmed end-to-end |
 
+### `tests/Feature/AdminReportsAndExportsTest.php` — 6 tests
+
+Covers spec §36, §37.
+
+| Test | Property proved |
+|---|---|
+| **excludes cancelled orders from the sales report total** | a cancelled order's `grand_total` is not counted toward revenue or order count |
+| reports vendor revenue and ledger totals separately per vendor | each vendor's order revenue and net ledger movement are kept as distinct figures, not merged |
+| ranks products by revenue in the product performance report | highest-revenue product sorts first, with the correct summed quantity |
+| exports orders as a CSV with the expected header row | streamed response is `text/csv` and contains the real header and row data |
+| exports vendors as a CSV filtered by status | the `status` query filter narrows which rows are streamed |
+| **rejects report and export access from a non-admin user** | both report and export endpoints 403 for a non-admin actor |
+
 ---
 
 ## Not yet covered
@@ -287,7 +300,7 @@ Covers spec §35.
 These areas have no tests because the features are not implemented. Listed so the
 gap is explicit rather than implied by omission:
 
-reports · exports · CMS · SEO.
+CMS · SEO.
 
 ## Known gaps in what *is* implemented
 

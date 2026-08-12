@@ -23,6 +23,12 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('throttle:api.authenticated')->group(function () {
     Route::get('dashboard/vendor-category-stats', [DashboardController::class, 'vendorCategoryStats'])->middleware('throttle:dashboard.stats')->name('dashboard.vendor-category-stats');
     Route::get('dashboard/overview', [DashboardController::class, 'overview'])->middleware('throttle:dashboard.stats')->name('dashboard.overview');
+    Route::get('reports/sales', [\App\Http\Controllers\Api\Admin\ReportController::class, 'sales'])->middleware('throttle:dashboard.stats')->name('reports.sales');
+    Route::get('reports/vendors', [\App\Http\Controllers\Api\Admin\ReportController::class, 'vendors'])->middleware('throttle:dashboard.stats')->name('reports.vendors');
+    Route::get('reports/products', [\App\Http\Controllers\Api\Admin\ReportController::class, 'products'])->middleware('throttle:dashboard.stats')->name('reports.products');
+    Route::get('exports/orders', [\App\Http\Controllers\Api\Admin\ExportController::class, 'orders'])->middleware('throttle:dashboard.stats')->name('exports.orders');
+    Route::get('exports/products', [\App\Http\Controllers\Api\Admin\ExportController::class, 'products'])->middleware('throttle:dashboard.stats')->name('exports.products');
+    Route::get('exports/vendors', [\App\Http\Controllers\Api\Admin\ExportController::class, 'vendors'])->middleware('throttle:dashboard.stats')->name('exports.vendors');
     Route::get('cities/import/template', [\App\Http\Controllers\Api\Admin\CityController::class, 'importTemplate'])->name('cities.import-template');
     Route::post('cities/import', [\App\Http\Controllers\Api\Admin\CityController::class, 'import'])->middleware('throttle:uploads')->name('cities.import');
     Route::get('categories/import/template', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'importTemplate'])->name('categories.import-template');
