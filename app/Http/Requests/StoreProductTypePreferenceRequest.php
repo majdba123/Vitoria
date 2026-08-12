@@ -33,9 +33,9 @@ class StoreProductTypePreferenceRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'preferred_product_type.required' => 'يرجى اختيار نوع صحيح للمتابعة.',
-            'preferred_product_type.in' => 'نوع التصفح المحدد غير صالح.',
-            'redirect_to.in' => 'وجهة المتابعة المحددة غير صالحة.',
+            'preferred_product_type.required' => __('preferences.type_required'),
+            'preferred_product_type.in' => __('preferences.invalid_type'),
+            'redirect_to.in' => __('preferences.invalid_redirect'),
         ];
     }
 }

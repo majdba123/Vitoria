@@ -17,6 +17,11 @@ const state = {
     currency: 'SYP',
     coupon: null,
     loaded: false,
+    // Guards against a rapid double-click (e.g. tapping "+" again before a
+    // "-" that just removed the line has re-rendered) sending a second
+    // mutation for a line the server already dropped, which previously
+    // surfaced as a confusing "item is not in your cart" error.
+    pending: false,
 };
 
 function strings() {
@@ -176,6 +181,9 @@ function render() {
  * are identical regardless of which control the shopper used.
  */
 async function mutate(request, { successMessage = null, animateBadge = false } = {}) {
+    state.pending = true;
+    setBusy(true);
+
     try {
         const response = await request();
         applyPayload(response.data?.data);
@@ -194,7 +202,23 @@ async function mutate(request, { successMessage = null, animateBadge = false } =
         // Resync so the UI never drifts from the server after a rejection.
         await sync();
         throw error;
+    } finally {
+        state.pending = false;
+        setBusy(false);
     }
+}
+
+/**
+ * Disables pointer interaction on the cart line list while a mutation is
+ * in flight, so a rapid double-tap on +/- or remove can't fire a second
+ * request against a line the first request is about to change or delete.
+ */
+function setBusy(busy) {
+    const container = document.getElementById('cart-items');
+    if (!container) return;
+    container.classList.toggle('pointer-events-none', busy);
+    container.classList.toggle('opacity-60', busy);
+    container.setAttribute('aria-busy', busy ? 'true' : 'false');
 }
 
 async function sync() {
@@ -307,6 +331,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('cart-items')?.addEventListener('click', (event) => {
         const button = event.target.closest('[data-cart-action]');
         if (!button) return;
+
+        // Belt-and-suspenders alongside setBusy()'s pointer-events:none — that
+        // CSS guard doesn't stop a keyboard Enter/Space activation on a
+        // focused button, so check the flag directly too.
+        if (state.pending) return;
 
         const productId = Number(button.dataset.productId);
         const action = button.dataset.action || button.dataset.cartAction;

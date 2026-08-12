@@ -1,15 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'اختيار نوع التصفح - Vetora')
+@section('title', __('preferences.title'))
 
 @section('content')
 <div class="page-shell min-h-[calc(100vh-5rem)] py-10 sm:py-16">
     <div class="mx-auto max-w-6xl border-y-2 border-gray-950 py-8 dark:border-white sm:py-10">
         <div class="mx-auto max-w-2xl text-center">
-            <span class="badge-brand">ابدأ التصفح</span>
-            <h1 class="mt-4 text-3xl font-black text-white sm:text-4xl">اختر نوع المنتجات التي ترغب في تصفحها</h1>
+            <span class="badge-brand">{{ __('preferences.start_browsing') }}</span>
+            <h1 class="mt-4 text-3xl font-black text-white sm:text-4xl">{{ __('preferences.heading') }}</h1>
             <p class="mt-3 text-sm leading-7 text-slate-200">
-                سيتم عرض التصنيفات والمنتجات المناسبة لاختيارك فقط، ويمكنك تغيير هذا الاختيار لاحقا من نفس الصفحة أو من الملف الشخصي.
+                {{ __('preferences.description') }}
             </p>
         </div>
 
@@ -44,7 +44,7 @@
                             <i class="{{ $type['icon'] }} text-3xl" aria-hidden="true"></i>
                         </span>
                         <span class="inline-flex rounded-full px-3 py-1 text-[11px] font-bold {{ $isSelected ? 'bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' }}">
-                            {{ $isSelected ? 'محدد الآن' : 'اختيار' }}
+                            {{ $isSelected ? __('preferences.currently_selected') : __('preferences.choose') }}
                         </span>
                     </span>
 
@@ -56,11 +56,11 @@
                     <span class="mt-6 block space-y-3 text-sm text-gray-600 dark:text-slate-200">
                         <span class="flex items-center gap-2">
                             <span class="h-2 w-2 rounded-full bg-brand-500"></span>
-                            <span>عرض التصنيفات المطابقة فقط</span>
+                            <span>{{ __('preferences.matching_categories_only') }}</span>
                         </span>
                         <span class="flex items-center gap-2">
                             <span class="h-2 w-2 rounded-full bg-brand-500"></span>
-                            <span>تصفية المنتجات والبحث حسب القسم المحدد</span>
+                            <span>{{ __('preferences.filter_by_selected_section') }}</span>
                         </span>
                     </span>
 
