@@ -94,6 +94,12 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::get('vendors/{vendor}/settlements', [\App\Http\Controllers\Api\Admin\SettlementController::class, 'index'])->name('vendors.settlements.index');
     Route::post('vendors/{vendor}/settlements', [\App\Http\Controllers\Api\Admin\SettlementController::class, 'store'])->middleware('throttle:api.write')->name('vendors.settlements.store');
     Route::get('vendors/{vendor}/staff', [\App\Http\Controllers\Api\Admin\VendorStaffController::class, 'index'])->name('vendors.staff.index');
+
+    Route::get('vendor-documents', [\App\Http\Controllers\Api\Admin\VendorDocumentController::class, 'index'])->name('vendor-documents.index');
+    Route::get('vendor-documents/{documentId}', [\App\Http\Controllers\Api\Admin\VendorDocumentController::class, 'show'])->name('vendor-documents.show');
+    Route::get('vendor-documents/{documentId}/download', [\App\Http\Controllers\Api\Admin\VendorDocumentController::class, 'download'])->name('vendor-documents.download');
+    Route::patch('vendor-documents/{documentId}/review', [\App\Http\Controllers\Api\Admin\VendorDocumentController::class, 'review'])->middleware('throttle:api.write')->name('vendor-documents.review');
+    Route::patch('vendor-documents/{documentId}/suspend', [\App\Http\Controllers\Api\Admin\VendorDocumentController::class, 'suspend'])->middleware('throttle:api.write')->name('vendor-documents.suspend');
     Route::post('notifications/send', [\App\Http\Controllers\Api\Admin\NotificationController::class, 'send'])->middleware('throttle:notifications.write')->name('notifications.send');
 
     Route::get('contact-messages', [\App\Http\Controllers\Api\Admin\ContactMessageController::class, 'index'])->name('contact-messages.index');

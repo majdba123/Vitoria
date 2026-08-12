@@ -9,6 +9,8 @@ use App\Models\OrderReturn;
 use App\Models\Product;
 use App\Models\Refund;
 use App\Models\User;
+use App\Models\Vendor;
+use App\Models\VendorDocument;
 use App\Models\VendorMember;
 
 class NotificationService
@@ -240,6 +242,59 @@ class NotificationService
         $notification->recipients()->sync([$member->user_id]);
 
         $this->broadcastNotification($notification, [$member->user_id]);
+    }
+
+    /**
+     * Notify admin a vendor document needs review (spec §24).
+     */
+    public function notifyVendorDocumentSubmitted(Vendor $vendor): void
+    {
+        $adminIds = User::query()->where('type', User::TYPE_ADMIN)->pluck('id')->all();
+
+        if ($adminIds === []) {
+            return;
+        }
+
+        $notification = AdminNotification::query()->create([
+            'title' => 'وثيقة تاجر بانتظار المراجعة',
+            'body' => "قدّم متجر {$vendor->store_name} وثيقة جديدة بانتظار المراجعة",
+            'type' => AdminNotification::TYPE_PRIVATE,
+            'action_type' => null,
+            'action_id' => null,
+            'sent_by' => null,
+        ]);
+        $notification->recipients()->sync($adminIds);
+
+        $this->broadcastNotification($notification, $adminIds);
+    }
+
+    /**
+     * Notify the vendor owner their document was reviewed (spec §24).
+     */
+    public function notifyVendorDocumentReviewed(VendorDocument $document): void
+    {
+        $document->loadMissing('vendor.user');
+        $ownerId = $document->vendor?->user_id;
+
+        if (! $ownerId) {
+            return;
+        }
+
+        $body = $document->status === VendorDocument::STATUS_VERIFIED
+            ? "تم اعتماد وثيقة: {$document->type}"
+            : "تم رفض وثيقة: {$document->type}";
+
+        $notification = AdminNotification::query()->create([
+            'title' => 'مراجعة وثيقة',
+            'body' => $body,
+            'type' => AdminNotification::TYPE_PRIVATE,
+            'action_type' => null,
+            'action_id' => null,
+            'sent_by' => null,
+        ]);
+        $notification->recipients()->sync([$ownerId]);
+
+        $this->broadcastNotification($notification, [$ownerId]);
     }
 
     /**

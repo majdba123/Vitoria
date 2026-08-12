@@ -315,17 +315,60 @@ duplicate.
 
 ---
 
+## D16 — Vendor documents: additive table, existing field untouched, no new permission
+
+**Evidence:** `vendors.commercial_register_file` is a single nullable string, written once at
+self-registration (`AuthService::register`) and downloadable only through one admin
+endpoint that never inspects it — no reject action, no expiry, no second document type.
+
+**Decision:** `vendor_documents` is purely additive. `commercial_register_file` is left in
+place, untouched, not migrated or backfilled from history — the same reasoning D9 and D14
+already applied to `payments`/`vendors.paid_amount`: it still works exactly as it did, and
+rewriting it would be a destructive migration for no functional gain (§60). Self-registration
+is wired to *also* create a `commercial_registration` row in the new table (a small, additive
+change to `AuthService::register`, wrapped in try/catch so a document-row failure can never
+break account creation) — otherwise the new admin review queue would start empty and stay
+disconnected from the one place vendors actually submit a document today.
+
+`documents.manage` reuses the `roles`/`permissions`/`role_permissions` tables decision D15
+already created — this is a data-only migration (two new rows: a permission, and its
+`role_permissions` assignment to Owner and Manager), not a schema change. Documents are
+treated as part of the store's compliance profile and gated by the same permission tier as
+`profile.manage`, rather than inventing a document-specific permission split (Catalog Manager
+managing licenses makes no more sense than Finance managing them — there is no role for which
+partial document access is the right answer).
+
+**`draft` is not a reachable status.** Spec §24 lists `draft → pending_review → verified →
+rejected → expired → suspended` as the lifecycle, but every `vendor_documents` row is created
+together with an uploaded file — there is no code path that produces a documentless "draft"
+row a vendor edits before submitting. Claiming a state no workflow reaches would be worse than
+omitting it (same principle as D4 excluding `pickup`).
+
+**File security (§55):** documents are stored on the `local` disk — the same private disk
+`commercial_register_file` already used (`storage/app/private`, not the `public`-disk
+`/storage` symlink) — under a server-generated path (`Storage::putFile()`), never the
+client-supplied filename. The only way to read one back is `Storage::download()` from inside
+an authorized controller action; there is no public URL for a `vendor_documents` file.
+
+**Resubmission replaces rather than accumulates.** `unique(vendor_id, type)` plus
+`VendorDocumentService::upload()`'s upsert means a vendor fixing a rejected document overwrites
+the old file and row rather than creating a growing history — only the current document per
+type is ever meaningful to a reviewer, and the old file is deleted from disk once the new one
+is confirmed stored.
+
+---
+
 ## Deferred — not built, not documented as built
 
 §11 payments, §12 returns, §13 refunds, §14 shipping, §19 invoices, §20 vendor
-ledger/settlements, §22 vendor staff, and the vendor-scoped slice of §23 RBAC are now
-implemented — see [COMMERCE_ARCHITECTURE.md §12–17](COMMERCE_ARCHITECTURE.md#12-payments-phase-c),
-[VENDOR_STAFF_RBAC.md](VENDOR_STAFF_RBAC.md), and [TEST_COVERAGE.md](../testing/TEST_COVERAGE.md).
+ledger/settlements, §22 vendor staff, §23 RBAC (vendor-scoped), and §24 vendor documents
+are now implemented — see [COMMERCE_ARCHITECTURE.md §12–17](COMMERCE_ARCHITECTURE.md#12-payments-phase-c),
+[VENDOR_STAFF_RBAC.md](VENDOR_STAFF_RBAC.md), [VENDOR_DOCUMENTS.md](VENDOR_DOCUMENTS.md),
+and [TEST_COVERAGE.md](../testing/TEST_COVERAGE.md).
 
 Still deferred: §23 RBAC for admin/employee/syndicate/customer (no requirement yet) ·
-§24 vendor documents · §25 product documents · §29 comparison · §33 notification
-preferences · §35 audit log · §36 reports · §37 exports · §38 CMS · §39 SEO · §40–52 UI
-redesign.
+§25 product documents · §29 comparison · §33 notification preferences · §35 audit log ·
+§36 reports · §37 exports · §38 CMS · §39 SEO · §40–52 UI redesign.
 
 These remain open scope. Their absence is stated here so no reader mistakes a plan for
 an implementation.

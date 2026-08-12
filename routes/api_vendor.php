@@ -54,6 +54,11 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::get('ledger', [\App\Http\Controllers\Api\Vendor\LedgerController::class, 'index'])->name('ledger.index');
     Route::get('ledger/summary', [\App\Http\Controllers\Api\Vendor\LedgerController::class, 'summary'])->name('ledger.summary');
 
+    Route::get('documents', [\App\Http\Controllers\Api\Vendor\DocumentController::class, 'index'])->name('documents.index');
+    Route::post('documents', [\App\Http\Controllers\Api\Vendor\DocumentController::class, 'store'])->middleware(['throttle:api.write', 'throttle:uploads'])->name('documents.store');
+    Route::get('documents/{documentId}', [\App\Http\Controllers\Api\Vendor\DocumentController::class, 'show'])->name('documents.show');
+    Route::get('documents/{documentId}/download', [\App\Http\Controllers\Api\Vendor\DocumentController::class, 'download'])->name('documents.download');
+
     Route::get('staff', [\App\Http\Controllers\Api\Vendor\StaffController::class, 'index'])->name('staff.index');
     Route::post('staff', [\App\Http\Controllers\Api\Vendor\StaffController::class, 'store'])->middleware('throttle:api.write')->name('staff.store');
     Route::patch('staff/{memberId}', [\App\Http\Controllers\Api\Vendor\StaffController::class, 'update'])->middleware('throttle:api.write')->name('staff.update');

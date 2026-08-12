@@ -3,13 +3,13 @@
 Last run: 2026-08-12 · `php artisan test`
 
 ```
-Tests:    231 passed (1359 assertions)
-Duration: 49.40s
+Tests:    242 passed (1400 assertions)
+Duration: 67.61s
 ```
 
-Baseline before this program: 145 passed (913 assertions). **86 tests added, 0
+Baseline before this program: 145 passed (913 assertions). **97 tests added, 0
 regressions** (45 from Phase B; 17 from payments/returns/refunds; 13 from
-shipping/invoices/vendor ledger; 11 from vendor staff/RBAC).
+shipping/invoices/vendor ledger; 11 from vendor staff/RBAC; 11 from vendor documents).
 
 The checkout flow was additionally exercised end-to-end in a real browser
 against the dev server — guest cart → login merge → address creation → order
@@ -203,6 +203,24 @@ Covers spec §22, §23 (vendor-scoped RBAC).
 | isolates a staff member strictly to their own vendor | 403/404 on a foreign vendor's order |
 | lets finance staff view the ledger but not manage the product catalog | financial read access without catalog write access |
 
+### `tests/Feature/VendorDocumentsTest.php` — 11 tests
+
+Covers spec §24.
+
+| Test | Property proved |
+|---|---|
+| **stores an uploaded document privately, never on the public disk** | exists on `local`, missing on `public`; stored path never contains the client's original filename |
+| rejects an unsupported document type | type whitelist enforced |
+| **replaces the file and resets review state when a document type is resubmitted** | same row id reused, old file deleted from disk, review fields cleared |
+| lets a manager upload documents but not a viewer | `documents.manage` gating; a viewer can still list |
+| lets an admin approve a pending document | happy path |
+| requires a rejection reason to reject a document | validation |
+| **cannot review the same document twice** | second review call rejected; status unchanged after the first |
+| lets an admin suspend a previously verified document | `verified → suspended` |
+| stops a vendor from viewing or downloading another vendor's document | 403 on both endpoints |
+| expires overdue verified documents when the admin queue is loaded | lazy expiry runs before the queue is returned |
+| creates a `commercial_registration` document automatically at vendor self-registration | the new table is populated from day one, not left disconnected from the only real submission path |
+
 ---
 
 ## Not yet covered
@@ -210,8 +228,8 @@ Covers spec §22, §23 (vendor-scoped RBAC).
 These areas have no tests because the features are not implemented. Listed so the
 gap is explicit rather than implied by omission:
 
-vendor verification documents · product documents · product comparison ·
-notification preferences · admin audit log · reports · exports · CMS · SEO.
+product documents · product comparison · notification preferences · admin audit log ·
+reports · exports · CMS · SEO.
 
 ## Known gaps in what *is* implemented
 
