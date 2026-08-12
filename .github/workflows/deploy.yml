@@ -76,7 +76,7 @@ jobs:
             mkdir -p storage/backups
             set -a; source .env; set +a
             if [ -n "$DB_DATABASE" ] && command -v mysqldump >/dev/null 2>&1; then
-              mysqldump -h"${DB_HOST:-127.0.0.1}" -P"${DB_PORT:-3306}" -u"$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" \
+              mysqldump --no-tablespaces -h"${DB_HOST:-127.0.0.1}" -P"${DB_PORT:-3306}" -u"$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" \
                 | gzip > "storage/backups/pre-deploy-$(date +%Y%m%d%H%M%S).sql.gz" \
                 || echo "WARNING: database backup failed, continuing deploy"
             else
