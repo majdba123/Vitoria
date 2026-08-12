@@ -464,18 +464,54 @@ products' shared type doesn't support.
 
 ---
 
+## D20 — Audit log: only where no domain-specific trail already exists
+
+**Evidence:** several of §35's own named examples already have a purpose-built, tested
+audit trail: order status changes are `order_status_histories` (previous status, new
+status, actor, actor type, reason, notes, timestamp — decision D4); a return's reviewer
+and decision are `order_returns.reviewed_by_user_id`/`reviewed_at`/`rejection_reason`; a
+refund's lifecycle is its own `status`/`completed_at`/`initiated_by_user_id`. These were
+each built, in earlier phases of this program, specifically to answer "who changed this
+and when" for their own entity.
+
+**Decision:** `audit_logs` is *not* wired into `OrderStatusService`, `OrderCancellationService`,
+`ReturnService`, or `RefundService` — duplicating what those tables already record into a
+second, generic table would be redundant data with no new capability, just two places to
+look for the same fact. `AuditLogService::record()` is instead called from the actions
+spec §35 names that have **no** existing equivalent: vendor approval/suspension
+(`Admin\VendorController`), product moderation (`ProductController::updateStatus`/
+`toggleActive`), coupon create/update/delete (`Admin\CouponController`), settings changes
+(`Admin\FooterSettingController`), user role changes (`Admin\UserController`, only when
+`type` actually changes — a name edit is not logged), and vendor-ledger financial
+adjustments/settlements (`VendorLedgerService`, which already captures `created_by_user_id`
+per entry but not IP/user-agent/request-id).
+
+**Redaction is unconditional, not opt-in.** `AuditLogService::redact()` strips a fixed list
+of keys (`password`, every token/secret variant, card/CVV fields, `otp`) from `old_values`/
+`new_values` before the row is ever created — a caller cannot accidentally log a secret by
+passing one in, because the service never trusts what it's handed.
+
+**`request_id` correlates multiple audit rows from one request** without adding
+distributed tracing infrastructure: `AssignRequestId` middleware (appended to the `api`
+group, alongside `SetLocale`/`ApplyUserTimezone`) reuses an upstream `X-Request-Id` header
+when present, otherwise generates a UUID, and echoes it back on the response — a caller
+that already sends a correlation id keeps it; one that doesn't still gets a consistent id
+across every log line the request produces.
+
+---
+
 ## Deferred — not built, not documented as built
 
 §11 payments, §12 returns, §13 refunds, §14 shipping, §19 invoices, §20 vendor
 ledger/settlements, §22 vendor staff, §23 RBAC (vendor-scoped), §24 vendor documents,
-§25 product documents, §29 product comparison, and §33 notification preferences
-(in-app only) are now implemented — see
+§25 product documents, §29 product comparison, §33 notification preferences (in-app
+only), and §35 audit log are now implemented — see
 [COMMERCE_ARCHITECTURE.md §12–17](COMMERCE_ARCHITECTURE.md#12-payments-phase-c),
 [VENDOR_STAFF_RBAC.md](VENDOR_STAFF_RBAC.md), [VENDOR_DOCUMENTS.md](VENDOR_DOCUMENTS.md),
 [PRODUCT_DOCUMENTS.md](PRODUCT_DOCUMENTS.md), and [TEST_COVERAGE.md](../testing/TEST_COVERAGE.md).
 
 Still deferred: §23 RBAC for admin/employee/syndicate/customer (no requirement yet) ·
-§35 audit log · §36 reports · §37 exports · §38 CMS · §39 SEO · §40–52 UI redesign.
+§36 reports · §37 exports · §38 CMS · §39 SEO · §40–52 UI redesign.
 
 These remain open scope. Their absence is stated here so no reader mistakes a plan for
 an implementation.

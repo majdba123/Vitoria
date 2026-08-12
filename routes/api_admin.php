@@ -101,6 +101,8 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::patch('product-documents/{documentId}/review', [\App\Http\Controllers\Api\Admin\ProductDocumentController::class, 'review'])->middleware('throttle:api.write')->name('product-documents.review');
     Route::patch('product-documents/{documentId}/disable', [\App\Http\Controllers\Api\Admin\ProductDocumentController::class, 'disable'])->middleware('throttle:api.write')->name('product-documents.disable');
 
+    Route::get('audit-logs', [\App\Http\Controllers\Api\Admin\AuditLogController::class, 'index'])->name('audit-logs.index');
+
     Route::get('vendor-documents', [\App\Http\Controllers\Api\Admin\VendorDocumentController::class, 'index'])->name('vendor-documents.index');
     Route::get('vendor-documents/{documentId}', [\App\Http\Controllers\Api\Admin\VendorDocumentController::class, 'show'])->name('vendor-documents.show');
     Route::get('vendor-documents/{documentId}/download', [\App\Http\Controllers\Api\Admin\VendorDocumentController::class, 'download'])->name('vendor-documents.download');

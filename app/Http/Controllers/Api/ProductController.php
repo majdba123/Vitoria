@@ -16,6 +16,7 @@ use App\Models\Product;
 use App\Models\ProductPhoto;
 use App\Models\User;
 use App\Models\Vendor;
+use App\Services\AuditLogService;
 use App\Services\Import\CsvImportException;
 use App\Services\Import\Importers\ProductImporter;
 use App\Services\NotificationService;
@@ -40,6 +41,7 @@ class ProductController extends Controller
         public NotificationService $notificationService,
         public ProductService $productService,
         public SelectedProductTypeService $selectedProductTypeService,
+        public AuditLogService $auditLogService,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -338,9 +340,19 @@ class ProductController extends Controller
         ]);
     }
 
-    public function toggleActive(Product $product): JsonResponse
+    public function toggleActive(Request $request, Product $product): JsonResponse
     {
+        $wasActive = $product->is_active;
         $product = $this->productService->toggleActive($product);
+
+        $this->auditLogService->record(
+            $request->user(),
+            $product->is_active ? 'product.activated' : 'product.deactivated',
+            'Product',
+            $product->id,
+            ['is_active' => $wasActive],
+            ['is_active' => $product->is_active],
+        );
 
         return response()->json([
             'message' => $product->is_active
@@ -356,7 +368,17 @@ class ProductController extends Controller
             'status' => ['required', 'string', 'in:pending,approved,rejected'],
         ]);
 
+        $previousStatus = $product->status;
         $product = $this->productService->updateStatus($product, $request->input('status'));
+
+        $this->auditLogService->record(
+            $request->user(),
+            "product.{$product->status}",
+            'Product',
+            $product->id,
+            ['status' => $previousStatus],
+            ['status' => $product->status, 'rejection_reason' => $product->rejection_reason],
+        );
 
         if ($product->status === Product::STATUS_APPROVED) {
             $this->notificationService->notifyNewProductApproved($product);

@@ -6,12 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreCouponRequest;
 use App\Http\Requests\Admin\UpdateCouponRequest;
 use App\Models\Coupon;
+use App\Services\AuditLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class CouponController extends Controller
 {
+    public function __construct(
+        private readonly AuditLogService $auditLogService,
+    ) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -62,6 +67,15 @@ class CouponController extends Controller
 
         $coupon = Coupon::query()->create($validated);
 
+        $this->auditLogService->record(
+            $request->user(),
+            'coupon.created',
+            'Coupon',
+            $coupon->id,
+            null,
+            ['code' => $coupon->code, 'discount_type' => $coupon->discount_type, 'discount_value' => $coupon->discount_value],
+        );
+
         return response()->json([
             'message' => __('Coupon created successfully.'),
             'data' => $coupon->load('creator:id,name'),
@@ -101,7 +115,17 @@ class CouponController extends Controller
             $validated['ends_at'] ?? optional($coupon->ends_at)->toDateTimeString(),
         );
 
+        $before = $coupon->only(['code', 'discount_type', 'discount_value', 'is_active', 'status', 'starts_at', 'ends_at']);
         $coupon->update($validated);
+
+        $this->auditLogService->record(
+            $request->user(),
+            'coupon.updated',
+            'Coupon',
+            $coupon->id,
+            $before,
+            $coupon->fresh()->only(['code', 'discount_type', 'discount_value', 'is_active', 'status', 'starts_at', 'ends_at']),
+        );
 
         return response()->json([
             'message' => __('Coupon updated successfully.'),
@@ -112,9 +136,12 @@ class CouponController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Coupon $coupon): JsonResponse
+    public function destroy(Request $request, Coupon $coupon): JsonResponse
     {
+        $code = $coupon->code;
         $coupon->delete();
+
+        $this->auditLogService->record($request->user(), 'coupon.deleted', 'Coupon', $coupon->id, ['code' => $code], null);
 
         return response()->json([
             'message' => __('Coupon deleted successfully.'),

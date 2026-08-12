@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Vendor;
 use App\Models\VendorLedgerEntry;
 use App\Models\VendorSettlement;
+use App\Services\AuditLogService;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -24,6 +25,10 @@ use Illuminate\Support\Facades\DB;
  */
 class VendorLedgerService
 {
+    public function __construct(
+        private readonly AuditLogService $auditLogService,
+    ) {}
+
     /**
      * Record a completed order's gross sale and the platform commission on
      * it. Called once, from the single place an order reaches `completed`
@@ -97,7 +102,7 @@ class VendorLedgerService
      */
     public function recordAdjustment(Vendor $vendor, User $actor, float $amount, string $direction, string $description): VendorLedgerEntry
     {
-        return VendorLedgerEntry::create([
+        $entry = VendorLedgerEntry::create([
             'vendor_id' => $vendor->id,
             'order_id' => null,
             'type' => VendorLedgerEntry::TYPE_ADJUSTMENT,
@@ -106,6 +111,17 @@ class VendorLedgerService
             'description' => $description,
             'created_by_user_id' => $actor->id,
         ]);
+
+        $this->auditLogService->record(
+            $actor,
+            'vendor_ledger.adjustment',
+            'VendorLedgerEntry',
+            $entry->id,
+            null,
+            ['vendor_id' => $vendor->id, 'direction' => $direction, 'amount' => $entry->amount, 'description' => $description],
+        );
+
+        return $entry;
     }
 
     /**
@@ -143,7 +159,7 @@ class VendorLedgerService
                 'created_by_user_id' => $actor->id,
             ]);
 
-            return VendorSettlement::create([
+            $settlement = VendorSettlement::create([
                 'vendor_id' => $vendor->id,
                 'ledger_entry_id' => $entry->id,
                 'amount' => $amount,
@@ -153,6 +169,17 @@ class VendorLedgerService
                 'settled_by_user_id' => $actor->id,
                 'settled_at' => now(),
             ]);
+
+            $this->auditLogService->record(
+                $actor,
+                'vendor_ledger.settlement',
+                'VendorSettlement',
+                $settlement->id,
+                null,
+                ['vendor_id' => $vendor->id, 'amount' => $amount, 'method' => $method, 'reference' => $reference],
+            );
+
+            return $settlement;
         });
     }
 

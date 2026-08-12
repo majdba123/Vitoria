@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\UpdateVendorRequest;
 use App\Http\Resources\Admin\VendorResource;
 use App\Models\Vendor;
 use App\Services\Admin\VendorService;
+use App\Services\AuditLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +16,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class VendorController extends Controller
 {
-    public function __construct(public VendorService $vendorService) {}
+    public function __construct(
+        public VendorService $vendorService,
+        public AuditLogService $auditLogService,
+    ) {}
 
     /**
      * List all vendors.
@@ -102,9 +106,19 @@ class VendorController extends Controller
     /**
      * Toggle vendor active/inactive status.
      */
-    public function toggleActive(Vendor $vendor): JsonResponse
+    public function toggleActive(Request $request, Vendor $vendor): JsonResponse
     {
+        $previousStatus = $vendor->status;
         $vendor = $this->vendorService->toggleActive($vendor);
+
+        $this->auditLogService->record(
+            $request->user(),
+            $vendor->is_active ? 'vendor.activated' : 'vendor.suspended',
+            'Vendor',
+            $vendor->id,
+            ['status' => $previousStatus],
+            ['status' => $vendor->status],
+        );
 
         return response()->json([
             'message' => $vendor->is_active
@@ -117,9 +131,19 @@ class VendorController extends Controller
     /**
      * Approve a pending vendor.
      */
-    public function approve(Vendor $vendor): JsonResponse
+    public function approve(Request $request, Vendor $vendor): JsonResponse
     {
+        $previousStatus = $vendor->status;
         $vendor = $this->vendorService->approve($vendor);
+
+        $this->auditLogService->record(
+            $request->user(),
+            'vendor.approved',
+            'Vendor',
+            $vendor->id,
+            ['status' => $previousStatus],
+            ['status' => $vendor->status],
+        );
 
         return response()->json([
             'message' => __('Vendor approved successfully.'),

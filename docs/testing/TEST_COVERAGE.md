@@ -3,14 +3,15 @@
 Last run: 2026-08-12 · `php artisan test`
 
 ```
-Tests:    263 passed (1458 assertions)
-Duration: 77.14s
+Tests:    271 passed (1494 assertions)
+Duration: 84.03s
 ```
 
-Baseline before this program: 145 passed (913 assertions). **118 tests added, 0
+Baseline before this program: 145 passed (913 assertions). **126 tests added, 0
 regressions** (45 from Phase B; 17 from payments/returns/refunds; 13 from
 shipping/invoices/vendor ledger; 11 from vendor staff/RBAC; 11 from vendor documents;
-7 from product documents; 7 from notification preferences; 7 from product comparison).
+7 from product documents; 7 from notification preferences; 7 from product comparison;
+8 from the admin audit log).
 
 The checkout flow was additionally exercised end-to-end in a real browser
 against the dev server — guest cart → login merge → address creation → order
@@ -264,6 +265,21 @@ Covers spec §29.
 | rejects a product id that does not exist or is not publicly visible | pending/unapproved/nonexistent all rejected the same way |
 | **only includes specs relevant to the product's own type** | a veterinary comparison exposes `dosage_form` but never `target_crops` |
 
+### `tests/Feature/AuditLogTest.php` — 8 tests
+
+Covers spec §35.
+
+| Test | Property proved |
+|---|---|
+| **redacts sensitive keys before ever writing them** | `password`/`token` become `[redacted]` unconditionally; unrelated fields like `name` pass through untouched |
+| logs vendor approval and suspension with the acting admin | actor, actor_type, and before/after status all captured |
+| logs product approval with before and after status | `pending → approved` recorded |
+| **logs a user role change but not an unrelated profile update** | a name-only edit writes nothing; a `type` change writes `user.role_changed` with old/new values |
+| logs a coupon creation, update, and deletion | all three lifecycle actions produce a row, update captures the changed field's before/after |
+| logs a vendor ledger adjustment and settlement | both financial-adjustment paths produce a row |
+| lets an admin filter the audit log by entity type and action | every returned row matches both filters |
+| stamps a request id on every audit row written during a request | `AssignRequestId` middleware correlation confirmed end-to-end |
+
 ---
 
 ## Not yet covered
@@ -271,7 +287,7 @@ Covers spec §29.
 These areas have no tests because the features are not implemented. Listed so the
 gap is explicit rather than implied by omission:
 
-admin audit log · reports · exports · CMS · SEO.
+reports · exports · CMS · SEO.
 
 ## Known gaps in what *is* implemented
 

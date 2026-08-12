@@ -69,6 +69,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\ApplyUserTimezone::class,
         ]);
         $middleware->appendToGroup('api', [
+            \App\Http\Middleware\AssignRequestId::class,
             \App\Http\Middleware\SetLocale::class,
             \App\Http\Middleware\ApplyUserTimezone::class,
         ]);

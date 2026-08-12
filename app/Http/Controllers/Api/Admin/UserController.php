@@ -9,11 +9,15 @@ use App\Http\Resources\Auth\UserResource;
 use App\Models\ProductPhoto;
 use App\Models\User;
 use App\Services\Admin\UserService;
+use App\Services\AuditLogService;
 use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {
-    public function __construct(public UserService $userService) {}
+    public function __construct(
+        public UserService $userService,
+        public AuditLogService $auditLogService,
+    ) {}
 
     /**
      * List all users.
@@ -107,7 +111,22 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
-        $user = $this->userService->update($user, $request->validated());
+        $validated = $request->validated();
+        $previousType = $user->type;
+        $user = $this->userService->update($user, $validated);
+
+        // A user's `type` is the closest thing this app has to a role — a
+        // change here is exactly the "user role change" spec §35 names.
+        if (array_key_exists('type', $validated) && $user->type !== $previousType) {
+            $this->auditLogService->record(
+                $request->user(),
+                'user.role_changed',
+                'User',
+                $user->id,
+                ['type' => $previousType],
+                ['type' => $user->type],
+            );
+        }
 
         return response()->json([
             'message' => __('User updated successfully.'),
