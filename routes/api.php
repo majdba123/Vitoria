@@ -30,6 +30,8 @@ Route::middleware('web')->prefix('startup')->as('startup.')->group(function () {
 Route::middleware('web')->prefix('products')->as('products.')->group(function () {
     Route::get('/', [\App\Http\Controllers\Api\ProductController::class, 'publicIndex'])->middleware('throttle:search.filters')->name('public.index');
     Route::get('/{product}/reviews', [\App\Http\Controllers\Api\ProductReviewController::class, 'index'])->name('reviews.index');
+    Route::get('/{product}/documents', [\App\Http\Controllers\Api\ProductDocumentController::class, 'index'])->name('documents.index');
+    Route::get('/{product}/documents/{documentId}/download', [\App\Http\Controllers\Api\ProductDocumentController::class, 'download'])->name('documents.download');
     Route::get('/{product}', [\App\Http\Controllers\Api\ProductController::class, 'publicShow'])->name('public.show');
 });
 

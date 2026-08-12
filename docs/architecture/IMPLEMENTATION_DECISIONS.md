@@ -358,17 +358,51 @@ is confirmed stored.
 
 ---
 
+## D17 — Product documents: a separate table from `vendor_documents`, public once approved
+
+**Evidence:** spec §25 explicitly warns "do not expose private vendor documents," right
+after describing a feature that sounds superficially like §24's vendor documents — a
+document, a type, a review status. The critical functional difference is visibility: a
+vendor document is never public at any status; an *approved* product document must be
+downloadable by any storefront visitor, unauthenticated, on the product page.
+
+**Decision:** `product_documents` is a fully separate table and model, sharing no schema or
+review code with `vendor_documents` beyond the same upload-validation convention and the same
+private `local` disk. Files are never moved to the `public` disk — the public download action
+checks live `status = 'approved'` against the database on every request, so a disabled or
+rejected document is unreachable on the very next request with no stale public URL left
+pointing at it, and there is nothing to accidentally leak by storing the file in the wrong
+place.
+
+**No `unique(product_id, type)`**, unlike `vendor_documents`: a product can legitimately carry
+two leaflets in different languages at once, so each upload is its own row rather than
+replacing the last one.
+
+**`ProductController::publicShow()` was not modified to embed documents.** That response is
+cached per-product via `Cache::tags(['products'])`; threading document visibility through it
+would complicate cache invalidation (a document being approved or disabled would need to bust
+the product cache too) for a feature that has its own dedicated, uncached endpoint anyway.
+`GET /api/products/{product}/documents` exists specifically so the storefront's "Documents &
+Downloads" section doesn't need to touch the cached payload at all.
+
+**`products.manage` is reused, not a new permission** — product documents are catalog content,
+not a separate authorization concern from photos or listings, and the RBAC tables already
+support exactly this from decision D15 without a migration.
+
+---
+
 ## Deferred — not built, not documented as built
 
 §11 payments, §12 returns, §13 refunds, §14 shipping, §19 invoices, §20 vendor
-ledger/settlements, §22 vendor staff, §23 RBAC (vendor-scoped), and §24 vendor documents
-are now implemented — see [COMMERCE_ARCHITECTURE.md §12–17](COMMERCE_ARCHITECTURE.md#12-payments-phase-c),
+ledger/settlements, §22 vendor staff, §23 RBAC (vendor-scoped), §24 vendor documents, and
+§25 product documents are now implemented — see
+[COMMERCE_ARCHITECTURE.md §12–17](COMMERCE_ARCHITECTURE.md#12-payments-phase-c),
 [VENDOR_STAFF_RBAC.md](VENDOR_STAFF_RBAC.md), [VENDOR_DOCUMENTS.md](VENDOR_DOCUMENTS.md),
-and [TEST_COVERAGE.md](../testing/TEST_COVERAGE.md).
+[PRODUCT_DOCUMENTS.md](PRODUCT_DOCUMENTS.md), and [TEST_COVERAGE.md](../testing/TEST_COVERAGE.md).
 
 Still deferred: §23 RBAC for admin/employee/syndicate/customer (no requirement yet) ·
-§25 product documents · §29 comparison · §33 notification preferences · §35 audit log ·
-§36 reports · §37 exports · §38 CMS · §39 SEO · §40–52 UI redesign.
+§29 comparison · §33 notification preferences · §35 audit log · §36 reports · §37 exports ·
+§38 CMS · §39 SEO · §40–52 UI redesign.
 
 These remain open scope. Their absence is stated here so no reader mistakes a plan for
 an implementation.

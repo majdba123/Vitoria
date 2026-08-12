@@ -3,13 +3,14 @@
 Last run: 2026-08-12 · `php artisan test`
 
 ```
-Tests:    242 passed (1400 assertions)
-Duration: 67.61s
+Tests:    249 passed (1423 assertions)
+Duration: 65.68s
 ```
 
-Baseline before this program: 145 passed (913 assertions). **97 tests added, 0
+Baseline before this program: 145 passed (913 assertions). **104 tests added, 0
 regressions** (45 from Phase B; 17 from payments/returns/refunds; 13 from
-shipping/invoices/vendor ledger; 11 from vendor staff/RBAC; 11 from vendor documents).
+shipping/invoices/vendor ledger; 11 from vendor staff/RBAC; 11 from vendor documents;
+7 from product documents).
 
 The checkout flow was additionally exercised end-to-end in a real browser
 against the dev server — guest cart → login merge → address creation → order
@@ -221,6 +222,20 @@ Covers spec §24.
 | expires overdue verified documents when the admin queue is loaded | lazy expiry runs before the queue is returned |
 | creates a `commercial_registration` document automatically at vendor self-registration | the new table is populated from day one, not left disconnected from the only real submission path |
 
+### `tests/Feature/ProductDocumentsTest.php` — 7 tests
+
+Covers spec §25.
+
+| Test | Property proved |
+|---|---|
+| lets a vendor upload a product document for review | stored privately, not on the `public` disk |
+| **is not publicly visible or downloadable until approved** | absent from the public list, 404 on direct download by id |
+| **becomes publicly visible and downloadable once approved** | same document appears and streams after admin approval |
+| **stops being publicly downloadable once disabled** | approved → disabled removes public access on the very next request |
+| requires a rejection reason and prevents double review | validation + conditional-update idempotency |
+| stops a vendor from managing another vendor's product documents | 403 |
+| allows several documents of the same type on one product | no `unique(product_id, type)` — two leaflets, two languages |
+
 ---
 
 ## Not yet covered
@@ -228,8 +243,8 @@ Covers spec §24.
 These areas have no tests because the features are not implemented. Listed so the
 gap is explicit rather than implied by omission:
 
-product documents · product comparison · notification preferences · admin audit log ·
-reports · exports · CMS · SEO.
+product comparison · notification preferences · admin audit log · reports · exports ·
+CMS · SEO.
 
 ## Known gaps in what *is* implemented
 

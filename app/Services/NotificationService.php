@@ -7,6 +7,7 @@ use App\Models\AdminNotification;
 use App\Models\Order;
 use App\Models\OrderReturn;
 use App\Models\Product;
+use App\Models\ProductDocument;
 use App\Models\Refund;
 use App\Models\User;
 use App\Models\Vendor;
@@ -290,6 +291,61 @@ class NotificationService
             'type' => AdminNotification::TYPE_PRIVATE,
             'action_type' => null,
             'action_id' => null,
+            'sent_by' => null,
+        ]);
+        $notification->recipients()->sync([$ownerId]);
+
+        $this->broadcastNotification($notification, [$ownerId]);
+    }
+
+    /**
+     * Notify admin a product document needs review (spec §25).
+     */
+    public function notifyProductDocumentSubmitted(ProductDocument $document): void
+    {
+        $adminIds = User::query()->where('type', User::TYPE_ADMIN)->pluck('id')->all();
+
+        if ($adminIds === []) {
+            return;
+        }
+
+        $document->loadMissing('product:id,name');
+
+        $notification = AdminNotification::query()->create([
+            'title' => 'وثيقة منتج بانتظار المراجعة',
+            'body' => "تم رفع وثيقة جديدة للمنتج: {$document->product?->name}",
+            'type' => AdminNotification::TYPE_PRIVATE,
+            'action_type' => AdminNotification::ACTION_PRODUCT,
+            'action_id' => $document->product_id,
+            'sent_by' => null,
+        ]);
+        $notification->recipients()->sync($adminIds);
+
+        $this->broadcastNotification($notification, $adminIds);
+    }
+
+    /**
+     * Notify the owning vendor a product document was reviewed (spec §25).
+     */
+    public function notifyProductDocumentReviewed(ProductDocument $document): void
+    {
+        $document->loadMissing(['vendor:id,user_id', 'product:id,name']);
+        $ownerId = $document->vendor?->user_id;
+
+        if (! $ownerId) {
+            return;
+        }
+
+        $body = $document->status === ProductDocument::STATUS_APPROVED
+            ? "تم اعتماد وثيقة المنتج: {$document->product?->name}"
+            : "تم رفض وثيقة المنتج: {$document->product?->name}";
+
+        $notification = AdminNotification::query()->create([
+            'title' => 'مراجعة وثيقة منتج',
+            'body' => $body,
+            'type' => AdminNotification::TYPE_PRIVATE,
+            'action_type' => AdminNotification::ACTION_PRODUCT,
+            'action_id' => $document->product_id,
             'sent_by' => null,
         ]);
         $notification->recipients()->sync([$ownerId]);

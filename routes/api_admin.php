@@ -95,6 +95,12 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::post('vendors/{vendor}/settlements', [\App\Http\Controllers\Api\Admin\SettlementController::class, 'store'])->middleware('throttle:api.write')->name('vendors.settlements.store');
     Route::get('vendors/{vendor}/staff', [\App\Http\Controllers\Api\Admin\VendorStaffController::class, 'index'])->name('vendors.staff.index');
 
+    Route::get('product-documents', [\App\Http\Controllers\Api\Admin\ProductDocumentController::class, 'index'])->name('product-documents.index');
+    Route::get('product-documents/{documentId}', [\App\Http\Controllers\Api\Admin\ProductDocumentController::class, 'show'])->name('product-documents.show');
+    Route::get('product-documents/{documentId}/download', [\App\Http\Controllers\Api\Admin\ProductDocumentController::class, 'download'])->name('product-documents.download');
+    Route::patch('product-documents/{documentId}/review', [\App\Http\Controllers\Api\Admin\ProductDocumentController::class, 'review'])->middleware('throttle:api.write')->name('product-documents.review');
+    Route::patch('product-documents/{documentId}/disable', [\App\Http\Controllers\Api\Admin\ProductDocumentController::class, 'disable'])->middleware('throttle:api.write')->name('product-documents.disable');
+
     Route::get('vendor-documents', [\App\Http\Controllers\Api\Admin\VendorDocumentController::class, 'index'])->name('vendor-documents.index');
     Route::get('vendor-documents/{documentId}', [\App\Http\Controllers\Api\Admin\VendorDocumentController::class, 'show'])->name('vendor-documents.show');
     Route::get('vendor-documents/{documentId}/download', [\App\Http\Controllers\Api\Admin\VendorDocumentController::class, 'download'])->name('vendor-documents.download');

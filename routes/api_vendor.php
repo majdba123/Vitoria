@@ -54,6 +54,11 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::get('ledger', [\App\Http\Controllers\Api\Vendor\LedgerController::class, 'index'])->name('ledger.index');
     Route::get('ledger/summary', [\App\Http\Controllers\Api\Vendor\LedgerController::class, 'summary'])->name('ledger.summary');
 
+    Route::get('products/{product}/documents', [\App\Http\Controllers\Api\Vendor\ProductDocumentController::class, 'index'])->name('products.documents.index');
+    Route::post('products/{product}/documents', [\App\Http\Controllers\Api\Vendor\ProductDocumentController::class, 'store'])->middleware(['throttle:api.write', 'throttle:uploads'])->name('products.documents.store');
+    Route::get('products/{product}/documents/{documentId}/download', [\App\Http\Controllers\Api\Vendor\ProductDocumentController::class, 'download'])->name('products.documents.download');
+    Route::patch('products/{product}/documents/{documentId}/disable', [\App\Http\Controllers\Api\Vendor\ProductDocumentController::class, 'disable'])->middleware('throttle:api.write')->name('products.documents.disable');
+
     Route::get('documents', [\App\Http\Controllers\Api\Vendor\DocumentController::class, 'index'])->name('documents.index');
     Route::post('documents', [\App\Http\Controllers\Api\Vendor\DocumentController::class, 'store'])->middleware(['throttle:api.write', 'throttle:uploads'])->name('documents.store');
     Route::get('documents/{documentId}', [\App\Http\Controllers\Api\Vendor\DocumentController::class, 'show'])->name('documents.show');
