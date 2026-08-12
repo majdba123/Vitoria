@@ -8,7 +8,6 @@ use App\Services\Commerce\CartService;
 use App\Services\Commerce\CouponService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Server-authoritative cart endpoints (spec §5).
@@ -29,7 +28,7 @@ class CartController extends Controller
         $cart = $this->cartService->resolve($request, createIfMissing: false);
 
         if (! $cart) {
-            $response = [
+            return response()->json([
                 'data' => [
                     'id' => null,
                     'items' => [],
@@ -40,13 +39,7 @@ class CartController extends Controller
                     'discount' => 0,
                     'total' => 0,
                 ],
-            ];
-
-            if ($debug = $this->debugCartSnapshot($request, null)) {
-                $response['_debug'] = $debug;
-            }
-
-            return response()->json($response);
+            ]);
         }
 
         $notices = $this->cartService->reconcile($cart);
@@ -189,68 +182,6 @@ class CartController extends Controller
             ]));
         }
 
-        if ($debug = $this->debugCartSnapshot($request, $cart)) {
-            $response['_debug'] = $debug;
-        }
-
         return response()->json($response);
-    }
-
-    /**
-     * TEMPORARY diagnostic for the "cart empties between requests" investigation.
-     * Only activates for callers sending the debug header, so normal traffic is
-     * unaffected. Remove once the root cause is confirmed.
-     */
-    private function debugCartSnapshot(Request $request, ?\App\Models\Cart $cart): ?array
-    {
-        if ($request->header('X-Debug-Cart') !== 'vetora-cart-debug-2026') {
-            return null;
-        }
-
-        $pdoConnectionId = null;
-        try {
-            $pdoConnectionId = DB::selectOne('SELECT CONNECTION_ID() AS id')->id ?? null;
-        } catch (\Throwable $e) {
-            $pdoConnectionId = 'error: '.$e->getMessage();
-        }
-
-        $cookieName = config('session.cookie');
-        $incomingCookieValue = $request->cookie($cookieName);
-        $resolvedSessionId = $request->session()->getId();
-        $sessionDriver = config('session.driver');
-
-        $sessionRowForIncomingCookie = null;
-        $sessionRowForResolvedId = null;
-        if ($sessionDriver === 'database') {
-            $sessionsTable = config('session.table', 'sessions');
-            if ($incomingCookieValue) {
-                $sessionRowForIncomingCookie = DB::table($sessionsTable)->where('id', $incomingCookieValue)->exists();
-            }
-            $sessionRowForResolvedId = DB::table($sessionsTable)->where('id', $resolvedSessionId)->exists();
-        }
-
-        return [
-            'connection_name' => DB::connection()->getName(),
-            'database_name' => DB::connection()->getDatabaseName(),
-            'pdo_connection_id' => $pdoConnectionId,
-            'transaction_level' => DB::transactionLevel(),
-            'carts_table_total_rows' => DB::table('carts')->count(),
-            'cart_items_table_total_rows' => DB::table('cart_items')->count(),
-            'resolved_cart_id' => $cart?->id,
-            'resolved_cart_row_exists_raw' => $cart ? DB::table('carts')->where('id', $cart->id)->exists() : null,
-            'auth_user_id' => $request->user()?->id,
-            'session_cookie_name' => $cookieName,
-            'incoming_cookie_present' => $request->hasCookie($cookieName),
-            'incoming_cookie_value' => $incomingCookieValue,
-            'resolved_session_id' => $resolvedSessionId,
-            'incoming_matches_resolved' => $incomingCookieValue !== null && $incomingCookieValue === $resolvedSessionId,
-            'session_row_exists_for_incoming_cookie' => $sessionRowForIncomingCookie,
-            'session_row_exists_for_resolved_id' => $sessionRowForResolvedId,
-            'sessions_table_total_rows' => $sessionDriver === 'database' ? DB::table(config('session.table', 'sessions'))->count() : null,
-            'session_driver' => $sessionDriver,
-            'guest_token_in_session' => $request->session()->get(CartService::GUEST_TOKEN_KEY),
-            'server_time' => now()->toDateTimeString(),
-            'app_env' => app()->environment(),
-        ];
     }
 }
