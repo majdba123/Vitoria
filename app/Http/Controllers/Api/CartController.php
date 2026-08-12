@@ -214,6 +214,21 @@ class CartController extends Controller
             $pdoConnectionId = 'error: '.$e->getMessage();
         }
 
+        $cookieName = config('session.cookie');
+        $incomingCookieValue = $request->cookie($cookieName);
+        $resolvedSessionId = $request->session()->getId();
+        $sessionDriver = config('session.driver');
+
+        $sessionRowForIncomingCookie = null;
+        $sessionRowForResolvedId = null;
+        if ($sessionDriver === 'database') {
+            $sessionsTable = config('session.table', 'sessions');
+            if ($incomingCookieValue) {
+                $sessionRowForIncomingCookie = DB::table($sessionsTable)->where('id', $incomingCookieValue)->exists();
+            }
+            $sessionRowForResolvedId = DB::table($sessionsTable)->where('id', $resolvedSessionId)->exists();
+        }
+
         return [
             'connection_name' => DB::connection()->getName(),
             'database_name' => DB::connection()->getDatabaseName(),
@@ -224,8 +239,15 @@ class CartController extends Controller
             'resolved_cart_id' => $cart?->id,
             'resolved_cart_row_exists_raw' => $cart ? DB::table('carts')->where('id', $cart->id)->exists() : null,
             'auth_user_id' => $request->user()?->id,
-            'session_id' => $request->session()->getId(),
-            'session_driver' => config('session.driver'),
+            'session_cookie_name' => $cookieName,
+            'incoming_cookie_present' => $request->hasCookie($cookieName),
+            'incoming_cookie_value' => $incomingCookieValue,
+            'resolved_session_id' => $resolvedSessionId,
+            'incoming_matches_resolved' => $incomingCookieValue !== null && $incomingCookieValue === $resolvedSessionId,
+            'session_row_exists_for_incoming_cookie' => $sessionRowForIncomingCookie,
+            'session_row_exists_for_resolved_id' => $sessionRowForResolvedId,
+            'sessions_table_total_rows' => $sessionDriver === 'database' ? DB::table(config('session.table', 'sessions'))->count() : null,
+            'session_driver' => $sessionDriver,
             'guest_token_in_session' => $request->session()->get(CartService::GUEST_TOKEN_KEY),
             'server_time' => now()->toDateTimeString(),
             'app_env' => app()->environment(),
