@@ -435,18 +435,47 @@ a preference that didn't exist when they were created.
 
 ---
 
+## D19 — Product comparison: stateless, no table
+
+**Evidence:** spec §29 says outright: "comparison state may be session/local storage; it
+does not require a database table unless persistence is justified." Nothing in this
+program's other features (favourites, cart, orders) reads or writes a saved comparison
+list, and no requirement calls for one — there is no persistence need to justify.
+
+**Decision:** `ProductComparisonService::compare()` takes a list of product ids and
+returns a normalized payload in one stateless call — no `product_comparisons` table, no
+per-user saved list. `GET /api/products/compare?ids=1,2,3` is the entire surface; which
+products a shopper is comparing lives in the client, exactly as the spec suggests.
+
+**"Comparison only between sensible product categories"** is enforced by requiring every
+product in the set to share the same `categories.type` (`agriculture` or `veterinary`) —
+reusing the same type split `Product::scopeForCategoryType()` already uses elsewhere in
+this codebase, rather than inventing a new grouping concept. Mixing the two would compare
+attributes that mean nothing across them (a dosage form against a fertilization method),
+which is exactly what §29 says not to do.
+
+**Specs shown are type-scoped**, not a flat merge of every possible field:
+`ProductComparisonService::specsFor()` returns only the veterinary fields
+(`active_ingredients`, `concentration`, `dosage_form`, `routes_of_administration`,
+`target_species`) for veterinary products, and only the agricultural fields
+(`agricultural_product_type`, `formulation`, `application_methods`, `target_crops`,
+`target_pests`) for agricultural ones — never both, and never a field the compared
+products' shared type doesn't support.
+
+---
+
 ## Deferred — not built, not documented as built
 
 §11 payments, §12 returns, §13 refunds, §14 shipping, §19 invoices, §20 vendor
 ledger/settlements, §22 vendor staff, §23 RBAC (vendor-scoped), §24 vendor documents,
-§25 product documents, and §33 notification preferences (in-app only) are now
-implemented — see [COMMERCE_ARCHITECTURE.md §12–17](COMMERCE_ARCHITECTURE.md#12-payments-phase-c),
+§25 product documents, §29 product comparison, and §33 notification preferences
+(in-app only) are now implemented — see
+[COMMERCE_ARCHITECTURE.md §12–17](COMMERCE_ARCHITECTURE.md#12-payments-phase-c),
 [VENDOR_STAFF_RBAC.md](VENDOR_STAFF_RBAC.md), [VENDOR_DOCUMENTS.md](VENDOR_DOCUMENTS.md),
 [PRODUCT_DOCUMENTS.md](PRODUCT_DOCUMENTS.md), and [TEST_COVERAGE.md](../testing/TEST_COVERAGE.md).
 
 Still deferred: §23 RBAC for admin/employee/syndicate/customer (no requirement yet) ·
-§29 comparison · §35 audit log · §36 reports · §37 exports · §38 CMS · §39 SEO ·
-§40–52 UI redesign.
+§35 audit log · §36 reports · §37 exports · §38 CMS · §39 SEO · §40–52 UI redesign.
 
 These remain open scope. Their absence is stated here so no reader mistakes a plan for
 an implementation.

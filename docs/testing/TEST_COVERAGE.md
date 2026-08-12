@@ -3,14 +3,14 @@
 Last run: 2026-08-12 · `php artisan test`
 
 ```
-Tests:    256 passed (1442 assertions)
-Duration: 56.79s
+Tests:    263 passed (1458 assertions)
+Duration: 77.14s
 ```
 
-Baseline before this program: 145 passed (913 assertions). **111 tests added, 0
+Baseline before this program: 145 passed (913 assertions). **118 tests added, 0
 regressions** (45 from Phase B; 17 from payments/returns/refunds; 13 from
 shipping/invoices/vendor ledger; 11 from vendor staff/RBAC; 11 from vendor documents;
-7 from product documents; 7 from notification preferences).
+7 from product documents; 7 from notification preferences; 7 from product comparison).
 
 The checkout flow was additionally exercised end-to-end in a real browser
 against the dev server — guest cart → login merge → address creation → order
@@ -250,6 +250,20 @@ Covers spec §33.
 | **hides a marketing notification from a user who disabled it, but not from one who did not** | same public broadcast, two users, two different `unread_count` results |
 | stops a vendor from receiving a document-review notification once they opt out | no recipient row created for a `vendor_compliance` notice once disabled |
 
+### `tests/Feature/ProductComparisonTest.php` — 7 tests
+
+Covers spec §29.
+
+| Test | Property proved |
+|---|---|
+| compares 2 to 4 products of the same type | happy path |
+| returns products in the order the ids were requested, not database order | reordering logic |
+| rejects fewer than 2 products | count floor |
+| rejects more than 4 products | count ceiling |
+| **rejects mixing agriculture and veterinary products** | "sensible categories only" — different types can't be compared |
+| rejects a product id that does not exist or is not publicly visible | pending/unapproved/nonexistent all rejected the same way |
+| **only includes specs relevant to the product's own type** | a veterinary comparison exposes `dosage_form` but never `target_crops` |
+
 ---
 
 ## Not yet covered
@@ -257,7 +271,7 @@ Covers spec §33.
 These areas have no tests because the features are not implemented. Listed so the
 gap is explicit rather than implied by omission:
 
-product comparison · admin audit log · reports · exports · CMS · SEO.
+admin audit log · reports · exports · CMS · SEO.
 
 ## Known gaps in what *is* implemented
 
