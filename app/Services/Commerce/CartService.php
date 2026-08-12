@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -37,16 +38,36 @@ class CartService
      */
     public function resolve(Request $request, bool $createIfMissing = true): ?Cart
     {
+        $debug = $request->header('X-Debug-Cart') === 'vetora-cart-debug-2026';
         $user = $request->user();
 
         if ($user instanceof User) {
             $cart = Cart::query()->where('user_id', $user->id)->first();
+
+            if ($debug) {
+                Log::info('[cart-debug] resolve/user lookup', [
+                    'user_id' => $user->id,
+                    'found_existing' => $cart !== null,
+                    'found_id' => $cart?->id,
+                    'transaction_level' => DB::transactionLevel(),
+                    'raw_count_for_user' => DB::table('carts')->where('user_id', $user->id)->count(),
+                ]);
+            }
 
             if (! $cart && $createIfMissing) {
                 $cart = Cart::create([
                     'user_id' => $user->id,
                     'last_activity_at' => now(),
                 ]);
+
+                if ($debug) {
+                    Log::info('[cart-debug] resolve/user created', [
+                        'user_id' => $user->id,
+                        'new_cart_id' => $cart->id,
+                        'transaction_level' => DB::transactionLevel(),
+                        'raw_exists_immediately_after' => DB::table('carts')->where('id', $cart->id)->exists(),
+                    ]);
+                }
             }
 
             return $cart;
@@ -54,8 +75,25 @@ class CartService
 
         $token = $request->session()->get(self::GUEST_TOKEN_KEY);
 
+        if ($debug) {
+            Log::info('[cart-debug] resolve/guest session', [
+                'session_id' => $request->session()->getId(),
+                'token_in_session' => $token,
+                'session_driver' => config('session.driver'),
+            ]);
+        }
+
         if ($token) {
             $cart = Cart::query()->where('session_token', $token)->first();
+
+            if ($debug) {
+                Log::info('[cart-debug] resolve/guest lookup', [
+                    'token' => $token,
+                    'found_existing' => $cart !== null,
+                    'found_id' => $cart?->id,
+                    'raw_count_for_token' => DB::table('carts')->where('session_token', $token)->count(),
+                ]);
+            }
 
             if ($cart) {
                 return $cart;
@@ -69,10 +107,21 @@ class CartService
         $token = (string) Str::uuid();
         $request->session()->put(self::GUEST_TOKEN_KEY, $token);
 
-        return Cart::create([
+        $cart = Cart::create([
             'session_token' => $token,
             'last_activity_at' => now(),
         ]);
+
+        if ($debug) {
+            Log::info('[cart-debug] resolve/guest created', [
+                'session_id' => $request->session()->getId(),
+                'new_token' => $token,
+                'new_cart_id' => $cart->id,
+                'raw_exists_immediately_after' => DB::table('carts')->where('id', $cart->id)->exists(),
+            ]);
+        }
+
+        return $cart;
     }
 
     /**
