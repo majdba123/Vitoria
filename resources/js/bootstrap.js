@@ -211,7 +211,11 @@ window.Auth = {
     },
 
     /**
-     * Bearer token rejected by API (expired or revoked). Clears client state and redirects shoppers to login.
+     * Bearer token rejected by API (expired or revoked). Clears client state and lets the
+     * UI fall back to guest browsing — most pages that carry a stale token (e.g. a product
+     * page) don't require login at all, so this must not force-navigate away from them.
+     * Pages/actions that do require auth already guard themselves (server-side `auth`
+     * middleware on session-backed routes, explicit checks like cart.js's checkout button).
      */
     handleSessionExpired() {
         if (!localStorage.getItem('auth_token')) {
@@ -227,10 +231,6 @@ window.Auth = {
 
         this.clearAll();
         window.dispatchEvent(new CustomEvent('sz:auth:expired'));
-        const path = window.location.pathname || '';
-        if (!/^\/(login|register)(\/)?$/i.test(path)) {
-            window.location.href = '/login';
-        }
     },
 };
 
