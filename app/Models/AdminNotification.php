@@ -20,6 +20,7 @@ class AdminNotification extends Model
         'title',
         'body',
         'type',
+        'category',
         'action_type',
         'action_id',
         'sent_by',

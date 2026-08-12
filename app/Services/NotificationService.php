@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Events\AdminNotificationSent;
 use App\Models\AdminNotification;
+use App\Models\NotificationPreference;
 use App\Models\Order;
 use App\Models\OrderReturn;
 use App\Models\Product;
@@ -16,9 +17,18 @@ use App\Models\VendorMember;
 
 class NotificationService
 {
+    public function __construct(
+        private readonly NotificationPreferenceService $preferenceService,
+    ) {}
+
     /**
      * Send a public notification (e.g. new product approved). Message in Arabic.
      * Clicking the notification takes the user to the product page.
+     *
+     * Public (broadcast-to-everyone) notifications have no per-recipient row
+     * to skip at creation time, so the `marketing` opt-out (spec §33) is
+     * enforced at read time instead — see NotificationController::index()
+     * and NotificationPreferenceService::disabledCategoriesFor().
      */
     public function notifyNewProductApproved(Product $product): void
     {
@@ -28,6 +38,7 @@ class NotificationService
             'title' => 'منتج جديد',
             'body' => $body,
             'type' => AdminNotification::TYPE_PUBLIC,
+            'category' => NotificationPreference::CATEGORY_MARKETING,
             'action_type' => AdminNotification::ACTION_PRODUCT,
             'action_id' => $product->id,
             'sent_by' => null,
@@ -37,7 +48,9 @@ class NotificationService
     }
 
     /**
-     * Notify admin and vendor when an order is created.
+     * Notify admin and vendor when an order is created. Order-lifecycle
+     * notices are transaction-critical (spec §33) — never filtered by
+     * preference.
      */
     public function notifyNewOrder(Order $order): void
     {
@@ -54,6 +67,7 @@ class NotificationService
                 'title' => 'طلب جديد',
                 'body' => $bodyAdmin,
                 'type' => AdminNotification::TYPE_PRIVATE,
+                'category' => NotificationPreference::CATEGORY_ORDER_UPDATES,
                 'action_type' => AdminNotification::ACTION_ORDER,
                 'action_id' => $order->id,
                 'sent_by' => null,
@@ -67,6 +81,7 @@ class NotificationService
                 'title' => 'طلب جديد',
                 'body' => $bodyVendor,
                 'type' => AdminNotification::TYPE_PRIVATE,
+                'category' => NotificationPreference::CATEGORY_ORDER_UPDATES,
                 'action_type' => AdminNotification::ACTION_ORDER,
                 'action_id' => $order->id,
                 'sent_by' => null,
@@ -106,6 +121,7 @@ class NotificationService
             'title' => 'تحديث الطلب',
             'body' => $body,
             'type' => AdminNotification::TYPE_PRIVATE,
+            'category' => NotificationPreference::CATEGORY_ORDER_UPDATES,
             'action_type' => AdminNotification::ACTION_ORDER,
             'action_id' => $order->id,
             'sent_by' => null,
@@ -130,6 +146,7 @@ class NotificationService
             'title' => 'طلب إرجاع',
             'body' => $bodyAdmin,
             'type' => AdminNotification::TYPE_PRIVATE,
+            'category' => NotificationPreference::CATEGORY_ORDER_UPDATES,
             'action_type' => AdminNotification::ACTION_ORDER,
             'action_id' => $return->order_id,
             'sent_by' => null,
@@ -145,6 +162,7 @@ class NotificationService
                 'title' => 'طلب إرجاع',
                 'body' => $bodyVendor,
                 'type' => AdminNotification::TYPE_PRIVATE,
+                'category' => NotificationPreference::CATEGORY_ORDER_UPDATES,
                 'action_type' => AdminNotification::ACTION_ORDER,
                 'action_id' => $return->order_id,
                 'sent_by' => null,
@@ -182,6 +200,7 @@ class NotificationService
             'title' => 'تحديث الإرجاع',
             'body' => $body,
             'type' => AdminNotification::TYPE_PRIVATE,
+            'category' => NotificationPreference::CATEGORY_ORDER_UPDATES,
             'action_type' => AdminNotification::ACTION_ORDER,
             'action_id' => $return->order_id,
             'sent_by' => null,
@@ -215,6 +234,7 @@ class NotificationService
             'title' => 'تحديث الاسترداد',
             'body' => $body,
             'type' => AdminNotification::TYPE_PRIVATE,
+            'category' => NotificationPreference::CATEGORY_ORDER_UPDATES,
             'action_type' => AdminNotification::ACTION_ORDER,
             'action_id' => $refund->order_id,
             'sent_by' => null,
@@ -236,6 +256,7 @@ class NotificationService
             'title' => 'إضافة إلى فريق متجر',
             'body' => "تمت إضافتك إلى فريق متجر {$storeName} بصلاحية: {$roleName}",
             'type' => AdminNotification::TYPE_PRIVATE,
+            'category' => NotificationPreference::CATEGORY_ACCOUNT_SECURITY,
             'action_type' => null,
             'action_id' => null,
             'sent_by' => null,
@@ -246,11 +267,17 @@ class NotificationService
     }
 
     /**
-     * Notify admin a vendor document needs review (spec §24).
+     * Notify admin a vendor document needs review (spec §24). Operational,
+     * not transaction-critical — subject to the `vendor_compliance`
+     * opt-out (spec §33), filtered from the recipient list before it is
+     * ever created as a recipient row or broadcast.
      */
     public function notifyVendorDocumentSubmitted(Vendor $vendor): void
     {
-        $adminIds = User::query()->where('type', User::TYPE_ADMIN)->pluck('id')->all();
+        $adminIds = $this->preferenceService->filterEnabled(
+            User::query()->where('type', User::TYPE_ADMIN)->pluck('id')->all(),
+            NotificationPreference::CATEGORY_VENDOR_COMPLIANCE,
+        );
 
         if ($adminIds === []) {
             return;
@@ -260,6 +287,7 @@ class NotificationService
             'title' => 'وثيقة تاجر بانتظار المراجعة',
             'body' => "قدّم متجر {$vendor->store_name} وثيقة جديدة بانتظار المراجعة",
             'type' => AdminNotification::TYPE_PRIVATE,
+            'category' => NotificationPreference::CATEGORY_VENDOR_COMPLIANCE,
             'action_type' => null,
             'action_id' => null,
             'sent_by' => null,
@@ -277,7 +305,7 @@ class NotificationService
         $document->loadMissing('vendor.user');
         $ownerId = $document->vendor?->user_id;
 
-        if (! $ownerId) {
+        if (! $ownerId || ! $this->preferenceService->isEnabled($ownerId, NotificationPreference::CATEGORY_VENDOR_COMPLIANCE)) {
             return;
         }
 
@@ -289,6 +317,7 @@ class NotificationService
             'title' => 'مراجعة وثيقة',
             'body' => $body,
             'type' => AdminNotification::TYPE_PRIVATE,
+            'category' => NotificationPreference::CATEGORY_VENDOR_COMPLIANCE,
             'action_type' => null,
             'action_id' => null,
             'sent_by' => null,
@@ -303,7 +332,10 @@ class NotificationService
      */
     public function notifyProductDocumentSubmitted(ProductDocument $document): void
     {
-        $adminIds = User::query()->where('type', User::TYPE_ADMIN)->pluck('id')->all();
+        $adminIds = $this->preferenceService->filterEnabled(
+            User::query()->where('type', User::TYPE_ADMIN)->pluck('id')->all(),
+            NotificationPreference::CATEGORY_VENDOR_COMPLIANCE,
+        );
 
         if ($adminIds === []) {
             return;
@@ -315,6 +347,7 @@ class NotificationService
             'title' => 'وثيقة منتج بانتظار المراجعة',
             'body' => "تم رفع وثيقة جديدة للمنتج: {$document->product?->name}",
             'type' => AdminNotification::TYPE_PRIVATE,
+            'category' => NotificationPreference::CATEGORY_VENDOR_COMPLIANCE,
             'action_type' => AdminNotification::ACTION_PRODUCT,
             'action_id' => $document->product_id,
             'sent_by' => null,
@@ -332,7 +365,7 @@ class NotificationService
         $document->loadMissing(['vendor:id,user_id', 'product:id,name']);
         $ownerId = $document->vendor?->user_id;
 
-        if (! $ownerId) {
+        if (! $ownerId || ! $this->preferenceService->isEnabled($ownerId, NotificationPreference::CATEGORY_VENDOR_COMPLIANCE)) {
             return;
         }
 
@@ -344,6 +377,7 @@ class NotificationService
             'title' => 'مراجعة وثيقة منتج',
             'body' => $body,
             'type' => AdminNotification::TYPE_PRIVATE,
+            'category' => NotificationPreference::CATEGORY_VENDOR_COMPLIANCE,
             'action_type' => AdminNotification::ACTION_PRODUCT,
             'action_id' => $document->product_id,
             'sent_by' => null,
@@ -366,6 +400,7 @@ class NotificationService
             'title' => 'خصم على منتج',
             'body' => $body,
             'type' => AdminNotification::TYPE_PUBLIC,
+            'category' => NotificationPreference::CATEGORY_MARKETING,
             'action_type' => AdminNotification::ACTION_PRODUCT,
             'action_id' => $product->id,
             'sent_by' => null,
@@ -386,6 +421,7 @@ class NotificationService
             'title' => 'تحديث خصم منتج',
             'body' => $body,
             'type' => AdminNotification::TYPE_PUBLIC,
+            'category' => NotificationPreference::CATEGORY_MARKETING,
             'action_type' => AdminNotification::ACTION_PRODUCT,
             'action_id' => $product->id,
             'sent_by' => null,

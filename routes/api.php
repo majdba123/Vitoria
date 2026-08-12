@@ -147,6 +147,9 @@ Route::middleware(['auth:sanctum', 'throttle:api.authenticated'])->group(functio
     Route::get('/checkout/summary', [\App\Http\Controllers\Api\CheckoutController::class, 'summary'])->name('checkout.summary');
     Route::post('/checkout', [\App\Http\Controllers\Api\CheckoutController::class, 'store'])->middleware('throttle:orders.write')->name('checkout.store');
 
+    Route::get('/notification-preferences', [\App\Http\Controllers\Api\NotificationPreferenceController::class, 'index'])->name('notification-preferences.index');
+    Route::patch('/notification-preferences', [\App\Http\Controllers\Api\NotificationPreferenceController::class, 'update'])->middleware('throttle:api.write')->name('notification-preferences.update');
+
     Route::get('/notifications', [\App\Http\Controllers\Api\NotificationController::class, 'index'])->name('notifications.index');
     Route::patch('/notifications/{notification}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markRead'])->middleware('throttle:notifications.write')->name('notifications.read');
     Route::post('/notifications/mark-all-read', [\App\Http\Controllers\Api\NotificationController::class, 'markAllRead'])->middleware('throttle:notifications.write')->name('notifications.mark-all-read');

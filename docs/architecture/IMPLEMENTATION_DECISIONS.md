@@ -391,18 +391,62 @@ support exactly this from decision D15 without a migration.
 
 ---
 
+## D18 — Notification preferences: in-app only, critical categories bypass storage
+
+**Evidence:** §33 explicitly permits scoping this to what already works ("channels may
+include... do not implement SMS or push unless infrastructure already exists"). Auditing
+the actual codebase found that reasoning applies to email too: there is no
+`app/Notifications/` directory, no `Mail::` call, no `->notify()` call anywhere in `app/`,
+and `MAIL_MAILER` defaults to `log` — nothing in this repository has ever sent a real
+email. `Notifiable` is declared on `User` but never invoked.
+
+**Decision:** `notification_preferences` covers the in-app channel only — the one channel
+with real, working delivery (`AdminNotification` + Reverb broadcast). No `channel` column
+was added to the schema: unlike D7/D12's zero-rate money columns (needed by a real total
+formula even before a rate is configured), a channel column here would hold exactly one
+ever-used value, which is a speculative column, not a structural one. Offering an "email
+notifications" toggle that delivers nothing would be the same fake-feature problem D9
+already rejected for payment gateways — worse than not offering the control at all, because
+it looks like it does something.
+
+**Four categories**, derived from auditing all 13 existing `NotificationService` event
+methods by what they actually communicate, not by which actor receives them:
+`order_updates` and `account_security` are transaction/access-critical (§33: "should not be
+accidentally disabled") and their target lists are never filtered; `vendor_compliance` and
+`marketing` are operational/promotional and mutable.
+
+**Critical categories bypass the permissions table entirely** —
+`NotificationPreferenceService::isEnabled()` returns `true` for them before touching the
+database, the same defense-in-depth shape as `User::hasVendorPermission()`'s owner bypass
+(decision D15). A stale or directly-written preference row can never suppress an order,
+return, refund, or account-access notice — proven in
+`NotificationPreferencesTest::it never disables a critical category even from a
+directly-written row`, which writes exactly such a row and confirms the service still
+returns `true`.
+
+**Public (broadcast-to-everyone) notifications are filtered at read time, not creation
+time.** A private notification's recipient list is filtered before its `recipients()->sync()`
+and broadcast — the disabled user simply isn't created as a recipient. A public notification
+has no recipient rows at all (that's what "public" means in this schema), so
+`NotificationController::index()`/`markAllRead()` instead exclude a disabled category from
+the visibility query per request. This is why `admin_notifications` gained a nullable,
+unbackfilled `category` column: historical rows have none and are therefore never hidden by
+a preference that didn't exist when they were created.
+
+---
+
 ## Deferred — not built, not documented as built
 
 §11 payments, §12 returns, §13 refunds, §14 shipping, §19 invoices, §20 vendor
-ledger/settlements, §22 vendor staff, §23 RBAC (vendor-scoped), §24 vendor documents, and
-§25 product documents are now implemented — see
-[COMMERCE_ARCHITECTURE.md §12–17](COMMERCE_ARCHITECTURE.md#12-payments-phase-c),
+ledger/settlements, §22 vendor staff, §23 RBAC (vendor-scoped), §24 vendor documents,
+§25 product documents, and §33 notification preferences (in-app only) are now
+implemented — see [COMMERCE_ARCHITECTURE.md §12–17](COMMERCE_ARCHITECTURE.md#12-payments-phase-c),
 [VENDOR_STAFF_RBAC.md](VENDOR_STAFF_RBAC.md), [VENDOR_DOCUMENTS.md](VENDOR_DOCUMENTS.md),
 [PRODUCT_DOCUMENTS.md](PRODUCT_DOCUMENTS.md), and [TEST_COVERAGE.md](../testing/TEST_COVERAGE.md).
 
 Still deferred: §23 RBAC for admin/employee/syndicate/customer (no requirement yet) ·
-§29 comparison · §33 notification preferences · §35 audit log · §36 reports · §37 exports ·
-§38 CMS · §39 SEO · §40–52 UI redesign.
+§29 comparison · §35 audit log · §36 reports · §37 exports · §38 CMS · §39 SEO ·
+§40–52 UI redesign.
 
 These remain open scope. Their absence is stated here so no reader mistakes a plan for
 an implementation.
