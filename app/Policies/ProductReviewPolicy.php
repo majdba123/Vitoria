@@ -16,8 +16,8 @@ class ProductReviewPolicy
             return true;
         }
 
-        if ($user->type === User::TYPE_VENDOR && $user->vendor) {
-            return $productReview->product && $productReview->product->vendor_id === $user->vendor->id;
+        if ($user->type === User::TYPE_VENDOR && ($vendor = $user->managedVendor())) {
+            return $productReview->product && $productReview->product->vendor_id === $vendor->id;
         }
 
         return $productReview->user_id === $user->id;

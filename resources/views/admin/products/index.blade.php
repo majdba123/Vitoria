@@ -101,12 +101,26 @@
         </div>
     </div>
 
-    {{-- Products Grid --}}
-    <div id="products-grid-wrapper" class="hidden">
-        <div id="products-grid" class="responsive-product-grid"></div>
+    {{-- Products Table --}}
+    <div id="products-grid-wrapper" class="hidden card overflow-hidden">
+        <div class="admin-table-wrap table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th scope="col">{{ __('admin.name_label') }}</th>
+                        <th scope="col" class="text-end">{{ __('products.fields.price') }}</th>
+                        <th scope="col" class="text-end">{{ __('admin.qty_label') }}</th>
+                        <th scope="col">{{ __('common.active') }}</th>
+                        <th scope="col">{{ __('admin.approval_status_label') }}</th>
+                        <th scope="col" class="text-end">{{ __('admin.th_actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody id="products-grid"></tbody>
+            </table>
+        </div>
 
-        <div class="mt-4 flex flex-col items-center gap-3 border-t border-gray-100 px-4 py-3 sm:flex-row sm:justify-between">
-            <p id="products-info" class="text-xs text-gray-500"></p>
+        <div class="flex flex-col items-center gap-3 border-t border-gray-100 px-4 py-3 dark:border-gray-800 sm:flex-row sm:justify-between">
+            <p id="products-info" class="text-xs text-gray-500 dark:text-gray-400"></p>
             <div class="flex gap-2">
                 <button id="prev-page" class="btn-secondary btn-xs" disabled>{{ __('nav.prev') }}</button>
                 <button id="next-page" class="btn-secondary btn-xs" disabled>{{ __('nav.next') }}</button>
@@ -276,66 +290,56 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         grid.innerHTML = products.map(p => {
             const photoUrl = p.first_photo_url || null;
-            return `<div class="group card overflow-hidden border border-gray-200/70 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl">
-                <div class="relative aspect-[4/3] overflow-hidden bg-gray-100 sm:aspect-square dark:bg-gray-800">
-                    ${photoUrl
-                        ? `<div class="flex h-full w-full items-center justify-center p-2">
-                            <img src="${photoUrl}" class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" alt="${esc(p.name)}">
-                        </div>`
-                        : `<div class="flex h-full w-full items-center justify-center text-gray-300">
-                            <svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"/></svg>
-                        </div>`
+            return `<tr>
+                <td>
+                    <a href="/admin/products/${p.id}" class="flex items-center gap-3">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden bg-gray-100 dark:bg-gray-800" style="border-radius: var(--radius-control)">
+                            ${photoUrl ? `<img src="${photoUrl}" class="h-full w-full object-contain p-1" alt="">` : `<svg class="h-5 w-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z"/></svg>`}
+                        </span>
+                        <span class="min-w-0">
+                            <span class="block truncate font-semibold text-gray-900 dark:text-white">${esc(p.name)}</span>
+                            <span class="block truncate text-xs text-gray-500 dark:text-gray-400">${esc(p.commercial_name || p.category?.name || i18n.noCommercialName)}</span>
+                        </span>
+                    </a>
+                </td>
+                <td class="text-end tabular-nums">
+                    ${p.has_active_discount
+                        ? `<span class="badge badge-danger align-middle">-${parseFloat(p.discount_percentage || 0).toFixed(0)}%</span> <span class="font-semibold" style="color: var(--color-danger-strong)">$${parseFloat(p.discounted_price || p.price || 0).toFixed(2)}</span> <span class="text-xs text-gray-400 line-through">$${parseFloat(p.price || 0).toFixed(2)}</span>`
+                        : `<span class="font-semibold text-gray-900 dark:text-white">$${parseFloat(p.price || 0).toFixed(2)}</span>`
                     }
-                    <div class="absolute right-2 top-2">
-                        <button onclick="toggleProductStatus(${p.id})" class="badge ${p.is_active ? 'badge-success' : 'badge-danger'} shadow-lg text-[10px]">
-                            <span class="mr-1 inline-block h-1.5 w-1.5 rounded-full ${p.is_active ? 'bg-emerald-500' : 'bg-red-500'}"></span>
-                            ${p.is_active ? esc(i18n.active) : esc(i18n.inactive)}
+                </td>
+                <td class="text-end tabular-nums text-gray-600 dark:text-gray-300">${p.quantity}</td>
+                <td>
+                    <button onclick="toggleProductStatus(${p.id})" class="badge ${p.is_active ? 'badge-success' : 'badge-danger'}">
+                        ${p.is_active ? esc(i18n.active) : esc(i18n.inactive)}
+                    </button>
+                </td>
+                <td>
+                    <select onchange="updateProductStatus(${p.id}, this.value)" data-original-value="${p.status || 'pending'}" class="form-select text-xs" style="min-height: 2rem; padding-top: 0.25rem; padding-bottom: 0.25rem;" aria-label="${esc(i18n.approvalStatus)}">
+                        <option value="pending" ${p.status === 'pending' ? 'selected' : ''}>${esc(i18n.statusPending)}</option>
+                        <option value="approved" ${p.status === 'approved' ? 'selected' : ''}>${esc(i18n.statusApproved)}</option>
+                        <option value="rejected" ${p.status === 'rejected' ? 'selected' : ''}>${esc(i18n.statusRejected)}</option>
+                    </select>
+                </td>
+                <td class="text-end">
+                    <div class="row-actions-menu">
+                        <button type="button" class="row-actions-trigger" aria-label="${esc(i18n.show)} ${esc(p.name)}">
+                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"/></svg>
                         </button>
-                    </div>
-                    ${p.has_active_discount ? `<div class="absolute left-2 top-2 rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold text-white shadow-lg">-${parseFloat(p.discount_percentage || 0).toFixed(0)}%</div>` : ''}
-                </div>
-                <div class="card-body">
-                    <h3 class="text-base font-semibold text-gray-900 line-clamp-1">${esc(p.name)}</h3>
-                    <p class="mt-1 text-xs text-gray-500 line-clamp-1">${esc(p.commercial_name || p.category?.name || i18n.noCommercialName)}</p>
-                    <p class="mt-1 text-xs text-gray-500 line-clamp-2">${esc(p.description || i18n.noDescription)}</p>
-                    <div class="mt-3 flex items-center justify-between">
-                        <div>
-                            ${p.has_active_discount
-                                ? `<p class="text-lg font-bold text-red-600">$${parseFloat(p.discounted_price || p.price || 0).toFixed(2)}</p><p class="text-xs text-gray-400 line-through">$${parseFloat(p.price || 0).toFixed(2)}</p>`
-                                : `<p class="text-lg font-bold text-gray-900">$${parseFloat(p.price || 0).toFixed(2)}</p>`
-                            }
-                            <p class="text-xs text-gray-500">${esc(i18n.qty)}: ${p.quantity}</p>
+                        <div class="row-actions-panel dropdown-panel">
+                            <a href="/admin/products/${p.id}">${esc(i18n.show)}</a>
+                            <a href="/admin/products/${p.id}/reviews">${esc(i18n.reviews)}</a>
+                            <a href="/admin/products/${p.id}/edit">${esc(i18n.edit)}</a>
+                            <button type="button" class="is-danger" onclick="openDeleteModal(${p.id})">${esc(i18n.remove)}</button>
                         </div>
                     </div>
-                    <div class="mt-3 border-t border-gray-100 pt-3">
-                        <label class="mb-1.5 block text-xs font-medium text-gray-500">${esc(i18n.approvalStatus)}</label>
-                        <select onchange="updateProductStatus(${p.id}, this.value)" data-original-value="${p.status || 'pending'}" class="w-full form-input text-xs py-1.5 px-2">
-                            <option value="pending" ${p.status === 'pending' ? 'selected' : ''}>${esc(i18n.statusPending)}</option>
-                            <option value="approved" ${p.status === 'approved' ? 'selected' : ''}>${esc(i18n.statusApproved)}</option>
-                            <option value="rejected" ${p.status === 'rejected' ? 'selected' : ''}>${esc(i18n.statusRejected)}</option>
-                        </select>
-                    </div>
-                    <div class="mt-4 flex flex-wrap gap-2 border-t border-gray-100 pt-3">
-                        <a href="/admin/products/${p.id}" class="btn-secondary btn-xs flex-1 text-center min-w-0">
-                            <svg class="h-3.5 w-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            ${esc(i18n.show)}
-                        </a>
-                        <a href="/admin/products/${p.id}/reviews" class="btn-secondary btn-xs flex-1 text-center min-w-0" title="${esc(i18n.reviews)}">
-                            <svg class="h-3.5 w-3.5 inline" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                            ${esc(i18n.reviews)}
-                        </a>
-                        <a href="/admin/products/${p.id}/edit" class="btn-primary btn-xs flex-1 text-center min-w-0">
-                            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
-                            ${esc(i18n.edit)}
-                        </a>
-                        <button onclick="openDeleteModal(${p.id})" class="btn-danger btn-xs flex-1">
-                            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
-                            ${esc(i18n.remove)}
-                        </button>
-                    </div>
-                </div>
-            </div>`;
+                </td>
+            </tr>`;
         }).join('');
+
+        grid.querySelectorAll('.row-actions-menu').forEach((menu) => {
+            VetoraWorkspace.wireDropdown(menu.querySelector('.row-actions-trigger'), menu.querySelector('.row-actions-panel'));
+        });
     }
 
     function renderPagination(meta) {

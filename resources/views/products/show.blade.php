@@ -61,9 +61,9 @@
                             </div>
 
                             <div class="mt-5 flex flex-wrap items-end gap-3 border-b border-gray-100 pb-5 dark:border-gray-800">
-                                <span id="product-price" class="text-4xl font-bold tabular-nums text-gray-900 dark:text-white"></span>
-                                <span class="pb-1 text-sm font-semibold text-gray-400">SYP</span>
-                                <span id="product-price-original" class="hidden pb-1 text-sm text-gray-400 line-through"></span>
+                                <span id="product-price" class="text-4xl font-bold tabular-nums" style="color: var(--color-text);"></span>
+                                <span class="pb-1 text-sm font-semibold" style="color: var(--color-text-muted);">SYP</span>
+                                <span id="product-price-original" class="hidden pb-1 text-sm tabular-nums line-through" style="color: var(--color-text-muted);"></span>
                             </div>
 
                             <div class="storefront-spec-grid mt-5">
@@ -81,30 +81,30 @@
                                 </div>
                                 <div class="storefront-spec-card">
                                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('products.fields.vendor') }}</p>
-                                    <p id="product-vendor" class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">—</p>
+                                    <a id="product-vendor" href="#" class="mt-1 block truncate text-sm font-semibold text-gray-900 hover:text-brand-600 dark:text-white dark:hover:text-brand-400">—</a>
                                 </div>
                             </div>
 
-                            <div class="mt-5 border-y border-gray-200 py-4 dark:border-gray-800">
+                            <div class="mt-5 border-y py-4" style="border-color: var(--color-border);">
                                 <div class="flex flex-wrap items-start justify-between gap-4">
                                     <div>
-                                        <p class="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">{{ __('products.discount_card_title') }}</p>
-                                        <p id="product-discount-status" class="mt-2 text-sm font-black text-gray-900 dark:text-white">—</p>
+                                        <p class="text-[11px] font-semibold uppercase tracking-[0.2em]" style="color: var(--color-text-muted);">{{ __('products.discount_card_title') }}</p>
+                                        <p id="product-discount-status" class="mt-2 text-sm font-semibold" style="color: var(--color-text);">—</p>
                                     </div>
                                     <p id="product-availability"></p>
                                 </div>
                                 <div class="mt-4 grid gap-3 sm:grid-cols-3">
-                                    <div class="border-s-2 border-gray-200 ps-3 dark:border-gray-700">
-                                        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-gray-400">{{ __('products.fields.discount_value') }}</p>
-                                        <p id="product-discount-value" class="mt-1 text-sm font-black text-red-600 dark:text-red-400">—</p>
+                                    <div class="border-s-2 ps-3" style="border-color: var(--color-border);">
+                                        <p class="text-[11px] font-semibold uppercase tracking-[0.18em]" style="color: var(--color-text-muted);">{{ __('products.fields.discount_value') }}</p>
+                                        <p id="product-discount-value" class="mt-1 text-sm font-semibold tabular-nums" style="color: var(--color-danger-600);">—</p>
                                     </div>
-                                    <div class="border-s-2 border-gray-200 ps-3 dark:border-gray-700">
-                                        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-gray-400">{{ __('products.fields.discount_starts') }}</p>
-                                        <p id="product-discount-start" class="mt-1 text-sm font-black text-gray-900 dark:text-white">—</p>
+                                    <div class="border-s-2 ps-3" style="border-color: var(--color-border);">
+                                        <p class="text-[11px] font-semibold uppercase tracking-[0.18em]" style="color: var(--color-text-muted);">{{ __('products.fields.discount_starts') }}</p>
+                                        <p id="product-discount-start" class="mt-1 text-sm font-semibold tabular-nums" style="color: var(--color-text);">—</p>
                                     </div>
-                                    <div class="border-s-2 border-gray-200 ps-3 dark:border-gray-700">
-                                        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-gray-400">{{ __('products.fields.discount_ends') }}</p>
-                                        <p id="product-discount-end" class="mt-1 text-sm font-black text-gray-900 dark:text-white">—</p>
+                                    <div class="border-s-2 ps-3" style="border-color: var(--color-border);">
+                                        <p class="text-[11px] font-semibold uppercase tracking-[0.18em]" style="color: var(--color-text-muted);">{{ __('products.fields.discount_ends') }}</p>
+                                        <p id="product-discount-end" class="mt-1 text-sm font-semibold tabular-nums" style="color: var(--color-text);">—</p>
                                     </div>
                                 </div>
                             </div>
@@ -141,11 +141,11 @@
                                 <div>
                                     <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300">{{ __('products.review_rating_label') }}</label>
                                     <div id="review-stars-input" class="flex gap-1 text-2xl text-gray-300 dark:text-gray-600" data-rating="0">
-                                        <button type="button" class="star-btn rounded p-0.5 transition-colors hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2" data-value="1" aria-label="{{ __('products.review_star_label', ['count' => 1]) }}"><svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></button>
-                                        <button type="button" class="star-btn rounded p-0.5 transition-colors hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2" data-value="2" aria-label="{{ __('products.review_star_label', ['count' => 2]) }}"><svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></button>
-                                        <button type="button" class="star-btn rounded p-0.5 transition-colors hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2" data-value="3" aria-label="{{ __('products.review_star_label', ['count' => 3]) }}"><svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></button>
-                                        <button type="button" class="star-btn rounded p-0.5 transition-colors hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2" data-value="4" aria-label="{{ __('products.review_star_label', ['count' => 4]) }}"><svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></button>
-                                        <button type="button" class="star-btn rounded p-0.5 transition-colors hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2" data-value="5" aria-label="{{ __('products.review_star_label', ['count' => 5]) }}"><svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></button>
+                                        <button type="button" class="star-btn rounded p-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2" data-value="1" aria-label="{{ __('products.review_star_label', ['count' => 1]) }}"><svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></button>
+                                        <button type="button" class="star-btn rounded p-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2" data-value="2" aria-label="{{ __('products.review_star_label', ['count' => 2]) }}"><svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></button>
+                                        <button type="button" class="star-btn rounded p-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2" data-value="3" aria-label="{{ __('products.review_star_label', ['count' => 3]) }}"><svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></button>
+                                        <button type="button" class="star-btn rounded p-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2" data-value="4" aria-label="{{ __('products.review_star_label', ['count' => 4]) }}"><svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></button>
+                                        <button type="button" class="star-btn rounded p-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2" data-value="5" aria-label="{{ __('products.review_star_label', ['count' => 5]) }}"><svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg></button>
                                     </div>
                                     <input type="hidden" name="rating" id="review-rating-input" value="0">
                                 </div>
@@ -172,7 +172,7 @@
                 <svg class="mx-auto h-16 w-16 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
                 <p class="mt-4 text-base font-bold text-gray-900 dark:text-white">{{ __('products.error_title') }}</p>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('products.error_copy') }}</p>
-                <a href="{{ route('products.index') }}" class="mt-6 inline-flex items-center gap-2 rounded-xl bg-gray-900 px-6 py-3 text-sm font-bold text-white hover:bg-brand-600 dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">{{ __('products.back_to_products') }}</a>
+                <a href="{{ route('products.index') }}" class="btn-primary mt-6">{{ __('products.back_to_products') }}</a>
             </div>
         </div>
     </div>
@@ -200,6 +200,7 @@
             'photoSingle' => __('products.photo_single'),
             'noAdditionalPhotos' => __('products.no_additional_photos'),
             'noPrimaryPhoto' => __('products.no_primary_photo'),
+            'viewLarger' => __('products.view_larger'),
             'reviewsLoadFailed' => __('products.reviews_load_failed'),
             'reviewsNotAvailable' => __('products.reviews_not_available'),
             'reviewDeleteConfirm' => __('products.delete_review_confirm'),
@@ -260,7 +261,14 @@
                 $('product-description').textContent = product.description || i18n.noDescription || '';
                 $('product-category').textContent = product.category?.name || '—';
                 $('product-subcategory').textContent = product.subcategory?.name || i18n.noSubcategory || '—';
-                $('product-vendor').textContent = product.vendor?.store_name || product.vendor?.name || i18n.noVendor || '—';
+                const vendorLink = $('product-vendor');
+                vendorLink.textContent = product.vendor?.store_name || product.vendor?.name || i18n.noVendor || '—';
+                if (product.vendor?.id) {
+                    vendorLink.setAttribute('href', `/vendors/${product.vendor.id}`);
+                } else {
+                    vendorLink.removeAttribute('href');
+                    vendorLink.classList.add('pointer-events-none');
+                }
 
                 const averageRating = parseFloat(product.average_rating) || 0;
                 const reviewCount = parseInt(product.review_count, 10) || 0;
@@ -272,9 +280,7 @@
                 const hasDiscount = !!product.has_active_discount;
                 const effectivePrice = parseFloat(hasDiscount ? product.discounted_price : product.price || 0);
                 $('product-price').textContent = effectivePrice.toLocaleString();
-                $('product-price').className = hasDiscount
-                    ? 'text-4xl font-black text-red-600 dark:text-red-400'
-                    : 'text-4xl font-black text-gray-900 dark:text-white';
+                $('product-price').style.color = hasDiscount ? 'var(--color-danger-600)' : 'var(--color-text)';
 
                 if (hasDiscount) {
                     $('product-price-original').classList.remove('hidden');
@@ -292,8 +298,8 @@
 
                 const inStock = product.quantity > 0;
                 $('product-availability').innerHTML = inStock
-                    ? `<span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>${esc(i18n.inStock || '')}</span>`
-                    : `<span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-600 dark:bg-red-500/10 dark:text-red-400"><span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>${esc(i18n.outOfStock || '')}</span>`;
+                    ? `<span class="badge badge-success gap-1.5"><span class="h-1.5 w-1.5 rounded-full" style="background: var(--color-success-500);"></span>${esc(i18n.inStock || '')}</span>`
+                    : `<span class="badge badge-danger gap-1.5"><span class="h-1.5 w-1.5 rounded-full" style="background: var(--color-danger-500);"></span>${esc(i18n.outOfStock || '')}</span>`;
 
                 const addToCartButton = $('add-to-cart-btn');
                 if (inStock) {
@@ -306,8 +312,6 @@
                 } else {
                     addToCartButton.innerHTML = `<span class="flex items-center justify-center gap-2"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>${esc(i18n.outOfStockButton || '')}</span>`;
                     addToCartButton.disabled = true;
-                    addToCartButton.classList.remove('bg-gray-900', 'dark:bg-white', 'dark:text-gray-900');
-                    addToCartButton.classList.add('cursor-not-allowed', 'bg-gray-100', 'text-gray-400', 'dark:bg-gray-800', 'dark:text-gray-500');
                 }
 
                 const primaryPhoto = photos.find((photo) => photo.is_primary) || photos[0];
@@ -368,12 +372,15 @@
                     const img = document.createElement('img');
                     img.src = url;
                     img.alt = name || '';
-                    img.className = 'max-h-[90vh] max-w-[90vw] rounded-2xl object-contain';
+                    img.className = 'max-h-[90vh] max-w-[90vw] rounded-lg object-contain';
 
                     const closeBtn = document.createElement('button');
                     closeBtn.type = 'button';
                     closeBtn.setAttribute('aria-label', i18n.close);
-                    closeBtn.className = 'absolute -right-2 -top-2 flex h-10 w-10 items-center justify-center rounded-full bg-white text-gray-900 shadow-xl hover:scale-110 transition-transform';
+                    closeBtn.className = 'absolute flex h-10 w-10 items-center justify-center rounded-full bg-white text-gray-900';
+                    closeBtn.style.insetInlineEnd = '-0.5rem';
+                    closeBtn.style.top = '-0.5rem';
+                    closeBtn.style.boxShadow = 'var(--shadow-3)';
                     closeBtn.innerHTML = '<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>';
 
                     wrap.appendChild(img);
@@ -421,14 +428,21 @@
                 const container = $('primary-photo-container');
                 container.innerHTML = '';
 
+                // A real <button> (not a bare <img> with a click listener) so the
+                // zoom interaction is keyboard-operable, not mouse-only.
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'block h-full w-full cursor-zoom-in focus:outline-none';
+                button.setAttribute('aria-label', i18n.viewLarger || '');
+                button.addEventListener('click', () => window._viewLarge(url, name));
+
                 const img = document.createElement('img');
                 img.src = url;
                 img.alt = name || '';
                 img.loading = 'eager';
-                img.className = 'cursor-zoom-in transition-transform duration-300 hover:scale-[1.03]';
-                img.addEventListener('click', () => window._viewLarge(url, name));
 
-                container.appendChild(img);
+                button.appendChild(img);
+                container.appendChild(button);
             }
 
             function formatDateOnly(value) {
@@ -500,13 +514,13 @@
                         const date = review.created_at ? new Date(review.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' }) : '';
                         const currentUserId = window.Auth?.getUser?.()?.id || null;
                         const canDelete = currentUserId && review.user && review.user.id === currentUserId;
-                        const deleteButton = canDelete ? `<button type="button" data-review-id="${review.id}" class="review-delete-btn text-xs font-bold text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">${esc(i18n.deleteReview || 'Delete')}</button>` : '';
+                        const deleteButton = canDelete ? `<button type="button" data-review-id="${review.id}" class="review-delete-btn text-xs font-bold text-danger-600 hover:text-danger-700 dark:text-danger-400 dark:hover:text-danger-300">${esc(i18n.deleteReview || 'Delete')}</button>` : '';
 
                         listElement.innerHTML += `
                             <article class="py-5" data-review-id="${review.id}">
                                 <div class="flex flex-wrap items-center justify-between gap-3">
                                     <div>
-                                        <p class="text-sm font-black text-gray-900 dark:text-white">${userName}</p>
+                                        <p class="text-sm font-bold text-gray-900 dark:text-white">${userName}</p>
                                         ${date ? `<p class="mt-1 text-[11px] text-gray-400 dark:text-gray-500">${esc(date)}</p>` : ''}
                                     </div>
                                     <div class="flex items-center gap-3">

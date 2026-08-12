@@ -64,7 +64,7 @@
             <div class="modal-shell w-full">
                 <div class="border-b border-gray-100 px-6 py-5 dark:border-gray-800">
                     <p class="text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-brand-400">Vetora</p>
-                    <h2 id="startup-title" class="mt-1 text-xl font-black text-gray-900 dark:text-white">{{ __('startup.modal_title') }}</h2>
+                    <h2 id="startup-title" class="mt-1 text-xl font-bold text-gray-900 dark:text-white">{{ __('startup.modal_title') }}</h2>
                 </div>
                 <div class="px-6 py-5">
                     <div class="mb-5 grid grid-cols-2 gap-2">
@@ -93,7 +93,7 @@
                 </div>
                 <div class="flex items-center justify-between gap-3 border-t border-gray-100 px-6 py-4 dark:border-gray-800">
                     <button type="button" id="startup-back" class="hidden rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800">{{ __('startup.back') }}</button>
-                    <button type="button" id="startup-next" class="ms-auto rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-black text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">{{ __('startup.next') }}</button>
+                    <button type="button" id="startup-next" class="ms-auto rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">{{ __('startup.next') }}</button>
                 </div>
             </div>
         </div>

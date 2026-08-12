@@ -7,8 +7,8 @@
 <div class="space-y-6">
     <section class="dashboard-page-header">
         <div class="min-w-0">
-            <p class="text-[11px] font-black uppercase tracking-[0.22em] text-brand-600 dark:text-brand-300">{{ __('vendor.workspace') }}</p>
-            <h2 class="mt-2 text-2xl font-black text-gray-900 dark:text-white" id="vendor-welcome">{{ __('vendor.dashboard_heading') }}</h2>
+            <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-brand-600 dark:text-brand-300">{{ __('vendor.workspace') }}</p>
+            <h2 class="mt-2 text-2xl font-bold text-gray-900 dark:text-white" id="vendor-welcome">{{ __('vendor.dashboard_heading') }}</h2>
             <p class="dashboard-section-copy">{{ __('vendor.dashboard_copy') }}</p>
         </div>
         <div class="dashboard-page-header-actions">
@@ -81,7 +81,7 @@
             <div class="card-body">
                 <div id="recent-products" class="space-y-3">
                     <div class="py-8 text-center">
-                        <div class="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-emerald-500 dark:border-gray-700"></div>
+                        <div class="mx-auto h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-brand-500 dark:border-gray-700 dark:border-t-brand-400"></div>
                         <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ __('common.loading') }}</p>
                     </div>
                 </div>

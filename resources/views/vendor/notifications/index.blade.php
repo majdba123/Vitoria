@@ -13,7 +13,7 @@
     </div>
 
     <div id="vendor-notif-loading" class="card py-14 text-center">
-        <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-emerald-500 dark:border-gray-700 dark:border-t-emerald-400"></div>
+        <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500 dark:border-gray-700 dark:border-t-brand-400"></div>
         <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">{{ __('common.loading') }}</p>
     </div>
 
@@ -96,14 +96,14 @@
                 const href = linkUrl(n.action_type, n.action_id != null ? n.action_id : null);
                 const tag = href ? 'a' : 'div';
                 const attrs = href ? ' href="' + esc(href) + '" class="block"' : ' class="block"';
-                return '<li class="' + (isUnread ? 'bg-emerald-50/30 dark:bg-emerald-500/5' : '') + '">' +
+                return '<li class="' + (isUnread ? 'bg-brand-50/40 dark:bg-brand-500/5' : '') + '">' +
                     '<' + tag + attrs + ' data-nid="' + esc(String(n.id)) + '">' +
                     '<div class="flex items-start gap-3 px-4 py-3.5">' +
-                    (isUnread ? '<div class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-emerald-500 dark:bg-emerald-400"></div>' : '<div class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-gray-300 dark:bg-gray-600"></div>') +
+                    (isUnread ? '<div class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand-500 dark:bg-brand-400"></div>' : '<div class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-gray-300 dark:bg-gray-600"></div>') +
                     '<div class="min-w-0 flex-1">' +
                     '<p class="text-sm font-medium text-gray-900 dark:text-white">' + body + '</p>' +
                     '<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">' + time + (sender ? ' · ' + sender : '') + '</p>' +
-                    (isUnread ? '<button type="button" class="vendor-notif-mark-one mt-2 text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400" data-id="' + esc(String(n.id)) + '">' + esc(i18n.markRead) + '</button>' : '') +
+                    (isUnread ? '<button type="button" class="vendor-notif-mark-one mt-2 text-xs font-medium text-brand-600 hover:underline dark:text-brand-400" data-id="' + esc(String(n.id)) + '">' + esc(i18n.markRead) + '</button>' : '') +
                     '</div>' +
                     (href ? '<svg class="h-4 w-4 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>' : '') +
                     '</div></' + tag + '></li>';

@@ -7,8 +7,8 @@
 <div class="space-y-6">
     <section class="dashboard-page-header">
         <div>
-            <p class="text-[11px] font-black uppercase tracking-[0.22em] text-brand-600 dark:text-brand-300">{{ __('employee.workspace') }}</p>
-            <h2 class="mt-2 text-2xl font-black text-gray-900 dark:text-white">{{ __('employee.dashboard_title') }}</h2>
+            <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-brand-600 dark:text-brand-300">{{ __('employee.workspace') }}</p>
+            <h2 class="mt-2 text-2xl font-bold text-gray-900 dark:text-white">{{ __('employee.dashboard_title') }}</h2>
             <p class="dashboard-section-copy">{{ __('employee.dashboard_copy') }}</p>
         </div>
         <div class="dashboard-page-header-actions">
@@ -20,7 +20,7 @@
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6">
         <div class="stat-tile">
             <div class="card-body flex items-center gap-4">
-                <div class="icon-chip bg-cyan-500/10 text-cyan-700 dark:text-cyan-300">
+                <div class="icon-chip">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
                 </div>
                 <div>
@@ -32,55 +32,55 @@
 
         <div class="stat-tile">
             <div class="card-body flex items-center gap-4">
-                <div class="icon-chip bg-sky-500/10 text-sky-700 dark:text-sky-300">
+                <div class="icon-chip">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m6 2.25a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
                 </div>
                 <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('employee.active_products_label') }}</p>
-                    <p class="text-lg font-bold text-sky-600" id="stat-active-products">0</p>
+                    <p class="text-lg font-bold text-gray-900 dark:text-white" id="stat-active-products">0</p>
                 </div>
             </div>
         </div>
 
         <div class="stat-tile">
             <div class="card-body flex items-center gap-4">
-                <div class="icon-chip bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+                <div class="icon-chip" style="background: var(--color-success-soft); color: var(--color-success-strong);">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
                 <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('employee.approved_products') }}</p>
-                    <p class="text-lg font-bold text-emerald-600" id="stat-approved-products">0</p>
+                    <p class="text-lg font-bold" id="stat-approved-products" style="color: var(--color-success-strong)">0</p>
                 </div>
             </div>
         </div>
 
         <div class="stat-tile">
             <div class="card-body flex items-center gap-4">
-                <div class="icon-chip bg-amber-500/10 text-amber-700 dark:text-amber-300">
+                <div class="icon-chip" style="background: var(--color-warning-soft); color: var(--color-warning-strong);">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
                 <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('employee.pending_products') }}</p>
-                    <p class="text-lg font-bold text-amber-600" id="stat-pending-products">0</p>
+                    <p class="text-lg font-bold" id="stat-pending-products" style="color: var(--color-warning-strong)">0</p>
                 </div>
             </div>
         </div>
 
         <div class="stat-tile">
             <div class="card-body flex items-center gap-4">
-                <div class="icon-chip bg-rose-500/10 text-rose-700 dark:text-rose-300">
+                <div class="icon-chip" style="background: var(--color-danger-soft); color: var(--color-danger-strong);">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
                 </div>
                 <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('employee.rejected_products') }}</p>
-                    <p class="text-lg font-bold text-rose-600" id="stat-rejected-products">0</p>
+                    <p class="text-lg font-bold" id="stat-rejected-products" style="color: var(--color-danger-strong)">0</p>
                 </div>
             </div>
         </div>
 
         <div class="stat-tile">
             <div class="card-body flex items-center gap-4">
-                <div class="icon-chip bg-slate-500/10 text-slate-700 dark:text-slate-300">
+                <div class="icon-chip">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636A9 9 0 0 1 5.636 18.364M5.636 5.636A9 9 0 0 0 18.364 18.364M5.636 5.636 18.364 18.364"/></svg>
                 </div>
                 <div>
@@ -96,7 +96,7 @@
             <div class="card-body flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-400">{{ __('employee.status_summary') }}</p>
-                    <h3 class="mt-2 text-lg font-black text-gray-900 dark:text-white">{{ __('employee.all_products') }}</h3>
+                    <h3 class="mt-2 text-lg font-bold text-gray-900 dark:text-white">{{ __('employee.all_products') }}</h3>
                 </div>
                 <span class="badge badge-brand">{{ __('employee.open_tab') }}</span>
             </div>
@@ -105,7 +105,7 @@
             <div class="card-body flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-400">{{ __('employee.status_summary') }}</p>
-                    <h3 class="mt-2 text-lg font-black text-gray-900 dark:text-white">{{ __('employee.active_products_tab') }}</h3>
+                    <h3 class="mt-2 text-lg font-bold text-gray-900 dark:text-white">{{ __('employee.active_products_tab') }}</h3>
                 </div>
                 <span class="badge badge-success">{{ __('employee.open_tab') }}</span>
             </div>
@@ -114,7 +114,7 @@
             <div class="card-body flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-400">{{ __('employee.status_summary') }}</p>
-                    <h3 class="mt-2 text-lg font-black text-gray-900 dark:text-white">{{ __('employee.pending_products') }}</h3>
+                    <h3 class="mt-2 text-lg font-bold text-gray-900 dark:text-white">{{ __('employee.pending_products') }}</h3>
                 </div>
                 <span class="badge badge-warning">{{ __('employee.open_tab') }}</span>
             </div>
@@ -123,7 +123,7 @@
             <div class="card-body flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-400">{{ __('employee.status_summary') }}</p>
-                    <h3 class="mt-2 text-lg font-black text-gray-900 dark:text-white">{{ __('employee.rejected_products') }}</h3>
+                    <h3 class="mt-2 text-lg font-bold text-gray-900 dark:text-white">{{ __('employee.rejected_products') }}</h3>
                 </div>
                 <span class="badge badge-danger">{{ __('employee.open_tab') }}</span>
             </div>
@@ -284,7 +284,7 @@ document.addEventListener('employee-ready', function () {
             <div class="rounded-2xl border border-gray-200/80 p-4 dark:border-gray-800">
                 <div class="mb-2 flex items-center justify-between gap-3">
                     <p class="truncate text-sm font-semibold text-gray-900 dark:text-white">${escapeHtml(label)}</p>
-                    <span class="text-sm font-bold text-cyan-600 dark:text-cyan-300">${value}</span>
+                    <span class="text-sm font-bold text-brand-600 dark:text-brand-300">${value}</span>
                 </div>
                 <div class="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
                     <div class="h-full rounded-full bg-brand-500" style="width:${Math.max((value / maxValue) * 100, 8)}%"></div>
@@ -311,12 +311,12 @@ document.addEventListener('employee-ready', function () {
 
         const total = rows.reduce((sum, row) => sum + row[1], 0);
         typeStats.innerHTML = rows.map(([label, value], index) => {
-            const colors = ['bg-emerald-500', 'bg-brand-500', 'bg-amber-500', 'bg-rose-500'];
+            const colors = ['bg-brand-500', 'bg-info-500', 'bg-amber-500', 'bg-rose-500'];
             const colorClass = colors[index % colors.length];
             const percent = total > 0 ? Math.round((value / total) * 100) : 0;
 
             return `
-                <div class="rounded-[24px] border border-gray-200/80 p-4 dark:border-gray-800">
+                <div class="border border-gray-200/80 p-4 dark:border-gray-800" style="border-radius: var(--radius-card)">
                     <div class="flex items-center justify-between gap-3">
                         <div>
                             <p class="text-sm font-semibold text-gray-900 dark:text-white">${escapeHtml(label)}</p>

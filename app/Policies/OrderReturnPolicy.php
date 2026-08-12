@@ -36,7 +36,7 @@ class OrderReturnPolicy
             return true;
         }
 
-        return $user->isVendor() && $this->ownsVendor($user, $return);
+        return $user->isVendor() && $this->ownsVendor($user, $return) && $user->hasVendorPermission($return->vendor, 'returns.review');
     }
 
     public function cancel(User $user, OrderReturn $return): bool
@@ -62,12 +62,12 @@ class OrderReturnPolicy
             return true;
         }
 
-        return $user->isVendor() && $this->ownsVendor($user, $return);
+        return $user->isVendor() && $this->ownsVendor($user, $return) && $user->hasVendorPermission($return->vendor, 'returns.refund');
     }
 
     private function ownsVendor(User $user, OrderReturn $return): bool
     {
-        $vendorId = $user->vendor?->id;
+        $vendorId = $user->managedVendor()?->id;
 
         return $vendorId !== null && (int) $return->vendor_id === (int) $vendorId;
     }

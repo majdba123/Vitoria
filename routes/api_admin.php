@@ -93,6 +93,7 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::post('vendors/{vendor}/ledger/adjustments', [\App\Http\Controllers\Api\Admin\LedgerController::class, 'adjust'])->middleware('throttle:api.write')->name('vendors.ledger.adjust');
     Route::get('vendors/{vendor}/settlements', [\App\Http\Controllers\Api\Admin\SettlementController::class, 'index'])->name('vendors.settlements.index');
     Route::post('vendors/{vendor}/settlements', [\App\Http\Controllers\Api\Admin\SettlementController::class, 'store'])->middleware('throttle:api.write')->name('vendors.settlements.store');
+    Route::get('vendors/{vendor}/staff', [\App\Http\Controllers\Api\Admin\VendorStaffController::class, 'index'])->name('vendors.staff.index');
     Route::post('notifications/send', [\App\Http\Controllers\Api\Admin\NotificationController::class, 'send'])->middleware('throttle:notifications.write')->name('notifications.send');
 
     Route::get('contact-messages', [\App\Http\Controllers\Api\Admin\ContactMessageController::class, 'index'])->name('contact-messages.index');

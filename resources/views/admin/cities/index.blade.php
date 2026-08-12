@@ -41,15 +41,23 @@
         <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">{{ __('admin.loading_cities') }}</p>
     </div>
 
-    <div id="cities-empty" class="hidden">
-        <div class="card py-16 text-center">
-            <svg class="mx-auto h-12 w-12 text-gray-300 dark:text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21h7.5m-7.5 0V5.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m-7.5 0H5.625A1.125 1.125 0 014.5 19.875V10.5a1.125 1.125 0 011.125-1.125H8.25m7.5 11.625h2.625A1.125 1.125 0 0019.5 19.875V8.25a1.125 1.125 0 00-1.125-1.125H15.75"/></svg>
-            <h3 class="mt-3 text-sm font-semibold text-gray-900 dark:text-white">{{ __('admin.no_cities_found') }}</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('admin.create_first_city') }}</p>
-        </div>
+    <div id="cities-empty" class="empty-state hidden">
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('admin.no_cities_found') }}</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('admin.create_first_city') }}</p>
     </div>
 
-    <div id="cities-grid" class="hidden grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
+    <div id="cities-table-wrap" class="admin-table-wrap table-responsive hidden">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th scope="col">{{ __('admin.cities') }}</th>
+                    <th scope="col" class="text-end">{{ __('admin.vendors') }}</th>
+                    <th scope="col" class="text-end">{{ __('admin.th_actions') }}</th>
+                </tr>
+            </thead>
+            <tbody id="cities-table-body"></tbody>
+        </table>
+    </div>
 </div>
 
 <div id="delete-modal" class="mobile-dialog">
@@ -78,7 +86,8 @@ document.addEventListener('DOMContentLoaded', function () {
     ]) !!};
     const loading = document.getElementById('cities-loading');
     const empty = document.getElementById('cities-empty');
-    const grid = document.getElementById('cities-grid');
+    const tableWrap = document.getElementById('cities-table-wrap');
+    const tbody = document.getElementById('cities-table-body');
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-btn');
     const clearSearch = document.getElementById('clear-search');
@@ -112,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             loading.classList.remove('hidden');
             empty.classList.add('hidden');
-            grid.classList.add('hidden');
+            tableWrap.classList.add('hidden');
 
             const params = new URLSearchParams({ per_page: '100' });
             if (searchTerm) {
@@ -132,27 +141,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            grid.classList.remove('hidden');
-            grid.innerHTML = cities.map(function (city) {
+            tableWrap.classList.remove('hidden');
+            tbody.innerHTML = cities.map(function (city) {
                 return `
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="flex items-start justify-between gap-4">
-                                <div>
-                                    <h3 class="text-base font-semibold text-gray-900 dark:text-white">${esc(city.name)}</h3>
-                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${Number(city.vendors_count || 0)} ${esc(i18n.vendorsAssignedSuffix)}</p>
-                                </div>
-                                <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400">
-                                    <i class="fa-solid fa-city"></i>
-                                </span>
+                    <tr>
+                        <td class="flex items-center gap-3">
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center text-brand-600 dark:text-brand-400" style="border-radius: var(--radius-control); background: var(--color-brand-soft)"><i class="fa-solid fa-city text-xs" aria-hidden="true"></i></span>
+                            <a href="/admin/cities/${city.id}" class="font-semibold text-gray-900 dark:text-white">${esc(city.name)}</a>
+                        </td>
+                        <td class="text-end tabular-nums text-gray-600 dark:text-gray-300">${Number(city.vendors_count || 0)}</td>
+                        <td class="text-end">
+                            <div class="inline-flex items-center gap-1.5">
+                                <a href="/admin/cities/${city.id}" class="btn-ghost btn-xs" aria-label="${esc(i18n.viewDetails)}">${esc(i18n.viewDetails)}</a>
+                                <a href="/admin/cities/${city.id}/edit" class="btn-secondary btn-xs" aria-label="${esc(i18n.edit)}">${esc(i18n.edit)}</a>
+                                <button type="button" onclick="confirmDeleteCity(${city.id})" class="btn-danger btn-xs" aria-label="${esc(i18n.delete)}: ${esc(city.name)}">${esc(i18n.delete)}</button>
                             </div>
-                            <div class="mt-4 flex gap-2 border-t border-gray-100 pt-4 dark:border-gray-800">
-                                <a href="/admin/cities/${city.id}" class="btn-primary btn-sm flex-1">${esc(i18n.viewDetails)}</a>
-                                <a href="/admin/cities/${city.id}/edit" class="btn-secondary btn-sm">${esc(i18n.edit)}</a>
-                                <button type="button" onclick="confirmDeleteCity(${city.id})" class="btn-danger btn-sm">${esc(i18n.delete)}</button>
-                            </div>
-                        </div>
-                    </div>
+                        </td>
+                    </tr>
                 `;
             }).join('');
         } catch (error) {

@@ -17,7 +17,7 @@ class CommissionController extends Controller
      */
     public function show(Request $request): JsonResponse
     {
-        $vendor = $request->user()?->vendor;
+        $vendor = $request->user()?->managedVendor();
         if (! $vendor instanceof Vendor) {
             abort(403, 'Vendor profile not found.');
         }

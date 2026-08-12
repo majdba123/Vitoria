@@ -25,31 +25,33 @@
                 <a href="{{ route('vendor.products.index') }}" class="btn-secondary btn-sm mt-4 inline-block">{{ __('vendor.back_to_products') }}</a>
             </div>
         @else
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="border-b border-gray-100 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
+            <div class="admin-table-wrap table-responsive">
+                <table class="admin-table">
+                    <caption class="sr-only">{{ __('vendor.all_reviews_for') }} {{ $product->name }}</caption>
+                    <thead>
                         <tr>
-                            <th class="px-4 py-3 font-semibold text-gray-900 dark:text-white">{{ __('vendor.th_user') }}</th>
-                            <th class="px-4 py-3 font-semibold text-gray-900 dark:text-white">{{ __('vendor.th_rating') }}</th>
-                            <th class="px-4 py-3 font-semibold text-gray-900 dark:text-white">{{ __('vendor.th_comment') }}</th>
-                            <th class="px-4 py-3 font-semibold text-gray-900 dark:text-white">{{ __('vendor.th_date') }}</th>
-                            <th class="px-4 py-3 font-semibold text-gray-900 dark:text-white">{{ __('vendor.th_actions') }}</th>
+                            <th scope="col">{{ __('vendor.th_user') }}</th>
+                            <th scope="col">{{ __('vendor.th_rating') }}</th>
+                            <th scope="col">{{ __('vendor.th_comment') }}</th>
+                            <th scope="col">{{ __('vendor.th_date') }}</th>
+                            <th scope="col" class="text-end">{{ __('vendor.th_actions') }}</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    <tbody>
                         @foreach($reviews as $review)
-                            <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/30">
-                                <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">{{ $review->user?->name ?? '—' }}</td>
-                                <td class="px-4 py-3">
-                                    <span class="text-amber-400" aria-hidden="true">{{ str_repeat('★', (int) $review->rating) }}</span><span class="text-gray-300 dark:text-gray-600">{{ str_repeat('★', 5 - (int) $review->rating) }}</span>
+                            <tr>
+                                <td class="font-medium text-gray-900 dark:text-white">{{ $review->user?->name ?? '—' }}</td>
+                                <td>
+                                    <span style="color: var(--color-warning-500)" aria-hidden="true">{{ str_repeat('★', (int) $review->rating) }}</span><span class="text-gray-300 dark:text-gray-600">{{ str_repeat('★', 5 - (int) $review->rating) }}</span>
+                                    <span class="sr-only">{{ $review->rating }}/5</span>
                                 </td>
-                                <td class="max-w-xs px-4 py-3 text-gray-600 dark:text-gray-400">{{ $review->body ?: '—' }}</td>
-                                <td class="px-4 py-3 text-gray-500 dark:text-gray-400">{{ $review->created_at?->format('M j, Y') ?? '—' }}</td>
-                                <td class="px-4 py-3">
+                                <td class="max-w-xs text-gray-600 dark:text-gray-400">{{ $review->body ?: '—' }}</td>
+                                <td class="tabular-nums text-gray-500 dark:text-gray-400">{{ $review->created_at?->format('M j, Y') ?? '—' }}</td>
+                                <td class="text-end">
                                     <form action="{{ route('vendor.products.reviews.destroy', [$product->id, $review->id]) }}" method="POST" class="inline" onsubmit="return confirm('{{ __('vendor.confirm_delete_review') }}');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-xs font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">{{ __('common.delete') }}</button>
+                                        <button type="submit" class="btn-danger btn-xs" aria-label="{{ __('common.delete') }}: {{ $review->user?->name ?? '' }}">{{ __('common.delete') }}</button>
                                     </form>
                                 </td>
                             </tr>

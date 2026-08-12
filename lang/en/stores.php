@@ -17,4 +17,7 @@ return [
     'not_found_copy' => 'This store is unavailable or has been removed.',
     'back_home' => 'Back to marketplace',
     'location' => 'Location',
+    'breadcrumb_label' => 'Vendor',
+    'view_product' => 'View',
+    'load_products_error' => 'Failed to load products. Please try again later.',
 ];

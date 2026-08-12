@@ -39,9 +39,8 @@
                     @php
                         $isActive = str_starts_with($currentRoute, str_replace('.index', '', $item['route']));
                     @endphp
-                    <a href="{{ route($item['route']) }}" class="dashboard-sidebar-link {{ $isActive ? 'is-active' : '' }}">
-                        <span class="dashboard-sidebar-bullet h-2.5 w-2.5 rounded-full bg-white/20"></span>
-                        <i class="{{ $item['icon'] }} w-4 text-center text-[13px]"></i>
+                    <a href="{{ route($item['route']) }}" class="dashboard-sidebar-link {{ $isActive ? 'is-active' : '' }}" @if ($isActive) aria-current="page" @endif>
+                        <i class="{{ $item['icon'] }} w-4 text-center text-[13px]" aria-hidden="true"></i>
                         <span class="flex-1">{{ $item['label'] }}</span>
                     </a>
                 @endforeach
@@ -50,7 +49,7 @@
 
         <div class="mb-6">
             <p class="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.24em] text-white/35">{{ __('vendor.categories') }}</p>
-            <div id="sidebar-categories" class="space-y-1">
+            <div id="sidebar-categories" class="space-y-1" aria-live="polite">
                 <div class="border border-white/8 bg-white/5 px-3 py-3">
                     <div class="h-4 w-24 animate-pulse rounded bg-white/10"></div>
                 </div>

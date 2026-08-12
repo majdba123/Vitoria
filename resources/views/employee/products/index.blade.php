@@ -54,21 +54,21 @@
         </div>
         <div class="card-body p-0">
             <x-alert type="error" id="products-alert" />
-            <div class="overflow-x-auto">
-                <table>
+            <div class="admin-table-wrap table-responsive">
+                <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>{{ __('employee.all_products') }}</th>
-                            <th>{{ __('admin.categories') }}</th>
-                            <th>{{ __('employee.status') }}</th>
-                            <th class="text-end">{{ __('products.fields.price') }}</th>
-                            <th class="text-end">{{ __('admin.th_actions') }}</th>
+                            <th scope="col">{{ __('employee.all_products') }}</th>
+                            <th scope="col">{{ __('admin.categories') }}</th>
+                            <th scope="col">{{ __('employee.status') }}</th>
+                            <th scope="col" class="text-end">{{ __('products.fields.price') }}</th>
+                            <th scope="col" class="text-end">{{ __('admin.th_actions') }}</th>
                         </tr>
                     </thead>
                     <tbody id="products-grid"></tbody>
                 </table>
             </div>
-            <div id="products-empty" class="hidden py-16 text-center text-sm text-gray-400">{{ __('employee.no_products') }}</div>
+            <div id="products-empty" class="empty-state hidden">{{ __('employee.no_products') }}</div>
         </div>
     </div>
 </div>
@@ -119,7 +119,7 @@ document.addEventListener('employee-ready', function () {
                     <td class="text-gray-600 dark:text-gray-300">${escapeHtml(product.category?.name || '—')}</td>
                     <td><span class="badge ${badgeClass(product.status)}">${escapeHtml(product.status || '')}</span></td>
                     <td class="text-end font-semibold text-gray-950 dark:text-white" dir="ltr">${escapeHtml(product.price || '')}</td>
-                    <td class="text-end"><a href="{{ url('/employee/products') }}/${product.id}/edit" class="btn-secondary btn-xs">{{ __('employee.review_product') }}</a></td>
+                    <td class="text-end"><a href="{{ url('/employee/products') }}/${product.id}/edit" class="btn-secondary btn-xs" aria-label="{{ __('employee.review_product') }}: ${escapeHtml(product.name || '')}">{{ __('employee.review_product') }}</a></td>
                 </tr>
             `).join('');
         } catch (error) {

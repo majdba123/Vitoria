@@ -4,6 +4,7 @@ return [
     'workspace' => 'Employee Workspace',
     'open_sidebar' => 'Open sidebar',
     'workspace_label' => 'Employee workspace',
+    'workspace_footer' => 'Employee workspace',
     'dashboard' => 'Dashboard',
     'sidebar_copy' => 'Review products, update listings, and keep moderation decisions clear for vendors.',
     'dashboard_title' => 'Product moderation workspace',

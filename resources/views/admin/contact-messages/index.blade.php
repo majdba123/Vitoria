@@ -39,11 +39,10 @@
                         </div>
                         <div class="flex shrink-0 items-center gap-2">
                             @if(($m['status'] ?? '') === 'replied')
-                                <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">{{ __('admin.status_replied') }}</span>
-                                <span class="text-xs text-gray-400 dark:text-gray-500">{{ __('admin.status_replied') }}</span>
+                                <span class="badge badge-success">{{ __('admin.status_replied') }}</span>
                             @else
-                                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">{{ __('common.pending') }}</span>
-                                <button type="button" class="cm-reply-btn rounded-lg border border-brand-500 px-2.5 py-1.5 text-xs font-bold text-brand-600 hover:bg-brand-50 dark:border-brand-400 dark:text-brand-400 dark:hover:bg-brand-500/10" data-id="{{ $m['id'] }}" data-message="{{ e($m['message'] ?? '') }}" data-email="{{ e($m['email'] ?? $m['user']['email'] ?? '') }}">{{ __('admin.reply') }}</button>
+                                <span class="badge badge-warning">{{ __('common.pending') }}</span>
+                                <button type="button" class="cm-reply-btn btn-secondary btn-xs" data-id="{{ $m['id'] }}" data-message="{{ e($m['message'] ?? '') }}" data-email="{{ e($m['email'] ?? $m['user']['email'] ?? '') }}">{{ __('admin.reply') }}</button>
                             @endif
                         </div>
                     </div>
@@ -74,17 +73,16 @@
 </div>
 
 {{-- Reply modal --}}
-<div id="cm-reply-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-gray-900/60 p-4" aria-hidden="true">
-    <div class="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-900" role="dialog" aria-labelledby="cm-reply-title">
+<div id="cm-reply-modal" class="mobile-dialog" aria-hidden="true">
+    <div class="mobile-dialog-card" style="max-width: 32rem;" role="dialog" aria-labelledby="cm-reply-title">
         <h3 id="cm-reply-title" class="text-lg font-bold text-gray-900 dark:text-white">{{ __('admin.reply_to_message') }}</h3>
-        <div id="cm-reply-original" class="mt-3 rounded-xl border border-gray-100 bg-gray-50 p-3 text-sm text-gray-700 dark:border-gray-800 dark:bg-gray-800/60 dark:text-gray-300"></div>
+        <div id="cm-reply-original" class="mt-3 border border-gray-100 bg-gray-50 p-3 text-sm text-gray-700 dark:border-gray-800 dark:bg-gray-800/60 dark:text-gray-300" style="border-radius: var(--radius-control)"></div>
         <form id="cm-reply-form" class="mt-4 space-y-3">
             <input type="hidden" id="cm-reply-id" name="id">
             <div>
-                <label for="cm-reply-text" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('admin.your_reply') }}</label>
-                <textarea id="cm-reply-text" name="admin_reply" rows="4" required maxlength="5000" placeholder="{{ __('admin.type_your_reply') }}"
-                    class="block w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"></textarea>
-                <p id="cm-reply-err" class="mt-1 hidden text-xs text-red-500"></p>
+                <label for="cm-reply-text" class="form-label">{{ __('admin.your_reply') }}</label>
+                <textarea id="cm-reply-text" name="admin_reply" rows="4" required maxlength="5000" placeholder="{{ __('admin.type_your_reply') }}" class="form-textarea"></textarea>
+                <p id="cm-reply-err" class="form-error mt-1 hidden"></p>
             </div>
             <div class="flex gap-2 justify-end">
                 <button type="button" id="cm-reply-cancel" class="btn-secondary btn-sm">{{ __('common.cancel') }}</button>
@@ -193,11 +191,11 @@
                 const fromName = m.name || (m.user && m.user.name) || '—';
                 const fromEmail = m.email || (m.user && m.user.email) || '—';
                 const statusBadge = m.status === 'replied'
-                    ? '<span class="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">' + esc(i18n.replied) + '</span>'
-                    : '<span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">' + esc(i18n.pending) + '</span>';
+                    ? '<span class="badge badge-success">' + esc(i18n.replied) + '</span>'
+                    : '<span class="badge badge-warning">' + esc(i18n.pending) + '</span>';
                 const replyBtn = m.status === 'pending'
-                    ? '<button type="button" class="cm-reply-btn rounded-lg border border-brand-500 px-2.5 py-1.5 text-xs font-bold text-brand-600 hover:bg-brand-50 dark:border-brand-400 dark:text-brand-400 dark:hover:bg-brand-500/10" data-id="' + m.id + '" data-message="' + attrEsc(m.message) + '" data-email="' + attrEsc(fromEmail) + '">' + esc(i18n.reply) + '</button>'
-                    : '<span class="text-xs text-gray-400 dark:text-gray-500">' + esc(i18n.replied) + '</span>';
+                    ? '<button type="button" class="cm-reply-btn btn-secondary btn-xs" data-id="' + m.id + '" data-message="' + attrEsc(m.message) + '" data-email="' + attrEsc(fromEmail) + '">' + esc(i18n.reply) + '</button>'
+                    : '';
                 return '<li class="px-4 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800/50">' +
                     '<div class="flex flex-wrap items-start justify-between gap-2">' +
                     '<div class="min-w-0 flex-1">' +

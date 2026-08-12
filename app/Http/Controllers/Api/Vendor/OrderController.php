@@ -25,7 +25,7 @@ class OrderController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $vendor = $request->user()?->vendor;
+        $vendor = $request->user()?->managedVendor();
         if (! $vendor) {
             abort(403, 'Vendor profile not found.');
         }
@@ -84,7 +84,7 @@ class OrderController extends Controller
      */
     public function show(Request $request, int $orderId): JsonResponse
     {
-        $vendor = $request->user()?->vendor;
+        $vendor = $request->user()?->managedVendor();
         if (! $vendor) {
             abort(403, 'Vendor profile not found.');
         }

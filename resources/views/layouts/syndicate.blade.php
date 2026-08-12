@@ -45,6 +45,8 @@
     data-session-auth="{{ auth()->check() ? '1' : '0' }}"
     class="dashboard-body min-h-screen font-sans text-gray-900 antialiased dark:text-gray-100"
 >
+    <a href="#main-content" class="skip-link">{{ __('common.skip_to_content') }}</a>
+
     <div id="syndicate-app" class="hidden">
         <div id="sidebar-backdrop" class="fixed inset-0 z-40 hidden bg-gray-950/60 lg:hidden" onclick="closeSidebar()"></div>
         <aside id="syndicate-sidebar" class="dashboard-sidebar fixed inset-y-0 {{ $sidebarEdgeClass }} z-50 flex w-72 {{ $sidebarHiddenClass }} flex-col lg:translate-x-0">
@@ -69,8 +71,7 @@
                         $isActive = $currentRoute === $link['route'];
                     @endphp
                     <a href="{{ route($link['route']) }}" class="dashboard-sidebar-link {{ $isActive ? 'is-active' : '' }}">
-                        <span class="dashboard-sidebar-bullet h-2.5 w-2.5 rounded-full bg-white/20"></span>
-                        <i class="{{ $link['icon'] }} w-4 text-center text-[13px]"></i>
+                        <i class="{{ $link['icon'] }} w-4 text-center text-[13px]" aria-hidden="true"></i>
                         <span class="flex-1">{{ $link['label'] }}</span>
                     </a>
                 @endforeach
@@ -80,20 +81,19 @@
             </div>
         </aside>
         <div class="{{ $mainPaddingClass }}">
-            <header class="dashboard-topbar sticky top-0 z-30">
-                <div class="workspace-shell flex h-16 items-center gap-4">
-                    <button type="button" id="sidebar-toggle" class="-m-2.5 flex h-10 w-10 items-center justify-center rounded-2xl text-gray-500 hover:bg-white/70 dark:hover:bg-white/5 lg:hidden">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
-                    </button>
-                    <div class="min-w-0 flex-1">
-                        <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-brand-600 dark:text-brand-300">{{ __('syndicate.workspace_label') }}</p>
-                        <h1 class="mt-1 truncate text-lg font-black text-gray-900 dark:text-white">@yield('page-title', __('syndicate.dashboard'))</h1>
-                    </div>
-                    <span id="syndicate-type-badge" class="badge badge-brand"></span>
-                    <button onclick="syndicateLogout()" class="btn-secondary btn-sm">{{ __('syndicate.sign_out') }}</button>
-                </div>
-            </header>
-            <main class="workspace-shell py-8">@yield('content')</main>
+            <x-workspace.topbar
+                context="syndicate"
+                :badge-label="__('syndicate.workspace_label')"
+                :open-sidebar-label="__('syndicate.open_sidebar')"
+                :notifications="false"
+                :avatar="false"
+                :theme-toggle-label="__('nav.toggle_theme_aria')"
+                :sign-out-label="__('syndicate.sign_out')"
+                :login-url="route('login')"
+            >
+                <span id="syndicate-type-badge" class="badge badge-brand"></span>
+            </x-workspace.topbar>
+            <main id="main-content" class="workspace-shell py-8">@yield('content')</main>
         </div>
     </div>
     <div id="syndicate-loading" class="flex min-h-screen items-center justify-center">
@@ -104,8 +104,7 @@
     </div>
     <script>
         window.__sessionAuthUser = @json($sessionAuthUser);
-        const syndicateHiddenClass = @json($sidebarHiddenClass);
-        function deleteCookie(name) { document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/'; }
+
         function syndicateTypeLabel(type) {
             if (type === 'agriculture') return @json(__('syndicate.type_agriculture'));
             if (type === 'veterinary') return @json(__('syndicate.type_veterinary'));
@@ -122,13 +121,9 @@
             document.getElementById('syndicate-app').classList.remove('hidden');
             document.dispatchEvent(new CustomEvent('syndicate-ready'));
         }
-        window.syndicateLogout = async function() {
-            try { await window.axios.post('/api/auth/logout'); } catch (error) {}
-            if (window.Auth?.clearAll) window.Auth.clearAll(); else localStorage.clear();
-            deleteCookie('XSRF-TOKEN'); deleteCookie('laravel_session');
-            window.location.replace('{{ route("login") }}?logout=1');
-        };
         document.addEventListener('DOMContentLoaded', async function () {
+            VetoraWorkspace.initSidebarToggle({ sidebarId: 'syndicate-sidebar', hiddenClass: @json($sidebarHiddenClass) });
+
             if (window.__sessionAuthUser && window.Auth?.setUser) {
                 window.Auth.setUser(window.__sessionAuthUser);
             }
@@ -159,16 +154,6 @@
                 window.location.href = '{{ route("login") }}';
             }
         });
-        document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('sidebar-toggle')?.addEventListener('click', function () {
-                document.getElementById('syndicate-sidebar').classList.remove(syndicateHiddenClass);
-                document.getElementById('sidebar-backdrop').classList.remove('hidden');
-            });
-        });
-        function closeSidebar() {
-            document.getElementById('syndicate-sidebar').classList.add(syndicateHiddenClass);
-            document.getElementById('sidebar-backdrop').classList.add('hidden');
-        }
     </script>
     @stack('scripts')
 </body>

@@ -18,26 +18,26 @@
 </div>
 
 <div id="{{ $id }}-import-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm">
-    <div class="w-full max-w-lg rounded-xl bg-white p-6 shadow-2xl">
-        <h3 class="text-base font-semibold text-gray-900">Import {{ $label }} from CSV</h3>
-        <p class="mt-1 text-sm text-gray-500">Selected file: <span id="{{ $id }}-import-filename" class="font-medium text-gray-700"></span></p>
+    <div class="modal-shell w-full max-w-lg p-6">
+        <h3 class="text-base font-semibold text-gray-900 dark:text-white">Import {{ $label }} from CSV</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Selected file: <span id="{{ $id }}-import-filename" class="font-medium text-gray-700 dark:text-gray-300"></span></p>
 
-        <div id="{{ $id }}-import-idle" class="mt-4 text-sm text-gray-500">
+        <div id="{{ $id }}-import-idle" class="mt-4 text-sm text-gray-500 dark:text-gray-400">
             Choose a CSV file (built from the downloaded template), then click "Start Import".
         </div>
 
         <div id="{{ $id }}-import-loading" class="mt-4 hidden py-6 text-center">
-            <div class="mx-auto h-6 w-6 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500"></div>
-            <p class="mt-2 text-sm text-gray-500">Processing file...</p>
+            <div class="mx-auto h-6 w-6 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500 dark:border-gray-700"></div>
+            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Processing file...</p>
         </div>
 
         <div id="{{ $id }}-import-result" class="mt-4 hidden">
-            <p class="text-sm text-gray-700">
-                <span id="{{ $id }}-import-created" class="font-semibold text-emerald-600"></span> created,
-                <span id="{{ $id }}-import-failed" class="font-semibold text-rose-600"></span> failed
+            <p class="text-sm text-gray-700 dark:text-gray-300">
+                <span id="{{ $id }}-import-created" class="font-semibold text-success-600 dark:text-success-400"></span> created,
+                <span id="{{ $id }}-import-failed" class="font-semibold text-danger-600 dark:text-danger-400"></span> failed
                 out of <span id="{{ $id }}-import-total" class="font-semibold"></span> rows.
             </p>
-            <ul id="{{ $id }}-import-errors" class="mt-2 max-h-56 list-disc space-y-1 overflow-y-auto pl-5 text-xs text-rose-700"></ul>
+            <ul id="{{ $id }}-import-errors" class="mt-2 max-h-56 list-disc space-y-1 overflow-y-auto pl-5 text-xs text-danger-700 dark:text-danger-400"></ul>
         </div>
 
         <div class="mt-3">

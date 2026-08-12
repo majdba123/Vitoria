@@ -17,21 +17,21 @@
     </div>
 
     <div id="order-content" class="hidden space-y-6">
-        <div class="overflow-hidden rounded-3xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <div class="bg-gradient-to-r from-brand-500/10 via-brand-400/5 to-transparent px-5 py-4 dark:from-brand-500/20 dark:via-brand-400/10">
+        <div class="card overflow-hidden">
+            <div class="card-body border-b border-gray-100 dark:border-gray-800">
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                        <h2 id="o-number" class="inline-flex rounded-xl bg-brand-600 px-3 py-1 text-lg font-black text-white shadow-sm">—</h2>
-                        <p id="o-number-fallback" class="mt-1 text-sm font-bold text-gray-900 dark:text-white">Order Number: —</p>
+                        <h2 id="o-number" class="badge badge-brand text-sm">—</h2>
+                        <p id="o-number-fallback" class="mt-2 text-sm font-bold text-gray-900 dark:text-white">Order Number: —</p>
                         <p id="o-meta" class="mt-1 text-sm text-gray-600 dark:text-gray-300">—</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span id="o-status" class="rounded-full px-3 py-1 text-xs font-bold">pending</span>
-                        <span id="o-payment" class="rounded-full bg-white px-3 py-1 text-xs font-bold text-gray-700 ring-1 ring-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:ring-gray-700">cash</span>
+                        <span id="o-status" class="badge badge-warning">pending</span>
+                        <span id="o-payment" class="badge">cash</span>
                     </div>
                 </div>
                 <div class="mt-3 flex flex-wrap items-center gap-2">
-                    <button id="admin-complete-btn" type="button" class="hidden rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-emerald-700">Mark as Completed</button>
+                    <button id="admin-complete-btn" type="button" class="hidden btn-sm" style="background: var(--color-success-500); color: #fff; border-radius: var(--radius-control); padding-inline: 0.75rem; padding-block: 0.375rem; font-weight: 700;">Mark as Completed</button>
                     <p id="admin-action-msg" class="hidden text-xs font-semibold"></p>
                 </div>
             </div>
@@ -44,14 +44,14 @@
         </div>
 
         <div class="grid gap-5 lg:grid-cols-2">
-            <div class="rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <div class="card card-body">
                 <h3 class="text-sm font-bold text-gray-900 dark:text-white">Customer Info</h3>
                 <div class="mt-3 space-y-2 text-xs text-gray-600 dark:text-gray-300">
                     <p><span class="text-gray-400">Name:</span> <span id="o-user-name">—</span></p>
                     <p><span class="text-gray-400">Email:</span> <span id="o-user-email">—</span></p>
                 </div>
             </div>
-            <div class="rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <div class="card card-body">
                 <h3 class="text-sm font-bold text-gray-900 dark:text-white">Vendor Info</h3>
                 <div class="mt-3 space-y-2 text-xs text-gray-600 dark:text-gray-300">
                     <p><span class="text-gray-400">Store:</span> <span id="o-vendor-name">—</span></p>
@@ -59,15 +59,15 @@
             </div>
         </div>
 
-        <div class="rounded-3xl border border-gray-200/80 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <div class="card card-body">
             <div class="flex items-center justify-between gap-2">
-                <h3 class="text-sm font-black text-gray-900 dark:text-white">Items Details</h3>
-                <span class="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300">Full Snapshot</span>
+                <h3 class="text-sm font-bold text-gray-900 dark:text-white">Items Details</h3>
+                <span class="badge">Full Snapshot</span>
             </div>
             <div id="o-items" class="mt-3 space-y-3"></div>
         </div>
 
-        <div class="rounded-3xl border border-gray-200/80 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <div class="card card-body">
             <h3 class="text-sm font-bold text-gray-900 dark:text-white">Totals & Coupon</h3>
             <div class="mt-3 grid gap-2 text-sm text-gray-600 dark:text-gray-300 sm:grid-cols-2">
                 <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800"><span>Subtotal</span><span id="o-subtotal">0</span></div>
@@ -75,7 +75,7 @@
                 <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800"><span>Coupon Type</span><span id="o-coupon-type">—</span></div>
                 <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800"><span>Coupon Value</span><span id="o-coupon-value">—</span></div>
                 <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800"><span>Coupon Discount</span><span id="o-coupon-discount">0</span></div>
-                <div class="flex items-center justify-between rounded-lg border border-brand-200 bg-brand-50 px-3 py-2 font-black text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300"><span>Total</span><span id="o-total">0</span></div>
+                <div class="flex items-center justify-between rounded-lg border border-brand-200 bg-brand-50 px-3 py-2 font-bold text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300"><span>Total</span><span id="o-total">0</span></div>
             </div>
         </div>
     </div>
@@ -86,57 +86,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
     const orderId = '{{ $orderId }}';
-    const highContrastNumberIds = ['o-number', 'o-number-fallback', 'o-id', 'o-user-id', 'o-vendor-id', 'o-items-count', 'o-total'];
-    const dataValueIds = ['o-meta', 'o-user-name', 'o-user-email', 'o-vendor-name', 'o-subtotal', 'o-coupon-code', 'o-coupon-type', 'o-coupon-value', 'o-coupon-discount'];
-
-    function applyNumberContrast() {
-        const isDark = document.documentElement.classList.contains('dark');
-        const primaryTextColor = isDark ? '#f9fafb' : '#111827';
-        const secondaryTextColor = isDark ? '#d1d5db' : '#4b5563';
-
-        highContrastNumberIds.forEach((id) => {
-            const el = document.getElementById(id);
-            if (!el) {
-                return;
-            }
-
-            if (id === 'o-number') {
-                el.style.setProperty('background-color', '#0284c7', 'important');
-                el.style.setProperty('color', '#ffffff', 'important');
-                return;
-            }
-
-            el.style.setProperty('color', primaryTextColor, 'important');
-            el.style.setProperty('font-weight', '700', 'important');
-        });
-
-        dataValueIds.forEach((id) => {
-            const el = document.getElementById(id);
-            if (!el) {
-                return;
-            }
-            el.style.setProperty('color', id === 'o-meta' ? secondaryTextColor : primaryTextColor, 'important');
-            if (id !== 'o-meta') {
-                el.style.setProperty('font-weight', '600', 'important');
-            }
-        });
-
-        // Force all dynamic order values visible in both modes.
-        document.querySelectorAll('[data-order-value="true"]').forEach((el) => {
-            el.style.setProperty('color', primaryTextColor, 'important');
-            el.style.setProperty('font-weight', '600', 'important');
-        });
-
-        document.querySelectorAll('[data-order-surface="true"]').forEach((el) => {
-            if (isDark) {
-                el.style.setProperty('background-color', '#1f2937', 'important');
-                el.style.setProperty('border-color', '#374151', 'important');
-            } else {
-                el.style.setProperty('background-color', '#f9fafb', 'important');
-                el.style.setProperty('border-color', '#f3f4f6', 'important');
-            }
-        });
-    }
 
     try {
         const response = await window.axios.get('/api/admin/orders/' + orderId);
@@ -149,7 +98,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const status = String(order.status || 'pending').toLowerCase();
         const statusEl = document.getElementById('o-status');
         statusEl.textContent = status;
-        statusEl.className = 'rounded-full px-2.5 py-1 text-[11px] font-semibold ' + statusClass(status);
+        statusEl.className = 'badge ' + statusClass(status);
         renderAdminAction(status);
 
         document.getElementById('o-payment').textContent = order.payment_way || 'cash';
@@ -169,15 +118,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         document.getElementById('o-total').textContent = money(order.total_amount);
 
         document.getElementById('o-items').innerHTML = (order.items || []).map((item, index) => {
-            return `<article class="rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900">
+            return `<article class="card card-body">
                 <div class="flex flex-wrap items-start justify-between gap-2">
                     <div>
-                        <p data-order-value="true" class="text-sm font-black text-gray-900 dark:text-white">${index + 1}. ${esc(item.product_name || 'Product')}</p>
+                        <p data-order-value="true" class="text-sm font-bold text-gray-900 dark:text-white">${index + 1}. ${esc(item.product_name || 'Product')}</p>
                         <p data-order-value="true" class="text-[11px] text-gray-500 dark:text-gray-400">Item #${item.id ?? '—'} · Product #${item.product_id ?? '—'} · Qty ${item.quantity ?? 0}</p>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        ${item.has_discount ? '<span class="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">Discount Applied</span>' : '<span class="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-bold text-gray-700 dark:bg-gray-800 dark:text-gray-300">Standard Price</span>'}
-                        <span class="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-bold text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">${money(item.line_total)}</span>
+                        ${item.has_discount ? '<span class="badge badge-success">Discount Applied</span>' : '<span class="badge">Standard Price</span>'}
+                        <span class="badge badge-brand">${money(item.line_total)}</span>
                     </div>
                 </div>
                 <div class="mt-3 grid gap-2 text-xs sm:grid-cols-2 lg:grid-cols-3">
@@ -193,13 +142,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         document.getElementById('order-loading').classList.add('hidden');
         document.getElementById('order-content').classList.remove('hidden');
-        applyNumberContrast();
     } catch (error) {
         document.getElementById('order-loading').innerHTML = `<p class="text-sm font-medium text-red-500">${esc(error.response?.data?.message || 'Failed to load order details.')}</p>`;
     }
-
-    const observer = new MutationObserver(applyNumberContrast);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
     function money(v) {
         return Number.parseFloat(v || 0).toLocaleString() + ' SYP';
@@ -207,10 +152,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     function statusClass(status) {
         const classes = {
-            pending: 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
-            confirmed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
-            completed: 'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
-            cancelled: 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400',
+            pending: 'badge-warning',
+            confirmed: 'badge-success',
+            completed: 'badge-info',
+            cancelled: 'badge-danger',
         };
         return classes[status] || classes.pending;
     }
@@ -246,7 +191,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (!el) {
             return;
         }
-        el.className = 'text-xs font-semibold ' + (type === 'success' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400');
+        el.className = 'text-xs font-semibold';
+        el.style.color = type === 'success' ? 'var(--color-success-strong)' : 'var(--color-danger-strong)';
         el.textContent = message;
         el.classList.remove('hidden');
     }

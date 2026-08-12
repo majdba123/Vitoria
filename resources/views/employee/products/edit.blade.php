@@ -13,15 +13,15 @@
             </div>
             <div class="card-body">
                 <div id="preview-loading" class="py-14 text-center">
-                    <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-cyan-500"></div>
+                    <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500 dark:border-gray-700 dark:border-t-brand-400"></div>
                     <p class="mt-3 text-sm text-gray-500">{{ __('common.loading') }}</p>
                 </div>
                 <div id="preview-content" class="hidden space-y-4">
-                    <div class="aspect-[4/3] overflow-hidden rounded-[28px] bg-gray-100">
+                    <div class="aspect-[4/3] overflow-hidden rounded-xl bg-gray-100">
                         <img id="preview-image" src="" class="h-full w-full object-cover" alt="">
                     </div>
                     <div class="space-y-2">
-                        <h3 id="preview-name" class="text-2xl font-black text-gray-900 dark:text-white">-</h3>
+                        <h3 id="preview-name" class="text-2xl font-bold text-gray-900 dark:text-white">-</h3>
                         <p id="preview-desc" class="text-sm leading-7 text-gray-600 dark:text-gray-300"></p>
                     </div>
                     <div class="grid grid-cols-2 gap-3 text-sm">

@@ -7,7 +7,7 @@
 <div class="space-y-5">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h2 class="text-lg font-black text-gray-900 dark:text-white">{{ __('admin.syndicate_agents_heading') }}</h2>
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white">{{ __('admin.syndicate_agents_heading') }}</h2>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('admin.syndicate_agents_copy') }}</p>
         </div>
         <a href="{{ route('admin.syndicates.create') }}" class="btn-primary btn-sm">{{ __('admin.add_syndicate_agent') }}</a>
@@ -42,25 +42,25 @@
         </div>
     </div>
 
-    <div id="syndicates-alert" class="hidden rounded-xl border px-4 py-3 text-sm font-semibold"></div>
+    <div id="syndicates-alert" class="hidden"></div>
 
     <div class="card overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-100 dark:divide-gray-800">
-                <thead class="bg-gray-50 dark:bg-gray-800/60">
+        <div class="admin-table-wrap table-responsive">
+            <table class="admin-table">
+                <thead>
                     <tr>
-                        <th class="px-4 py-3 text-start text-xs font-bold text-gray-500 dark:text-gray-400">{{ __('admin.name_label') }}</th>
-                        <th class="px-4 py-3 text-start text-xs font-bold text-gray-500 dark:text-gray-400">{{ __('admin.th_account') }}</th>
-                        <th class="px-4 py-3 text-start text-xs font-bold text-gray-500 dark:text-gray-400">{{ __('admin.type_label') }}</th>
-                        <th class="px-4 py-3 text-start text-xs font-bold text-gray-500 dark:text-gray-400">{{ __('admin.status_label') }}</th>
-                        <th class="px-4 py-3 text-start text-xs font-bold text-gray-500 dark:text-gray-400">{{ __('admin.th_data') }}</th>
-                        <th class="px-4 py-3 text-start text-xs font-bold text-gray-500 dark:text-gray-400">{{ __('admin.th_created_at') }}</th>
-                        <th class="px-4 py-3 text-end text-xs font-bold text-gray-500 dark:text-gray-400">{{ __('admin.th_actions') }}</th>
+                        <th scope="col">{{ __('admin.name_label') }}</th>
+                        <th scope="col">{{ __('admin.th_account') }}</th>
+                        <th scope="col">{{ __('admin.type_label') }}</th>
+                        <th scope="col">{{ __('admin.status_label') }}</th>
+                        <th scope="col">{{ __('admin.th_data') }}</th>
+                        <th scope="col">{{ __('admin.th_created_at') }}</th>
+                        <th scope="col" class="text-end">{{ __('admin.th_actions') }}</th>
                     </tr>
                 </thead>
-                <tbody id="syndicates-body" class="divide-y divide-gray-100 bg-white dark:divide-gray-800 dark:bg-gray-900">
+                <tbody id="syndicates-body">
                     <tr>
-                        <td colspan="7" class="px-4 py-12 text-center text-sm text-gray-400">{{ __('admin.js_loading_syndicates') }}</td>
+                        <td colspan="7" class="text-center text-gray-400">{{ __('admin.js_loading_syndicates') }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -161,30 +161,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function renderRows(rows) {
         if (!rows.length) {
-            body.innerHTML = `<tr><td colspan="7" class="px-4 py-12 text-center text-sm text-gray-400">${esc(i18n.noSyndicatesMatchFilters)}</td></tr>`;
+            body.innerHTML = `<tr><td colspan="7" class="text-center text-gray-400">${esc(i18n.noSyndicatesMatchFilters)}</td></tr>`;
             return;
         }
 
         body.innerHTML = rows.map(row => `
-            <tr class="hover:bg-gray-50/70 dark:hover:bg-gray-800/50">
-                <td class="px-4 py-4">
+            <tr>
+                <td>
                     <div class="flex items-center gap-3">
-                        <div class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-brand-50 text-sm font-black text-brand-700">
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden text-sm font-bold text-brand-700 dark:text-brand-300" style="border-radius: var(--radius-control); background: var(--color-brand-soft)">
                             ${row.logo_url ? `<img src="${esc(row.logo_url)}" class="h-full w-full object-cover" alt="">` : esc((row.name || '?').charAt(0))}
                         </div>
                         <div class="min-w-0">
-                            <p class="truncate text-sm font-bold text-gray-900 dark:text-white">${esc(row.name)}</p>
+                            <p class="truncate font-semibold text-gray-900 dark:text-white">${esc(row.name)}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">${esc(row.phone || i18n.noPhone)}</p>
                         </div>
                     </div>
                 </td>
-                <td class="px-4 py-4 text-sm text-gray-700 dark:text-gray-200">
+                <td class="text-gray-700 dark:text-gray-200">
                     <p class="font-semibold">${esc(row.email || row.user?.email || '—')}</p>
                     <p class="text-xs text-gray-400 dark:text-gray-500">#${esc(row.user_id)}</p>
                 </td>
-                <td class="px-4 py-4"><span class="badge badge-brand">${esc(typeText(row.type))}</span></td>
-                <td class="px-4 py-4">${statusBadge(row)}</td>
-                <td class="px-4 py-4">
+                <td><span class="badge badge-brand">${esc(typeText(row.type))}</span></td>
+                <td>${statusBadge(row)}</td>
+                <td>
                     <div class="grid min-w-48 grid-cols-2 gap-1 text-xs text-gray-500 dark:text-gray-400">
                         <span>${Number(row.categories_count || 0)} ${esc(i18n.categoriesCountSuffix)}</span>
                         <span>${Number(row.vendors_count || 0)} ${esc(i18n.vendorsCountSuffix)}</span>
@@ -192,17 +192,26 @@ document.addEventListener('DOMContentLoaded', function () {
                         <span>${Number(row.orders_count || 0)} ${esc(i18n.ordersCountSuffix)}</span>
                     </div>
                 </td>
-                <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">${fmtDate(row.created_at)}</td>
-                <td class="px-4 py-4">
-                    <div class="flex justify-end gap-2">
-                        <a href="/admin/syndicates/${row.id}" class="btn-secondary btn-xs">${esc(i18n.view)}</a>
-                        <a href="/admin/syndicates/${row.id}/edit" class="btn-primary btn-xs">${esc(i18n.edit)}</a>
-                        <button onclick="toggleSyndicate(${row.id})" class="btn-secondary btn-xs">${row.is_active ? esc(i18n.disable) : esc(i18n.enable)}</button>
-                        <button onclick="deleteSyndicate(${row.id})" class="btn-danger btn-xs">${esc(i18n.delete)}</button>
+                <td class="tabular-nums text-gray-500 dark:text-gray-400">${fmtDate(row.created_at)}</td>
+                <td class="text-end">
+                    <div class="row-actions-menu">
+                        <button type="button" class="row-actions-trigger" aria-label="${esc(i18n.view)} ${esc(row.name)}">
+                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"/></svg>
+                        </button>
+                        <div class="row-actions-panel dropdown-panel">
+                            <a href="/admin/syndicates/${row.id}">${esc(i18n.view)}</a>
+                            <a href="/admin/syndicates/${row.id}/edit">${esc(i18n.edit)}</a>
+                            <button type="button" onclick="toggleSyndicate(${row.id})">${row.is_active ? esc(i18n.disable) : esc(i18n.enable)}</button>
+                            <button type="button" class="is-danger" onclick="deleteSyndicate(${row.id})">${esc(i18n.delete)}</button>
+                        </div>
                     </div>
                 </td>
             </tr>
         `).join('');
+
+        body.querySelectorAll('.row-actions-menu').forEach((menu) => {
+            VetoraWorkspace.wireDropdown(menu.querySelector('.row-actions-trigger'), menu.querySelector('.row-actions-panel'));
+        });
     }
 
     function renderPagination(meta) {
@@ -221,9 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function showAlert(message, type = 'success') {
         alertBox.textContent = message;
-        alertBox.className = type === 'success'
-            ? 'rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700'
-            : 'rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700';
+        alertBox.className = type === 'success' ? 'alert-shell alert-success' : 'alert-shell alert-error';
         alertBox.classList.remove('hidden');
     }
 

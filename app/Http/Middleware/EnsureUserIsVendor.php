@@ -29,8 +29,9 @@ class EnsureUserIsVendor
             return response()->view('errors.403-vendor', ['message' => $message], 403);
         }
 
-        // Check vendor profile exists and is active
-        $vendor = $user->vendor;
+        // Check vendor profile exists and is active. managedVendor() covers
+        // both the owner and an active staff member (spec §22).
+        $vendor = $user->managedVendor();
 
         if (! $vendor || ! $vendor->is_active) {
             $message = $vendor?->status === Vendor::STATUS_PENDING

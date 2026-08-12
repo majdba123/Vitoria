@@ -4,8 +4,16 @@
     {
       "name": "vitoria-laravel",
       "runtimeExecutable": "php",
-      "runtimeArgs": ["artisan", "serve", "--port=8010"],
-      "port": 8010
+      "runtimeArgs": ["artisan", "serve", "--port=8020"],
+      "port": 8020,
+      "autoPort": false
+    },
+    {
+      "name": "vitoria-verify",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["artisan", "serve", "--port=8011"],
+      "port": 8011,
+      "autoPort": false
     }
   ]
 }

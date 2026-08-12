@@ -17,23 +17,21 @@
     </div>
 
     <div id="show-content" class="hidden space-y-5">
-        <div class="overflow-hidden rounded-2xl bg-gradient-to-r from-navy-800 to-navy-900 shadow-xl">
-            <div class="px-6 py-8 sm:px-8">
-                <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                    <div class="flex items-center gap-4">
-                        <span class="inline-flex h-16 w-16 items-center justify-center rounded-3xl bg-white/10 text-2xl text-white ring-1 ring-white/20">
-                            <i class="fa-solid fa-city"></i>
-                        </span>
-                        <div>
-                            <h2 id="city-name" class="text-2xl font-bold text-white">-</h2>
-                            <p class="mt-1 text-sm text-gray-300">City record used in admin and store vendor management.</p>
-                        </div>
-                    </div>
-                    <a id="edit-link" href="#" class="inline-flex items-center gap-1.5 rounded-lg bg-white/15 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/25">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
-                        Edit
-                    </a>
+        <div class="dashboard-page-header">
+            <div class="flex min-w-0 flex-1 items-center gap-4">
+                <span class="flex h-12 w-12 shrink-0 items-center justify-center text-lg text-brand-700 dark:text-brand-300" style="border-radius: var(--radius-control); background: var(--color-brand-soft)">
+                    <i class="fa-solid fa-city" aria-hidden="true"></i>
+                </span>
+                <div class="min-w-0">
+                    <h2 id="city-name" class="truncate text-xl font-bold text-gray-900 dark:text-white">-</h2>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">City record used in admin and store vendor management.</p>
                 </div>
+            </div>
+            <div class="dashboard-page-header-actions">
+                <a id="edit-link" href="#" class="btn-secondary btn-sm">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+                    Edit
+                </a>
             </div>
         </div>
 

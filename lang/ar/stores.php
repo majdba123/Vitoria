@@ -17,4 +17,7 @@ return [
     'not_found_copy' => 'هذا المتجر غير متاح أو تمت إزالته.',
     'back_home' => 'العودة إلى السوق',
     'location' => 'الموقع',
+    'breadcrumb_label' => 'المتجر',
+    'view_product' => 'عرض',
+    'load_products_error' => 'تعذّر تحميل المنتجات. حاول مرة أخرى.',
 ];

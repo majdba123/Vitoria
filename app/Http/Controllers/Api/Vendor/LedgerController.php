@@ -19,9 +19,12 @@ class LedgerController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $vendor = $request->user()?->vendor;
+        $vendor = $request->user()?->managedVendor();
         if (! $vendor) {
             abort(403, 'Vendor profile not found.');
+        }
+        if (! $request->user()->hasVendorPermission($vendor, 'ledger.view')) {
+            abort(403, __('You are not allowed to view this vendor\'s ledger.'));
         }
 
         $entries = VendorLedgerEntry::query()
@@ -44,9 +47,12 @@ class LedgerController extends Controller
 
     public function summary(Request $request): JsonResponse
     {
-        $vendor = $request->user()?->vendor;
+        $vendor = $request->user()?->managedVendor();
         if (! $vendor) {
             abort(403, 'Vendor profile not found.');
+        }
+        if (! $request->user()->hasVendorPermission($vendor, 'ledger.view')) {
+            abort(403, __('You are not allowed to view this vendor\'s ledger.'));
         }
 
         return response()->json([

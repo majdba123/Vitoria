@@ -48,7 +48,7 @@ class ProductController extends Controller
         $vendor = null;
 
         if ($user && $user->type === User::TYPE_VENDOR) {
-            $vendor = $user->vendor;
+            $vendor = $user->managedVendor();
             if (! $vendor) {
                 abort(403, __('Vendor profile not found.'));
             }
@@ -134,7 +134,7 @@ class ProductController extends Controller
         $user = $request->user();
 
         if ($user && $user->type === User::TYPE_VENDOR) {
-            $vendor = $user->vendor;
+            $vendor = $user->managedVendor();
             if (! $vendor) {
                 abort(403, __('Vendor profile not found.'));
             }
@@ -188,9 +188,12 @@ class ProductController extends Controller
         $targetVendor = null;
 
         if ($user && $user->type === User::TYPE_VENDOR) {
-            $vendor = $user->vendor;
+            $vendor = $user->managedVendor();
             if (! $vendor) {
                 abort(403, __('Vendor profile not found.'));
+            }
+            if (! $user->hasVendorPermission($vendor, 'products.manage')) {
+                abort(403, __('You are not allowed to manage this vendor\'s products.'));
             }
             $validated = $request->validate((new VendorStoreProductRequest)->rules());
             $targetVendor = $vendor;
@@ -257,12 +260,15 @@ class ProductController extends Controller
         $targetVendor = $product->vendor;
 
         if ($user && $user->type === User::TYPE_VENDOR) {
-            $vendor = $user->vendor;
+            $vendor = $user->managedVendor();
             if (! $vendor) {
                 abort(403, __('Vendor profile not found.'));
             }
             if ($product->vendor_id !== $vendor->id) {
                 abort(403, __('You do not own this product.'));
+            }
+            if (! $user->hasVendorPermission($vendor, 'products.manage')) {
+                abort(403, __('You are not allowed to manage this vendor\'s products.'));
             }
             $validated = $request->validate((new VendorUpdateProductRequest)->rules());
             $targetVendor = $vendor;
@@ -367,12 +373,15 @@ class ProductController extends Controller
         $user = $request->user();
 
         if ($user && $user->type === User::TYPE_VENDOR) {
-            $vendor = $user->vendor;
+            $vendor = $user->managedVendor();
             if (! $vendor) {
                 abort(403, __('Vendor profile not found.'));
             }
             if ($product->vendor_id !== $vendor->id) {
                 abort(403, __('You do not own this product.'));
+            }
+            if (! $user->hasVendorPermission($vendor, 'products.manage')) {
+                abort(403, __('You are not allowed to manage this vendor\'s products.'));
             }
         }
 
@@ -389,12 +398,15 @@ class ProductController extends Controller
         $user = $request->user();
 
         if ($user && $user->type === User::TYPE_VENDOR) {
-            $vendor = $user->vendor;
+            $vendor = $user->managedVendor();
             if (! $vendor) {
                 abort(403, __('Vendor profile not found.'));
             }
             if ($product->vendor_id !== $vendor->id) {
                 abort(403, __('You do not own this product.'));
+            }
+            if (! $user->hasVendorPermission($vendor, 'products.manage')) {
+                abort(403, __('You are not allowed to manage this vendor\'s products.'));
             }
         }
 
@@ -421,9 +433,12 @@ class ProductController extends Controller
         $context = [];
 
         if ($this->isVendorRequest($request)) {
-            $vendor = $request->user()->vendor;
+            $vendor = $request->user()->managedVendor();
             if (! $vendor) {
                 abort(403, __('Vendor profile not found.'));
+            }
+            if (! $request->user()->hasVendorPermission($vendor, 'products.manage')) {
+                abort(403, __('You are not allowed to manage this vendor\'s products.'));
             }
             $context['vendor'] = $vendor;
         }

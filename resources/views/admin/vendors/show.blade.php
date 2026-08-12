@@ -20,40 +20,33 @@
     </div>
 
     <div id="show-content" class="hidden space-y-5">
-        <div class="overflow-hidden rounded-2xl bg-gradient-to-r from-navy-800 to-navy-900 shadow-xl">
-            <div class="px-6 py-8 sm:px-8">
-                <div class="flex flex-col items-center gap-6 sm:flex-row">
-                    <div class="flex flex-col items-center gap-1.5">
-                        <div id="vendor-avatar-display" class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-white/15 text-3xl font-bold text-white shadow-lg ring-4 ring-white/25">
-                            <span id="vendor-avatar-initials">V</span>
-                        </div>
-                        <span class="text-[10px] font-medium text-gray-400">Profile</span>
+        <div class="dashboard-page-header">
+            <div class="flex min-w-0 flex-1 items-center gap-4">
+                <div class="flex -space-x-3 rtl:space-x-reverse">
+                    <div id="vendor-avatar-display" class="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full text-lg font-bold text-brand-700 dark:text-brand-300" style="background: var(--color-brand-soft); box-shadow: 0 0 0 3px var(--color-surface)">
+                        <span id="vendor-avatar-initials">V</span>
                     </div>
-
-                    <div class="flex flex-col items-center gap-1.5">
-                        <div id="vendor-logo-display" class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-white/10 shadow-lg ring-4 ring-white/25">
-                            <svg class="h-10 w-10 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.15c0 .415.336.75.75.75z"/></svg>
-                        </div>
-                        <span class="text-[10px] font-medium text-gray-400">Store Logo</span>
-                    </div>
-
-                    <div class="flex-1 text-center sm:text-left">
-                        <h2 class="text-2xl font-bold text-white" id="vendor-store-name">-</h2>
-                        <p class="mt-1 text-sm text-gray-300" id="vendor-owner-line">-</p>
-                        <div class="mt-2" id="vendor-status-badge"></div>
-                    </div>
-
-                    <div class="flex flex-col gap-2 sm:flex-row">
-                        <button id="approve-btn" type="button" class="hidden inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-600">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                            Approve
-                        </button>
-                        <a id="edit-link" href="#" class="inline-flex items-center gap-1.5 rounded-lg bg-white/15 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/25">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
-                            Edit
-                        </a>
+                    <div id="vendor-logo-display" class="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800" style="box-shadow: 0 0 0 3px var(--color-surface)">
+                        <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.15c0 .415.336.75.75.75z"/></svg>
                     </div>
                 </div>
+
+                <div class="min-w-0">
+                    <h2 class="truncate text-xl font-bold text-gray-900 dark:text-white" id="vendor-store-name">-</h2>
+                    <p class="mt-1 truncate text-sm text-gray-500 dark:text-gray-400" id="vendor-owner-line">-</p>
+                    <div class="mt-2" id="vendor-status-badge"></div>
+                </div>
+            </div>
+
+            <div class="dashboard-page-header-actions">
+                <button id="approve-btn" type="button" class="hidden btn-primary btn-sm">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                    Approve
+                </button>
+                <a id="edit-link" href="#" class="btn-secondary btn-sm">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+                    Edit
+                </a>
             </div>
         </div>
 

@@ -7,21 +7,17 @@
 <div class="mx-auto max-w-3xl space-y-6">
     {{-- Loading --}}
     <div id="profile-loading" class="py-20 text-center">
-        <div class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-emerald-500"></div>
-        <p class="mt-4 text-sm font-medium text-gray-500">Loading your profile...</p>
+        <div class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500 dark:border-gray-700 dark:border-t-brand-400"></div>
+        <p class="mt-4 text-sm font-medium text-gray-500 dark:text-gray-400">Loading your profile...</p>
     </div>
 
     <div id="profile-content" class="hidden space-y-6">
-        {{-- Header Banner --}}
-        <div class="overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 shadow-xl">
-            <div class="px-6 py-8 sm:px-8">
-                <div class="flex flex-col items-center gap-5 sm:flex-row">
-                    <div class="text-center sm:text-left">
-                        <h2 id="profile-name" class="text-2xl font-bold text-white"></h2>
-                        <p id="profile-store" class="mt-1 text-emerald-100"></p>
-                        <div id="profile-status-badge" class="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm"></div>
-                    </div>
-                </div>
+        {{-- Header --}}
+        <div class="dashboard-page-header">
+            <div class="min-w-0">
+                <h2 id="profile-name" class="truncate text-xl font-bold text-gray-900 dark:text-white"></h2>
+                <p id="profile-store" class="mt-1 text-sm text-gray-500 dark:text-gray-400"></p>
+                <div id="profile-status-badge" class="mt-2"></div>
             </div>
         </div>
 
@@ -31,16 +27,16 @@
         <form id="profile-form" class="space-y-6" novalidate enctype="multipart/form-data">
             {{-- Avatar & Store Logo Side by Side --}}
             <div class="card">
-                <div class="card-body border-b border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-900">Profile & Store Images</h3>
-                    <p class="mt-0.5 text-sm text-gray-500">Hover over an image to change it.</p>
+                <div class="card-body border-b border-gray-100 dark:border-gray-800">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Profile & Store Images</h3>
+                    <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Hover over an image to change it.</p>
                 </div>
                 <div class="card-body">
                     <div class="flex flex-wrap items-center justify-center gap-10 py-4">
                         {{-- Profile Avatar --}}
                         <div class="flex flex-col items-center gap-3">
                             <div class="group relative">
-                                <div id="avatar-display" class="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 text-4xl font-bold text-emerald-600 shadow-lg ring-4 ring-white">
+                                <div id="avatar-display" class="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full text-4xl font-bold text-brand-700 dark:text-brand-300" style="background: var(--color-brand-soft); box-shadow: 0 0 0 4px var(--color-surface)">
                                     <span id="avatar-initials">V</span>
                                 </div>
                                 <label for="avatar-input" tabindex="0" role="button" aria-label="Change profile photo" class="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/50 opacity-0 transition-all duration-200 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-white/60">
@@ -51,14 +47,14 @@
                                 </label>
                                 <input type="file" id="avatar-input" accept="image/jpeg,image/png,image/gif,image/webp" class="hidden">
                             </div>
-                            <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Profile Photo</span>
+                            <span class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Profile Photo</span>
                             <p class="form-error" id="avatar-error"></p>
                         </div>
 
                         {{-- Store Logo --}}
                         <div class="flex flex-col items-center gap-3">
                             <div class="group relative">
-                                <div id="store-logo-display" class="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-gray-100 to-gray-200 shadow-lg ring-4 ring-white">
+                                <div id="store-logo-display" class="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800" style="box-shadow: 0 0 0 4px var(--color-surface)">
                                     <svg class="h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.15c0 .415.336.75.75.75z"/></svg>
                                 </div>
                                 <label for="logo-input" tabindex="0" role="button" aria-label="Change store logo" class="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/50 opacity-0 transition-all duration-200 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-white/60">
@@ -69,7 +65,7 @@
                                 </label>
                                 <input type="file" id="logo-input" accept="image/jpeg,image/png,image/gif,image/webp" class="hidden">
                             </div>
-                            <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Store Logo</span>
+                            <span class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Store Logo</span>
                             <p class="form-error" id="logo-error"></p>
                         </div>
                     </div>
@@ -78,9 +74,9 @@
 
             {{-- Personal Information --}}
             <div class="card">
-                <div class="card-body border-b border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-900">Personal Information</h3>
-                    <p class="mt-0.5 text-sm text-gray-500">Your account details and login credentials.</p>
+                <div class="card-body border-b border-gray-100 dark:border-gray-800">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Personal Information</h3>
+                    <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Your account details and login credentials.</p>
                 </div>
                 <div class="card-body">
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -97,18 +93,18 @@
 
             {{-- Store Information --}}
             <div class="card">
-                <div class="card-body border-b border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-900">Store Information</h3>
-                    <p class="mt-0.5 text-sm text-gray-500">Your store profile visible to customers.</p>
+                <div class="card-body border-b border-gray-100 dark:border-gray-800">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Store Information</h3>
+                    <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Your store profile visible to customers.</p>
                 </div>
                 <div class="card-body">
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <x-form.input name="store_name" label="Store Name" placeholder="Your store name" :required="true" />
                         <x-form.input name="address" label="Address" placeholder="Store address (optional)" />
                     </div>
-                    <div class="mt-4 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Business Type</p>
-                        <p id="profile-business-type" class="mt-1 text-sm font-semibold text-gray-900">Loading...</p>
+                    <div class="mt-4 border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-gray-800/60" style="border-radius: var(--radius-control)">
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Business Type</p>
+                        <p id="profile-business-type" class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">Loading...</p>
                     </div>
                     <div class="mt-4">
                         <label for="description" class="form-label">Description</label>
@@ -120,13 +116,13 @@
 
             {{-- Allowed Categories (read-only) --}}
             <div class="card">
-                <div class="card-body border-b border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-900">Allowed Categories</h3>
-                    <p class="mt-0.5 text-sm text-gray-500">Categories assigned by admin. Contact admin to change.</p>
+                <div class="card-body border-b border-gray-100 dark:border-gray-800">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Allowed Categories</h3>
+                    <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Categories assigned by admin. Contact admin to change.</p>
                 </div>
                 <div class="card-body">
                     <div id="profile-categories" class="flex flex-wrap gap-2">
-                        <span class="text-sm text-gray-400 italic">Loading...</span>
+                        <span class="text-sm text-gray-400 italic dark:text-gray-500">Loading...</span>
                     </div>
                 </div>
             </div>
@@ -187,22 +183,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const statusBadge = document.getElementById('profile-status-badge');
             statusBadge.innerHTML = vendor?.is_active
-                ? '<span class="h-1.5 w-1.5 rounded-full bg-emerald-300"></span> Active Store'
-                : '<span class="h-1.5 w-1.5 rounded-full bg-red-300"></span> Inactive Store';
+                ? '<span class="badge badge-success">Active Store</span>'
+                : '<span class="badge badge-danger">Inactive Store</span>';
 
             const catsContainer = document.getElementById('profile-categories');
             if (vendor?.categories && vendor.categories.length > 0) {
                 catsContainer.innerHTML = vendor.categories.map(c =>
-                    `<span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ${c.type === 'veterinary' ? 'bg-blue-50 text-blue-700 ring-blue-200' : 'bg-emerald-50 text-emerald-700 ring-emerald-200'}">${esc(c.name)} <span>${esc(c.type_label || '')}</span></span>`
+                    `<span class="badge ${c.type === 'veterinary' ? 'badge-info' : 'badge-brand'}">${esc(c.name)} <span class="ms-1 opacity-75">${esc(c.type_label || '')}</span></span>`
                 ).join('');
             } else {
-                catsContainer.innerHTML = '<span class="text-sm text-gray-400 italic">No categories assigned</span>';
+                catsContainer.innerHTML = '<span class="text-sm text-gray-400 italic dark:text-gray-500">No categories assigned</span>';
             }
 
             document.getElementById('profile-loading').classList.add('hidden');
             document.getElementById('profile-content').classList.remove('hidden');
         } catch (e) {
-            document.getElementById('profile-loading').innerHTML = '<p class="text-sm text-red-600">Failed to load profile.</p>';
+            document.getElementById('profile-loading').innerHTML = '<p class="text-sm text-red-600 dark:text-red-400">Failed to load profile.</p>';
         }
     }
 

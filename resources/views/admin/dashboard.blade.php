@@ -7,8 +7,8 @@
     <div class="space-y-6">
         <section class="dashboard-page-header">
             <div class="min-w-0">
-                <p class="text-[11px] font-black uppercase tracking-[0.24em] text-brand-600 dark:text-brand-300">{{ __('admin.badge') }}</p>
-                <h2 class="mt-2 text-2xl font-black tracking-tight text-gray-900 dark:text-white sm:text-3xl">{{ __('admin.dashboard_title') }}</h2>
+                <p class="text-[11px] font-bold uppercase tracking-[0.24em] text-brand-600 dark:text-brand-300">{{ __('admin.badge') }}</p>
+                <h2 class="mt-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">{{ __('admin.dashboard_title') }}</h2>
                 <p class="dashboard-section-copy max-w-3xl">{{ __('admin.dashboard_copy') }}</p>
             </div>
 
@@ -30,24 +30,12 @@
                 <p class="dashboard-section-copy">{{ __('admin.stats_section_copy') }}</p>
             </div>
 
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-7">
-                <div class="stat-tile">
-                    <div class="relative z-10 flex items-start justify-between gap-4">
-                        <div class="min-w-0 flex-1">
-                            <p class="truncate text-xs font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">{{ __('admin.total_users') }}</p>
-                            <p id="stat-users" class="mt-3 text-2xl font-black text-gray-900 dark:text-white">—</p>
-                        </div>
-                        <span class="icon-chip bg-blue-500/10 text-blue-700 dark:text-blue-300">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
-                        </span>
-                    </div>
-                </div>
-
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div class="stat-tile">
                     <div class="relative z-10 flex items-start justify-between gap-4">
                         <div class="min-w-0 flex-1">
                             <p class="truncate text-xs font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">{{ __('admin.total_vendors') }}</p>
-                            <p id="stat-vendors" class="mt-3 text-2xl font-black text-gray-900 dark:text-white">—</p>
+                            <p id="stat-vendors" class="mt-3 text-2xl font-bold text-gray-900 dark:text-white">—</p>
                         </div>
                         <span class="icon-chip">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72" /></svg>
@@ -58,46 +46,10 @@
                 <div class="stat-tile">
                     <div class="relative z-10 flex items-start justify-between gap-4">
                         <div class="min-w-0 flex-1">
-                            <p class="truncate text-xs font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">{{ __('admin.total_syndicates') }}</p>
-                            <p id="stat-syndicates" class="mt-3 text-2xl font-black text-gray-900 dark:text-white">—</p>
-                        </div>
-                        <span class="icon-chip bg-cyan-500/10 text-cyan-700 dark:text-cyan-300">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.941 3.479a8.985 8.985 0 01-4.686 0m4.686 0V19.5m-4.686-.5a9.094 9.094 0 01-3.741-.479 3 3 0 014.682-2.72m-.941 3.479V19.5m0 0a3 3 0 11-6 0m6 0a3 3 0 00-6 0m6 0h.008v.008H12v-.008zM12 8.25a3 3 0 100-6 3 3 0 000 6z" /></svg>
-                        </span>
-                    </div>
-                </div>
-
-                <div class="stat-tile">
-                    <div class="relative z-10 flex items-start justify-between gap-4">
-                        <div class="min-w-0 flex-1">
-                            <p class="truncate text-xs font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">{{ __('admin.active_vendors') }}</p>
-                            <p id="stat-active-vendors" class="mt-3 text-2xl font-black text-emerald-600 dark:text-emerald-400">—</p>
-                        </div>
-                        <span class="icon-chip bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        </span>
-                    </div>
-                </div>
-
-                <div class="stat-tile">
-                    <div class="relative z-10 flex items-start justify-between gap-4">
-                        <div class="min-w-0 flex-1">
-                            <p class="truncate text-xs font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">{{ __('admin.inactive_vendors') }}</p>
-                            <p id="stat-inactive-vendors" class="mt-3 text-2xl font-black text-rose-600 dark:text-rose-400">—</p>
-                        </div>
-                        <span class="icon-chip bg-rose-500/10 text-rose-700 dark:text-rose-300">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
-                        </span>
-                    </div>
-                </div>
-
-                <div class="stat-tile">
-                    <div class="relative z-10 flex items-start justify-between gap-4">
-                        <div class="min-w-0 flex-1">
                             <p class="truncate text-xs font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">{{ __('admin.total_products') }}</p>
-                            <p id="stat-products" class="mt-3 text-2xl font-black text-gray-900 dark:text-white">—</p>
+                            <p id="stat-products" class="mt-3 text-2xl font-bold text-gray-900 dark:text-white">—</p>
                         </div>
-                        <span class="icon-chip bg-violet-500/10 text-violet-700 dark:text-violet-300">
+                        <span class="icon-chip">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
                         </span>
                     </div>
@@ -106,13 +58,32 @@
                 <div class="stat-tile">
                     <div class="relative z-10 flex items-start justify-between gap-4">
                         <div class="min-w-0 flex-1">
-                            <p class="truncate text-xs font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">{{ __('admin.active_products') }}</p>
-                            <p id="stat-active-products" class="mt-3 text-2xl font-black text-emerald-600 dark:text-emerald-400">—</p>
+                            <p class="truncate text-xs font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">{{ __('admin.total_users') }}</p>
+                            <p id="stat-users" class="mt-3 text-2xl font-bold text-gray-900 dark:text-white">—</p>
                         </div>
-                        <span class="icon-chip bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span class="icon-chip">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
                         </span>
                     </div>
+                </div>
+            </div>
+
+            <div class="metrics-row border-t border-gray-100 pt-4 dark:border-gray-800">
+                <div class="metrics-row-item">
+                    <span class="metrics-row-label">{{ __('admin.total_syndicates') }}</span>
+                    <span id="stat-syndicates" class="metrics-row-value">—</span>
+                </div>
+                <div class="metrics-row-item">
+                    <span class="metrics-row-label">{{ __('admin.active_vendors') }}</span>
+                    <span id="stat-active-vendors" class="metrics-row-value" style="color: var(--color-success-strong)">—</span>
+                </div>
+                <div class="metrics-row-item">
+                    <span class="metrics-row-label">{{ __('admin.inactive_vendors') }}</span>
+                    <span id="stat-inactive-vendors" class="metrics-row-value" style="color: var(--color-danger-strong)">—</span>
+                </div>
+                <div class="metrics-row-item">
+                    <span class="metrics-row-label">{{ __('admin.active_products') }}</span>
+                    <span id="stat-active-products" class="metrics-row-value" style="color: var(--color-success-strong)">—</span>
                 </div>
             </div>
         </section>
@@ -302,7 +273,7 @@
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35" /></svg>
                         </span>
                         <div class="min-w-0">
-                            <p class="text-sm font-black text-gray-900 dark:text-white">{{ __('admin.manage_vendors_title') }}</p>
+                            <p class="text-sm font-bold text-gray-900 dark:text-white">{{ __('admin.manage_vendors_title') }}</p>
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('admin.manage_vendors_copy') }}</p>
                         </div>
                     </div>
@@ -311,11 +282,11 @@
 
                 <a href="{{ route('admin.users.index') }}" class="list-panel group">
                     <div class="flex items-center gap-4">
-                        <span class="icon-chip bg-blue-500/10 text-blue-700 dark:text-blue-300">
+                        <span class="icon-chip">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
                         </span>
                         <div class="min-w-0">
-                            <p class="text-sm font-black text-gray-900 dark:text-white">{{ __('admin.manage_users_title') }}</p>
+                            <p class="text-sm font-bold text-gray-900 dark:text-white">{{ __('admin.manage_users_title') }}</p>
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('admin.manage_users_copy') }}</p>
                         </div>
                     </div>
@@ -324,11 +295,11 @@
 
                 <a href="{{ route('admin.products.index') }}" class="list-panel group">
                     <div class="flex items-center gap-4">
-                        <span class="icon-chip bg-violet-500/10 text-violet-700 dark:text-violet-300">
+                        <span class="icon-chip">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
                         </span>
                         <div class="min-w-0">
-                            <p class="text-sm font-black text-gray-900 dark:text-white">{{ __('admin.manage_products_title') }}</p>
+                            <p class="text-sm font-bold text-gray-900 dark:text-white">{{ __('admin.manage_products_title') }}</p>
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('admin.manage_products_copy') }}</p>
                         </div>
                     </div>
@@ -544,11 +515,11 @@
                 container.innerHTML = products.map((product) => `
                     <a href="/admin/products/${product.id}" class="list-panel group">
                         <div class="flex min-w-0 items-center gap-4">
-                            <span class="icon-chip bg-violet-500/10 text-violet-700 dark:text-violet-300">
+                            <span class="icon-chip">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
                             </span>
                             <div class="min-w-0">
-                                <p class="truncate text-sm font-black text-gray-900 dark:text-white">${esc(product.name)}</p>
+                                <p class="truncate text-sm font-bold text-gray-900 dark:text-white">${esc(product.name)}</p>
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${esc(product.category?.name || product.status || '')}</p>
                             </div>
                         </div>
@@ -583,7 +554,7 @@
                             <div class="min-w-0 flex-1">
                                 <div class="flex flex-wrap items-center justify-between gap-3">
                                     <div class="min-w-0">
-                                        <p class="truncate text-sm font-black text-gray-900 dark:text-white">${esc(row.name)}</p>
+                                        <p class="truncate text-sm font-bold text-gray-900 dark:text-white">${esc(row.name)}</p>
                                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${esc((adminDashboardI18n.vendorsTotalLabel || '').replace(':count', String(total)))}</p>
                                     </div>
                                     <div class="flex flex-wrap gap-2">
@@ -594,9 +565,9 @@
                                 </div>
                                 <div class="mt-4 h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
                                     <div class="flex h-full w-full">
-                                        <div class="bg-emerald-500" style="width:${activeWidth}%"></div>
-                                        <div class="bg-amber-500" style="width:${pendingWidth}%"></div>
-                                        <div class="bg-rose-500" style="width:${inactiveWidth}%"></div>
+                                        <div style="width:${activeWidth}%; background: var(--color-success-500)"></div>
+                                        <div style="width:${pendingWidth}%; background: var(--color-warning-500)"></div>
+                                        <div style="width:${inactiveWidth}%; background: var(--color-danger-500)"></div>
                                     </div>
                                 </div>
                             </div>
@@ -634,7 +605,7 @@
                     <a href="${metricTileUrl(noun, row.type)}" class="list-panel">
                         <div>
                             <p class="text-xs font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">${esc(typeLabel(row.type, row.label))}</p>
-                            <p class="mt-2 text-2xl font-black text-gray-900 dark:text-white">${Number(row.total || 0)}</p>
+                            <p class="mt-2 text-2xl font-bold text-gray-900 dark:text-white">${Number(row.total || 0)}</p>
                         </div>
                     </a>
                 `).join('');
@@ -665,7 +636,7 @@
                 container.innerHTML = rows.map((row) => `
                     <a href="/admin/vendors?category_id=${encodeURIComponent(row.id)}" class="list-panel">
                         <div class="min-w-0">
-                            <p class="truncate text-sm font-black text-gray-900 dark:text-white">${esc(row.name)}</p>
+                            <p class="truncate text-sm font-bold text-gray-900 dark:text-white">${esc(row.name)}</p>
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${esc(typeLabel(row.type, row.type_label))}</p>
                         </div>
                         <span class="badge badge-brand">${esc((adminDashboardI18n.vendorsCountLabel || '').replace(':count', String(Number(row.vendors_count || 0))))}</span>
@@ -687,7 +658,7 @@
                 container.innerHTML = rows.map((vendor) => `
                     <a href="/admin/vendors/${vendor.id}" class="list-panel">
                         <div class="min-w-0">
-                            <p class="truncate text-sm font-black text-gray-900 dark:text-white">${esc(vendor.store_name)}</p>
+                            <p class="truncate text-sm font-bold text-gray-900 dark:text-white">${esc(vendor.store_name)}</p>
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${esc(vendor.user?.name || '')} · ${esc(businessTypeLabel(vendor.business_type, vendor.business_type_label))}</p>
                         </div>
                         <span class="badge ${vendor.status === 'pending' ? 'badge-warning' : (vendor.is_active ? 'badge-success' : 'badge-danger')}">${esc(statusLabel(vendor.status || (vendor.is_active ? 'active' : 'inactive')))}</span>
@@ -710,7 +681,7 @@
                 const markup = rows.map((syndicate) => `
                     <a href="/admin/syndicates/${syndicate.id}" class="list-panel">
                         <div class="min-w-0">
-                            <p class="truncate text-sm font-black text-gray-900 dark:text-white">${esc(syndicate.name)}</p>
+                            <p class="truncate text-sm font-bold text-gray-900 dark:text-white">${esc(syndicate.name)}</p>
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${esc(syndicate.user?.email || '')} · ${esc(typeLabel(syndicate.type, syndicate.type_label))}</p>
                         </div>
                         <span class="badge ${syndicate.status === 'active' ? 'badge-success' : 'badge-danger'}">${esc(statusLabel(syndicate.status))}</span>
@@ -735,7 +706,7 @@
                 container.innerHTML = rows.map((vendor) => `
                     <a href="/admin/vendors/${vendor.id}" class="list-panel">
                         <div class="min-w-0">
-                            <p class="truncate text-sm font-black text-gray-900 dark:text-white">${esc(vendor.store_name)}</p>
+                            <p class="truncate text-sm font-bold text-gray-900 dark:text-white">${esc(vendor.store_name)}</p>
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${esc(businessTypeLabel(vendor.business_type, vendor.business_type_label))}</p>
                         </div>
                         <span class="badge badge-brand">${esc((adminDashboardI18n.productsCountLabel || '').replace(':count', String(Number(vendor.products_count || 0))))}</span>
@@ -754,7 +725,7 @@
                 container.innerHTML = rows.slice(0, 8).map((row) => `
                     <a href="/admin/categories/${row.id}" class="list-panel">
                         <div class="min-w-0">
-                            <p class="truncate text-sm font-black text-gray-900 dark:text-white">${esc(row.name)}</p>
+                            <p class="truncate text-sm font-bold text-gray-900 dark:text-white">${esc(row.name)}</p>
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${esc(typeLabel(row.type, row.type_label))}</p>
                         </div>
                         <span class="badge badge-danger">${Number(row[countKey] || 0)}</span>

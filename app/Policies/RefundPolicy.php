@@ -23,7 +23,7 @@ class RefundPolicy
         $refund->loadMissing('order');
 
         if ($user->isVendor()) {
-            $vendorId = $user->vendor?->id;
+            $vendorId = $user->managedVendor()?->id;
 
             return $vendorId !== null && (int) $refund->order->vendor_id === (int) $vendorId;
         }

@@ -163,4 +163,5 @@ return [
     'error_title' => 'Product not found',
     'error_copy' => 'The product you are looking for does not exist or is no longer available.',
     'back_to_products' => 'Back to products',
+    'view_larger' => 'View larger image',
 ];

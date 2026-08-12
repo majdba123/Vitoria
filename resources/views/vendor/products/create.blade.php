@@ -10,7 +10,7 @@
 
     <form id="create-form" class="space-y-6" novalidate enctype="multipart/form-data">
         <x-products.form-fields />
-        <x-products.photo-upload color="emerald" />
+        <x-products.photo-upload color="brand" />
 
         <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <a href="{{ route('vendor.products.index') }}" class="btn-secondary">{{ __('common.cancel') }}</a>
@@ -24,7 +24,7 @@
 @endsection
 
 @push('scripts')
-<x-products.photo-upload-script color="emerald" alertId="create-alert" />
+<x-products.photo-upload-script color="brand" alertId="create-alert" />
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
     const i18n = {!! json_encode([

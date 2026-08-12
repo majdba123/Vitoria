@@ -41,34 +41,34 @@
         <div id="loading" class="py-10 text-center">
             <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500"></div>
         </div>
-        <div id="table-wrap" class="hidden overflow-x-auto">
-            <table class="min-w-full text-sm">
-                <thead class="border-b border-gray-100 bg-gray-50 text-left text-xs uppercase tracking-wider text-gray-500">
+        <div id="table-wrap" class="admin-table-wrap table-responsive hidden">
+            <table class="admin-table">
+                <thead>
                     <tr>
-                        <th class="px-4 py-3">Code</th>
-                        <th class="px-4 py-3">Title</th>
-                        <th class="px-4 py-3">Discount</th>
-                        <th class="px-4 py-3">Start</th>
-                        <th class="px-4 py-3">End</th>
-                        <th class="px-4 py-3">Status</th>
-                        <th class="px-4 py-3 text-right">Actions</th>
+                        <th scope="col">Code</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Discount</th>
+                        <th scope="col">Start</th>
+                        <th scope="col">End</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="text-end">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="rows"></tbody>
             </table>
         </div>
-        <div id="empty" class="hidden py-10 text-center text-sm text-gray-400">No coupons found.</div>
-        <div class="border-t border-gray-100 px-4 py-3">
-            <p id="pagination-info" class="text-xs text-gray-500"></p>
+        <div id="empty" class="empty-state hidden">No coupons found.</div>
+        <div class="border-t border-gray-100 px-4 py-3 dark:border-gray-800">
+            <p id="pagination-info" class="text-xs text-gray-500 dark:text-gray-400"></p>
         </div>
     </div>
 </div>
 
-<div id="coupon-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm">
-    <div class="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900">
+<div id="coupon-modal" class="mobile-dialog">
+    <div class="mobile-dialog-card" style="max-width: 40rem;">
         <div class="mb-4 flex items-center justify-between">
             <h3 id="modal-title" class="text-lg font-bold text-gray-900 dark:text-white">Create Coupon</h3>
-            <button type="button" onclick="closeCouponModal()" aria-label="Close" class="rounded-md p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800">
+            <button type="button" onclick="closeCouponModal()" aria-label="Close" class="p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800" style="border-radius: var(--radius-control)">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
@@ -192,17 +192,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
         $('table-wrap').classList.remove('hidden');
         $('rows').innerHTML = rows.map(c => `
-            <tr class="border-b border-gray-100 last:border-0 dark:border-gray-800">
-                <td class="px-4 py-3 font-mono text-xs font-bold text-gray-700 dark:text-gray-300">${esc(c.code)}</td>
-                <td class="px-4 py-3 font-semibold text-gray-900 dark:text-white">${esc(c.title)}</td>
-                <td class="px-4 py-3 text-gray-600 dark:text-gray-400">${c.discount_type === 'percentage' ? c.discount_value + '%' : Number(c.discount_value).toLocaleString() + ' SYP'}</td>
-                <td class="px-4 py-3 text-gray-600 dark:text-gray-400">${fmtDate(c.starts_at)}</td>
-                <td class="px-4 py-3 text-gray-600 dark:text-gray-400">${fmtDate(c.ends_at)}</td>
-                <td class="px-4 py-3">${statusBadge(c.status)}</td>
-                <td class="px-4 py-3">
-                    <div class="flex justify-end gap-2">
-                        <button class="btn-secondary btn-xs js-edit-coupon" data-json="${encodeURIComponent(JSON.stringify(c))}">Edit</button>
-                        <button class="btn-danger btn-xs" onclick="deleteCoupon(${c.id})">Delete</button>
+            <tr>
+                <td class="font-mono text-xs font-bold text-gray-700 dark:text-gray-300">${esc(c.code)}</td>
+                <td class="font-semibold text-gray-900 dark:text-white">${esc(c.title)}</td>
+                <td class="tabular-nums text-gray-600 dark:text-gray-400">${c.discount_type === 'percentage' ? c.discount_value + '%' : Number(c.discount_value).toLocaleString() + ' SYP'}</td>
+                <td class="tabular-nums text-gray-600 dark:text-gray-400">${fmtDate(c.starts_at)}</td>
+                <td class="tabular-nums text-gray-600 dark:text-gray-400">${fmtDate(c.ends_at)}</td>
+                <td>${statusBadge(c.status)}</td>
+                <td class="text-end">
+                    <div class="inline-flex justify-end gap-1.5">
+                        <button class="btn-secondary btn-xs js-edit-coupon" data-json="${encodeURIComponent(JSON.stringify(c))}" aria-label="Edit ${esc(c.code)}">Edit</button>
+                        <button class="btn-danger btn-xs" onclick="deleteCoupon(${c.id})" aria-label="Delete ${esc(c.code)}">Delete</button>
                     </div>
                 </td>
             </tr>

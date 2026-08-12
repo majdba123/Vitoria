@@ -9,4 +9,6 @@ return [
     'no_products' => 'No products in this category yet.',
     'no_subcategories' => 'No subcategories',
     'breadcrumb_categories' => 'Categories',
+    'products_count' => ':count products',
+    'commission_meta' => ':count% commission',
 ];

@@ -12,7 +12,7 @@
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">Vendor Financial Analytics</p>
-                <h2 id="vendor-title" class="mt-1 text-2xl font-black text-gray-900 dark:text-white">Vendor #{{ $vendorId }}</h2>
+                <h2 id="vendor-title" class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">Vendor #{{ $vendorId }}</h2>
                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Commission is calculated by category commission for completed orders only.</p>
             </div>
             <a href="/admin/vendors" class="btn-secondary btn-sm">Back to Vendors</a>
@@ -22,25 +22,25 @@
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
             <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Completed Orders Total</p>
-            <p id="stat-completed-total" class="mt-2 text-2xl font-black text-gray-900 dark:text-white">—</p>
+            <p id="stat-completed-total" class="mt-2 text-2xl font-bold text-gray-900 dark:text-white">—</p>
         </div>
         <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
             <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Commission Total</p>
-            <p id="stat-commission-total" class="mt-2 text-2xl font-black text-brand-600">—</p>
+            <p id="stat-commission-total" class="mt-2 text-2xl font-bold text-brand-600">—</p>
         </div>
         <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
             <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Paid to Vendor</p>
-            <p id="stat-paid-amount" class="mt-2 text-2xl font-black text-emerald-600">—</p>
+            <p id="stat-paid-amount" class="mt-2 text-2xl font-bold text-emerald-600">—</p>
         </div>
         <div class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
             <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Remaining</p>
-            <p id="stat-remaining-amount" class="mt-2 text-2xl font-black text-rose-600">—</p>
+            <p id="stat-remaining-amount" class="mt-2 text-2xl font-bold text-rose-600">—</p>
         </div>
     </div>
 
     <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
         <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <h3 class="text-base font-black text-gray-900 dark:text-white">Order Status Statistics</h3>
+            <h3 class="text-base font-bold text-gray-900 dark:text-white">Order Status Statistics</h3>
             <div class="mt-4 space-y-3">
                 <div>
                     <div class="mb-1 flex items-center justify-between text-xs">
@@ -73,7 +73,7 @@
         </div>
 
         <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <h3 class="text-base font-black text-gray-900 dark:text-white">Update Paid Amount</h3>
+            <h3 class="text-base font-bold text-gray-900 dark:text-white">Update Paid Amount</h3>
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Set total paid to vendor. Remaining amount updates automatically.</p>
             <form id="paid-form" class="mt-4 space-y-3">
                 <div>
@@ -86,7 +86,7 @@
     </div>
 
     <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <h3 class="text-base font-black text-gray-900 dark:text-white">Commission by Category</h3>
+        <h3 class="text-base font-bold text-gray-900 dark:text-white">Commission by Category</h3>
         <div class="mt-4 overflow-x-auto">
             <table class="admin-table">
                 <thead>
@@ -107,7 +107,7 @@
     </div>
 
     <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <h3 class="text-base font-black text-gray-900 dark:text-white">Last 7 Days Completed Orders</h3>
+        <h3 class="text-base font-bold text-gray-900 dark:text-white">Last 7 Days Completed Orders</h3>
         <div id="orders-trend" class="mt-4 grid grid-cols-7 gap-2"></div>
     </div>
 </div>

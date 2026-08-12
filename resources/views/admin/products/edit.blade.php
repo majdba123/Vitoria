@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             const photoUrl = photo.url.replace(/"/g, '&quot;');
             return `<div class="space-y-2">
                 <div class="relative aspect-square overflow-hidden rounded-lg border-2 transition-all duration-200 ${isSelected ? 'border-red-500 ring-4 ring-red-200 shadow-lg' : isMarkedPrimary ? 'border-emerald-500 ring-4 ring-emerald-200 shadow-lg' : isPrimary ? 'border-blue-400 ring-2 ring-blue-200' : 'border-gray-200 hover:border-gray-300'}" data-photo-id="${photo.id}" data-photo-url="${photoUrl}">
-                    <img src="${photoUrl}" class="h-full w-full object-cover transition-transform duration-200 ${isSelected || isMarkedPrimary ? 'opacity-60' : 'group-hover:scale-105'}" alt="">
+                    <img src="${photoUrl}" class="h-full w-full object-cover ${isSelected || isMarkedPrimary ? 'opacity-60' : ''}" alt="">
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const modal = document.createElement('div');
         modal.id = 'photo-modal';
         modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4';
-        modal.innerHTML = `<div class="relative max-h-[90vh] max-w-[90vw]"><img src="${url}" class="max-h-[90vh] max-w-[90vw] rounded-lg object-contain shadow-2xl" alt="Product photo"><button type="button" onclick="document.getElementById('photo-modal')?.remove()" class="absolute right-2 top-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-gray-900 shadow-lg backdrop-blur-sm transition-all hover:bg-white hover:scale-110" title="Close"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button></div>`;
+        modal.innerHTML = `<div class="relative max-h-[90vh] max-w-[90vw]"><img src="${url}" class="max-h-[90vh] max-w-[90vw] rounded-lg object-contain" alt="Product photo"><button type="button" onclick="document.getElementById('photo-modal')?.remove()" class="absolute top-2 flex h-11 w-11 items-center justify-center rounded-full bg-white text-gray-900 transition-colors hover:bg-gray-100" style="inset-inline-end: 0.5rem;" aria-label="Close"><svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button></div>`;
         modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
         document.body.appendChild(modal);
     };

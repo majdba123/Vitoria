@@ -118,11 +118,70 @@ class User extends Authenticatable
     }
 
     /**
-     * The vendor profile linked to this user.
+     * The vendor profile *owned* by this user. Unchanged by vendor staff
+     * (spec §22) — a staff member never gets a row here, only in
+     * `vendorMemberships()`. Use `managedVendor()` to resolve "the vendor
+     * this user may act on", which covers both.
      */
     public function vendor(): HasOne
     {
         return $this->hasOne(Vendor::class);
+    }
+
+    /**
+     * Every vendor-staff row this user holds, active or removed.
+     */
+    public function vendorMemberships(): HasMany
+    {
+        return $this->hasMany(VendorMember::class);
+    }
+
+    /**
+     * The single active staff membership this user currently holds, if any.
+     * A user is expected to be active staff for at most one vendor at a
+     * time (enforced in VendorStaffService, not the schema).
+     */
+    public function activeVendorMembership(): ?VendorMember
+    {
+        return $this->vendorMemberships()
+            ->where('status', VendorMember::STATUS_ACTIVE)
+            ->with('vendor')
+            ->first();
+    }
+
+    /**
+     * The vendor this user may act on — as owner if `vendor()` resolves,
+     * otherwise as active staff. Every controller and policy that needs
+     * "which vendor is this authenticated user managing" should call this
+     * rather than reading `vendor` directly, so vendor staff (spec §22)
+     * transparently works everywhere ownership already did.
+     */
+    public function managedVendor(): ?Vendor
+    {
+        return $this->vendor ?: $this->activeVendorMembership()?->vendor;
+    }
+
+    /**
+     * Whether this user may perform `$permission` against `$vendor`.
+     *
+     * The owner bypasses the permissions table entirely and unconditionally
+     * returns true — a missing or misconfigured role can never lock an
+     * owner out of their own vendor. Staff must hold an active membership
+     * whose role grants the permission (spec §23).
+     */
+    public function hasVendorPermission(Vendor $vendor, string $permission): bool
+    {
+        if ((int) $vendor->user_id === (int) $this->id) {
+            return true;
+        }
+
+        $membership = $this->vendorMemberships()
+            ->where('vendor_id', $vendor->id)
+            ->where('status', VendorMember::STATUS_ACTIVE)
+            ->with('role.permissions')
+            ->first();
+
+        return $membership !== null && $membership->role->permissions->contains('key', $permission);
     }
 
     /**

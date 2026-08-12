@@ -54,6 +54,11 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::get('ledger', [\App\Http\Controllers\Api\Vendor\LedgerController::class, 'index'])->name('ledger.index');
     Route::get('ledger/summary', [\App\Http\Controllers\Api\Vendor\LedgerController::class, 'summary'])->name('ledger.summary');
 
+    Route::get('staff', [\App\Http\Controllers\Api\Vendor\StaffController::class, 'index'])->name('staff.index');
+    Route::post('staff', [\App\Http\Controllers\Api\Vendor\StaffController::class, 'store'])->middleware('throttle:api.write')->name('staff.store');
+    Route::patch('staff/{memberId}', [\App\Http\Controllers\Api\Vendor\StaffController::class, 'update'])->middleware('throttle:api.write')->name('staff.update');
+    Route::delete('staff/{memberId}', [\App\Http\Controllers\Api\Vendor\StaffController::class, 'destroy'])->middleware('throttle:api.write')->name('staff.destroy');
+
     Route::get('products/{product}/photos', [ProductPhotoController::class, 'index'])->name('products.photos.index');
     Route::post('products/{product}/photos', [ProductPhotoController::class, 'store'])->middleware('throttle:uploads')->name('products.photos.store');
     Route::post('products/{product}/photos/update', [ProductPhotoController::class, 'updatePhotos'])->middleware('throttle:uploads')->name('products.photos.update');

@@ -5,41 +5,39 @@
 
 @section('content')
 <div class="space-y-4">
-    <div class="overflow-hidden border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-        <div class="border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-gray-950">
-            <h2 class="text-base font-black text-gray-900 dark:text-white">Orders Filters</h2>
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Filter your store orders by product, status, and category.</p>
+    <div class="filter-panel">
+        <div>
+            <h2 class="dashboard-section-title">Orders Filters</h2>
+            <p class="dashboard-section-copy">Filter your store orders by product, status, and category.</p>
         </div>
-        <div class="p-4">
-            <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <input id="f-product" type="text" placeholder="Product name" class="border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white">
-                <select id="f-status" class="border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white">
-                    <option value="">All Statuses</option>
-                    <option value="pending">Pending</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
-                </select>
-                <select id="f-category" class="border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white">
-                    <option value="">All Categories</option>
-                </select>
-                <button id="f-reset" class="rounded-xl border border-gray-200 px-3 py-2 text-sm font-bold text-gray-700 transition-all hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:text-gray-300 dark:hover:border-brand-500/40 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">Reset</button>
-            </div>
+        <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <input id="f-product" type="text" placeholder="Product name" class="form-input">
+            <select id="f-status" class="form-select">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+            <select id="f-category" class="form-select">
+                <option value="">All Categories</option>
+            </select>
+            <button id="f-reset" type="button" class="btn-secondary btn-sm">Reset</button>
         </div>
     </div>
 
     <div id="orders-loading" class="py-14 text-center">
-        <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500"></div>
-        <p class="mt-3 text-sm text-gray-500">Loading orders...</p>
+        <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500 dark:border-gray-700 dark:border-t-brand-400"></div>
+        <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Loading orders...</p>
     </div>
 
-    <div id="orders-empty" class="hidden card py-14 text-center">
+    <div id="orders-empty" class="empty-state hidden">
         <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">No orders found.</p>
     </div>
 
-    <div id="orders-table" class="hidden overflow-x-auto border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-        <table>
-            <thead><tr><th>Order</th><th>Customer</th><th>Status</th><th class="text-end">Total</th><th class="text-end">Action</th></tr></thead>
+    <div id="orders-table" class="hidden card admin-table-wrap table-responsive">
+        <table class="admin-table">
+            <thead><tr><th scope="col">Order</th><th scope="col">Customer</th><th scope="col">Status</th><th scope="col" class="text-end">Total</th><th scope="col" class="text-end">Action</th></tr></thead>
             <tbody id="orders-list"></tbody>
         </table>
     </div>

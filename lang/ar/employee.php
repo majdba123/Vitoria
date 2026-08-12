@@ -4,6 +4,7 @@ return [
     'workspace' => 'مساحة الموظف',
     'open_sidebar' => 'فتح القائمة الجانبية',
     'workspace_label' => 'مساحة الموظف',
+    'workspace_footer' => 'مساحة الموظف',
     'dashboard' => 'لوحة التحكم',
     'sidebar_copy' => 'راجع المنتجات، حدّث التفاصيل، واجعل قرارات المراجعة واضحة للبائع.',
     'dashboard_title' => 'مساحة مراجعة المنتجات',

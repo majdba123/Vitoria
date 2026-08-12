@@ -42,9 +42,8 @@
                                 || ($itemStatus !== null && $currentStatus === $itemStatus)
                             );
                     @endphp
-                    <a href="{{ route($item['route'], $item['params'] ?? []) }}" class="dashboard-sidebar-link {{ $isActive ? 'is-active' : '' }}">
-                        <span class="dashboard-sidebar-bullet h-2.5 w-2.5 rounded-full bg-white/20"></span>
-                        <i class="{{ $item['icon'] }} w-4 text-center text-[13px]"></i>
+                    <a href="{{ route($item['route'], $item['params'] ?? []) }}" class="dashboard-sidebar-link {{ $isActive ? 'is-active' : '' }}" @if ($isActive) aria-current="page" @endif>
+                        <i class="{{ $item['icon'] }} w-4 text-center text-[13px]" aria-hidden="true"></i>
                         <span class="flex-1">{{ $item['label'] }}</span>
                     </a>
                 @endforeach
@@ -53,7 +52,7 @@
     </nav>
 
     <div class="border-t border-white/8 px-6 py-4 text-[11px] text-white/40">
-        <p>{{ __('Vetora') }} employee workspace</p>
+        <p>{{ __('employee.workspace_footer') }}</p>
         <p class="mt-1">{{ date('Y') }}</p>
     </div>
 </aside>

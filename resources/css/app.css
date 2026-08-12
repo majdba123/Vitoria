@@ -44,11 +44,44 @@
     --color-ink-800: #202b31;
     --color-ink-900: #172126;
 
-    /* Status primitives - distinct from brand, never reused for identity */
+    /* Status primitives - distinct from brand, never reused for identity.
+       Deliberately muted/earthy (not candy-bright Tailwind emerald/amber/rose/blue)
+       so they read as considered signals in an agritech context, not SaaS accents. */
+    --color-success-50: #eefaf3;
+    --color-success-100: #d7f0e2;
+    --color-success-200: #b3e0c9;
+    --color-success-300: #7fc9a4;
     --color-success-500: #177a55;
+    --color-success-600: #136343;
+    --color-success-700: #0f4f36;
+    --color-success-800: #0c3e2a;
+
+    --color-warning-50: #fdf6ec;
+    --color-warning-100: #faeacb;
+    --color-warning-200: #f3d799;
+    --color-warning-300: #dba85b;
     --color-warning-500: #a65f09;
+    --color-warning-600: #8a4d07;
+    --color-warning-700: #6f3d06;
+    --color-warning-800: #583005;
+
+    --color-danger-50: #fbeef0;
+    --color-danger-100: #f5d7db;
+    --color-danger-200: #e9adb5;
+    --color-danger-300: #d98a94;
     --color-danger-500: #b93845;
+    --color-danger-600: #9c2d38;
+    --color-danger-700: #80242d;
+    --color-danger-800: #671d24;
+
+    --color-info-50: #eaf3fa;
+    --color-info-100: #cfe4f2;
+    --color-info-200: #a1c7e3;
+    --color-info-300: #7fa9cf;
     --color-info-500: #296aa3;
+    --color-info-600: #215582;
+    --color-info-700: #1a4266;
+    --color-info-800: #153450;
 }
 
 /* ==========================================================================
@@ -78,7 +111,24 @@
     --color-brand-soft: var(--color-brand-50);
     --color-brand-on: #ffffff;
 
+    /* Status roles - soft (tinted background) / strong (text-on-soft) / on
+       (text-on-solid-500-fill). Emerald/rose/amber/blue utility classes should
+       not appear in new component or Blade work - reach for these instead. */
+    --color-success-soft: var(--color-success-50);
+    --color-success-strong: var(--color-success-700);
+    --color-success-on: #ffffff;
+    --color-warning-soft: var(--color-warning-50);
+    --color-warning-strong: var(--color-warning-700);
+    --color-warning-on: #ffffff;
+    --color-danger-soft: var(--color-danger-50);
+    --color-danger-strong: var(--color-danger-700);
+    --color-danger-on: #ffffff;
+    --color-info-soft: var(--color-info-50);
+    --color-info-strong: var(--color-info-700);
+    --color-info-on: #ffffff;
+
     /* Focus */
+    --color-focus: var(--color-brand);
     --color-focus-ring: 0 0 0 3px rgba(41, 116, 151, 0.32);
 
     /* Elevation - at most 3 tiers, prefer borders over shadow */
@@ -126,6 +176,16 @@
     --color-brand-soft: rgba(41, 169, 209, 0.14);
     --color-brand-on: #06222d;
 
+    --color-success-soft: rgba(23, 122, 85, 0.16);
+    --color-success-strong: var(--color-success-300);
+    --color-warning-soft: rgba(166, 95, 9, 0.16);
+    --color-warning-strong: var(--color-warning-300);
+    --color-danger-soft: rgba(185, 56, 69, 0.16);
+    --color-danger-strong: var(--color-danger-300);
+    --color-info-soft: rgba(41, 106, 163, 0.16);
+    --color-info-strong: var(--color-info-300);
+
+    --color-focus: var(--color-brand);
     --color-focus-ring: 0 0 0 3px rgba(116, 198, 222, 0.4);
 
     --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.32);
@@ -663,7 +723,7 @@
     .btn-secondary,
     .btn-danger,
     .btn-ghost {
-        @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold tracking-tight outline-none;
+        @apply inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold tracking-tight outline-none;
         border-radius: var(--radius-control);
         transition:
             background-color 150ms ease,
@@ -678,6 +738,14 @@
 
     .btn-primary:hover {
         background: var(--button-primary-bg-hover);
+    }
+
+    .btn-primary:disabled,
+    .btn-secondary:disabled,
+    .btn-danger:disabled,
+    .btn-ghost:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
     }
 
     .btn-secondary {
@@ -723,24 +791,42 @@
         border-radius: var(--radius-pill);
     }
 
+    /* Status badges consume the semantic soft/strong tokens directly - never
+       Tailwind's stock emerald/rose/amber/blue palette (spec §5/§25: emerald
+       is a success signal only, and every status color must trace back to
+       the primitive scale, not a raw utility class). */
     .badge-success {
-        @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/20 ring-inset dark:bg-emerald-500/10 dark:text-emerald-300;
+        background: var(--color-success-soft);
+        color: var(--color-success-strong);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-success-500) 22%, transparent);
     }
 
     .badge-danger {
-        @apply bg-rose-50 text-rose-700 ring-1 ring-rose-500/20 ring-inset dark:bg-rose-500/10 dark:text-rose-300;
+        background: var(--color-danger-soft);
+        color: var(--color-danger-strong);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-danger-500) 22%, transparent);
     }
 
     .badge-warning {
-        @apply bg-amber-50 text-amber-700 ring-1 ring-amber-500/20 ring-inset dark:bg-amber-500/10 dark:text-amber-300;
+        background: var(--color-warning-soft);
+        color: var(--color-warning-strong);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-warning-500) 22%, transparent);
     }
 
     .badge-info {
-        @apply bg-blue-50 text-blue-700 ring-1 ring-blue-500/20 ring-inset dark:bg-blue-500/10 dark:text-blue-300;
+        background: var(--color-info-soft);
+        color: var(--color-info-strong);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-info-500) 22%, transparent);
     }
 
-    .badge-purple {
-        @apply bg-violet-50 text-violet-700 ring-1 ring-violet-500/20 ring-inset dark:bg-violet-500/10 dark:text-violet-300;
+    /* Legacy non-status variants - kept for existing Blade references, routed
+       through neutral/info tokens rather than raw violet/cyan so they no
+       longer invent identity colors outside the brand scale. */
+    .badge-purple,
+    .badge-cyan {
+        background: var(--color-info-soft);
+        color: var(--color-info-strong);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-info-500) 18%, transparent);
     }
 
     .badge-brand {
@@ -755,6 +841,50 @@
     .alert-shell {
         @apply mb-4 items-start gap-3 border p-4 text-sm font-medium;
         border-radius: var(--radius-card);
+    }
+
+    .alert-success {
+        border-color: color-mix(in srgb, var(--color-success-500) 20%, transparent);
+        background: color-mix(in srgb, var(--color-success-50) 90%, transparent);
+        color: var(--color-success-strong);
+    }
+
+    .dark .alert-success {
+        background: color-mix(in srgb, var(--color-success-500) 12%, transparent);
+        color: var(--color-success-300);
+    }
+
+    .alert-error {
+        border-color: color-mix(in srgb, var(--color-danger-500) 20%, transparent);
+        background: color-mix(in srgb, var(--color-danger-50) 90%, transparent);
+        color: var(--color-danger-strong);
+    }
+
+    .dark .alert-error {
+        background: color-mix(in srgb, var(--color-danger-500) 12%, transparent);
+        color: var(--color-danger-300);
+    }
+
+    .alert-warning {
+        border-color: color-mix(in srgb, var(--color-warning-500) 20%, transparent);
+        background: color-mix(in srgb, var(--color-warning-50) 90%, transparent);
+        color: var(--color-warning-strong);
+    }
+
+    .dark .alert-warning {
+        background: color-mix(in srgb, var(--color-warning-500) 12%, transparent);
+        color: var(--color-warning-300);
+    }
+
+    .alert-info {
+        border-color: color-mix(in srgb, var(--color-info-500) 20%, transparent);
+        background: color-mix(in srgb, var(--color-info-50) 90%, transparent);
+        color: var(--color-info-strong);
+    }
+
+    .dark .alert-info {
+        background: color-mix(in srgb, var(--color-info-500) 12%, transparent);
+        color: var(--color-info-300);
     }
 
     /* ---- Tables ---------------------------------------------------------- */
@@ -844,6 +974,23 @@
         border-radius: var(--radius-control);
         background: var(--color-danger-500);
         color: #fff;
+    }
+
+    /* Bestseller rank marker - a structural fact (list position), not a
+       fabricated trust signal. Ink, not danger/brand, so it never competes
+       with a discount badge on the same card. */
+    .product-card-rank {
+        @apply absolute top-2 flex h-6 min-w-6 items-center justify-center px-1.5 text-[11px] font-bold tabular-nums;
+        inset-inline-start: 0.5rem;
+        border-radius: var(--radius-control);
+        background: var(--color-ink-900);
+        color: #fff;
+    }
+
+    .dark .product-card-rank {
+        background: var(--color-surface);
+        color: var(--color-text);
+        box-shadow: inset 0 0 0 1px var(--color-border-strong);
     }
 
     .product-card-fav {
@@ -1021,9 +1168,12 @@
     }
 
     .workspace-hero {
+        /* Flat brand fill, not a gradient mesh - restrained surfaces over
+           decoration (spec: "remove gradient buttons/generic gradient meshes
+           as default design language"). */
         @apply relative overflow-hidden p-6 sm:p-8;
         border-radius: var(--radius-feature);
-        background: linear-gradient(135deg, #123748 0%, #297497 100%);
+        background: var(--color-brand-strong);
         border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
@@ -1178,6 +1328,17 @@
 
     .nav-action-btn:hover {
         background: var(--color-surface-muted);
+    }
+
+    /* Mega-menu active-category rail. Previously set via inline JS with a
+       literal #10b981 (Tailwind emerald-500) - moved to a token so the active
+       state carries brand identity instead of an accidental second brand color. */
+    .mega-cat-btn.is-active {
+        box-shadow: inset 3px 0 0 var(--color-brand);
+    }
+
+    html[dir='rtl'] .mega-cat-btn.is-active {
+        box-shadow: inset -3px 0 0 var(--color-brand);
     }
 
     .mobile-drawer-shell {
@@ -1633,22 +1794,108 @@
         letter-spacing: 0;
     }
 
+    /* Row-actions menu: collapses a dense table row's secondary actions
+       behind one kebab trigger so a single urgent action (e.g. "Approve")
+       can stay visible at full weight instead of competing with 5-6 routine
+       icons at equal size. Chrome comes from .dropdown-panel; this only adds
+       positioning. */
+    .row-actions-menu {
+        @apply relative inline-flex;
+    }
+
+    .row-actions-trigger {
+        @apply flex h-9 w-9 items-center justify-center text-gray-500 transition-colors dark:text-gray-400;
+        border-radius: var(--radius-control);
+    }
+
+    .row-actions-trigger:hover,
+    .row-actions-trigger[aria-expanded='true'] {
+        background: var(--color-surface-muted);
+        color: var(--color-text);
+    }
+
+    .row-actions-panel {
+        @apply absolute z-30 hidden min-w-[11rem] py-1;
+        inset-inline-end: 0;
+        top: calc(100% + 0.25rem);
+    }
+
+    .row-actions-panel a,
+    .row-actions-panel button {
+        @apply flex w-full items-center gap-2 px-3 py-2 text-start text-[13px] font-medium;
+        color: var(--color-text);
+    }
+
+    .row-actions-panel a:hover,
+    .row-actions-panel button:hover {
+        background: var(--color-surface-muted);
+    }
+
+    .row-actions-panel .is-danger {
+        color: var(--color-danger-strong);
+    }
+
+    /* Metrics as typography: label/value pairs separated by a hairline
+       divider, for secondary/contextual counts that don't warrant a
+       .stat-tile of their own - per the brief, not every number needs to be
+       a floating tile. */
+    .metrics-row {
+        @apply flex flex-wrap gap-y-2;
+    }
+
+    .metrics-row-item {
+        @apply flex flex-col gap-1 px-4 py-1 first:ps-0;
+        border-inline-start: 1px solid var(--color-border);
+    }
+
+    .metrics-row-item:first-child {
+        border-inline-start: 0;
+    }
+
+    .metrics-row-label {
+        @apply text-[11px] font-semibold uppercase tracking-[0.08em];
+        color: var(--color-text-secondary);
+    }
+
+    .metrics-row-value {
+        @apply mt-0.5 text-base font-bold;
+        font-variant-numeric: tabular-nums;
+        color: var(--color-text);
+    }
+
+    /* Migration aid, not a permanent fixture: this block mutes leftover
+       AI-dashboard utility soup (gradient heroes, hover-lift, oversized
+       radius/shadow/blur) wherever it still appears in workspace markup, so
+       operator screens read as dense and neutral even before every page is
+       rewritten against the primitives above. Selector list intentionally
+       covers every gradient direction and scale trigger seen in the audit
+       (not just -to-r and hover:scale) - narrower lists let raw markup slip
+       through untouched. Delete this block once no workspace view still
+       needs it. */
     .dashboard-body [class*='hover:-translate'],
     .dashboard-body [class*='hover:scale'],
-    .dashboard-body [class*='active:scale'] {
+    .dashboard-body [class*='active:scale'],
+    .dashboard-body [class*='group-hover:scale'],
+    .dashboard-body [class*='group-hover:-translate'] {
         transform: none !important;
     }
 
+    .dashboard-body .rounded-2xl,
     .dashboard-body .rounded-3xl,
-    .dashboard-body [class*='rounded-[24px]'],
-    .dashboard-body [class*='rounded-[28px]'],
-    .dashboard-body [class*='rounded-[30px]'],
-    .dashboard-body [class*='rounded-[32px]'] {
-        border-radius: 0.375rem !important;
+    .dashboard-body [class*='rounded-[2'],
+    .dashboard-body [class*='rounded-[3'] {
+        border-radius: var(--radius-control) !important;
     }
 
+    .dashboard-body .shadow,
+    .dashboard-body .shadow-md,
+    .dashboard-body .shadow-lg,
     .dashboard-body .shadow-xl,
-    .dashboard-body .shadow-2xl {
+    .dashboard-body .shadow-2xl,
+    .dashboard-body [class*='hover:shadow'],
+    .dashboard-body [class*='shadow-emerald'],
+    .dashboard-body [class*='shadow-brand'],
+    .dashboard-body [class*='shadow-slate'] {
         box-shadow: none !important;
     }
 
@@ -1659,9 +1906,9 @@
         backdrop-filter: none !important;
     }
 
-    .dashboard-body .bg-gradient-to-r {
+    .dashboard-body [class*='bg-gradient-to'] {
         background-image: none !important;
-        background-color: #10242d !important;
+        background-color: var(--dashboard-shell) !important;
     }
 
     .dark .dashboard-body .bg-white,

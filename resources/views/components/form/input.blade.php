@@ -11,7 +11,7 @@
     <label for="{{ $name }}" class="form-label">
         {{ $label }}
         @if($required)
-            <span class="text-red-500">*</span>
+            <span class="text-danger-500">*</span>
         @endif
     </label>
     <input

@@ -14,7 +14,7 @@ class InvoicePolicy
         }
 
         if ($user->isVendor()) {
-            $vendorId = $user->vendor?->id;
+            $vendorId = $user->managedVendor()?->id;
 
             return $vendorId !== null && (int) $invoice->vendor_id === (int) $vendorId;
         }

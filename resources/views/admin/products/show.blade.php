@@ -71,22 +71,22 @@
     </div>
 
     <div id="show-content" class="hidden space-y-6">
-        <section class="overflow-hidden border border-slate-700 bg-slate-900 text-white">
-            <div class="grid gap-8 px-6 py-7 lg:grid-cols-[minmax(0,1fr)_320px] lg:px-8">
-                <div class="space-y-5">
+        <section class="card overflow-hidden">
+            <div class="grid gap-6 p-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+                <div class="space-y-4">
                     <div class="flex flex-wrap items-start justify-between gap-4">
-                        <div class="space-y-2">
-                            <p class="text-xs font-bold uppercase tracking-[0.35em] text-white/60">{{ __('products.overview_badge') }}</p>
-                            <h1 id="product-name" class="text-3xl font-black tracking-tight sm:text-4xl">—</h1>
-                            <p id="product-commercial-name" class="max-w-2xl text-sm text-white/70">—</p>
+                        <div class="min-w-0">
+                            <p class="text-[11px] font-bold uppercase tracking-[0.24em] text-brand-600 dark:text-brand-300">{{ __('products.overview_badge') }}</p>
+                            <h1 id="product-name" class="mt-1 text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">—</h1>
+                            <p id="product-commercial-name" class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">—</p>
                         </div>
 
                         <div class="flex flex-wrap items-center gap-2">
-                            <a id="reviews-link" href="#" class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20">
+                            <a id="reviews-link" href="#" class="btn-secondary btn-sm">
                                 <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                                 {{ __('products.reviews') }}
                             </a>
-                            <a id="edit-link" href="#" class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-100">
+                            <a id="edit-link" href="#" class="btn-primary btn-sm">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/></svg>
                                 {{ __('products.edit_product') }}
                             </a>
@@ -94,85 +94,85 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2">
-                        <span id="product-category-badge" class="inline-flex items-center rounded-full bg-white/12 px-4 py-2 text-xs font-semibold text-white/90 ring-1 ring-white/15">{{ __('products.badge_category') }} —</span>
-                        <span id="product-subcategory-badge" class="inline-flex items-center rounded-full bg-white/12 px-4 py-2 text-xs font-semibold text-white/90 ring-1 ring-white/15">{{ __('products.badge_subcategory') }} —</span>
-                        <span id="product-type-badge" class="inline-flex items-center rounded-full bg-brand-400/20 px-4 py-2 text-xs font-semibold text-brand-100 ring-1 ring-brand-200/25">{{ __('products.badge_type') }} —</span>
-                        <span id="product-approval-status" class="inline-flex items-center rounded-full bg-amber-400/20 px-4 py-2 text-xs font-semibold text-amber-100 ring-1 ring-amber-200/30">{{ __('common.pending') }}</span>
-                        <span id="product-active-status" class="inline-flex items-center rounded-full bg-emerald-400/20 px-4 py-2 text-xs font-semibold text-emerald-100 ring-1 ring-emerald-200/30">{{ __('common.active') }}</span>
+                        <span id="product-category-badge" class="badge">{{ __('products.badge_category') }} —</span>
+                        <span id="product-subcategory-badge" class="badge">{{ __('products.badge_subcategory') }} —</span>
+                        <span id="product-type-badge" class="badge badge-brand">{{ __('products.badge_type') }} —</span>
+                        <span id="product-approval-status" class="badge badge-warning">{{ __('common.pending') }}</span>
+                        <span id="product-active-status" class="badge badge-success">{{ __('common.active') }}</span>
                     </div>
 
-                    <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                        <div class="border-s border-white/20 px-4 py-2">
-                            <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/50">{{ __('products.fields.price') }}</p>
-                            <p id="product-price" class="mt-2 text-2xl font-black text-white">—</p>
+                    <div class="metrics-row border-t border-gray-100 pt-4 dark:border-gray-800">
+                        <div class="metrics-row-item">
+                            <span class="metrics-row-label">{{ __('products.fields.price') }}</span>
+                            <span id="product-price" class="metrics-row-value">—</span>
                         </div>
-                        <div class="border-s border-white/20 px-4 py-2">
-                            <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/50">{{ __('products.fields.quantity') }}</p>
-                            <p id="product-quantity" class="mt-2 text-2xl font-black text-white">—</p>
+                        <div class="metrics-row-item">
+                            <span class="metrics-row-label">{{ __('products.fields.quantity') }}</span>
+                            <span id="product-quantity" class="metrics-row-value">—</span>
                         </div>
-                        <div class="border-s border-white/20 px-4 py-2">
-                            <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/50">{{ __('products.fields.commission') }}</p>
-                            <p id="product-commission" class="mt-2 text-2xl font-black text-white">—</p>
+                        <div class="metrics-row-item">
+                            <span class="metrics-row-label">{{ __('products.fields.commission') }}</span>
+                            <span id="product-commission" class="metrics-row-value">—</span>
                         </div>
-                        <div class="border-s border-white/20 px-4 py-2">
-                            <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/50">{{ __('products.fields.created') }}</p>
-                            <p id="product-created" class="mt-2 text-sm font-semibold text-white/90">—</p>
+                        <div class="metrics-row-item">
+                            <span class="metrics-row-label">{{ __('products.fields.created') }}</span>
+                            <span id="product-created" class="metrics-row-value text-sm">—</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="border-t border-white/15 p-5">
+                <div class="border-gray-100 dark:border-gray-800 lg:border-s lg:ps-6">
                     <div class="flex items-start justify-between gap-3">
                         <div>
-                            <p class="text-xs font-bold uppercase tracking-[0.3em] text-white/55">{{ __('products.admin_controls_badge') }}</p>
-                            <h2 class="mt-2 text-lg font-bold text-white">{{ __('products.admin_controls_title') }}</h2>
+                            <p class="text-[11px] font-bold uppercase tracking-[0.24em] text-gray-400 dark:text-gray-500">{{ __('products.admin_controls_badge') }}</p>
+                            <h2 class="mt-1 text-sm font-bold text-gray-900 dark:text-white">{{ __('products.admin_controls_title') }}</h2>
                         </div>
-                        <span id="product-discount-status" class="inline-flex items-center rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white/80 ring-1 ring-white/10">—</span>
+                        <span id="product-discount-status" class="badge">—</span>
                     </div>
 
-                    <div class="mt-5 space-y-4">
-                        <div class="rounded-2xl bg-slate-950/20 p-4 ring-1 ring-white/10">
-                            <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/45">{{ __('products.fields.approval_status') }}</p>
-                            <div class="mt-3 flex flex-wrap items-center gap-2">
-                                <select id="product-status-select" class="hidden min-w-[160px] rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-sm text-white focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/15">
-                                    <option value="pending" class="text-slate-900">{{ __('common.pending') }}</option>
-                                    <option value="approved" class="text-slate-900">{{ __('common.approved') }}</option>
-                                    <option value="rejected" class="text-slate-900">{{ __('common.rejected') }}</option>
+                    <div class="mt-4 space-y-3">
+                        <div class="border border-gray-100 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-800/60" style="border-radius: var(--radius-control)">
+                            <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">{{ __('products.fields.approval_status') }}</p>
+                            <div class="mt-2 flex flex-wrap items-center gap-2">
+                                <select id="product-status-select" class="form-select hidden" style="min-width: 9rem;">
+                                    <option value="pending">{{ __('common.pending') }}</option>
+                                    <option value="approved">{{ __('common.approved') }}</option>
+                                    <option value="rejected">{{ __('common.rejected') }}</option>
                                 </select>
-                                <button type="button" id="edit-status-btn" class="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10">
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/></svg>
+                                <button type="button" id="edit-status-btn" class="btn-secondary btn-xs">
+                                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/></svg>
                                     {{ __('products.change_status') }}
                                 </button>
-                                <button type="button" id="save-status-btn" class="hidden inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-100">
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                <button type="button" id="save-status-btn" class="hidden btn-primary btn-xs">
+                                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                                     {{ __('products.save_status') }}
                                 </button>
-                                <button type="button" id="cancel-status-btn" class="hidden inline-flex items-center rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10">
+                                <button type="button" id="cancel-status-btn" class="hidden btn-ghost btn-xs">
                                     {{ __('common.cancel') }}
                                 </button>
                             </div>
                         </div>
 
-                        <div class="grid gap-3 sm:grid-cols-2">
-                            <div class="rounded-2xl bg-white/10 p-4 ring-1 ring-white/10">
-                                <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/45">{{ __('products.fields.discount_value') }}</p>
-                                <p id="product-discount-value" class="mt-2 text-base font-bold text-white">—</p>
+                        <div class="grid gap-2.5 sm:grid-cols-2">
+                            <div class="border border-gray-100 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-800/60" style="border-radius: var(--radius-control)">
+                                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">{{ __('products.fields.discount_value') }}</p>
+                                <p id="product-discount-value" class="mt-1 text-sm font-bold text-gray-900 dark:text-white">—</p>
                             </div>
-                            <div class="rounded-2xl bg-white/10 p-4 ring-1 ring-white/10">
-                                <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/45">{{ __('products.fields.vendor') }}</p>
-                                <p id="product-vendor" class="mt-2 text-sm font-semibold text-white/90">—</p>
+                            <div class="border border-gray-100 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-800/60" style="border-radius: var(--radius-control)">
+                                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">{{ __('products.fields.vendor') }}</p>
+                                <p id="product-vendor" class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">—</p>
                             </div>
-                            <div class="rounded-2xl bg-white/10 p-4 ring-1 ring-white/10">
-                                <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/45">{{ __('products.fields.discount_starts') }}</p>
-                                <p id="product-discount-start" class="mt-2 text-sm font-semibold text-white/90">—</p>
+                            <div class="border border-gray-100 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-800/60" style="border-radius: var(--radius-control)">
+                                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">{{ __('products.fields.discount_starts') }}</p>
+                                <p id="product-discount-start" class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">—</p>
                             </div>
-                            <div class="rounded-2xl bg-white/10 p-4 ring-1 ring-white/10">
-                                <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/45">{{ __('products.fields.discount_ends') }}</p>
-                                <p id="product-discount-end" class="mt-2 text-sm font-semibold text-white/90">—</p>
+                            <div class="border border-gray-100 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-800/60" style="border-radius: var(--radius-control)">
+                                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">{{ __('products.fields.discount_ends') }}</p>
+                                <p id="product-discount-end" class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">—</p>
                             </div>
                         </div>
 
-                        <a id="view-vendor-link" href="#" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/15">
+                        <a id="view-vendor-link" href="#" class="btn-secondary btn-sm w-full">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                             {{ __('products.view_vendor_profile') }}
                         </a>
@@ -181,9 +181,9 @@
             </div>
         </section>
 
-        <div id="product-rejection-wrap" class="hidden rounded-[28px] border border-rose-200 bg-rose-50 px-6 py-5 shadow-sm shadow-rose-100/60">
-            <p class="text-xs font-bold uppercase tracking-[0.3em] text-rose-500">{{ __('products.rejection_badge') }}</p>
-            <p id="product-rejection-reason" class="mt-3 text-sm font-semibold leading-7 text-rose-700">—</p>
+        <div id="product-rejection-wrap" class="alert-shell alert-error hidden">
+            <p class="text-xs font-bold uppercase tracking-[0.24em]">{{ __('products.rejection_badge') }}</p>
+            <p id="product-rejection-reason" class="mt-2 text-sm font-semibold leading-7">—</p>
         </div>
 
         <div class="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,.85fr)]">
@@ -193,7 +193,7 @@
                         <div class="flex flex-wrap items-center justify-between gap-3">
                             <div>
                                 <p class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">{{ __('products.media_badge') }}</p>
-                                <h2 class="mt-2 text-xl font-black text-slate-900">{{ __('products.gallery_title') }}</h2>
+                                <h2 class="mt-2 text-xl font-bold text-slate-900">{{ __('products.gallery_title') }}</h2>
                             </div>
                             <span id="photo-count" class="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">0</span>
                         </div>
@@ -209,7 +209,7 @@
                 <section class="overflow-hidden border border-slate-200 bg-white">
                     <div class="border-b border-slate-100 px-6 py-5">
                         <p class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">{{ __('products.description_badge') }}</p>
-                        <h2 class="mt-2 text-xl font-black text-slate-900">{{ __('products.description_title') }}</h2>
+                        <h2 class="mt-2 text-xl font-bold text-slate-900">{{ __('products.description_title') }}</h2>
                     </div>
                     <div class="px-6 py-5">
                         <p id="product-description" class="whitespace-pre-wrap text-sm leading-7 text-slate-600">—</p>
@@ -219,7 +219,7 @@
                 <section id="shared-section" class="overflow-hidden border border-slate-200 bg-white">
                     <div class="border-b border-slate-100 px-6 py-5">
                         <p class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">{{ __('products.shared_badge') }}</p>
-                        <h2 class="mt-2 text-xl font-black text-slate-900">{{ __('products.shared_title') }}</h2>
+                        <h2 class="mt-2 text-xl font-bold text-slate-900">{{ __('products.shared_title') }}</h2>
                     </div>
                     <div id="shared-grid" class="grid gap-4 p-6 md:grid-cols-2"></div>
                 </section>
@@ -227,7 +227,7 @@
                 <section id="agriculture-section" class="hidden overflow-hidden border border-emerald-200 bg-white">
                     <div class="border-b border-emerald-100 px-6 py-5">
                         <p class="text-xs font-bold uppercase tracking-[0.3em] text-emerald-500">{{ __('products.agriculture_badge') }}</p>
-                        <h2 class="mt-2 text-xl font-black text-slate-900">{{ __('products.agriculture_title') }}</h2>
+                        <h2 class="mt-2 text-xl font-bold text-slate-900">{{ __('products.agriculture_title') }}</h2>
                     </div>
                     <div id="agriculture-grid" class="grid gap-4 p-6 md:grid-cols-2"></div>
                 </section>
@@ -235,7 +235,7 @@
                 <section id="veterinary-section" class="hidden overflow-hidden border border-sky-200 bg-white">
                     <div class="border-b border-sky-100 px-6 py-5">
                         <p class="text-xs font-bold uppercase tracking-[0.3em] text-sky-500">{{ __('products.veterinary_badge') }}</p>
-                        <h2 class="mt-2 text-xl font-black text-slate-900">{{ __('products.veterinary_title') }}</h2>
+                        <h2 class="mt-2 text-xl font-bold text-slate-900">{{ __('products.veterinary_title') }}</h2>
                     </div>
                     <div id="veterinary-grid" class="grid gap-4 p-6 md:grid-cols-2"></div>
                 </section>
@@ -245,7 +245,7 @@
                 <section class="overflow-hidden border border-slate-200 bg-white">
                     <div class="border-b border-slate-100 px-6 py-5">
                         <p class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">{{ __('products.summary_badge') }}</p>
-                        <h2 class="mt-2 text-xl font-black text-slate-900">{{ __('products.summary_title') }}</h2>
+                        <h2 class="mt-2 text-xl font-bold text-slate-900">{{ __('products.summary_title') }}</h2>
                     </div>
                     <div class="space-y-4 p-6">
                         <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
@@ -484,22 +484,20 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         element('product-photos').innerHTML = photos.map((photo) => {
             const label = formatPhotoType(photo.image_type);
-            const badgeClass = photo.image_type === 'primary'
-                ? 'border-brand-200 bg-brand-50 text-brand-700'
-                : 'border-slate-200 bg-white text-slate-600';
 
             return `
                 <button
                     type="button"
-                    class="group overflow-hidden rounded-[22px] border border-slate-200 bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                    class="overflow-hidden border border-slate-200 bg-white text-left transition-colors hover:border-brand-300 dark:border-gray-800 dark:bg-gray-900"
+                    style="border-radius: var(--radius-card)"
                     onclick="window.showProductPhoto(${JSON.stringify(photo.url)}, ${JSON.stringify(label)}, ${photo.sort_order || 1})"
                 >
-                    <div class="aspect-[4/3] overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 p-3">
-                        <img src="${escapeHtml(photo.url)}" alt="${escapeHtml(label)}" class="h-full w-full rounded-2xl object-contain transition duration-300 group-hover:scale-105">
+                    <div class="aspect-[4/3] overflow-hidden bg-gray-50 p-3 dark:bg-gray-800">
+                        <img src="${escapeHtml(photo.url)}" alt="${escapeHtml(label)}" class="h-full w-full object-contain" style="border-radius: var(--radius-control)">
                     </div>
-                    <div class="flex items-center justify-between gap-3 border-t border-slate-100 px-3 py-3">
-                        <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em] ${badgeClass}">${escapeHtml(label)}</span>
-                        <span class="text-xs font-semibold text-slate-500">${escapeHtml(ui.order)} ${photo.sort_order || 1}</span>
+                    <div class="flex items-center justify-between gap-3 border-t border-slate-100 px-3 py-3 dark:border-gray-800">
+                        <span class="badge ${photo.image_type === 'primary' ? 'badge-brand' : ''}">${escapeHtml(label)}</span>
+                        <span class="text-xs font-semibold text-slate-500 dark:text-gray-400">${escapeHtml(ui.order)} ${photo.sort_order || 1}</span>
                     </div>
                 </button>
             `;
@@ -508,9 +506,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     function setPrimaryPhoto(url, label, order) {
         element('primary-photo-container').innerHTML = `
-            <img src="${escapeHtml(url)}" alt="${escapeHtml(label)}" class="h-full w-full object-contain p-5 transition duration-500 group-hover:scale-[1.02] cursor-zoom-in" onclick="window.openProductPhoto(${JSON.stringify(url)})">
-            <div class="absolute left-4 top-4 inline-flex items-center rounded-full bg-slate-950/80 px-3 py-1.5 text-xs font-semibold text-white shadow-lg">${escapeHtml(label)} ${escapeHtml(ui.photo)}</div>
-            <div class="absolute right-4 top-4 inline-flex items-center rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-lg">${escapeHtml(ui.sort)} ${order}</div>
+            <img src="${escapeHtml(url)}" alt="${escapeHtml(label)}" class="h-full w-full object-contain p-5 cursor-zoom-in" onclick="window.openProductPhoto(${JSON.stringify(url)})">
+            <div class="badge" style="position: absolute; top: 1rem; inset-inline-start: 1rem;">${escapeHtml(label)} ${escapeHtml(ui.photo)}</div>
+            <div class="badge" style="position: absolute; top: 1rem; inset-inline-end: 1rem;">${escapeHtml(ui.sort)} ${order}</div>
         `;
     }
 
@@ -530,9 +528,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         section.classList.remove('hidden');
         grid.innerHTML = entries.map(([label, value]) => `
-            <article class="rounded-[24px] border border-slate-200 bg-slate-50/80 p-4 shadow-sm shadow-slate-100/50">
-                <p class="text-[11px] font-bold uppercase tracking-[0.24em] text-slate-400">${escapeHtml(label)}</p>
-                <div class="mt-3">${renderValue(value)}</div>
+            <article class="border border-slate-200 bg-slate-50/80 p-4 dark:border-gray-800 dark:bg-gray-800/40" style="border-radius: var(--radius-card)">
+                <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-gray-500">${escapeHtml(label)}</p>
+                <div class="mt-2">${renderValue(value)}</div>
             </article>
         `).join('');
     }
@@ -540,8 +538,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     function renderValue(value) {
         if (Array.isArray(value)) {
             return value.length
-                ? `<div class="flex flex-wrap gap-2">${value.map((item) => `<span class="inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">${formatInlineValue(item)}</span>`).join('')}</div>`
-                : '<p class="text-sm text-slate-400">—</p>';
+                ? `<div class="flex flex-wrap gap-2">${value.map((item) => `<span class="badge">${formatInlineValue(item)}</span>`).join('')}</div>`
+                : '<p class="text-sm text-slate-400 dark:text-gray-500">—</p>';
         }
 
         if (typeof value === 'object' && value !== null) {
@@ -591,31 +589,29 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function updateActiveBadge(isActive) {
-        element('product-active-status').className = isActive
-            ? 'inline-flex items-center rounded-full bg-emerald-400/20 px-4 py-2 text-xs font-semibold text-emerald-100 ring-1 ring-emerald-200/30'
-            : 'inline-flex items-center rounded-full bg-rose-400/20 px-4 py-2 text-xs font-semibold text-rose-100 ring-1 ring-rose-200/30';
+        element('product-active-status').className = `badge ${isActive ? 'badge-success' : 'badge-danger'}`;
         element('product-active-status').textContent = isActive ? statusLabels.active : statusLabels.inactive;
     }
 
     function updateStatusBadge(status) {
         const classes = {
-            approved: 'bg-emerald-400/20 text-emerald-100 ring-emerald-200/30',
-            rejected: 'bg-rose-400/20 text-rose-100 ring-rose-200/30',
-            pending: 'bg-amber-400/20 text-amber-100 ring-amber-200/30',
+            approved: 'badge-success',
+            rejected: 'badge-danger',
+            pending: 'badge-warning',
         };
 
-        element('product-approval-status').className = `inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold ring-1 ${classes[status] || classes.pending}`;
+        element('product-approval-status').className = `badge ${classes[status] || classes.pending}`;
         element('product-approval-status').textContent = statusLabels[status] || statusLabels.pending;
     }
 
     function updateDiscountStatusBadge(status) {
         const classMap = {
-            active: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-            expired: 'bg-rose-50 text-rose-700 ring-rose-200',
-            pending: 'bg-amber-50 text-amber-700 ring-amber-200',
+            active: 'badge-success',
+            expired: 'badge-danger',
+            pending: 'badge-warning',
         };
 
-        element('product-discount-status').className = `inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ${classMap[status] || 'bg-slate-100 text-slate-600 ring-slate-200'}`;
+        element('product-discount-status').className = `badge ${classMap[status] || ''}`;
         element('product-discount-status').textContent = statusLabels[status] || ui.not_available;
     }
 
@@ -717,8 +713,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         modal.className = 'fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/85 px-4 py-6 backdrop-blur-sm';
         modal.innerHTML = `
             <div class="relative max-h-[92vh] max-w-[92vw]">
-                <img src="${escapeHtml(url)}" alt="${escapeHtml(ui.photo)}" class="max-h-[92vh] max-w-[92vw] rounded-[28px] bg-white object-contain shadow-2xl">
-                <button type="button" class="absolute right-3 top-3 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white text-slate-900 shadow-lg transition hover:scale-105" aria-label="${escapeHtml(@json(__('common.close')))}">
+                <img src="${escapeHtml(url)}" alt="${escapeHtml(ui.photo)}" class="max-h-[92vh] max-w-[92vw] bg-white object-contain" style="border-radius: var(--radius-feature); box-shadow: var(--shadow-3);">
+                <button type="button" class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white text-slate-900 transition-colors hover:bg-gray-100" style="position: absolute; top: 0.75rem; inset-inline-end: 0.75rem;" aria-label="${escapeHtml(@json(__('common.close')))}">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>

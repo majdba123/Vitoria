@@ -50,12 +50,25 @@
         <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">{{ __('admin.loading_subcategories') }}</p>
     </div>
 
-    <div id="subcategories-empty" class="hidden rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center dark:border-gray-700 dark:bg-gray-900">
+    <div id="subcategories-empty" class="empty-state hidden">
         <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ __('admin.no_subcategories_found') }}</h3>
         <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ __('admin.try_another_filter') }}</p>
     </div>
 
-    <div id="subcategories-grid" class="hidden grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
+    <div id="subcategories-table-wrap" class="admin-table-wrap table-responsive hidden">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th scope="col">{{ __('admin.category_name') }}</th>
+                    <th scope="col">{{ __('admin.parent_category_label') }}</th>
+                    <th scope="col">{{ __('admin.type_label') }}</th>
+                    <th scope="col" class="text-end">{{ __('admin.products') }}</th>
+                    <th scope="col" class="text-end">{{ __('admin.th_actions') }}</th>
+                </tr>
+            </thead>
+            <tbody id="subcategories-table-body"></tbody>
+        </table>
+    </div>
 </div>
 @endsection
 
@@ -74,7 +87,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         'confirmDeleteSubcategory' => __('admin.js_confirm_delete_subcategory'),
         'failedDeleteSubcategory' => __('admin.js_failed_delete_subcategory'),
     ]) !!};
-    const grid = document.getElementById('subcategories-grid');
+    const tableWrap = document.getElementById('subcategories-table-wrap');
+    const tbody = document.getElementById('subcategories-table-body');
     const loading = document.getElementById('subcategories-loading');
     const emptyState = document.getElementById('subcategories-empty');
     const alert = document.getElementById('subcategories-alert');
@@ -106,7 +120,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     async function loadSubcategories() {
         loading.classList.remove('hidden');
-        grid.classList.add('hidden');
+        tableWrap.classList.add('hidden');
         emptyState.classList.add('hidden');
         alert.classList.add('hidden');
 
@@ -128,31 +142,26 @@ document.addEventListener('DOMContentLoaded', async function () {
                 return;
             }
 
-            grid.innerHTML = subcategories.map((subcategory) => `
-                <article class="card overflow-hidden">
-                    <div class="card-body">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="min-w-0 flex-1">
-                                <p class="text-xs font-semibold uppercase tracking-wide text-brand-600 dark:text-brand-400">${escapeHtml(subcategory.category?.type || '-')}</p>
-                                <h3 class="mt-2 truncate text-lg font-bold text-gray-900 dark:text-white">${escapeHtml(subcategory.name_ar || '-')}</h3>
-                                <p class="mt-1 truncate text-sm text-gray-500 dark:text-gray-400">${escapeHtml(subcategory.name_en || '-')}</p>
-                            </div>
-                            <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300">${subcategory.products_count || 0} ${escapeHtml(i18n.productsCountSuffix)}</span>
+            tbody.innerHTML = subcategories.map((subcategory) => `
+                <tr>
+                    <td>
+                        <a href="/admin/subcategories/${subcategory.id}" class="font-semibold text-gray-900 dark:text-white">${escapeHtml(subcategory.name_ar || subcategory.name_en || '-')}</a>
+                        <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">${escapeHtml(subcategory.name_en || '')}</p>
+                    </td>
+                    <td class="text-gray-600 dark:text-gray-300">${escapeHtml(subcategory.category?.name || '-')}</td>
+                    <td class="text-gray-600 dark:text-gray-300">${escapeHtml(subcategory.category?.type || '-')}</td>
+                    <td class="text-end tabular-nums text-gray-600 dark:text-gray-300">${subcategory.products_count || 0}</td>
+                    <td class="text-end">
+                        <div class="inline-flex items-center gap-1.5">
+                            <a href="/admin/subcategories/${subcategory.id}" class="btn-ghost btn-xs" aria-label="${escapeHtml(i18n.view)}">${escapeHtml(i18n.view)}</a>
+                            <a href="/admin/subcategories/${subcategory.id}/edit" class="btn-secondary btn-xs" aria-label="${escapeHtml(i18n.edit)}">${escapeHtml(i18n.edit)}</a>
+                            <button type="button" data-delete-id="${subcategory.id}" class="btn-danger btn-xs" aria-label="${escapeHtml(i18n.delete)}">${escapeHtml(i18n.delete)}</button>
                         </div>
-                        <div class="mt-4 rounded-2xl bg-gray-50 px-4 py-3 dark:bg-gray-800/60">
-                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">${escapeHtml(i18n.parentCategory)}</p>
-                            <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">${escapeHtml(subcategory.category?.name || '-')}</p>
-                        </div>
-                        <div class="mt-4 flex gap-2">
-                            <a href="/admin/subcategories/${subcategory.id}" class="btn-secondary btn-sm flex-1">${escapeHtml(i18n.view)}</a>
-                            <a href="/admin/subcategories/${subcategory.id}/edit" class="btn-primary btn-sm">${escapeHtml(i18n.edit)}</a>
-                            <button type="button" data-delete-id="${subcategory.id}" class="btn-danger btn-sm">${escapeHtml(i18n.delete)}</button>
-                        </div>
-                    </div>
-                </article>
+                    </td>
+                </tr>
             `).join('');
 
-            grid.classList.remove('hidden');
+            tableWrap.classList.remove('hidden');
         } catch (error) {
             loading.classList.add('hidden');
             alert.classList.remove('hidden');
@@ -166,7 +175,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     });
 
-    grid.addEventListener('click', async function (event) {
+    tbody.addEventListener('click', async function (event) {
         const button = event.target.closest('[data-delete-id]');
         if (!button) {
             return;

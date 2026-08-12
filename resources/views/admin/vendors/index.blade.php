@@ -274,32 +274,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td>
                     ${renderStatus(vendor)}
                 </td>
-                <td class="text-right">
-                    <div class="flex items-center justify-end gap-1">
+                <td class="text-end">
+                    <div class="flex items-center justify-end gap-1.5">
                         ${vendor.status === 'pending' ? `
-                            <button onclick="approveVendor(${vendor.id}, this)" class="btn-ghost btn-xs text-emerald-600" title="${escapeHtml(i18n.approveVendor)}">
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                            <button onclick="approveVendor(${vendor.id}, this)" class="btn-primary btn-xs" aria-label="${escapeHtml(i18n.approveVendor)}: ${escapeHtml(vendor.store_name)}">
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                                ${escapeHtml(i18n.approveVendor)}
                             </button>
                         ` : ''}
-                        <a href="/admin/vendors/${vendor.id}" class="btn-ghost btn-xs text-brand-600" title="${escapeHtml(i18n.viewProfile)}">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
-                        </a>
-                        <a href="/admin/orders?vendor_id=${vendor.id}" class="btn-ghost btn-xs text-indigo-600" title="${escapeHtml(i18n.viewOrderHistory)}">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h6.75M3.75 3h11.25A2.25 2.25 0 0117.25 5.25V12M3.75 3l13.5 13.5M17.25 21v-4.5A2.25 2.25 0 0119.5 14.25H21m0 0l-3.375-3.375M21 14.25l-3.375 3.375"/></svg>
-                        </a>
-                        <a href="/admin/vendors/${vendor.id}/commission" class="btn-ghost btn-xs text-emerald-600" title="${escapeHtml(i18n.viewCommissionDashboard)}">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.5 4.5L21.75 7.5M15.75 7.5h6v6"/></svg>
-                        </a>
-                        <a href="/admin/vendors/${vendor.id}/edit" class="btn-ghost btn-xs text-gray-600" title="${escapeHtml(i18n.edit)}">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
-                        </a>
-                        <button onclick="openDeleteModal(${vendor.id})" class="btn-ghost btn-xs text-red-500 hover:text-red-700" title="${escapeHtml(i18n.delete)}">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
-                        </button>
+                        <div class="row-actions-menu">
+                            <button type="button" class="row-actions-trigger" aria-label="${escapeHtml(i18n.viewProfile)}: ${escapeHtml(vendor.store_name)}">
+                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"/></svg>
+                            </button>
+                            <div class="row-actions-panel dropdown-panel">
+                                <a href="/admin/vendors/${vendor.id}">${escapeHtml(i18n.viewProfile)}</a>
+                                <a href="/admin/orders?vendor_id=${vendor.id}">${escapeHtml(i18n.viewOrderHistory)}</a>
+                                <a href="/admin/vendors/${vendor.id}/commission">${escapeHtml(i18n.viewCommissionDashboard)}</a>
+                                <a href="/admin/vendors/${vendor.id}/edit">${escapeHtml(i18n.edit)}</a>
+                                <button type="button" class="is-danger" onclick="openDeleteModal(${vendor.id})">${escapeHtml(i18n.delete)}</button>
+                            </div>
+                        </div>
                     </div>
                 </td>
             </tr>
         `).join('');
+
+        tbody.querySelectorAll('.row-actions-menu').forEach((menu) => {
+            VetoraWorkspace.wireDropdown(menu.querySelector('.row-actions-trigger'), menu.querySelector('.row-actions-panel'));
+        });
     }
 
     function renderPagination(meta) {
@@ -310,14 +312,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function renderStatus(vendor) {
         if (vendor.status === 'pending') {
-            return `<span class="badge badge-warning"><span class="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-amber-500"></span>${escapeHtml(i18n.pending)}</span>`;
+            return `<span class="badge badge-warning"><span class="me-1 inline-block h-1.5 w-1.5 rounded-full bg-current"></span>${escapeHtml(i18n.pending)}</span>`;
         }
 
         const isActive = vendor.status === 'active' || vendor.is_active;
 
         return `
-            <button onclick="toggleVendorStatus(${vendor.id})" class="badge cursor-pointer transition-opacity hover:opacity-80 ${isActive ? 'badge-success' : 'badge-danger'}" title="${escapeHtml(i18n.clickToToggle)}">
-                <span class="mr-1 inline-block h-1.5 w-1.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-red-500'}"></span>
+            <button type="button" onclick="toggleVendorStatus(${vendor.id})" class="badge cursor-pointer transition-opacity hover:opacity-80 ${isActive ? 'badge-success' : 'badge-danger'}" aria-label="${escapeHtml(i18n.clickToToggle)}: ${isActive ? escapeHtml(i18n.active) : escapeHtml(i18n.inactive)}">
+                <span class="me-1 inline-block h-1.5 w-1.5 rounded-full bg-current"></span>
                 ${isActive ? escapeHtml(i18n.active) : escapeHtml(i18n.inactive)}
             </button>
         `;

@@ -48,12 +48,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
             detailsCard.innerHTML = `
                 <div class="flex flex-col gap-5 lg:flex-row lg:items-start">
-                    <div class="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-brand-50 text-2xl font-black text-brand-700 ring-1 ring-brand-100">
+                    <div class="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-brand-50 text-2xl font-bold text-brand-700 ring-1 ring-brand-100">
                         <img src="${escapeHtml(syndicate.logo_url)}" class="h-full w-full object-cover" alt="${escapeHtml(syndicate.name)}" onerror="this.src='{{ asset('images/syndicate-placeholder.svg') }}'">
                     </div>
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-center gap-2">
-                            <h2 class="text-2xl font-black text-gray-900 dark:text-white">${escapeHtml(syndicate.name)}</h2>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">${escapeHtml(syndicate.name)}</h2>
                             <span class="badge ${syndicate.is_active ? 'badge-success' : 'badge-danger'}">${escapeHtml(syndicate.status_label || (syndicate.is_active ? 'Active' : 'Inactive'))}</span>
                             <span class="badge badge-brand">${escapeHtml(syndicate.type_label || syndicate.type)}</span>
                         </div>
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
 
                 <div class="mt-6 rounded-xl border border-gray-200 p-4 dark:border-gray-800">
-                    <h3 class="text-sm font-black text-gray-900 dark:text-white">Linked User Account</h3>
+                    <h3 class="text-sm font-bold text-gray-900 dark:text-white">Linked User Account</h3>
                     <div class="mt-4 grid gap-4 sm:grid-cols-3">
                         ${infoBlock('Name', userName)}
                         ${infoBlock('Email', userEmail)}
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return `
             <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
                 <p class="text-xs font-bold uppercase tracking-wide text-gray-500">${escapeHtml(label)}</p>
-                <p class="mt-2 text-lg font-black text-gray-900 dark:text-white">${escapeHtml(value)}</p>
+                <p class="mt-2 text-lg font-bold text-gray-900 dark:text-white">${escapeHtml(value)}</p>
             </div>
         `;
     }

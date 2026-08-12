@@ -28,7 +28,9 @@ class OrderPolicy
 
     /**
      * Drive the order forward through fulfilment. Customers never can — they
-     * may only cancel, which is a separate ability.
+     * may only cancel, which is a separate ability. A vendor-staff member
+     * additionally needs the `orders.update` permission (spec §22, §23) —
+     * the owner always has it via User::hasVendorPermission()'s bypass.
      */
     public function updateStatus(User $user, Order $order): bool
     {
@@ -36,7 +38,7 @@ class OrderPolicy
             return true;
         }
 
-        return $user->isVendor() && $this->ownsVendor($user, $order);
+        return $user->isVendor() && $this->ownsVendor($user, $order) && $user->hasVendorPermission($order->vendor, 'orders.update');
     }
 
     public function cancel(User $user, Order $order): bool
@@ -46,7 +48,7 @@ class OrderPolicy
         }
 
         if ($user->isVendor()) {
-            return $this->ownsVendor($user, $order);
+            return $this->ownsVendor($user, $order) && $user->hasVendorPermission($order->vendor, 'orders.cancel');
         }
 
         return $order->user_id === $user->id;
@@ -66,7 +68,7 @@ class OrderPolicy
      */
     private function ownsVendor(User $user, Order $order): bool
     {
-        $vendorId = $user->vendor?->id;
+        $vendorId = $user->managedVendor()?->id;
 
         return $vendorId !== null && (int) $order->vendor_id === (int) $vendorId;
     }

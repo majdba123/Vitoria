@@ -187,8 +187,8 @@
         modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm';
         modal.innerHTML = `
             <div class="relative max-h-[90vh] max-w-[90vw]">
-                <img src="${url}" class="max-h-[90vh] max-w-[90vw] rounded-xl object-contain shadow-2xl" alt="Product photo">
-                <button type="button" data-preview-close class="absolute right-2 top-2 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-gray-900 shadow-lg transition hover:scale-105 hover:bg-white">
+                <img src="${url}" class="max-h-[90vh] max-w-[90vw] object-contain" style="border-radius: var(--radius-feature); box-shadow: var(--shadow-3);" alt="Product photo">
+                <button type="button" data-preview-close class="flex h-11 w-11 items-center justify-center rounded-full bg-white text-gray-900 transition-colors hover:bg-gray-100" style="position: absolute; top: 0.5rem; inset-inline-end: 0.5rem;" aria-label="Close">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>

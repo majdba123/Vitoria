@@ -17,22 +17,22 @@
     </div>
 
     <div id="show-content" class="hidden space-y-5">
-        <div class="overflow-hidden rounded-2xl bg-gradient-to-r from-navy-800 to-navy-900 shadow-xl">
-            <div class="px-6 py-8 sm:px-8">
-                <div class="flex flex-col items-center gap-6 sm:flex-row">
-                    <div id="user-avatar" class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-white/15 text-3xl font-bold text-white shadow-lg ring-4 ring-white/25">
-                        <span id="user-avatar-initial">U</span>
-                    </div>
-                    <div class="flex-1 text-center sm:text-left">
-                        <h2 id="user-name" class="text-2xl font-bold text-white">—</h2>
-                        <p id="user-email" class="mt-1 text-sm text-gray-300">—</p>
-                        <div class="mt-2" id="user-type-badge"></div>
-                    </div>
-                    <a id="edit-link" href="#" class="inline-flex items-center gap-1.5 rounded-lg bg-white/15 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/25">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
-                        Edit
-                    </a>
+        <div class="dashboard-page-header">
+            <div class="flex min-w-0 flex-1 items-center gap-4">
+                <div id="user-avatar" class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full text-lg font-bold text-brand-700 dark:text-brand-300" style="background: var(--color-brand-soft)">
+                    <span id="user-avatar-initial">U</span>
                 </div>
+                <div class="min-w-0">
+                    <h2 id="user-name" class="truncate text-xl font-bold text-gray-900 dark:text-white">—</h2>
+                    <p id="user-email" class="mt-1 truncate text-sm text-gray-500 dark:text-gray-400">—</p>
+                    <div class="mt-2" id="user-type-badge"></div>
+                </div>
+            </div>
+            <div class="dashboard-page-header-actions">
+                <a id="edit-link" href="#" class="btn-secondary btn-sm">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+                    Edit
+                </a>
             </div>
         </div>
 
@@ -153,16 +153,16 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         grid.innerHTML = favourites.map((product) => {
             const photoUrl = product.first_photo_url || '';
-            return `<a href="/products/${product.id}" class="group overflow-hidden rounded-xl border border-gray-200/80 bg-white transition-all hover:-translate-y-0.5 hover:shadow-md">
-                <div class="aspect-square overflow-hidden bg-gray-50">
-                    ${photoUrl ? `<img src="${esc(photoUrl)}" class="h-full w-full object-contain p-3 transition-transform duration-300 group-hover:scale-105" loading="lazy" alt="">` : `<div class="flex h-full items-center justify-center"><svg class="h-10 w-10 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg></div>`}
+            return `<a href="/products/${product.id}" class="group overflow-hidden border border-gray-200/80 bg-white transition-colors hover:border-brand-300 dark:border-gray-800 dark:bg-gray-900" style="border-radius: var(--radius-card)">
+                <div class="aspect-square overflow-hidden bg-gray-50 dark:bg-gray-800">
+                    ${photoUrl ? `<img src="${esc(photoUrl)}" class="h-full w-full object-contain p-3" loading="lazy" alt="">` : `<div class="flex h-full items-center justify-center"><svg class="h-10 w-10 text-gray-200 dark:text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg></div>`}
                 </div>
                 <div class="p-3">
-                    ${product.vendor ? `<p class="mb-0.5 truncate text-[10px] text-gray-400">${esc(product.vendor.store_name)}</p>` : ''}
-                    <h4 class="line-clamp-2 text-xs font-bold text-gray-900 group-hover:text-brand-600">${esc(product.name)}</h4>
+                    ${product.vendor ? `<p class="mb-0.5 truncate text-[10px] text-gray-400 dark:text-gray-500">${esc(product.vendor.store_name)}</p>` : ''}
+                    <h4 class="line-clamp-2 text-xs font-bold text-gray-900 group-hover:text-brand-600 dark:text-white">${esc(product.name)}</h4>
                     <div class="mt-1.5 flex items-baseline gap-1">
-                        <span class="text-sm font-black text-gray-900">${Number.parseFloat(product.price).toLocaleString()}</span>
-                        <span class="text-[10px] text-gray-400">SYP</span>
+                        <span class="text-sm font-bold text-gray-900 dark:text-white">${Number.parseFloat(product.price).toLocaleString()}</span>
+                        <span class="text-[10px] text-gray-400 dark:text-gray-500">SYP</span>
                     </div>
                 </div>
             </a>`;

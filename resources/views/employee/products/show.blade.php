@@ -17,10 +17,10 @@
         </div>
         <div class="card-body">
             <div id="show-loading" class="py-16 text-center">
-                <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-cyan-500"></div>
+                <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500 dark:border-gray-700 dark:border-t-brand-400"></div>
             </div>
             <div id="show-content" class="hidden grid gap-6 lg:grid-cols-[1fr_1fr]">
-                <div class="overflow-hidden rounded-[28px] bg-gray-100">
+                <div class="overflow-hidden rounded-xl bg-gray-100">
                     <img id="product-image" class="h-full w-full object-cover" alt="">
                 </div>
                 <div class="space-y-4">

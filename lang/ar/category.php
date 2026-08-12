@@ -9,4 +9,6 @@ return [
     'no_products' => 'لا توجد منتجات في هذا التصنيف بعد.',
     'no_subcategories' => 'لا توجد تصنيفات فرعية',
     'breadcrumb_categories' => 'التصنيفات',
+    'products_count' => ':count منتج',
+    'commission_meta' => 'عمولة :count%',
 ];

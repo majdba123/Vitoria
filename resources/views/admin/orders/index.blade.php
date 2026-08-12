@@ -5,45 +5,57 @@
 
 @section('content')
 <div class="space-y-4">
-    <div class="overflow-hidden rounded-3xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
-        <div class="bg-gradient-to-r from-brand-500/10 via-brand-400/5 to-transparent px-5 py-4 dark:from-brand-500/20 dark:via-brand-400/10">
-            <h2 class="text-base font-black text-gray-900 dark:text-white">Orders Filters</h2>
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Refine by product, status, vendor, user, and category.</p>
+    <div class="filter-panel">
+        <div>
+            <h2 class="dashboard-section-title">Orders Filters</h2>
+            <p class="dashboard-section-copy">Refine by product, status, vendor, user, and category.</p>
         </div>
-        <div class="p-4">
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
-            <input id="f-product" type="text" placeholder="Product name" class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white">
-            <select id="f-status" class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+        <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+            <input id="f-product" type="text" placeholder="Product name" class="form-input">
+            <select id="f-status" class="form-select">
                 <option value="">All Statuses</option>
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
                 <option value="completed">Completed</option>
                 <option value="cancelled">Cancelled</option>
             </select>
-            <select id="f-user" class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+            <select id="f-user" class="form-select">
                 <option value="">All Users</option>
             </select>
-            <select id="f-vendor" class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+            <select id="f-vendor" class="form-select">
                 <option value="">All Vendors</option>
             </select>
-            <select id="f-category" class="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+            <select id="f-category" class="form-select">
                 <option value="">All Categories</option>
             </select>
-            <button id="f-reset" class="rounded-xl border border-gray-200 px-3 py-2 text-sm font-bold text-gray-700 transition-all hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:text-gray-300 dark:hover:border-brand-500/40 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">Reset</button>
-        </div>
+            <button id="f-reset" type="button" class="btn-secondary btn-sm">Reset</button>
         </div>
     </div>
 
     <div id="orders-loading" class="py-14 text-center">
-        <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500"></div>
-        <p class="mt-3 text-sm text-gray-500">Loading orders...</p>
+        <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500 dark:border-gray-700 dark:border-t-brand-400"></div>
+        <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Loading orders...</p>
     </div>
 
-    <div id="orders-empty" class="hidden card py-14 text-center">
+    <div id="orders-empty" class="empty-state hidden">
         <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">No orders found.</p>
     </div>
 
-    <div id="orders-list" class="hidden space-y-3"></div>
+    <div id="orders-list" class="hidden card admin-table-wrap table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th scope="col">Order</th>
+                    <th scope="col">Vendor / Customer</th>
+                    <th scope="col" class="text-end">Items</th>
+                    <th scope="col" class="text-end">Total</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody id="orders-list-body"></tbody>
+        </table>
+    </div>
 
     <div id="orders-pagination" class="hidden items-center justify-between border-t border-gray-100 pt-3 dark:border-gray-800">
         <p id="orders-page-info" class="text-xs text-gray-500"></p>
@@ -137,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             $('orders-empty').classList.add('hidden');
             $('orders-list').classList.remove('hidden');
-            $('orders-list').innerHTML = orders.map(orderCard).join('');
+            $('orders-list-body').innerHTML = orders.map(orderRow).join('');
             $('orders-pagination').classList.remove('hidden');
             $('orders-pagination').classList.add('flex');
             $('orders-page-info').textContent = `Page ${meta.current_page} of ${meta.last_page} · ${meta.total} orders`;
@@ -152,33 +164,23 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function orderCard(order) {
+    function orderRow(order) {
         const date = order.created_at ? new Date(order.created_at).toLocaleDateString() : '—';
-        const items = (order.items || []).slice(0, 3).map(i => `<li class="text-xs text-gray-500 dark:text-gray-400">${esc(i.product_name)} · Qty ${i.quantity}</li>`).join('');
-        const extraItems = (order.items || []).length > 3 ? `<li class="text-xs font-semibold text-gray-400">+ ${(order.items || []).length - 3} more items</li>` : '';
-        return `<article class="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800 dark:bg-gray-900">
-            <div class="flex flex-wrap items-start justify-between gap-2 border-b border-gray-100 bg-gray-50/80 px-4 py-3 dark:border-gray-800 dark:bg-gray-800/40">
-                <div>
-                    <p><span class="inline-flex rounded-lg bg-gray-900 px-2.5 py-1 text-xs font-black text-white shadow-sm dark:bg-white dark:text-gray-900">${esc(order.order_number || ('Order #' + order.id))}</span></p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">${date} · ${esc(order.vendor?.store_name || 'Unknown vendor')} · ${esc(order.user?.name || 'Unknown user')}</p>
-                </div>
-                <div class="flex items-center gap-2">${statusBadge(order.status)} ${paymentBadge(order.payment_way)}</div>
-            </div>
-            <div class="p-4">
-                <ul class="space-y-1.5">${items || '<li class="text-xs text-gray-400">No items.</li>'}${extraItems}</ul>
-                <div class="mt-3 grid gap-2 text-xs sm:grid-cols-3">
-                    <div class="rounded-lg border border-gray-100 bg-gray-50 px-2.5 py-2 dark:border-gray-800 dark:bg-gray-800/60"><p class="text-gray-400">Order ID</p><p class="mt-0.5 font-semibold text-gray-800 dark:text-gray-200">${order.id ?? '—'}</p></div>
-                    <div class="rounded-lg border border-gray-100 bg-gray-50 px-2.5 py-2 dark:border-gray-800 dark:bg-gray-800/60"><p class="text-gray-400">Items</p><p class="mt-0.5 font-semibold text-gray-800 dark:text-gray-200">${order.items_count ?? (order.items || []).length}</p></div>
-                    <div class="rounded-lg border border-gray-100 bg-gray-50 px-2.5 py-2 dark:border-gray-800 dark:bg-gray-800/60"><p class="text-gray-400">Total</p><p class="mt-0.5 font-semibold text-gray-800 dark:text-gray-200">${Number.parseFloat(order.total_amount || 0).toLocaleString()} SYP</p></div>
-                </div>
-                <div class="mt-3 flex justify-end">
-                    <a href="/admin/orders/${order.id}" class="inline-flex items-center gap-1 rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-700 transition-all hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:text-gray-300 dark:hover:border-brand-500/40 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">
-                        View Details
-                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                    </a>
-                </div>
-            </div>
-        </article>`;
+        const itemCount = order.items_count ?? (order.items || []).length;
+        return `<tr>
+            <td>
+                <a href="/admin/orders/${order.id}" class="font-semibold text-gray-900 dark:text-white">${esc(order.order_number || ('Order #' + order.id))}</a>
+                <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">${date}</p>
+            </td>
+            <td class="text-gray-600 dark:text-gray-300">
+                <p>${esc(order.vendor?.store_name || 'Unknown vendor')}</p>
+                <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">${esc(order.user?.name || 'Unknown user')}</p>
+            </td>
+            <td class="text-end tabular-nums text-gray-600 dark:text-gray-300">${itemCount}</td>
+            <td class="text-end tabular-nums font-semibold text-gray-900 dark:text-white">${Number.parseFloat(order.total_amount || 0).toLocaleString()} SYP</td>
+            <td><div class="flex flex-wrap items-center gap-1.5">${statusBadge(order.status)} ${paymentBadge(order.payment_way)}</div></td>
+            <td class="text-end"><a href="/admin/orders/${order.id}" class="btn-secondary btn-xs">View</a></td>
+        </tr>`;
     }
 
     function toggleLoading(show) {
@@ -195,16 +197,20 @@ document.addEventListener('DOMContentLoaded', function () {
     function statusBadge(status) {
         const s = String(status || 'pending').toLowerCase();
         const cls = {
-            pending: 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
-            confirmed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
-            completed: 'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
-            cancelled: 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400'
+            pending: 'badge-warning',
+            confirmed: 'badge-success',
+            completed: 'badge-info',
+            cancelled: 'badge-danger',
         };
-        return `<span class="rounded-full px-2.5 py-1 text-[11px] font-semibold ${cls[s] || cls.pending}">${esc(s)}</span>`;
+        // Pending orders need action; give them a filled dot + bold weight so
+        // they read as "needs attention" rather than just a different hue
+        // from resolved statuses (never rely on color alone).
+        const dot = s === 'pending' ? `<span class="me-1 inline-block h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true"></span>` : '';
+        return `<span class="badge ${cls[s] || cls.pending} ${s === 'pending' ? 'font-bold' : ''}">${dot}${esc(s)}</span>`;
     }
 
     function paymentBadge(paymentWay) {
-        return `<span class="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300">${esc(paymentWay || 'cash')}</span>`;
+        return `<span class="badge badge-info">${esc(paymentWay || 'cash')}</span>`;
     }
 
     function debounce(fn, wait) {

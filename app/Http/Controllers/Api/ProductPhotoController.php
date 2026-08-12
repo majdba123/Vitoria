@@ -217,7 +217,7 @@ class ProductPhotoController extends Controller
 
         // Vendor can only access their own products
         if ($user && $user->type === User::TYPE_VENDOR) {
-            $vendor = $user->vendor;
+            $vendor = $user->managedVendor();
             if (! $vendor) {
                 abort(403, __('Vendor profile not found.'));
             }

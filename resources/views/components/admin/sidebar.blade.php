@@ -49,13 +49,9 @@
                     @php
                         $isActive = str_starts_with($currentRoute, str_replace('.index', '', $item['route']));
                     @endphp
-                    <a href="{{ route($item['route'], $item['params'] ?? []) }}" class="dashboard-sidebar-link {{ $isActive ? 'is-active' : '' }}">
-                        <span class="dashboard-sidebar-bullet h-2.5 w-2.5 rounded-full bg-white/20"></span>
-                        <i class="{{ $item['icon'] }} w-4 text-center text-[13px]"></i>
+                    <a href="{{ route($item['route'], $item['params'] ?? []) }}" class="dashboard-sidebar-link {{ $isActive ? 'is-active' : '' }}" @if ($isActive) aria-current="page" @endif>
+                        <i class="{{ $item['icon'] }} w-4 text-center text-[13px]" aria-hidden="true"></i>
                         <span class="flex-1">{{ $item['label'] }}</span>
-                        @if ($isActive)
-                            <span class="text-[10px] font-semibold text-brand-200">{{ __('admin.active_now') }}</span>
-                        @endif
                     </a>
                 @endforeach
             </div>

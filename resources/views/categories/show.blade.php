@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Category - Vetora')
+@section('title', __('category.page_title') . ' - Vetora')
 
 @section('content')
 @php
@@ -9,32 +9,32 @@
     <div class="catalog-page-band">
         <div class="page-shell py-3">
             <nav id="breadcrumb" class="page-breadcrumb">
-                <a href="{{ route('home') }}" class="hover:text-brand-600">Home</a>
+                <a href="{{ route('home') }}" class="hover:text-brand-600 dark:hover:text-brand-400">{{ __('nav.home') }}</a>
                 <svg class="h-3 w-3 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-                <a href="{{ route('categories.index', array_filter(['type' => $pageSelectedType])) }}" class="hover:text-brand-600">Categories</a>
+                <a href="{{ route('categories.index', array_filter(['type' => $pageSelectedType])) }}" class="hover:text-brand-600 dark:hover:text-brand-400">{{ __('category.breadcrumb_categories') }}</a>
                 <svg class="h-3 w-3 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-                <span id="bc-name" class="font-medium text-gray-900 dark:text-white"></span>
+                <span id="bc-name" class="page-breadcrumb-current"></span>
             </nav>
         </div>
     </div>
 
     <div class="page-shell">
-        <div id="cat-header" class="mb-10 grid items-center gap-5 border-b border-gray-200 pb-8 sm:grid-cols-[9rem_1fr] dark:border-gray-800">
-            <div id="cat-logo" class="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-900"></div>
+        <div id="cat-header" class="mb-10 grid items-center gap-5 border-b pb-8 sm:grid-cols-[9rem_1fr]" style="border-color: var(--color-border);">
+            <div id="cat-logo" class="aspect-[4/3] overflow-hidden rounded-[var(--radius-card)]" style="background: var(--color-surface-muted);"></div>
             <div>
-                <h1 id="cat-name" class="text-2xl font-black text-gray-900 sm:text-3xl dark:text-white"></h1>
-                <p id="cat-meta" class="mt-0.5 text-sm text-gray-500 dark:text-gray-400"></p>
+                <h1 id="cat-name" class="text-2xl font-bold sm:text-3xl" style="color: var(--color-text);"></h1>
+                <p id="cat-meta" class="mt-1 text-sm" style="color: var(--color-text-secondary);"></p>
             </div>
         </div>
 
         <div>
             <div class="commerce-section-header">
-                <h2 class="text-lg font-bold text-gray-900 dark:text-white">Products in this category</h2>
-                <a href="{{ route('products.index', array_filter(['type' => $pageSelectedType, 'category_id' => $categoryId])) }}" class="text-sm font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400">View All <span aria-hidden="true" class="inline-block rtl:-scale-x-100">&rarr;</span></a>
+                <h2 class="commerce-title text-lg">{{ __('category.products_heading') }}</h2>
+                <a href="{{ route('products.index', array_filter(['type' => $pageSelectedType, 'category_id' => $categoryId])) }}" class="btn-secondary btn-sm">{{ __('category.view_all') }} <svg class="h-4 w-4 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></a>
             </div>
-            <div id="p-loading" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div><div class="skeleton h-80 rounded-2xl"></div></div>
-            <div id="p-grid" class="grid grid-cols-2 gap-x-3 gap-y-7 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"></div>
-            <div id="p-empty" class="hidden py-12 text-center text-sm text-gray-400 dark:text-gray-500">No products in this category yet.</div>
+            <div id="p-loading" class="responsive-shop-grid"><div class="skeleton aspect-square rounded-lg"></div><div class="skeleton aspect-square rounded-lg"></div><div class="skeleton aspect-square rounded-lg"></div><div class="skeleton hidden aspect-square rounded-lg xl:block"></div></div>
+            <div id="p-grid" class="responsive-shop-grid"></div>
+            <div id="p-empty" class="empty-state hidden py-16 text-center text-sm" style="color: var(--color-text-muted);">{{ __('category.no_products') }}</div>
             <div id="p-pagination" class="mt-8 flex flex-wrap items-center justify-center gap-1.5"></div>
         </div>
     </div>
@@ -42,10 +42,24 @@
 @endsection
 
 @push('scripts')
+@php
+    $categoryShowI18n = [
+        'notFound' => __('category.not_found'),
+        'productsCount' => __('category.products_count'),
+        'commissionMeta' => __('category.commission_meta'),
+        'soldOut' => __('nav.sold_out'),
+        'inStock' => __('nav.in_stock'),
+        'addCart' => __('products.add_to_cart_btn'),
+        'reviewsCount' => __('nav.reviews_count'),
+        'prev' => __('nav.prev'),
+        'next' => __('nav.next'),
+    ];
+@endphp
 <script>
 document.addEventListener('DOMContentLoaded', async function() {
     const catId = {{ $categoryId }};
     const selectedType = @json($pageSelectedType);
+    const t = @json($categoryShowI18n);
     const $ = id => document.getElementById(id);
     let page = 1;
     const withSelectedType = (url) => selectedType ? `${url}${url.includes('?') ? '&' : '?'}type=${encodeURIComponent(selectedType)}` : url;
@@ -79,10 +93,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.title = cat.name + ' - Vetora';
         $('bc-name').textContent = cat.name;
         $('cat-name').textContent = cat.name;
-        $('cat-meta').textContent = `${cat.products_count || 0} products · ${cat.commission}% commission`;
+        const metaParts = [
+            (t.productsCount || '').replace(':count', String(cat.products_count || 0)),
+            (t.commissionMeta || '').replace(':count', String(cat.commission)),
+        ].filter(Boolean);
+        $('cat-meta').textContent = metaParts.join(' · ');
         $('cat-logo').innerHTML = categoryHeroInner(cat);
     } catch (e) {
-        $('cat-name').textContent = 'Category not found';
+        $('cat-name').textContent = t.notFound || '';
     }
 
     loadProducts();
@@ -107,45 +125,28 @@ document.addEventListener('DOMContentLoaded', async function() {
         $('p-loading').classList.add('hidden');
     }
 
-    function starStars(rating) {
-        const r = Math.min(5, Math.max(0, Math.round(parseFloat(rating) || 0)));
-        const filled = '<svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
-        const empty = '<svg class="w-3.5 h-3.5 text-gray-300 dark:text-gray-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
-        let h = '';
-        for (let i = 0; i < 5; i++) h += i < r ? filled : empty;
-        return h;
-    }
-
     function pCard(p) {
-        const photo = p.first_photo_url || p.fallback_photo_url || '{{ asset('images/product-placeholder.svg') }}';
-        const inStock = p.quantity > 0;
-        const unitPrice = p.has_active_discount ? p.discounted_price : p.price;
-        const isFav = window._favIds && window._favIds.has(p.id);
-        const revCount = parseInt(p.review_count, 10) || 0;
-        return `<article class="commerce-product-card">
-            <div class="commerce-product-media">
-                <a href="${typedPageHref('/products/' + p.id)}"><img src="${esc(photo)}" alt="${esc(p.name)}" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}'"></a>
-                ${p.has_active_discount ? `<span class="absolute start-2.5 top-2.5 bg-red-600 px-2 py-1 text-[10px] font-bold text-white">-${parseFloat(p.discount_percentage || 0).toFixed(0)}%</span>` : ''}
-                <button type="button" data-fav-btn="${p.id}" onclick="event.stopPropagation();window.toggleFav(${p.id},this)" aria-pressed="${isFav}" aria-label="Favorite ${esc(p.name)}" class="absolute end-2.5 top-2.5 flex h-10 w-10 items-center justify-center border border-gray-200 bg-white text-gray-500 dark:border-gray-700 dark:bg-gray-950 ${isFav ? 'text-red-500' : ''}"><svg class="h-5 w-5" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="${isFav ? 'currentColor' : 'none'}"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg></button>
-            </div>
-            <div class="commerce-product-body">
-                <a href="${typedPageHref('/products/' + p.id)}"><h3 class="commerce-product-title">${esc(p.name)}</h3></a>
-                <div class="mt-2 flex items-center gap-1.5 text-amber-500">${starStars(p.average_rating)}<span class="text-[11px] text-gray-500">${revCount || ''}</span></div>
-                <div class="commerce-product-price"><strong>${parseFloat(unitPrice).toLocaleString()}</strong><span>SYP</span>${p.has_active_discount ? `<del>${parseFloat(p.price).toLocaleString()}</del>` : ''}</div>
-                <div class="mt-3 flex items-center justify-between gap-3"><span class="text-xs font-semibold ${inStock ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600'}">${inStock ? 'In stock' : 'Sold out'}</span><button type="button" aria-label="Add ${esc(p.name)} to cart" onclick="window.addToCart&&window.addToCart(${p.id},\`${esc(p.name)}\`,${unitPrice},\`${esc(photo)}\`)" class="commerce-product-action" ${!inStock ? 'disabled' : ''}><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/></svg></button></div>
-            </div>
-        </article>`;
+        return window.renderProductCard(p, {
+            href: typedPageHref('/products/' + p.id),
+            placeholder: '{{ asset('images/product-placeholder.svg') }}',
+            soldOutLabel: t.soldOut || '',
+            inStockLabel: t.inStock || '',
+            addToCartLabel: t.addCart || '',
+            favoriteLabel: p.name || '',
+            reviewsLabel: (count) => (t.reviewsCount || '').replace(':count', String(count)),
+        });
     }
 
     function renderPag(meta) {
         if (!meta || meta.last_page <= 1) return;
         const c = meta.current_page;
         const l = meta.last_page;
-        let h = `<button onclick="window._goP(${c - 1})" class="flex h-10 items-center rounded-xl border border-gray-200 bg-white px-4 text-xs font-bold dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 ${c === 1 ? 'opacity-40 pointer-events-none' : ''}" ${c === 1 ? 'disabled' : ''}>Prev</button>`;
+        const navBtn = (label, target, disabled) => `<button onclick="window._goP(${target})" class="flex h-10 items-center rounded-lg border px-4 text-xs font-bold ${disabled ? 'pointer-events-none opacity-40' : ''}" style="border-color: var(--color-border); background: var(--color-surface); color: var(--color-text-secondary);" ${disabled ? 'disabled' : ''}>${esc(label)}</button>`;
+        let h = navBtn(t.prev || '', c - 1, c === 1);
         getR(c, l).forEach(p => {
-            h += p === '...' ? '<span class="px-2 text-gray-400">...</span>' : `<button onclick="window._goP(${p})" class="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-xs font-bold dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 ${p === c ? 'page-active' : ''}">${p}</button>`;
+            h += p === '...' ? '<span class="px-2" style="color: var(--color-text-muted);">…</span>' : `<button onclick="window._goP(${p})" class="flex h-10 w-10 items-center justify-center rounded-lg border text-xs font-bold ${p === c ? 'page-active' : ''}" style="${p === c ? '' : 'border-color: var(--color-border); background: var(--color-surface); color: var(--color-text-secondary);'}">${p}</button>`;
         });
-        h += `<button onclick="window._goP(${c + 1})" class="flex h-10 items-center rounded-xl border border-gray-200 bg-white px-4 text-xs font-bold dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 ${c === l ? 'opacity-40 pointer-events-none' : ''}" ${c === l ? 'disabled' : ''}>Next</button>`;
+        h += navBtn(t.next || '', c + 1, c === l);
         $('p-pagination').innerHTML = h;
     }
 

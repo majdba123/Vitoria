@@ -78,6 +78,13 @@ requirement for genuinely different permission sets *within* one type.
 **Not deferred:** the security property §23 actually asks for — server-side enforcement,
 never button-hiding — is delivered by the Policies.
 
+**Resolved:** vendor staff (§22) landed — see decision D15. `roles` / `permissions` /
+`role_permissions` now exist, scoped to vendors via `vendor_members`. The other four
+actor types (admin/employee/syndicate/customer) still have no requirement for
+differentiated permission sets and are untouched — there is no generic `user_roles`
+table, because nothing yet needs one outside the vendor-staff case D3 named as the
+trigger.
+
 ---
 
 ## D4 — Order lifecycle: extend the existing states, do not replace them

@@ -16,7 +16,7 @@ class ProductReviewViewController extends Controller
      */
     public function __invoke(Request $request, string $id): View
     {
-        $vendor = $request->user()->vendor;
+        $vendor = $request->user()->managedVendor();
         if (! $vendor) {
             abort(403, __('Vendor profile not found.'));
         }
@@ -41,7 +41,7 @@ class ProductReviewViewController extends Controller
 
     public function destroy(Request $request, string $productId, string $reviewId): RedirectResponse
     {
-        $vendor = $request->user()->vendor;
+        $vendor = $request->user()->managedVendor();
         if (! $vendor) {
             abort(403, __('Vendor profile not found.'));
         }

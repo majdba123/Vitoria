@@ -150,9 +150,21 @@ Browser review covered 375px, 768px, 1024px, and 1440px across representative ma
 
 ## Test results
 
-- `npm run build`: passed.
-- `php artisan test --compact`: passed, 145 tests and 913 assertions.
+- `npm run build`: passed (`app-l2N2Zq4m.css`, 171.77 kB).
+- `php artisan test --compact`: passed, 220 tests and 1324 assertions (re-run after the follow-up
+  pass below; count grew from the 145/913 baseline as workspace-specific coverage and fixture
+  data were added alongside the redesign).
 - `git diff --check`: passed.
+
+One genuine regression was caught by the test suite during the follow-up pass, not just
+cosmetic drift: a multi-line PHP array literal passed directly into `@json([...])` inside
+`syndicate/dashboard.blade.php` broke Blade's directive-argument parser — it silently truncated
+the array mid-list instead of raising a compile error, and `php artisan view:cache` alone did not
+catch it, because compiling Blade to PHP text doesn't execute the result. It only surfaced as a
+`ParseError` at render time, as 40 failing feature tests. Fixed by moving the array to a `@php`
+block variable and calling `@json($variable)` instead — the same single-line pattern already used
+safely elsewhere (`admin/dashboard.blade.php`'s `$adminDashboardStrings`). Re-ran the full suite
+afterward to confirm: 220/220 passing.
 
 ## Known remaining design debt
 
@@ -172,6 +184,147 @@ Where effects remain, they have a specific job: state, overlay separation, image
 ## Release polish addendum
 
 The final production pass also removed unused gradient-text, glass-panel, and decorative-grid utilities; reduced over-weighted product-detail labels; added tabular numerals to purchasing data; and replaced the vendor product grid's floating hover tiles with the shared commerce-card grammar. These changes followed the audit's removal-first order and did not alter routes, APIs, IDs, data attributes, or business behavior.
+
+## Follow-up pass — workspace-specific findings and live verification
+
+A second pass focused specifically on the four operator workspaces, grepping the actual source
+for the flagged patterns rather than relying on memory, and verifying the result live in a
+browser rather than only via `view:cache` (which, as the `@json` bug above shows, doesn't catch
+everything).
+
+**Additional removals found and fixed:**
+
+- **`font-black` (900) as the default number/heading weight** was still present on ~80 instances
+  across `admin/dashboard.blade.php` (16), `vendor/commission.blade.php` (11),
+  `admin/products/show.blade.php` (10), `admin/vendors/commission.blade.php` (9),
+  `syndicate/dashboard.blade.php` (7), `vendor/products/show.blade.php` (6),
+  `employee/dashboard.blade.php` (6), and five more files. All converted to `font-bold` (700),
+  matching the design system's own rule ("800/900 only for rare hero/display moments") — none of
+  these were hero moments, they were routine KPI numbers and headings repeated dozens of times.
+- **Two full dark-slate "hero" panels survived the first pass**: `admin/products/show.blade.php`
+  and `vendor/products/show.blade.php` still had a permanently-dark `bg-slate-900` block with 4
+  giant metric callouts before any real product data — the single worst offender by the audit's
+  own standard. Rebuilt as light/dark-responsive `.card` + `.badge`/`.metrics-row`/`.btn-*`,
+  including the live status-editing controls (approve/reject select, save/cancel buttons) that
+  make this more than a decorative header.
+- **Card-in-card order list**: `admin/orders/index.blade.php` rendered orders as cards containing
+  3 further nested rounded/bordered sub-boxes with `hover:-translate-y-0.5 hover:shadow-md` lift.
+  Replaced with one `.admin-table`.
+- **Hover-lift-and-scale on photo galleries/lightboxes** on both admin and vendor product pages
+  (`group-hover:scale-105`, `hover:-translate-y-0.5 hover:shadow-md`, `hover:scale-105` lightbox
+  close buttons) and on the favorited-products grid in `admin/users/show.blade.php` — removed in
+  favor of border-color-only hover, matching the CSS's own stated direction.
+- **Odd bracket radii** (`rounded-[22px]`, `rounded-[24px]`, `rounded-[28px]`) and a decorative
+  `bg-gradient-to-br` media background on gallery thumbnails, replaced with the real radius
+  tokens and a flat surface color.
+- **Remaining role-identity color leaks**: `<x-products.photo-upload color="emerald">` in
+  `vendor/products/create.blade.php` (the exact "brand and emerald as interchangeable accent
+  choices" pattern the original audit named), plus `cyan`/`emerald` spinners and unread-notification
+  dots in `employee/*` and `vendor/notifications/index.blade.php` — all re-pointed to brand.
+
+**Structural simplification also done in this pass:**
+
+- Consolidated the four dashboard layouts' ~150-line duplicated notification/theme/logout/sidebar
+  JS into `resources/js/workspace-shell.js` plus `components/workspace/{topbar,notification-dropdown}.blade.php`,
+  parameterized by workspace context.
+- Added a `.row-actions-menu` kebab component and used it to collapse 6-icon (vendors) and
+  4-icon (users) row-action clusters, while giving the one action with real urgency — **Approve**
+  on a pending vendor — its own `.btn-primary` weight instead of being icon #3 of 6.
+- Rebuilt `syndicate/dashboard.blade.php`'s single generic `renderSection()` template (which
+  rendered categories/vendors/products/orders/podcasts/reports identically, and silently
+  rendered `reports` empty because its real API shape doesn't fit a generic list) into per-domain
+  tables and a real 5-card reports summary.
+
+**Live verification** (Browser tool against `php artisan serve`, logged in as `admin@vetora.test`,
+not just static grep):
+
+- Dark mode: toggled `document.documentElement.classList.add('dark')` and confirmed
+  `getComputedStyle(document.body).backgroundColor` resolves to `rgb(12, 20, 24)` (`#0c1418`,
+  the token's dark value) — first attempt read a stale cached CSS bundle from before the final
+  `npm run build`; a clean rebuild + hard navigation resolved it, which is itself worth noting as
+  a deployment gotcha, not a code defect.
+- RTL: with `dir="rtl"` confirmed on `<html>`, the notification dropdown's bounding rect showed
+  its **end** edge (physically left in RTL) aligned exactly with its trigger button, expanding
+  toward **start** (right) — the correct mirror of the LTR behavior, confirming the
+  `inset-inline-end` fix works live, not just at the CSS level.
+- Mobile (375px): sidebar correctly off-canvas, `document.body.scrollWidth === window.innerWidth`
+  (no page-level horizontal scroll) — wide content is contained within `.table-responsive`.
+- DOM sweep of the rendered admin dashboard confirmed zero `font-black`, zero
+  `shadow-xl`/`shadow-2xl`, zero hover-lift/scale utilities, and zero gradient backgrounds
+  remaining on that page.
+
+## Second follow-up pass — app-wide grep sweep, not just workspaces
+
+Re-run of the exact pattern list (`rounded-3xl`, `rounded-[24px+]`, `backdrop-blur`,
+`bg-gradient-to`, `shadow-xl`/`shadow-2xl`, `font-black`) across the **entire** `resources/views`
+tree — public storefront included, not just the four workspaces — since the instruction was to
+audit every major page. Found and fixed real remaining instances the earlier passes missed:
+
+**Removed:**
+
+- **`resources/views/welcome.blade.php`** — Laravel's own out-of-the-box stock scaffold page
+  (the framework's default React-starter welcome screen, complete with its own bundled Tailwind
+  color palette and generic copy). Confirmed via `grep -rn "welcome" routes/*.php` that it is
+  **not referenced by any route** — pure dead code, and the single clearest possible example of
+  "stock-template" content sitting in the repo as a reintroduction risk. Deleted. Side effect:
+  since Tailwind v4 scans all view files for classes actually in use, removing it also shrank the
+  compiled CSS bundle from 171.77 kB to 154.55 kB — confirmation the file really was dead weight,
+  not just visually redundant.
+- **A second, customer-facing JS-based dark-mode contrast patch.** `orders/show.blade.php` (the
+  public "my order" page, not the admin one) had its own `applyNumberContrast()` +
+  `MutationObserver` re-implementing the exact pattern already retired from the admin order page
+  in the previous pass — including the same hardcoded `#0284c7` inline background color on the
+  order-number element. Retired the same way: removed the patch, let the (now-`dark:`-complete)
+  markup carry its own colors.
+- **Gradient header wash and gradient avatar circle on two more customer-facing pages**:
+  `orders/show.blade.php` (`bg-gradient-to-r from-brand-500/10 ...`) and `profile.blade.php`
+  (`bg-gradient-to-br from-brand-400 to-brand-600` avatar preview, plus a bare `-right-1`
+  positioned edit-pencil badge — the exact RTL bug the *original* UI audit named as CRITICAL for
+  this file specifically). Both flattened to token surfaces; the avatar-edit badge now uses
+  `inset-inline-end`.
+- **Two more `rounded-3xl`/`rounded-2xl` + `shadow-sm` card shells** on `admin/orders/show.blade.php`
+  (Customer Info / Vendor Info / Items Details / Totals cards, plus a non-interactive line-item
+  card that still had `hover:shadow-md` despite not being clickable) and the equivalent
+  customer-facing order-item cards in `orders/show.blade.php` — all converted to `.card`/`.badge`
+  tokens, hover effects removed from non-interactive elements.
+- **The last two `rounded-[24px]` + colored-shadow spec-attribute cards** in
+  `admin/products/show.blade.php:531` and `vendor/products/show.blade.php:425` (a "shared
+  attributes" grid the first pass's hero rebuild didn't reach) — same fix as the rest of those
+  two files: real radius token, no colored shadow, `dark:` classes added.
+- **A shared component's lightbox**, not just the two page-specific ones:
+  `components/products/photo-upload-script.blade.php` (used by both admin and vendor product
+  create/edit forms) had the identical `shadow-2xl` + `hover:scale-105` + bare `right-2` pattern
+  already fixed three times elsewhere — fixed once here, which fixes it everywhere the shared
+  component is used.
+- **A generic `shadow-xl ring-1` card and an inverse `bg-gray-900`/`bg-gray-100` CTA button** on
+  `errors/403-vendor.blade.php` — replaced with the same `.auth-shell` class the login page
+  already uses, and `.btn-primary` for the CTA, instead of a one-off hand-rolled treatment for a
+  page that should look like the rest of the auth flow.
+- **Remaining `font-black` instances found by a full-app grep** (not just the workspace list from
+  the first pass): `layouts/app.blade.php` (startup-modal title and button — the public layout
+  used on every page), `orders/show.blade.php`, `products/show.blade.php` (reviewer name), and
+  two of the three instances in `preferences/product-type.blade.php`. All converted to
+  `font-bold`. **Deliberately left as `font-black`**: the site wordmark/logo text in
+  `layouts/app.blade.php:110` and the single page-level `<h1>` on the product-type preference
+  screen (`preferences/product-type.blade.php:10`) — a wordmark and a one-time full-page choice
+  heading are the "rare hero/display moment" the design system's own rule carves out; converting
+  every remaining 900-weight instance without exception would have been mechanical removal
+  without judgment, which the brief explicitly warned against.
+
+**Verified clean** (grepped, zero remaining matches across all of `resources/views`):
+`bg-gradient-to-*`, `rounded-3xl`, `rounded-[24px]` through `rounded-[99px]`, `shadow-xl`,
+`shadow-2xl`. Remaining `backdrop-blur` usage (`csv-import.blade.php`, `cart-modal.blade.php`,
+`layouts/app.blade.php`'s startup modal, and the two product lightboxes) was individually checked
+and confirmed to be exactly the transient-overlay-scrim case the design system allows — not
+persistent surfaces.
+
+**Re-validated after this pass:**
+
+```
+npm run build        → success (app-BkYJ6oa0.css, 154.55 kB — down from 171.77 kB after
+                        removing the dead welcome.blade.php)
+php artisan test --compact → 220 passed (1325 assertions), 0 failed
+```
 
 ## External research references
 

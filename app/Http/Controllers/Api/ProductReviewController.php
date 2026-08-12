@@ -62,7 +62,7 @@ class ProductReviewController extends Controller
      */
     public function indexForVendor(Request $request, Product $product): JsonResponse
     {
-        $vendor = $request->user()->vendor;
+        $vendor = $request->user()->managedVendor();
         if (! $vendor || $product->vendor_id !== $vendor->id) {
             abort(403, __('You can only view reviews for your own products.'));
         }

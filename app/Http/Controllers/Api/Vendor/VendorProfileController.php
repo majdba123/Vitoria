@@ -23,10 +23,8 @@ class VendorProfileController extends Controller
     {
         $user = $request->user();
         $user->loadMissing('city');
-        $vendor = Vendor::query()
-            ->where('user_id', $user->id)
-            ->with('categories')
-            ->first();
+        $vendor = $user->managedVendor();
+        $vendor?->loadMissing('categories');
 
         return response()->json([
             'message' => __('Profile retrieved successfully.'),
@@ -61,8 +59,15 @@ class VendorProfileController extends Controller
     public function update(UpdateProfileRequest $request): JsonResponse
     {
         $user = $request->user();
-        $vendor = Vendor::query()->where('user_id', $user->id)->first();
+        $vendor = $user->managedVendor();
         $data = $request->validated();
+
+        $vendorFieldKeys = ['store_name', 'description', 'address'];
+        $requestsVendorChange = $request->hasFile('logo') || collect($vendorFieldKeys)->some(fn ($field) => isset($data[$field]));
+
+        if ($vendor && $requestsVendorChange && ! $user->hasVendorPermission($vendor, 'profile.manage')) {
+            abort(403, __('You are not allowed to update the store profile.'));
+        }
 
         if (! empty($data['password'])) {
             if (! $user->password || ! Hash::check($data['current_password'], $user->password)) {

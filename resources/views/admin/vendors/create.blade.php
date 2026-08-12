@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <input type="checkbox" name="category_ids[]" value="${cat.id}" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 category-checkbox">
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-900">${esc(cat.name)}</span>
-                        <span class="ml-2 text-xs font-semibold ${cat.type === 'veterinary' ? 'text-blue-600' : 'text-emerald-600'}">${cat.type === 'veterinary' ? 'Veterinary' : 'Agriculture'}</span>
+                        <span class="ms-2 text-xs font-semibold ${cat.type === 'veterinary' ? 'text-blue-600' : 'text-emerald-600'}">${cat.type === 'veterinary' ? 'Veterinary' : 'Agriculture'}</span>
                     </div>
                 </label>
             `;

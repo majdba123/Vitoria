@@ -25,13 +25,13 @@
 
     <section id="home-type-selector" class="page-shell pt-2 sm:pt-3">
         @if (session('success'))
-            <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
+            <div class="alert-shell alert-success">
                 {{ session('success') }}
             </div>
         @endif
 
         @error('preferred_product_type')
-            <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+            <div class="alert-shell alert-error">
                 {{ $message }}
             </div>
         @enderror
@@ -73,7 +73,7 @@
                 <div class="surface-card-muted px-5 py-4 sm:px-6">
                     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                         <div class="flex min-w-0 items-center gap-4">
-                            <div id="sz-category-bar-visual" class="shop-thumb-box hidden h-14 w-14 shrink-0 rounded-2xl ring-1 ring-brand-200/50 sm:flex dark:ring-brand-500/20"></div>
+                            <div id="sz-category-bar-visual" class="shop-thumb-box hidden h-14 w-14 shrink-0 ring-1 ring-brand-200/50 sm:flex dark:ring-brand-500/20"></div>
                             <div class="min-w-0">
                                 <p class="commerce-kicker">{{ __('home.browsing_prefix') }}</p>
                                 <h2 id="sz-category-bar-name" class="mt-2 text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">—</h2>
@@ -517,20 +517,7 @@
                 }
             }
 
-            function starStars(rating) {
-                const resolved = Math.min(5, Math.max(0, Math.round(parseFloat(rating) || 0)));
-                const filled = '<svg class="h-3.5 w-3.5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
-                const empty = '<svg class="h-3.5 w-3.5 text-gray-300 dark:text-gray-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
-                let html = '';
-
-                for (let index = 0; index < 5; index++) {
-                    html += index < resolved ? filled : empty;
-                }
-
-                return html;
-            }
-
-            function renderProductCards(data, gridElement, emptyElement, loadingElement, startOpacity = 0) {
+            function renderProductCards(data, gridElement, emptyElement, loadingElement, startOpacity = 0, variant = null) {
                 if (!gridElement) {
                     return;
                 }
@@ -551,44 +538,32 @@
                     emptyElement.classList.add('hidden');
                 }
 
-                gridElement.innerHTML = data.map((product, index) => {
-                    const photo = product.first_photo_url || product.fallback_photo_url || '{{ asset('images/product-placeholder.svg') }}';
-                    const inStock = product.quantity > 0;
-                    const unitPrice = product.has_active_discount ? product.discounted_price : product.price;
-                    const isFav = window._favIds && window._favIds.has(product.id);
-                    const reviewCount = parseInt(product.review_count, 10) || 0;
-                    const subcategoryName = subcategoryLabel(product.subcategory);
-                    const commercialName = product.commercial_name || '';
+                const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-                    return `
-                        <div class="product-card" style="opacity:0;transform:translateY(12px);transition:opacity .35s ease ${(startOpacity + index) * 0.04}s,transform .35s ease ${(startOpacity + index) * 0.04}s;">
-                            <a href="${typedPageHref('/products/' + product.id)}" class="product-card-media block">
-                                <img src="${esc(photo)}" alt="${esc(product.name)}" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('images/product-placeholder.svg') }}'">
-                                ${!inStock ? '<div class="absolute inset-0 flex items-center justify-center bg-white/75 dark:bg-gray-900/75"><span class="badge badge-danger">' + esc(homeI18n.soldOut || '') + '</span></div>' : ''}
-                                ${product.has_active_discount ? `<span class="product-card-badge">-${parseFloat(product.discount_percentage || 0).toFixed(0)}%</span>` : ''}
-                            </a>
-                            <button type="button" data-fav-btn="${product.id}" onclick="event.stopPropagation();window.toggleFav(${product.id},this)" class="product-card-fav ${isFav ? 'is-active' : ''}" aria-label="${esc(product.name)}" aria-pressed="${isFav ? 'true' : 'false'}"><svg class="h-4 w-4" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="${isFav ? 'currentColor' : 'none'}"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg></button>
-                            <div class="product-card-body">
-                                ${subcategoryName ? `<span class="product-card-context">${esc(subcategoryName)}</span>` : ''}
-                                <a href="${typedPageHref('/products/' + product.id)}"><h3 class="product-card-title">${esc(product.name)}</h3></a>
-                                ${commercialName ? `<p class="truncate text-xs" style="color: var(--color-text-muted);">${esc(commercialName)}</p>` : ''}
-                                <div class="product-card-rating">${starStars(product.average_rating)}<span>${reviewCount ? esc(revLabel(reviewCount)) : ''}</span></div>
-                                <div class="product-card-footer">
-                                    <div class="product-card-price-group">
-                                        <span class="product-card-price">${parseFloat(product.has_active_discount ? product.discounted_price : product.price).toLocaleString()} <span class="text-xs font-medium" style="color: var(--color-text-muted);">SYP</span></span>
-                                        ${product.has_active_discount ? `<span class="product-card-price-was">${parseFloat(product.price).toLocaleString()} SYP</span>` : ''}
-                                        <span class="product-card-stock ${inStock ? '' : 'is-out'}">${inStock ? '' : esc(homeI18n.soldOut || '')}</span>
-                                    </div>
-                                    <button type="button" onclick="window.addToCart(${product.id},\`${esc(product.name)}\`,${unitPrice},\`${esc(photo)}\`)" class="product-card-cta" aria-label="${esc(homeI18n.addCart || '')}: ${esc(product.name)}" ${!inStock ? 'disabled' : ''}>
-                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                gridElement.innerHTML = data.map((product, index) => {
+                    const context = product.vendor?.store_name || subcategoryLabel(product.subcategory) || '';
+                    const card = window.renderProductCard(product, {
+                        href: typedPageHref('/products/' + product.id),
+                        context,
+                        placeholder: '{{ asset('images/product-placeholder.svg') }}',
+                        soldOutLabel: homeI18n.soldOut || '',
+                        inStockLabel: '',
+                        addToCartLabel: homeI18n.addCart || '',
+                        favoriteLabel: product.name || '',
+                        reviewsLabel: (count) => revLabel(count),
+                        rank: variant === 'rank' ? startOpacity + index + 1 : null,
+                    });
+
+                    if (reduceMotion) {
+                        return `<div class="home-card-reveal flex">${card}</div>`;
+                    }
+
+                    return `<div class="home-card-reveal flex" style="opacity:0;transform:translateY(12px);transition:opacity .35s ease ${(startOpacity + index) * 0.04}s,transform .35s ease ${(startOpacity + index) * 0.04}s;">${card}</div>`;
                 }).join('');
 
-                gridElement.querySelectorAll('.product-card').forEach((element) => observer.observe(element));
+                if (!reduceMotion) {
+                    gridElement.querySelectorAll('.home-card-reveal').forEach((element) => observer.observe(element));
+                }
             }
 
             async function loadProducts() {
@@ -640,7 +615,7 @@
                 try {
                     const extraFilters = '&category_id=' + encodeURIComponent(currentSelectedCategoryId) + (currentSelectedSubcategoryId ? '&subcategory_id=' + encodeURIComponent(currentSelectedSubcategoryId) : '');
                     const response = await window.axios.get(typedUrl('/api/products?per_page=5&sort=best_selling' + extraFilters, 'category_type'));
-                    renderProductCards(response.data.data || [], gridElement, emptyElement, loadingElement);
+                    renderProductCards(response.data.data || [], gridElement, emptyElement, loadingElement, 0, 'rank');
                 } catch (error) {
                     emptyElement?.classList.remove('hidden');
                 }

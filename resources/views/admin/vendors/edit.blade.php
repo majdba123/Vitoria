@@ -55,7 +55,7 @@
                         {{-- Avatar --}}
                         <div class="flex flex-col items-center gap-3">
                             <div class="group relative">
-                                <div id="avatar-display" class="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-100 to-brand-200 text-4xl font-bold text-brand-600 shadow-lg ring-4 ring-white">
+                                <div id="avatar-display" class="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full text-3xl font-bold text-brand-700 dark:text-brand-300" style="background: var(--color-brand-soft); box-shadow: 0 0 0 4px var(--color-surface)">
                                     <span id="avatar-initials">V</span>
                                 </div>
                                 <label for="avatar-input" tabindex="0" role="button" aria-label="Change profile photo" class="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/50 opacity-0 transition-all duration-200 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-white/60">
@@ -73,7 +73,7 @@
                         {{-- Store Logo --}}
                         <div class="flex flex-col items-center gap-3">
                             <div class="group relative">
-                                <div id="logo-display" class="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-gray-100 to-gray-200 shadow-lg ring-4 ring-white">
+                                <div id="logo-display" class="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800" style="box-shadow: 0 0 0 4px var(--color-surface)">
                                     <svg class="h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.15c0 .415.336.75.75.75z"/></svg>
                                 </div>
                                 <label for="logo-input" tabindex="0" role="button" aria-label="Change store logo" class="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/50 opacity-0 transition-all duration-200 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-white/60">
@@ -344,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <input type="checkbox" name="category_ids[]" value="${cat.id}" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 category-checkbox" ${vendorCategoryIds.includes(cat.id) ? 'checked' : ''}>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-900">${esc(cat.name)}</span>
-                        <span class="ml-2 text-xs font-semibold ${cat.type === 'veterinary' ? 'text-blue-600' : 'text-emerald-600'}">${cat.type === 'veterinary' ? 'Veterinary' : 'Agriculture'}</span>
+                        <span class="ms-2 text-xs font-semibold ${cat.type === 'veterinary' ? 'text-blue-600' : 'text-emerald-600'}">${cat.type === 'veterinary' ? 'Veterinary' : 'Agriculture'}</span>
                     </div>
                 </label>
             `;

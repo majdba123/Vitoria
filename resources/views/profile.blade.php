@@ -44,10 +44,10 @@
                 <label class="mb-4 block text-sm font-bold text-gray-900 dark:text-white">{{ __('profile.profile_photo') }}</label>
                 <div class="flex items-center gap-6">
                     <div class="relative">
-                        <div id="avatar-preview" class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-400 to-brand-600 ring-4 ring-white shadow-lg dark:ring-gray-800">
-                            <span id="avatar-initial" class="text-3xl font-black text-white">?</span>
+                        <div id="avatar-preview" class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-brand-600" style="box-shadow: 0 0 0 4px var(--color-surface)">
+                            <span id="avatar-initial" class="text-3xl font-bold text-white">?</span>
                         </div>
-                        <label for="avatar-input" class="absolute -bottom-1 -right-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-brand-600 text-white transition-colors hover:bg-brand-700">
+                        <label for="avatar-input" class="absolute bottom-0 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-brand-600 text-white transition-colors hover:bg-brand-700" style="inset-inline-end: 0;">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>
                         </label>
                         <input type="file" id="avatar-input" class="hidden" accept="image/*">
@@ -343,7 +343,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             preview.innerHTML = `<img src="${u.avatar_url}" class="h-full w-full object-cover" alt="">`;
             $('avatar-remove').classList.remove('hidden');
         } else {
-            preview.innerHTML = `<span class="text-3xl font-black text-white">${(u.name || '?').charAt(0).toUpperCase()}</span>`;
+            preview.innerHTML = `<span class="text-3xl font-bold text-white">${(u.name || '?').charAt(0).toUpperCase()}</span>`;
             $('avatar-remove').classList.add('hidden');
         }
     }
@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     $('avatar-remove').addEventListener('click', () => {
         pendingAvatar = 'remove';
         const initial = ($('p-name').value || '?').charAt(0).toUpperCase();
-        $('avatar-preview').innerHTML = `<span class="text-3xl font-black text-white">${initial}</span>`;
+        $('avatar-preview').innerHTML = `<span class="text-3xl font-bold text-white">${initial}</span>`;
         $('avatar-remove').classList.add('hidden');
         $('avatar-input').value = '';
     });
@@ -411,7 +411,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         </div>
                         <div class="p-3">
                             <h4 class="line-clamp-2 text-xs font-bold text-gray-900 group-hover:text-brand-600 dark:text-white dark:group-hover:text-brand-400">${escH(p.name)}</h4>
-                            <div class="mt-1.5 flex items-baseline gap-1"><span class="text-sm font-black text-gray-900 dark:text-white">${parseFloat(p.price).toLocaleString()}</span><span class="text-[10px] text-gray-400">SYP</span></div>
+                            <div class="mt-1.5 flex items-baseline gap-1"><span class="text-sm font-bold text-gray-900 dark:text-white">${parseFloat(p.price).toLocaleString()}</span><span class="text-[10px] text-gray-400">SYP</span></div>
                         </div>
                     </a>
                 </div>`;
@@ -486,7 +486,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         ${item.has_discount ? `<p class="text-[11px] text-gray-400 line-through">Original ${original} SYP</p>` : ''}
                         ${discountPart}
                     </div>
-                    <p class="shrink-0 text-xs font-black text-gray-800 dark:text-gray-100">${total} SYP</p>
+                    <p class="shrink-0 text-xs font-bold text-gray-800 dark:text-gray-100">${total} SYP</p>
                 </div>
             </div>`;
         }).join('');
@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         return `<article class="overflow-hidden border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
             <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 bg-gray-50/80 px-4 py-3 dark:border-gray-800 dark:bg-gray-800/40">
                 <div>
-                    <p><span class="inline-flex rounded-lg bg-gray-900 px-2.5 py-1 text-[11px] font-black text-white shadow-sm dark:bg-white dark:text-gray-900">${escH(order.order_number || ('Order #' + order.id))}</span></p>
+                    <p><span class="inline-flex rounded-lg bg-gray-900 px-2.5 py-1 text-[11px] font-bold text-white dark:bg-white dark:text-gray-900">${escH(order.order_number || ('Order #' + order.id))}</span></p>
                     <p class="text-xs text-gray-500 dark:text-gray-400">${date}</p>
                 </div>
                 <div class="flex items-center gap-2">
@@ -514,7 +514,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 </div>
 
                 <div class="mt-3 flex items-center justify-between border-t border-gray-100 pt-3 text-sm dark:border-gray-800">
-                    <p class="font-black text-gray-900 dark:text-white">Total: ${parseFloat(order.total_amount || 0).toLocaleString()} SYP</p>
+                    <p class="font-bold text-gray-900 dark:text-white">Total: ${parseFloat(order.total_amount || 0).toLocaleString()} SYP</p>
                     <a href="/orders/${order.id}" class="inline-flex items-center gap-1 rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-700 transition-all hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:text-gray-300 dark:hover:border-brand-500/40 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">
                         View Details
                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>

@@ -9,6 +9,7 @@ use App\Models\OrderReturn;
 use App\Models\Product;
 use App\Models\Refund;
 use App\Models\User;
+use App\Models\VendorMember;
 
 class NotificationService
 {
@@ -218,6 +219,27 @@ class NotificationService
         $notification->recipients()->sync($recipientIds);
 
         $this->broadcastNotification($notification, $recipientIds);
+    }
+
+    /**
+     * Notify a user they were added as staff to a vendor (spec §22).
+     */
+    public function notifyVendorStaffAdded(VendorMember $member): void
+    {
+        $storeName = $member->vendor->store_name;
+        $roleName = __("vendor_staff.role.{$member->role->key}");
+
+        $notification = AdminNotification::query()->create([
+            'title' => 'إضافة إلى فريق متجر',
+            'body' => "تمت إضافتك إلى فريق متجر {$storeName} بصلاحية: {$roleName}",
+            'type' => AdminNotification::TYPE_PRIVATE,
+            'action_type' => null,
+            'action_id' => null,
+            'sent_by' => null,
+        ]);
+        $notification->recipients()->sync([$member->user_id]);
+
+        $this->broadcastNotification($notification, [$member->user_id]);
     }
 
     /**

@@ -89,7 +89,6 @@
 @php
     $vendorShowI18n = [
         'productsAvailable' => __('stores.products_available'),
-        'noDescription' => __('products.no_description'),
         'outOfStock' => __('nav.sold_out'),
         'inStock' => __('nav.in_stock'),
         'addCart' => __('products.add_to_cart_btn'),
@@ -168,86 +167,35 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const response = await window.axios.get(`/api/products?${params.toString()}`);
                 const { data, meta } = response.data;
 
-                productsCount.textContent = `${meta.total} product${meta.total !== 1 ? 's' : ''} available`;
+                productsCount.textContent = (t.productsAvailable || '').replace(':count', String(meta.total));
 
                 if (data.length === 0) {
                     productsEmpty.classList.remove('hidden');
                 } else {
-                    productsGrid.innerHTML = data.map(product => `
-                        <article class="commerce-product-card">
-                            <div class="shop-card-media">
-                                <img src="${esc(product.first_photo_url || '/images/product-placeholder.svg')}"
-                                     alt="${esc(product.name)}"
-                                     class="shop-card-media-img"
-                                     loading="lazy"
-                                     onerror="this.onerror=null;this.src='/images/product-placeholder.svg'">
-                                ${product.quantity <= 0 ? `<div class="absolute end-2 top-2 badge badge-danger">Out of Stock</div>` : ''}
-                                ${product.has_active_discount ? `<div class="absolute start-2 top-2 badge badge-danger">-${parseFloat(product.discount_percentage || 0).toFixed(0)}%</div>` : ''}
-                            </div>
-                            <div class="commerce-product-body">
-                                <h3 class="commerce-product-title line-clamp-2">${esc(product.name)}</h3>
-                                <p class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600 dark:text-gray-400">${esc(product.description || 'No description available')}</p>
-                                <div class="mt-4 border-t border-gray-200 pt-3 dark:border-gray-800">
-                                    <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                                        <span class="commerce-product-price ${product.has_active_discount ? 'text-red-600 dark:text-red-400' : ''}">${parseFloat(product.has_active_discount ? product.discounted_price : product.price).toFixed(2)} <small>SYP</small></span>
-                                        ${product.has_active_discount ? `<span class="text-xs tabular-nums text-gray-400 line-through">${parseFloat(product.price).toFixed(2)} SYP</span>` : ''}
-                                    </div>
-                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${product.quantity} available</p>
-                                </div>
-                                <div class="mt-4 flex gap-2">
-                                    <a href="/products/${product.id}" class="btn-secondary btn-sm flex-1 justify-center text-center">View</a>
-                                    <button data-product-id="${product.id}"
-                                            data-product-name="${esc(product.name)}"
-                                            data-product-price="${product.has_active_discount ? product.discounted_price : product.price}"
-                                            data-product-photo="${esc(product.first_photo_url || '')}"
-                                            onclick="handleAddToCartFromCard(this)"
-                                            class="btn-primary btn-sm flex-1 justify-center ${product.quantity <= 0 ? 'cursor-not-allowed opacity-50' : ''}"
-                                            ${product.quantity <= 0 ? 'disabled' : ''}>
-                                        <span class="flex items-center justify-center gap-1.5">
-                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                            </svg>
-                                            Add to Cart
-                                        </span>
-                                    </button>
-                                </div>
-                            </div>
-                        </article>
-                    `).join('');
+                    productsGrid.innerHTML = data.map(product => window.renderProductCard(product, {
+                        href: '/products/' + product.id,
+                        placeholder: '/images/product-placeholder.svg',
+                        soldOutLabel: t.outOfStock || '',
+                        inStockLabel: t.inStock || '',
+                        addToCartLabel: t.addCart || '',
+                        favoriteLabel: product.name || '',
+                        reviewsLabel: (count) => (t.reviewsCount || '').replace(':count', String(count)),
+                    })).join('');
                 }
 
                 // Pagination
                 if (meta.last_page > 1) {
+                    const navBtn = (label, target, disabled) => `<button onclick="currentPage = ${target}; loadVendorProducts();" class="flex h-10 items-center rounded-lg border px-4 text-xs font-bold ${disabled ? 'pointer-events-none opacity-40' : ''}" style="border-color: var(--color-border); background: var(--color-surface); color: var(--color-text-secondary);" ${disabled ? 'disabled' : ''}>${esc(label)}</button>`;
                     productsPagination.innerHTML = `
-                        <button ${meta.current_page === 1 ? 'disabled' : ''}
-                                onclick="currentPage = ${meta.current_page - 1}; loadVendorProducts();"
-                                class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition-all ${meta.current_page === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 hover:border-brand-300'}"
-                                ${meta.current_page === 1 ? 'disabled' : ''}>
-                            <span class="flex items-center gap-2">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                                </svg>
-                                Previous
-                            </span>
-                        </button>
-                        <span class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700">Page ${meta.current_page} of ${meta.last_page}</span>
-                        <button ${meta.current_page === meta.last_page ? 'disabled' : ''}
-                                onclick="currentPage = ${meta.current_page + 1}; loadVendorProducts();"
-                                class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition-all ${meta.current_page === meta.last_page ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 hover:border-brand-300'}"
-                                ${meta.current_page === meta.last_page ? 'disabled' : ''}>
-                            <span class="flex items-center gap-2">
-                                Next
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                                </svg>
-                            </span>
-                        </button>
+                        ${navBtn(t.prev || '', meta.current_page - 1, meta.current_page === 1)}
+                        <span class="rounded-lg px-4 py-2 text-xs font-bold" style="background: var(--color-surface-muted); color: var(--color-text-secondary);">${esc(t.page || '')} ${meta.current_page} ${esc(t.of || '')} ${meta.last_page}</span>
+                        ${navBtn(t.next || '', meta.current_page + 1, meta.current_page === meta.last_page)}
                     `;
                 }
             } catch (error) {
                 console.error('Failed to load products:', error);
                 productsEmpty.classList.remove('hidden');
-                productsEmpty.innerHTML = '<p class="text-lg font-medium text-red-500">Failed to load products. Please try again later.</p>';
+                document.getElementById('vendor-products-empty-title').textContent = t.loadProductsError || '';
             } finally {
                 productsLoading.classList.add('hidden');
             }

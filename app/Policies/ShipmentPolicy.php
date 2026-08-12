@@ -16,7 +16,7 @@ class ShipmentPolicy
         $shipment->loadMissing('order');
 
         if ($user->isVendor()) {
-            $vendorId = $user->vendor?->id;
+            $vendorId = $user->managedVendor()?->id;
 
             return $vendorId !== null && (int) $shipment->order->vendor_id === (int) $vendorId;
         }
@@ -30,9 +30,12 @@ class ShipmentPolicy
             return true;
         }
 
-        $shipment->loadMissing('order');
-        $vendorId = $user->vendor?->id;
+        $shipment->loadMissing('order.vendor');
+        $vendorId = $user->managedVendor()?->id;
 
-        return $user->isVendor() && $vendorId !== null && (int) $shipment->order->vendor_id === (int) $vendorId;
+        return $user->isVendor()
+            && $vendorId !== null
+            && (int) $shipment->order->vendor_id === (int) $vendorId
+            && $user->hasVendorPermission($shipment->order->vendor, 'shipments.manage');
     }
 }
