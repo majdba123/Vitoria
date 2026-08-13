@@ -123,8 +123,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     async function loadDashboard() {
         try {
-            const [productsRes, ordersRes, profileRes] = await Promise.all([
+            const [productsRes, activeProductsRes, ordersRes, profileRes] = await Promise.all([
                 window.axios.get('/api/vendor/products?per_page=5'),
+                window.axios.get('/api/vendor/products?per_page=1&is_active=1'),
                 window.axios.get('/api/vendor/orders?per_page=1'),
                 window.axios.get('/api/vendor/profile'),
             ]);
@@ -137,7 +138,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             document.getElementById('vendor-welcome').textContent = profileVendor.store_name || @json(__('vendor.dashboard_heading'));
             document.getElementById('stat-products').textContent = productsRes.data.meta?.total ?? products.length;
-            document.getElementById('stat-active-products').textContent = products.filter(product => product.is_active).length;
+            document.getElementById('stat-active-products').textContent = activeProductsRes.data.meta?.total ?? 0;
             document.getElementById('stat-orders').textContent = ordersMeta.total ?? 0;
             document.getElementById('store-status').textContent = profileVendor.is_active ? @json(__('common.active')) : @json(__('common.inactive'));
 
@@ -175,8 +176,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         document.getElementById('store-info').innerHTML = items.map(([label, value]) => `
             <div class="list-panel">
-                <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-400">${label}</p>
-                <p class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">${value}</p>
+                <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-gray-400">${escapeHtml(label)}</p>
+                <p class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">${escapeHtml(value)}</p>
             </div>
         `).join('');
     }
