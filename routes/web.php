@@ -22,6 +22,10 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
+Route::get('/pages/{slug}', function (string $slug) {
+    return view('pages.show', ['slug' => $slug]);
+})->name('pages.show');
+
 Route::get('/product-type/select', [\App\Http\Controllers\ProductTypePreferenceController::class, 'show'])->name('product-type.select');
 Route::post('/product-type/select', [\App\Http\Controllers\ProductTypePreferenceController::class, 'store'])->name('product-type.store');
 
@@ -277,6 +281,14 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(funct
     Route::get('/coupons', function () {
         return view('admin.coupons.index');
     })->name('coupons.index');
+
+    Route::get('/pages', function () {
+        return view('admin.pages.index');
+    })->name('pages.index');
+
+    Route::get('/banners', function () {
+        return view('admin.banners.index');
+    })->name('banners.index');
 
     Route::get('/orders', function () {
         return view('admin.orders.index');

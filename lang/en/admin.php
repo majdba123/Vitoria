@@ -34,6 +34,8 @@ return [
     'users' => 'Users',
     'contact_messages' => 'Contact messages',
     'about_us' => 'About us',
+    'pages' => 'Pages',
+    'banners' => 'Banners',
 
     'dashboard_title' => 'Control center',
     'dashboard_copy' => 'Track platform health, review growth signals, and jump into the most important admin actions.',

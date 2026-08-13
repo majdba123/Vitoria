@@ -18,6 +18,8 @@
         ['group' => __('admin.management'), 'route' => 'admin.notifications.index', 'label' => __('admin.notifications_log'), 'icon' => 'fa-regular fa-bell'],
         ['group' => __('admin.management'), 'route' => 'admin.contact-messages.index', 'label' => __('admin.contact_messages'), 'icon' => 'fa-regular fa-envelope'],
         ['group' => __('admin.management'), 'route' => 'admin.about-us.edit', 'label' => __('admin.about_us'), 'icon' => 'fa-regular fa-circle-info'],
+        ['group' => __('admin.management'), 'route' => 'admin.pages.index', 'label' => __('admin.pages'), 'icon' => 'fa-regular fa-file-lines'],
+        ['group' => __('admin.management'), 'route' => 'admin.banners.index', 'label' => __('admin.banners'), 'icon' => 'fa-regular fa-image'],
     ];
     $groupedLinks = collect($links)->groupBy('group');
 @endphp
