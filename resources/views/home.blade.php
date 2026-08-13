@@ -23,6 +23,8 @@
 
     <x-home.hero />
 
+    <x-home.banner-strip />
+
     <section id="home-type-selector" class="page-shell pt-2 sm:pt-3">
         @if (session('success'))
             <div class="alert-shell alert-success">
