@@ -17,9 +17,21 @@ class VendorCommissionController extends Controller
      */
     public function show(Vendor $vendor): JsonResponse
     {
+        // Every non-pending, non-cancelled status counts as "completed" here —
+        // this bucket only feeds the status-breakdown percentage bars, not the
+        // commission/financial figures below, so it must cover every status
+        // Order::TRANSITIONS can produce or the three bars silently undercount
+        // orders sitting in preparing/shipped/out_for_delivery (same fix as
+        // Api\Vendor\CommissionController).
         $statusCounts = [
             'pending' => $this->statusCount($vendor, [Order::STATUS_PENDING]),
-            'completed' => $this->statusCount($vendor, [Order::STATUS_CONFIRMED, 'completed']),
+            'completed' => $this->statusCount($vendor, [
+                Order::STATUS_CONFIRMED,
+                Order::STATUS_PREPARING,
+                Order::STATUS_SHIPPED,
+                Order::STATUS_OUT_FOR_DELIVERY,
+                Order::STATUS_COMPLETED,
+            ]),
             'cancelled' => $this->statusCount($vendor, [Order::STATUS_CANCELLED]),
         ];
 
