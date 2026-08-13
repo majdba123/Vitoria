@@ -15,7 +15,7 @@
 
     <article id="page-content" class="hidden max-w-3xl">
         <h1 id="page-title" class="text-2xl font-bold sm:text-3xl" style="color: var(--color-text);"></h1>
-        <div id="page-body" class="prose mt-6 max-w-none" style="color: var(--color-text-secondary);"></div>
+        <div id="page-body" class="prose mt-6 max-w-none" style="color: var(--color-text-secondary); white-space: pre-wrap;"></div>
     </article>
 
     <div id="page-not-found" class="hidden py-16 text-center text-sm" style="color: var(--color-text-muted);">

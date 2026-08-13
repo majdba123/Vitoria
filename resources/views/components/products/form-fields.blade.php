@@ -83,7 +83,7 @@
                 <x-form.input name="name_en" :label="$t('الاسم الإنجليزي', 'English Name')" :placeholder="$t('أدخل اسم المنتج بالإنجليزية', 'Enter English product name')" :required="true" />
             </div>
 
-            <x-form.input name="price" :label="$t('السعر ($)', 'Price ($)')" type="number" placeholder="0.00" :required="true" />
+            <x-form.input name="price" :label="$t('السعر (ل.س)', 'Price (SYP)')" type="number" placeholder="0.00" :required="true" />
 
             <div>
                 <label for="discount_percentage" class="form-label">{{ $t('الخصم (%)', 'Discount (%)') }}</label>
