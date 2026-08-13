@@ -22,9 +22,20 @@ class CommissionController extends Controller
             abort(403, 'Vendor profile not found.');
         }
 
+        // Every non-pending, non-cancelled status counts as "completed" here —
+        // this bucket only feeds the status-breakdown percentage bars, not the
+        // commission/financial figures below, so it must cover every status
+        // Order::TRANSITIONS can produce or the three bars silently undercount
+        // orders sitting in preparing/shipped/out_for_delivery.
         $statusCounts = [
             'pending' => $this->statusCount($vendor, [Order::STATUS_PENDING]),
-            'completed' => $this->statusCount($vendor, [Order::STATUS_CONFIRMED, Order::STATUS_COMPLETED]),
+            'completed' => $this->statusCount($vendor, [
+                Order::STATUS_CONFIRMED,
+                Order::STATUS_PREPARING,
+                Order::STATUS_SHIPPED,
+                Order::STATUS_OUT_FOR_DELIVERY,
+                Order::STATUS_COMPLETED,
+            ]),
             'cancelled' => $this->statusCount($vendor, [Order::STATUS_CANCELLED]),
         ];
 

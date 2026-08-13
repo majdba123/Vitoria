@@ -14,6 +14,23 @@
         <x-alert type="error" id="edit-alert" />
         <x-alert type="success" id="edit-success" />
 
+        <div class="card">
+            <div class="card-body border-b border-gray-100 dark:border-gray-800">
+                <h2 class="text-lg font-bold text-gray-900 dark:text-white">{{ __('vendor.product_photos_title') }}</h2>
+                <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{{ __('vendor.product_photos_copy') }}</p>
+            </div>
+            <div class="card-body space-y-4">
+                <x-alert type="error" id="photos-alert" />
+                <div id="existing-photos" class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"></div>
+                <div>
+                    <label for="add-photos-input" class="btn-secondary btn-sm cursor-pointer">
+                        {{ __('vendor.add_photos_btn') }}
+                        <input type="file" id="add-photos-input" multiple accept="image/jpeg,image/png,image/gif,image/webp" class="hidden">
+                    </label>
+                </div>
+            </div>
+        </div>
+
         <form id="edit-form" class="space-y-6" novalidate enctype="multipart/form-data">
             <x-products.form-fields />
 
@@ -47,6 +64,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         'failedLoadProduct' => __('vendor.failed_load_product'),
         'failedUpdateProduct' => __('vendor.failed_update_product'),
         'remove' => __('common.remove'),
+        'noPhotosYet' => __('vendor.no_photos_yet'),
+        'primaryLabel' => __('vendor.primary_photo_label'),
+        'setPrimaryBtn' => __('vendor.set_primary_photo_btn'),
+        'removeBtn' => __('common.remove'),
+        'confirmRemovePhoto' => __('vendor.confirm_remove_photo'),
     ]) !!};
     const productId = '{{ $productId }}';
     const form = document.getElementById('edit-form');
@@ -108,6 +130,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         syncSubcategoryOptions();
         subcategorySelect.value = p.subcategory_id || '';
         syncProductTypeSections();
+        renderPhotos(p.photos || []);
         form.description.value = p.description || '';
         document.getElementById('is_active').checked = !!p.is_active;
         document.getElementById('discount_starts_at').value = toDateInput(p.discount_starts_at);
@@ -152,6 +175,96 @@ document.addEventListener('DOMContentLoaded', async function () {
             handleErrors(error);
         } finally {
             toggleLoading(false);
+        }
+    });
+
+    function renderPhotos(photos) {
+        const grid = document.getElementById('existing-photos');
+        if (!grid) {
+            return;
+        }
+
+        if (!photos.length) {
+            grid.innerHTML = `<p class="col-span-full text-sm text-gray-400">${escapeHtml(i18n.noPhotosYet)}</p>`;
+            return;
+        }
+
+        grid.innerHTML = photos.map((photo) => `
+            <div class="relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800" data-photo-id="${photo.id}">
+                <img src="${escapeHtml(photo.url)}" alt="" class="aspect-square w-full object-contain bg-gray-50 p-2 dark:bg-gray-800">
+                ${photo.is_primary ? `<span class="badge badge-brand absolute top-2 start-2">${escapeHtml(i18n.primaryLabel)}</span>` : ''}
+                <div class="flex items-center justify-between gap-1 border-t border-gray-100 p-1.5 dark:border-gray-800">
+                    ${photo.is_primary ? '' : `<button type="button" class="btn-secondary btn-xs flex-1 js-set-primary" data-photo-id="${photo.id}">${escapeHtml(i18n.setPrimaryBtn)}</button>`}
+                    <button type="button" class="btn-danger btn-xs flex-1 js-remove-photo" data-photo-id="${photo.id}">${escapeHtml(i18n.removeBtn)}</button>
+                </div>
+            </div>
+        `).join('');
+
+        grid.querySelectorAll('.js-set-primary').forEach((btn) => {
+            btn.addEventListener('click', () => setPrimaryPhoto(btn.dataset.photoId, btn));
+        });
+        grid.querySelectorAll('.js-remove-photo').forEach((btn) => {
+            btn.addEventListener('click', () => removePhoto(btn.dataset.photoId, btn));
+        });
+    }
+
+    async function reloadPhotos() {
+        try {
+            const res = await window.axios.get(`/api/vendor/products/${productId}/photos`);
+            renderPhotos(res.data.data || []);
+        } catch (error) {}
+    }
+
+    async function setPrimaryPhoto(photoId, button) {
+        button.disabled = true;
+        try {
+            await window.axios.patch(`/api/vendor/products/${productId}/photos/${photoId}/set-primary`);
+            await reloadPhotos();
+        } catch (error) {
+            showPhotosAlert(error.response?.data?.message || i18n.failedUpdateProduct);
+        } finally {
+            button.disabled = false;
+        }
+    }
+
+    async function removePhoto(photoId, button) {
+        if (!window.confirm(i18n.confirmRemovePhoto)) {
+            return;
+        }
+        button.disabled = true;
+        try {
+            await window.axios.delete(`/api/vendor/products/${productId}/photos/${photoId}`);
+            await reloadPhotos();
+        } catch (error) {
+            showPhotosAlert(error.response?.data?.message || i18n.failedUpdateProduct);
+        } finally {
+            button.disabled = false;
+        }
+    }
+
+    function showPhotosAlert(message) {
+        document.getElementById('photos-alert-message').textContent = message;
+        document.getElementById('photos-alert').classList.remove('hidden');
+    }
+
+    document.getElementById('add-photos-input')?.addEventListener('change', async function () {
+        const files = Array.from(this.files || []);
+        if (!files.length) {
+            return;
+        }
+
+        const formData = new FormData();
+        files.forEach((file) => formData.append('photos[]', file));
+
+        try {
+            await window.axios.post(`/api/vendor/products/${productId}/photos`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            await reloadPhotos();
+        } catch (error) {
+            showPhotosAlert(error.response?.data?.message || i18n.failedUpdateProduct);
+        } finally {
+            this.value = '';
         }
     });
 

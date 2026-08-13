@@ -84,9 +84,8 @@
                         <x-form.input name="phone_number" label="Phone Number" type="tel" placeholder="09XXXXXXXX" :required="true" />
                         <x-form.input name="national_id" label="National ID" placeholder="National ID number" :required="true" />
                         <x-form.input name="email" label="Email" type="email" placeholder="you@example.com (optional)" />
-                        <div class="sm:col-span-2">
-                            <x-form.input name="password" label="New Password" type="password" placeholder="Leave blank to keep current" />
-                        </div>
+                        <x-form.input name="password" label="New Password" type="password" placeholder="Leave blank to keep current" />
+                        <x-form.input name="current_password" label="Current Password" type="password" placeholder="Required to set a new password" />
                     </div>
                 </div>
             </div>
@@ -248,7 +247,16 @@ document.addEventListener('DOMContentLoaded', function () {
         formData.append('store_name', form.store_name.value.trim());
 
         if (form.email.value.trim()) formData.append('email', form.email.value.trim());
-        if (form.password.value) formData.append('password', form.password.value);
+        if (form.password.value) {
+            if (!form.current_password.value) {
+                document.getElementById('current_password-error').textContent = 'Enter your current password to set a new one.';
+                document.getElementById('current_password-error').classList.remove('hidden');
+                toggleLoading(false);
+                return;
+            }
+            formData.append('password', form.password.value);
+            formData.append('current_password', form.current_password.value);
+        }
         if (form.address.value.trim()) formData.append('address', form.address.value.trim());
         if (form.description.value.trim()) formData.append('description', form.description.value.trim());
         if (avatarFile) formData.append('avatar', avatarFile);
@@ -284,6 +292,7 @@ document.addEventListener('DOMContentLoaded', function () {
             avatarFile = null;
             logoFile = null;
             form.password.value = '';
+            form.current_password.value = '';
             showAlert('profile-success', 'Profile updated successfully!');
         } catch (error) {
             handleErrors(error);

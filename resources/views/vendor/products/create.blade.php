@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const productSelectionStateBadge = document.getElementById('product-selection-state-badge');
     const agricultureSection = document.querySelector('[data-detail-section="agriculture"]');
     const veterinarySection = document.querySelector('[data-detail-section="veterinary"]');
-    const STORAGE_KEY = 'vendor_product_create_form';
+    const STORAGE_KEY = 'vendor_product_create_form_{{ auth()->id() }}';
     const baseApiPath = '/api/vendor';
     let savedCategoryId = '';
     let savedSubcategoryId = '';

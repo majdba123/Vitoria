@@ -50,3 +50,27 @@ test('vendor commission stats endpoint stays bounded and does not error with old
         ->assertJsonPath('data.financials.completed_order_total', 100)
         ->assertJsonPath('data.category_breakdown.0.sales_total', 100);
 });
+
+test('vendor commission status breakdown accounts for every order status, not just pending/completed/cancelled', function () {
+    $vendor = Vendor::factory()->create();
+    $vendor->user->update(['type' => User::TYPE_VENDOR]);
+    Sanctum::actingAs($vendor->user);
+
+    Order::factory()->for($vendor)->create(['status' => Order::STATUS_PENDING]);
+    Order::factory()->for($vendor)->create(['status' => Order::STATUS_CONFIRMED]);
+    Order::factory()->for($vendor)->create(['status' => Order::STATUS_PREPARING]);
+    Order::factory()->for($vendor)->create(['status' => Order::STATUS_SHIPPED]);
+    Order::factory()->for($vendor)->create(['status' => Order::STATUS_OUT_FOR_DELIVERY]);
+    Order::factory()->for($vendor)->create(['status' => Order::STATUS_COMPLETED]);
+    Order::factory()->for($vendor)->create(['status' => Order::STATUS_CANCELLED]);
+
+    $response = $this->getJson('/api/vendor/commission-stats')->assertOk();
+
+    // Every one of the 7 orders above must land in exactly one bucket —
+    // preparing/shipped/out_for_delivery used to fall through all three and
+    // vanish from the total instead of counting toward "completed".
+    expect($response->json('data.orders.total'))->toBe(7)
+        ->and($response->json('data.orders.status_counts.pending'))->toBe(1)
+        ->and($response->json('data.orders.status_counts.completed'))->toBe(5)
+        ->and($response->json('data.orders.status_counts.cancelled'))->toBe(1);
+});

@@ -44,6 +44,7 @@
         'page' => __('nav.page'),
         'of' => __('nav.of'),
         'failedToLoad' => __('nav.failed_show_notifications'),
+        'noNotifications' => __('nav.no_notifications'),
     ]) !!};
 
     function linkUrl(actionType, actionId) {
@@ -80,7 +81,9 @@
             const total = meta.total || 0;
 
             if (items.length === 0) {
-                document.getElementById('vendor-notif-empty').classList.remove('hidden');
+                const emptyEl = document.getElementById('vendor-notif-empty');
+                emptyEl.querySelector('p').textContent = i18n.noNotifications;
+                emptyEl.classList.remove('hidden');
                 return;
             }
 
