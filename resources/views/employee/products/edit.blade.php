@@ -49,7 +49,6 @@
             <x-alert type="success" id="edit-success" />
 
             <form id="edit-form" class="space-y-5" novalidate>
-                <x-form.input name="name" :label="__('employee.product_name')" :required="false" />
                 <div>
                     <label for="description" class="form-label">{{ __('employee.description') }}</label>
                     <textarea id="description" name="description" rows="4" class="form-textarea"></textarea>
@@ -115,7 +114,6 @@ document.addEventListener('employee-ready', async function () {
     try {
         const response = await window.axios.get('/api/employee/products/' + productId);
         const product = response.data.data;
-        form.name.value = product.name || '';
         form.description.value = product.description || '';
         statusSelect.value = product.status || 'pending';
         document.getElementById('rejection_reason').value = product.rejection_reason || '';
@@ -137,10 +135,8 @@ document.addEventListener('employee-ready', async function () {
         toggleLoading(true);
 
         const formData = new FormData();
-        const name = form.name.value.trim();
         const description = form.description.value.trim();
 
-        if (name) formData.append('name', name);
         if (description) formData.append('description', description);
         if (statusSelect.value) formData.append('status', statusSelect.value);
         if (statusSelect.value === 'rejected') {

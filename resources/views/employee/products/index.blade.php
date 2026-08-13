@@ -118,7 +118,7 @@ document.addEventListener('employee-ready', function () {
                     <td><div class="flex min-w-56 items-center gap-3"><img src="${product.first_photo_url || '/images/product-placeholder.svg'}" class="h-10 w-10 shrink-0 border border-gray-200 object-cover dark:border-gray-700" alt=""><div><p class="font-semibold text-gray-950 dark:text-white">${escapeHtml(product.name || '')}</p>${product.status === 'rejected' && product.rejection_reason ? `<p class="mt-0.5 max-w-xs truncate text-xs text-red-600 dark:text-red-400">${escapeHtml(product.rejection_reason)}</p>` : ''}</div></div></td>
                     <td class="text-gray-600 dark:text-gray-300">${escapeHtml(product.category?.name || '—')}</td>
                     <td><span class="badge ${badgeClass(product.status)}">${escapeHtml(product.status || '')}</span></td>
-                    <td class="text-end font-semibold text-gray-950 dark:text-white" dir="ltr">${escapeHtml(product.price || '')}</td>
+                    <td class="text-end font-semibold text-gray-950 dark:text-white" dir="ltr">${Number.parseFloat(product.price || 0).toLocaleString()} SYP</td>
                     <td class="text-end"><a href="{{ url('/employee/products') }}/${product.id}/edit" class="btn-secondary btn-xs" aria-label="{{ __('employee.review_product') }}: ${escapeHtml(product.name || '')}">{{ __('employee.review_product') }}</a></td>
                 </tr>
             `).join('');

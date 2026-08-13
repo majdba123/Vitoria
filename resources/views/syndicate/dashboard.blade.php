@@ -268,7 +268,7 @@ document.addEventListener('syndicate-ready', async function () {
                     <p class="truncate text-sm font-semibold text-gray-900 dark:text-white">${esc(row.store_name || row.name || '—')}</p>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${row.orders_count != null ? esc(row.orders_count) + ' ' + esc(i18n.totalOrders).toLowerCase() : ''}</p>
                 </div>
-                <span class="badge badge-brand tabular-nums">${row.sales_total != null ? Number(row.sales_total).toLocaleString() : esc(row.products_count || row.count || 0)}</span>
+                <span class="badge badge-brand tabular-nums">${row.sales_total != null ? formatMoney(row.sales_total) : esc(row.products_count || row.count || 0)}</span>
             </div>
         `).join('');
     }
@@ -310,7 +310,7 @@ document.addEventListener('syndicate-ready', async function () {
                 <td class="font-semibold text-gray-900 dark:text-white">${esc(o.order_number || ('#' + o.id))}</td>
                 <td class="text-gray-600 dark:text-gray-300">${esc(o.user?.name || '—')}</td>
                 <td class="text-gray-600 dark:text-gray-300">${esc(o.vendor?.store_name || '—')}</td>
-                <td class="text-end tabular-nums">${Number(o.total_amount || 0).toLocaleString()}</td>
+                <td class="text-end tabular-nums">${formatMoney(o.total_amount)}</td>
                 <td><span class="badge ${orderStatusBadge(o.status)}">${esc(orderStatusLabel(o.status))}</span></td>
             </tr>`,
         },
