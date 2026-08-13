@@ -253,6 +253,7 @@ window.szCategoryThumbHtml = categoryThumbHtml;
         0 => __('nav.customer'),
         1 => __('nav.admin'),
         2 => __('nav.business_account'),
+        3 => __('nav.syndicate'),
         4 => __('nav.employee'),
     ];
     $navDefaultRole = __('nav.customer');
@@ -383,6 +384,9 @@ function updateNavbar() {
         } else if (user.type === 4) {
             if (dashLink) { dashLink.href = '{{ url("/employee/dashboard") }}'; dashLink.classList.remove('hidden'); dashLink.classList.add('flex'); }
             if (mobDash) { mobDash.href = '{{ url("/employee/dashboard") }}'; mobDash.classList.remove('hidden'); }
+        } else if (user.type === 3) {
+            if (dashLink) { dashLink.href = '{{ url("/syndicate/dashboard") }}'; dashLink.classList.remove('hidden'); dashLink.classList.add('flex'); }
+            if (mobDash) { mobDash.href = '{{ url("/syndicate/dashboard") }}'; mobDash.classList.remove('hidden'); }
         }
         el('nav-notifications-wrap')?.classList.remove('hidden');
         updateNotificationBadge();

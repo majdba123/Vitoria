@@ -445,7 +445,8 @@ document.addEventListener('syndicate-ready', async function () {
     }
 
     function orderStatusBadge(status) {
-        if (status === 'completed' || status === 'confirmed') return 'badge-success';
+        if (status === 'completed' || status === 'confirmed' || status === 'preparing') return 'badge-success';
+        if (status === 'shipped' || status === 'out_for_delivery') return 'badge-info';
         if (status === 'cancelled') return 'badge-danger';
         return 'badge-warning';
     }

@@ -53,6 +53,8 @@ return [
     'customer' => 'عميل',
     'admin' => 'مسؤول',
     'business_account' => 'حساب تجاري',
+    'employee' => 'موظف',
+    'syndicate' => 'نقابة',
     'tap_category_prompt' => 'اضغط على تصنيف',
     'close_menu' => 'إغلاق القائمة',
     'toggle_theme_aria' => 'تبديل الوضع الفاتح أو الداكن',

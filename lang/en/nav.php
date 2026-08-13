@@ -53,6 +53,8 @@ return [
     'customer' => 'Customer',
     'admin' => 'Admin',
     'business_account' => 'Business account',
+    'employee' => 'Employee',
+    'syndicate' => 'Syndicate',
     'tap_category_prompt' => 'Tap a category',
     'close_menu' => 'Close menu',
     'toggle_theme_aria' => 'Toggle light or dark theme',

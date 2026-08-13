@@ -16,6 +16,9 @@
                 <option value="">All Statuses</option>
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
+                <option value="preparing">Preparing</option>
+                <option value="shipped">Shipped</option>
+                <option value="out_for_delivery">Out for Delivery</option>
                 <option value="completed">Completed</option>
                 <option value="cancelled">Cancelled</option>
             </select>
@@ -121,7 +124,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     function esc(value) { const d = document.createElement('div'); d.textContent = value || ''; return d.innerHTML; }
     function statusClass(status) {
-        if (status === 'completed' || status === 'confirmed') return 'badge-success';
+        if (status === 'completed' || status === 'confirmed' || status === 'preparing') return 'badge-success';
+        if (status === 'shipped' || status === 'out_for_delivery') return 'badge-info';
         if (status === 'cancelled') return 'badge-danger';
         return 'badge-warning';
     }
