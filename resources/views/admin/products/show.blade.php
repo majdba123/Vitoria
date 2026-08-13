@@ -640,7 +640,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function formatCurrency(value) {
-        return `$${Number(value || 0).toFixed(2)}`;
+        return `${Number(value || 0).toLocaleString()} SYP`;
     }
 
     function formatDateOnly(value) {

@@ -304,8 +304,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 </td>
                 <td class="text-end tabular-nums">
                     ${p.has_active_discount
-                        ? `<span class="badge badge-danger align-middle">-${parseFloat(p.discount_percentage || 0).toFixed(0)}%</span> <span class="font-semibold" style="color: var(--color-danger-strong)">$${parseFloat(p.discounted_price || p.price || 0).toFixed(2)}</span> <span class="text-xs text-gray-400 line-through">$${parseFloat(p.price || 0).toFixed(2)}</span>`
-                        : `<span class="font-semibold text-gray-900 dark:text-white">$${parseFloat(p.price || 0).toFixed(2)}</span>`
+                        ? `<span class="badge badge-danger align-middle">-${parseFloat(p.discount_percentage || 0).toFixed(0)}%</span> <span class="font-semibold" style="color: var(--color-danger-strong)">${parseFloat(p.discounted_price || p.price || 0).toLocaleString()} SYP</span> <span class="text-xs text-gray-400 line-through">${parseFloat(p.price || 0).toLocaleString()} SYP</span>`
+                        : `<span class="font-semibold text-gray-900 dark:text-white">${parseFloat(p.price || 0).toLocaleString()} SYP</span>`
                     }
                 </td>
                 <td class="text-end tabular-nums text-gray-600 dark:text-gray-300">${p.quantity}</td>

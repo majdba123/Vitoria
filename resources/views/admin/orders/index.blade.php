@@ -16,6 +16,9 @@
                 <option value="">All Statuses</option>
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
+                <option value="preparing">Preparing</option>
+                <option value="shipped">Shipped</option>
+                <option value="out_for_delivery">Out for delivery</option>
                 <option value="completed">Completed</option>
                 <option value="cancelled">Cancelled</option>
             </select>
@@ -99,8 +102,8 @@ document.addEventListener('DOMContentLoaded', function () {
     async function loadFilterData() {
         try {
             const [usersRes, vendorsRes, categoriesRes] = await Promise.all([
-                window.axios.get('/api/admin/users'),
-                window.axios.get('/api/vendors'),
+                window.axios.get('/api/admin/users?per_page=200'),
+                window.axios.get('/api/admin/vendors?per_page=200'),
                 window.axios.get('/api/categories?per_page=100'),
             ]);
 
@@ -199,6 +202,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const cls = {
             pending: 'badge-warning',
             confirmed: 'badge-success',
+            preparing: 'badge-success',
+            shipped: 'badge-info',
+            out_for_delivery: 'badge-info',
             completed: 'badge-info',
             cancelled: 'badge-danger',
         };

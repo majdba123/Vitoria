@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             { value: 'veterinary_medicine', label: 'Veterinary Medicine' },
         ],
     };
-    const STORAGE_KEY = 'admin_product_create_form';
+    const STORAGE_KEY = 'admin_product_create_form_{{ auth()->id() }}';
     const baseApiPath = '/api/admin';
     let savedVendorId = '';
     let savedCategoryId = '';

@@ -154,6 +154,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         const classes = {
             pending: 'badge-warning',
             confirmed: 'badge-success',
+            preparing: 'badge-success',
+            shipped: 'badge-info',
+            out_for_delivery: 'badge-info',
             completed: 'badge-info',
             cancelled: 'badge-danger',
         };
@@ -165,7 +168,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (!btn) {
             return;
         }
-        if (status === 'cancelled' || status === 'completed') {
+        // Order::TRANSITIONS only allows out_for_delivery -> completed; the
+        // API rejects every other source status, so only offer the button
+        // when it would actually succeed instead of inviting a guaranteed
+        // "cannot move from X to Completed" error.
+        if (status !== 'out_for_delivery') {
             btn.classList.add('hidden');
             return;
         }
