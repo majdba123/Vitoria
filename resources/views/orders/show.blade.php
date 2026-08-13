@@ -93,6 +93,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
     const orderId = '{{ $orderId }}';
+    const cancellableStatuses = @json(\App\Models\Order::CANCELLABLE_STATUSES);
 
     try {
         const response = await window.axios.get('/api/orders/' + orderId);
@@ -175,6 +176,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         const classes = {
             pending: 'badge-warning',
             confirmed: 'badge-success',
+            preparing: 'badge-success',
+            shipped: 'badge-info',
+            out_for_delivery: 'badge-info',
             completed: 'badge-info',
             cancelled: 'badge-danger',
         };
@@ -186,7 +190,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (!btn) {
             return;
         }
-        if (status === 'cancelled' || status === 'completed') {
+        // Order::CANCELLABLE_STATUSES only allows pending/confirmed/preparing
+        // — shipped and out_for_delivery orders can no longer be cancelled,
+        // so don't offer a button that's guaranteed to fail for those.
+        if (!cancellableStatuses.includes(status)) {
             btn.classList.add('hidden');
             return;
         }

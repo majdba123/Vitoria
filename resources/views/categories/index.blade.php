@@ -98,20 +98,24 @@ document.addEventListener('DOMContentLoaded', async function() {
         selectedType ? nextUrl.searchParams.set('type', selectedType) : nextUrl.searchParams.delete('type');
         window.history.replaceState({}, '', nextUrl.pathname + nextUrl.search);
 
-        const response = await axios.get('/api/categories?' + query.toString());
-        const categories = response.data.data || [];
-        document.getElementById('loading').classList.add('hidden');
-        document.getElementById('grid').innerHTML = categories.map(category => `
-            <article class="category-directory-card">
-                <div class="category-directory-media">${categoryMedia(category)}</div>
-                <a href="${typedPageHref('/categories/' + category.id)}" class="flex min-w-0 items-center gap-4 p-5 focus:outline-none focus:ring-2 focus:ring-brand-500/30">
-                    <div class="min-w-0 flex-1">
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">${esc(category.name)}</h2>
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${esc(commissionLine(category.commission))}</p>
-                    </div>
-                    <svg class="h-5 w-5 shrink-0 text-gray-400 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
-                </a>
-            </article>`).join('');
+        try {
+            const response = await axios.get('/api/categories?' + query.toString());
+            const categories = response.data.data || [];
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('grid').innerHTML = categories.map(category => `
+                <article class="category-directory-card">
+                    <div class="category-directory-media">${categoryMedia(category)}</div>
+                    <a href="${typedPageHref('/categories/' + category.id)}" class="flex min-w-0 items-center gap-4 p-5 focus:outline-none focus:ring-2 focus:ring-brand-500/30">
+                        <div class="min-w-0 flex-1">
+                            <h2 class="text-lg font-bold text-gray-900 dark:text-white">${esc(category.name)}</h2>
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">${esc(commissionLine(category.commission))}</p>
+                        </div>
+                        <svg class="h-5 w-5 shrink-0 text-gray-400 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                    </a>
+                </article>`).join('');
+        } catch (error) {
+            document.getElementById('loading').innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">' + esc(catPageI18n.loadErr || '') + '</p>';
+        }
     }
 
     document.querySelectorAll('.category-type-filter').forEach(button => {
@@ -121,11 +125,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     });
 
-    try {
-        await loadCategories();
-    } catch (error) {
-        document.getElementById('loading').innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">' + esc(catPageI18n.loadErr || '') + '</p>';
-    }
+    loadCategories();
 });
 </script>
 @endpush
