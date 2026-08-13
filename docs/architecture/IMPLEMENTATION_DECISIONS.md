@@ -534,18 +534,49 @@ only mutations are audit-logged).
 
 ---
 
+## D22 — CMS: two flat tables, no page-builder, no revision history
+
+**Evidence:** §38 asks for admin-managed static content (About/Terms/Privacy/FAQ-style
+pages) and homepage banners. Nothing in the spec calls for a page-builder (arbitrary
+block layouts), draft/review workflow, or version history — pages and banners each need
+exactly one current version, editable in place.
+
+**Decision:** two flat tables. `pages` (`slug`, bilingual `title_en`/`title_ar` and
+`content_en`/`content_ar`, `meta_title`/`meta_description`, `is_published`) and `banners`
+(`image_path`, optional `link_url`, `sort_order`, `is_active`, optional `starts_at`/
+`ends_at` window). `content_en`/`content_ar` are stored as plain long text — the admin
+frontend is responsible for whatever rich-text editing it wants; the API does not attempt
+to sanitize or interpret markup, since page content is admin-authored, not user-submitted.
+
+Public reads (`GET /pages/{slug}`, `GET /banners`) only ever return published pages /
+currently-visible banners (`Banner::currentlyVisible()` checks `is_active` and the
+optional `starts_at`/`ends_at` window) — an admin previewing a draft page must use the
+admin `show` endpoint, which returns regardless of `is_published`.
+
+Banner image uploads reuse the same `public` disk pattern as product photos
+(`ProductService::addPhotos`) rather than inventing a new storage convention. Deleting a
+banner deletes its stored file; replacing a banner's image on update deletes the old file
+after the new one is stored successfully.
+
+Both page and banner writes are audit-logged (`page.created`/`.updated`/`.deleted`,
+`banner.created`/`.updated`/`.deleted`) under the same policy as D20: they are admin
+mutations of publicly-visible content, so the same "who changed this and when" question
+applies as it does to coupons or footer settings.
+
+---
+
 ## Deferred — not built, not documented as built
 
 §11 payments, §12 returns, §13 refunds, §14 shipping, §19 invoices, §20 vendor
 ledger/settlements, §22 vendor staff, §23 RBAC (vendor-scoped), §24 vendor documents,
 §25 product documents, §29 product comparison, §33 notification preferences (in-app
-only), §35 audit log, §36 reports, and §37 exports are now implemented — see
+only), §35 audit log, §36 reports, §37 exports, and §38 CMS are now implemented — see
 [COMMERCE_ARCHITECTURE.md §12–17](COMMERCE_ARCHITECTURE.md#12-payments-phase-c),
 [VENDOR_STAFF_RBAC.md](VENDOR_STAFF_RBAC.md), [VENDOR_DOCUMENTS.md](VENDOR_DOCUMENTS.md),
 [PRODUCT_DOCUMENTS.md](PRODUCT_DOCUMENTS.md), and [TEST_COVERAGE.md](../testing/TEST_COVERAGE.md).
 
 Still deferred: §23 RBAC for admin/employee/syndicate/customer (no requirement yet) ·
-§38 CMS · §39 SEO · §40–52 UI redesign.
+§39 SEO · §40–52 UI redesign.
 
 These remain open scope. Their absence is stated here so no reader mistakes a plan for
 an implementation.

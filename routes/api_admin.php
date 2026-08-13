@@ -29,6 +29,9 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::get('exports/orders', [\App\Http\Controllers\Api\Admin\ExportController::class, 'orders'])->middleware('throttle:dashboard.stats')->name('exports.orders');
     Route::get('exports/products', [\App\Http\Controllers\Api\Admin\ExportController::class, 'products'])->middleware('throttle:dashboard.stats')->name('exports.products');
     Route::get('exports/vendors', [\App\Http\Controllers\Api\Admin\ExportController::class, 'vendors'])->middleware('throttle:dashboard.stats')->name('exports.vendors');
+    Route::apiResource('pages', \App\Http\Controllers\Api\Admin\PageController::class)->except(['show'])->middleware('throttle:api.write');
+    Route::apiResource('pages', \App\Http\Controllers\Api\Admin\PageController::class)->only(['show']);
+    Route::apiResource('banners', \App\Http\Controllers\Api\Admin\BannerController::class)->only(['index', 'store', 'update', 'destroy'])->middleware('throttle:api.write');
     Route::get('cities/import/template', [\App\Http\Controllers\Api\Admin\CityController::class, 'importTemplate'])->name('cities.import-template');
     Route::post('cities/import', [\App\Http\Controllers\Api\Admin\CityController::class, 'import'])->middleware('throttle:uploads')->name('cities.import');
     Route::get('categories/import/template', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'importTemplate'])->name('categories.import-template');

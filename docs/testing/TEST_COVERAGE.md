@@ -3,15 +3,15 @@
 Last run: 2026-08-12 · `php artisan test`
 
 ```
-Tests:    277 passed (1514 assertions)
-Duration: 79.48s
+Tests:    282 passed (1532 assertions)
+Duration: 79.03s
 ```
 
-Baseline before this program: 145 passed (913 assertions). **132 tests added, 0
+Baseline before this program: 145 passed (913 assertions). **137 tests added, 0
 regressions** (45 from Phase B; 17 from payments/returns/refunds; 13 from
 shipping/invoices/vendor ledger; 11 from vendor staff/RBAC; 11 from vendor documents;
 7 from product documents; 7 from notification preferences; 7 from product comparison;
-8 from the admin audit log; 6 from admin reports and exports).
+8 from the admin audit log; 6 from admin reports and exports; 5 from CMS pages/banners).
 
 The checkout flow was additionally exercised end-to-end in a real browser
 against the dev server — guest cart → login merge → address creation → order
@@ -293,6 +293,18 @@ Covers spec §36, §37.
 | exports vendors as a CSV filtered by status | the `status` query filter narrows which rows are streamed |
 | **rejects report and export access from a non-admin user** | both report and export endpoints 403 for a non-admin actor |
 
+### `tests/Feature/CmsTest.php` — 5 tests
+
+Covers spec §38.
+
+| Test | Property proved |
+|---|---|
+| lets an admin create, update, and delete a page | full CRUD lifecycle persists and removes correctly |
+| **only exposes published pages on the public endpoint** | an unpublished page 404s on the public route even though it exists |
+| lets an admin upload a banner and only shows currently-visible ones publicly | uploaded file is stored on the public disk; an inactive banner is excluded from the public list |
+| deletes the stored image file when a banner is deleted | the banner's disk file is actually removed, not just the DB row |
+| rejects page and banner management from a non-admin user | both admin CMS endpoints 403 for a non-admin actor |
+
 ---
 
 ## Not yet covered
@@ -300,7 +312,7 @@ Covers spec §36, §37.
 These areas have no tests because the features are not implemented. Listed so the
 gap is explicit rather than implied by omission:
 
-CMS · SEO.
+SEO.
 
 ## Known gaps in what *is* implemented
 
