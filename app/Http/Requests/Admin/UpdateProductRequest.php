@@ -47,7 +47,7 @@ class UpdateProductRequest extends FormRequest
             'photo_types.*' => ['required', Rule::in(ProductPhoto::allowedTypes())],
             'photo_sort_orders' => ['sometimes', 'array'],
             'photo_sort_orders.*' => ['nullable', 'integer', 'min:1'],
-        ], $this->localizedNameRules(), $this->sharedDetailRules(), $this->agriculturalDetailRules(), $this->veterinaryDetailRules());
+        ], $this->localizedNameRules(), $this->metaRules(), $this->sharedDetailRules(), $this->agriculturalDetailRules(), $this->veterinaryDetailRules());
     }
 
     protected function prepareForValidation(): void

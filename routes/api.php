@@ -83,6 +83,9 @@ Route::middleware(['web', 'cache.response:120'])->group(function () {
     Route::get('banners', [\App\Http\Controllers\Api\BannerController::class, 'index'])->name('banners.index');
 });
 
+Route::get('sitemap.xml', [\App\Http\Controllers\Api\SeoController::class, 'sitemap'])->middleware('throttle:public.browse')->name('sitemap');
+Route::get('robots.txt', [\App\Http\Controllers\Api\SeoController::class, 'robots'])->middleware('throttle:public.browse')->name('robots');
+
 Route::prefix('external/products')->as('external.products.')->group(function () {
     Route::get('/', [\App\Http\Controllers\Api\ProductController::class, 'externalIndex'])->name('index');
     Route::get('/{product}', [\App\Http\Controllers\Api\ProductController::class, 'externalShow'])->name('show');

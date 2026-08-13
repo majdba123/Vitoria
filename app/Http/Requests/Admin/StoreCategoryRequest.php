@@ -28,6 +28,8 @@ class StoreCategoryRequest extends FormRequest
             'type' => ['required', Rule::in([Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY])],
             'logo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:4096'],
             'commission' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string', 'max:500'],
         ];
     }
 

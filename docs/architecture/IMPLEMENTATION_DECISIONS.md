@@ -565,18 +565,60 @@ applies as it does to coupons or footer settings.
 
 ---
 
+## D23 — SEO: meta fields plus sitemap/robots, no URL slugs
+
+**Evidence:** §39 asks for search-engine-facing metadata and discoverability. Product and
+category URLs are id-based throughout the existing frontend and API
+(`/api/products/{product}`, `/api/categories/{category}`) — introducing slugs would be a
+routing change touching every existing link, with no requirement in the spec calling for
+it specifically (a numeric URL is still crawlable and indexable; it's just not as
+readable). That rewrite was out of scope for this pass.
+
+**Decision:** additive-only migration adds nullable `meta_title`/`meta_description` to
+`products` and `categories` (already present on `pages` from §38). Wired into the
+existing Admin and Vendor product store/update requests via a shared `metaRules()` helper
+on `InteractsWithProductDetails`, and into the admin category store/update requests — no
+new endpoints needed since both models already mass-assign their validated payload.
+
+`GET /api/sitemap.xml` lists the homepage, every published page, every category, and
+every active+approved product (pending/rejected/inactive products are excluded — nothing
+to gain from indexing something a shopper cannot actually buy). `GET /api/robots.txt`
+allows crawling by default and disallows `/api/admin/` and `/api/vendor/`, pointing at the
+sitemap. Both are served under `/api/` (matching where every other route in this app
+lives) rather than at the bare domain root — the frontend/edge server is responsible for
+proxying `/sitemap.xml` and `/robots.txt` to these routes if search engines need them at
+the conventional root path; that reverse-proxy config is outside this Laravel app's
+repository.
+
+---
+
 ## Deferred — not built, not documented as built
 
 §11 payments, §12 returns, §13 refunds, §14 shipping, §19 invoices, §20 vendor
 ledger/settlements, §22 vendor staff, §23 RBAC (vendor-scoped), §24 vendor documents,
 §25 product documents, §29 product comparison, §33 notification preferences (in-app
-only), §35 audit log, §36 reports, §37 exports, and §38 CMS are now implemented — see
+only), §35 audit log, §36 reports, §37 exports, §38 CMS, and §39 SEO are now
+implemented — see
 [COMMERCE_ARCHITECTURE.md §12–17](COMMERCE_ARCHITECTURE.md#12-payments-phase-c),
 [VENDOR_STAFF_RBAC.md](VENDOR_STAFF_RBAC.md), [VENDOR_DOCUMENTS.md](VENDOR_DOCUMENTS.md),
 [PRODUCT_DOCUMENTS.md](PRODUCT_DOCUMENTS.md), and [TEST_COVERAGE.md](../testing/TEST_COVERAGE.md).
 
-Still deferred: §23 RBAC for admin/employee/syndicate/customer (no requirement yet) ·
-§39 SEO · §40–52 UI redesign.
+Still deferred: §40–52 UI redesign (frontend scope, tracked separately).
+
+**§23 RBAC for admin/employee/syndicate/customer — deliberately not built.** Re-evaluated
+after §22's vendor RBAC shipped, since that's the obvious template to reuse. It doesn't
+apply here: D3's original reasoning still holds. Admin, employee, syndicate, and customer
+are four fixed, non-overlapping `users.type` values with no internal sub-roles anywhere in
+the codebase — unlike a vendor, which is one account that can have many staff members each
+needing different permissions *within* that one vendor. There is no second admin-type actor
+that needs a narrower permission set than "admin," no employee sub-role, and no
+requirement describing one. Building a `roles`/`permissions` layer for types that only
+ever have one role each would be exactly the premature generalization D3 rejected the
+first time — a parallel table with a 1:1 mapping to `users.type`, adding a lookup for a
+fact `users.type` already encodes directly. If a real requirement for admin sub-roles
+(e.g. a "support admin" who cannot touch vendor commissions) shows up, the existing
+`roles`/`permissions`/`role_permissions` tables the vendor-staff feature built are already
+generic enough to extend to a second actor type without a schema change — only new rows.
 
 These remain open scope. Their absence is stated here so no reader mistakes a plan for
 an implementation.

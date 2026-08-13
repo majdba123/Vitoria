@@ -50,6 +50,8 @@ class Product extends Model
         'discount_status',
         'status',
         'rejection_reason',
+        'meta_title',
+        'meta_description',
     ];
 
     /**

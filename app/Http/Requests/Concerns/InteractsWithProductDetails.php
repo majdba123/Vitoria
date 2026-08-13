@@ -20,6 +20,20 @@ trait InteractsWithProductDetails
     }
 
     /**
+     * SEO meta fields (spec §39) — optional on every product form regardless
+     * of actor (admin/vendor/employee).
+     *
+     * @return array<string, array<int, string>>
+     */
+    protected function metaRules(): array
+    {
+        return [
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string', 'max:500'],
+        ];
+    }
+
+    /**
      * @return array<string, array<int, string>>
      */
     protected function sharedDetailRules(bool $required = false): array

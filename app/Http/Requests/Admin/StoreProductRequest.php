@@ -42,7 +42,7 @@ class StoreProductRequest extends FormRequest
             'photo_types.*' => ['required', Rule::in(ProductPhoto::allowedTypes())],
             'photo_sort_orders' => ['nullable', 'array'],
             'photo_sort_orders.*' => ['nullable', 'integer', 'min:1'],
-        ], $this->localizedNameRules(true), $this->sharedDetailRules(true), $this->agriculturalDetailRules(true), $this->veterinaryDetailRules(true));
+        ], $this->localizedNameRules(true), $this->metaRules(), $this->sharedDetailRules(true), $this->agriculturalDetailRules(true), $this->veterinaryDetailRules(true));
     }
 
     /**

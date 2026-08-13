@@ -34,6 +34,8 @@ class Category extends Model
         'icon',
         'icon_class',
         'commission',
+        'meta_title',
+        'meta_description',
     ];
 
     /**

@@ -3,15 +3,16 @@
 Last run: 2026-08-12 · `php artisan test`
 
 ```
-Tests:    282 passed (1532 assertions)
-Duration: 79.03s
+Tests:    285 passed (1543 assertions)
+Duration: 63.39s
 ```
 
-Baseline before this program: 145 passed (913 assertions). **137 tests added, 0
+Baseline before this program: 145 passed (913 assertions). **140 tests added, 0
 regressions** (45 from Phase B; 17 from payments/returns/refunds; 13 from
 shipping/invoices/vendor ledger; 11 from vendor staff/RBAC; 11 from vendor documents;
 7 from product documents; 7 from notification preferences; 7 from product comparison;
-8 from the admin audit log; 6 from admin reports and exports; 5 from CMS pages/banners).
+8 from the admin audit log; 6 from admin reports and exports; 5 from CMS pages/banners;
+3 from SEO).
 
 The checkout flow was additionally exercised end-to-end in a real browser
 against the dev server — guest cart → login merge → address creation → order
@@ -305,14 +306,22 @@ Covers spec §38.
 | deletes the stored image file when a banner is deleted | the banner's disk file is actually removed, not just the DB row |
 | rejects page and banner management from a non-admin user | both admin CMS endpoints 403 for a non-admin actor |
 
+### `tests/Feature/SeoTest.php` — 3 tests
+
+Covers spec §39.
+
+| Test | Property proved |
+|---|---|
+| persists meta_title and meta_description on a category | admin category writes accept and store the new SEO fields |
+| **only lists published pages and approved active products in the sitemap** | a pending product is excluded from sitemap.xml even though it exists |
+| serves robots.txt pointing at the sitemap | robots.txt is reachable and references the sitemap URL |
+
 ---
 
 ## Not yet covered
 
-These areas have no tests because the features are not implemented. Listed so the
-gap is explicit rather than implied by omission:
-
-SEO.
+All spec sections through §39 now have at least baseline test coverage. §40–52 (UI
+redesign) is frontend scope tracked separately.
 
 ## Known gaps in what *is* implemented
 
