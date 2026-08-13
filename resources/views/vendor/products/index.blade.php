@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         'page' => __('nav.page'),
         'of' => __('nav.of'),
         'total' => __('vendor.total_label'),
+        'outOfStock' => __('nav.out_of_stock'),
     ]) !!};
     let currentPage = 1;
     const categorySelect = document.getElementById('filter-category');
@@ -149,7 +150,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
         empty.classList.add('hidden');
         gridW.classList.remove('hidden');
-        grid.innerHTML = products.map(p => `<div class="card"><div class="card-body"><h3 class="text-base font-semibold text-gray-900">${esc(p.name)}</h3><p class="mt-1 text-sm text-gray-500">${esc(p.commercial_name || p.category?.name || '')}</p><div class="mt-3 flex items-center justify-between"><span class="text-lg font-bold text-gray-900">$${parseFloat(p.price || 0).toFixed(2)}</span><span class="badge ${p.is_active ? 'badge-success' : 'badge-danger'}">${p.is_active ? esc(i18n.active) : esc(i18n.inactive)}</span></div><div class="mt-4 flex gap-2"><a href="/vendor/products/${p.id}" class="btn-secondary btn-xs flex-1">${esc(i18n.show)}</a><a href="/vendor/products/${p.id}/edit" class="btn-primary btn-xs flex-1">${esc(i18n.edit)}</a></div></div></div>`).join('');
+        grid.innerHTML = products.map(p => {
+            const photo = p.first_photo_url || p.fallback_photo_url;
+            const priceHtml = p.has_active_discount
+                ? `<span class="text-lg font-bold text-gray-900">${fmtMoney(p.discounted_price)}</span> <span class="text-xs text-gray-400 line-through">${fmtMoney(p.price)}</span>`
+                : `<span class="text-lg font-bold text-gray-900">${fmtMoney(p.price)}</span>`;
+            const outOfStock = Number(p.quantity || 0) <= 0;
+
+            return `<div class="card"><div class="aspect-square overflow-hidden bg-gray-50"><img src="${esc(photo)}" alt="${esc(p.name)}" class="h-full w-full object-contain p-3" loading="lazy" onerror="this.onerror=null;this.src='${esc(p.fallback_photo_url)}'"></div><div class="card-body"><h3 class="text-base font-semibold text-gray-900">${esc(p.name)}</h3><p class="mt-1 text-sm text-gray-500">${esc(p.commercial_name || p.category?.name || '')}</p><div class="mt-3 flex items-center justify-between gap-2"><span>${priceHtml}</span><span class="badge ${p.is_active ? 'badge-success' : 'badge-danger'}">${p.is_active ? esc(i18n.active) : esc(i18n.inactive)}</span></div>${outOfStock ? `<p class="mt-1.5 text-xs font-semibold text-danger-600">${esc(i18n.outOfStock)}</p>` : ''}<div class="mt-4 flex gap-2"><a href="/vendor/products/${p.id}" class="btn-secondary btn-xs flex-1">${esc(i18n.show)}</a><a href="/vendor/products/${p.id}/edit" class="btn-primary btn-xs flex-1">${esc(i18n.edit)}</a></div></div></div>`;
+        }).join('');
     }
 
     function renderPagination(meta) {
@@ -160,6 +169,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function showLoading(s) { document.getElementById('products-loading').classList.toggle('hidden', !s); }
+    function fmtMoney(v) { return Number(v || 0).toLocaleString() + ' SYP'; }
     function showAlert(id, msg) {
         const b = document.getElementById(id);
         document.getElementById(id + '-message').textContent = msg;

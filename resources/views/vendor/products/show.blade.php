@@ -333,8 +333,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         element('product-subcategory').textContent = subcategoryName;
         element('product-type').textContent = productType;
         element('product-description').textContent = product.description || ui.no_description;
-        element('product-price').textContent = formatCurrency(product.price);
-        element('product-price-secondary').textContent = formatCurrency(product.price);
+        const priceText = product.has_active_discount
+            ? `${formatCurrency(product.discounted_price)} (${formatCurrency(product.price)})`
+            : formatCurrency(product.price);
+        element('product-price').textContent = priceText;
+        element('product-price-secondary').textContent = priceText;
         element('product-quantity').textContent = `${Number(product.quantity || 0).toLocaleString()} ${ui.units}`;
         element('product-quantity-secondary').textContent = `${Number(product.quantity || 0).toLocaleString()} ${ui.units}`;
         element('product-registration').textContent = registration;
@@ -499,7 +502,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function formatCurrency(value) {
-        return `$${Number(value || 0).toFixed(2)}`;
+        return `${Number(value || 0).toLocaleString()} SYP`;
     }
 
     function hasValue(value) {
