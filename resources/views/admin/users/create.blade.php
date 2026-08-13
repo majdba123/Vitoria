@@ -39,9 +39,9 @@
                             <select id="type" name="type" class="form-select">
                                 <option value="0">User</option>
                                 <option value="1">Admin</option>
-                                <option value="2">Vendor</option>
                                 <option value="4" @selected(request('type') == 4)>Employee</option>
                             </select>
+                            <p class="mt-1 text-xs text-gray-400">To create a vendor account, use <a href="{{ route('admin.vendors.create') }}" class="text-brand-600 underline">Add Vendor</a> instead — it creates the store profile this form doesn't.</p>
                             <p class="form-error" id="type-error"></p>
                         </div>
                     </div>

@@ -33,7 +33,13 @@ class UpdateUserRequest extends FormRequest
             'membership_number' => ['sometimes', 'nullable', 'string', 'max:100', Rule::unique('users', 'membership_number')->ignore($userId)],
             'email' => ['nullable', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
             'password' => ['sometimes', 'nullable', 'string', 'min:6'],
-            'type' => ['sometimes', 'nullable', 'integer', Rule::in([User::TYPE_USER, User::TYPE_ADMIN, User::TYPE_VENDOR, User::TYPE_EMPLOYEE])],
+            // Vendor and syndicate are both included here (unlike
+            // StoreUserRequest, which excludes them) — an existing vendor or
+            // syndicate account edited through this generic form always
+            // resubmits its current type (see admin/users/edit.blade.php),
+            // so rejecting it would break saving any other field on that
+            // account, not just prevent new broken ones from being created.
+            'type' => ['sometimes', 'nullable', 'integer', Rule::in([User::TYPE_USER, User::TYPE_ADMIN, User::TYPE_VENDOR, User::TYPE_SYNDICATE, User::TYPE_EMPLOYEE])],
         ];
     }
 }

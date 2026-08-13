@@ -31,7 +31,14 @@ class StoreUserRequest extends FormRequest
             'membership_number' => ['sometimes', 'nullable', 'string', 'max:100', 'unique:users,membership_number'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6'],
-            'type' => ['sometimes', 'integer', Rule::in([User::TYPE_USER, User::TYPE_ADMIN, User::TYPE_VENDOR, User::TYPE_EMPLOYEE])],
+            // Vendor and syndicate accounts are deliberately excluded: both
+            // need a paired row (vendors / syndicates) created atomically
+            // with the user, which only their dedicated creation endpoints
+            // (POST /api/admin/vendors, /api/admin/syndicates) do. Allowing
+            // type here would let this endpoint mint a "vendor" user with no
+            // vendors row — an account that's locked out of every vendor
+            // feature since User::managedVendor() would always return null.
+            'type' => ['sometimes', 'integer', Rule::in([User::TYPE_USER, User::TYPE_ADMIN, User::TYPE_EMPLOYEE])],
         ];
     }
 

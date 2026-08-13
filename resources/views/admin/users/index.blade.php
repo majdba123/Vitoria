@@ -104,8 +104,8 @@ function initAdminUsersPage() {
     let deleteUserId = null;
     const deleteDialog = window.wireAccessibleDialog(document.getElementById('delete-modal'), closeDeleteModal, { labelledBy: 'delete-modal-title' });
     const filterType = new URLSearchParams(window.location.search).get('type') || '';
-    const typeLabels = { 0: 'User', 1: 'Admin', 2: 'Vendor', 4: 'Employee' };
-    const typeBadge = { 0: 'badge-info', 1: 'badge-purple', 2: 'badge-brand', 4: 'badge-cyan' };
+    const typeLabels = { 0: 'User', 1: 'Admin', 2: 'Vendor', 3: 'Syndicate', 4: 'Employee' };
+    const typeBadge = { 0: 'badge-info', 1: 'badge-purple', 2: 'badge-brand', 3: 'badge-warning', 4: 'badge-cyan' };
     const usersLoading = document.getElementById('users-loading');
     const usersEmpty = document.getElementById('users-empty');
     const usersTableWrapper = document.getElementById('users-table-wrapper');
