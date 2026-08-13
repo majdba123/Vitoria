@@ -237,26 +237,14 @@
                 <p class="dashboard-section-copy">{{ __('admin.recent_activity_copy') }}</p>
             </div>
 
-            <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
-                <div class="card">
-                    <div class="panel-heading">
-                        <div>
-                            <h4 class="dashboard-section-title">{{ __('admin.recent_vendors_title') }}</h4>
-                            <p class="dashboard-section-copy">{{ __('admin.recent_vendors_copy') }}</p>
-                        </div>
+            <div class="card">
+                <div class="panel-heading">
+                    <div>
+                        <h4 class="dashboard-section-title">{{ __('admin.recent_vendors_title') }}</h4>
+                        <p class="dashboard-section-copy">{{ __('admin.recent_vendors_copy') }}</p>
                     </div>
-                    <div id="recent-vendors" class="card-body space-y-3"></div>
                 </div>
-
-                <div class="card">
-                    <div class="panel-heading">
-                        <div>
-                            <h4 class="dashboard-section-title">{{ __('admin.recent_syndicate_agents_title') }}</h4>
-                            <p class="dashboard-section-copy">{{ __('admin.recent_syndicate_agents_copy') }}</p>
-                        </div>
-                    </div>
-                    <div id="recent-syndicate-agents-summary" class="card-body space-y-3"></div>
-                </div>
+                <div id="recent-vendors" class="card-body space-y-3"></div>
             </div>
         </section>
 
@@ -668,17 +656,13 @@
 
             function renderRecentSyndicates(rows) {
                 const container = document.getElementById('recent-syndicate-agents');
-                const summaryContainer = document.getElementById('recent-syndicate-agents-summary');
 
                 if (!rows.length) {
                     container.innerHTML = emptyState(adminDashboardI18n.noSyndicateAgentsYet);
-                    if (summaryContainer) {
-                        summaryContainer.innerHTML = emptyState(adminDashboardI18n.noSyndicateAgentsYet);
-                    }
                     return;
                 }
 
-                const markup = rows.map((syndicate) => `
+                container.innerHTML = rows.map((syndicate) => `
                     <a href="/admin/syndicates/${syndicate.id}" class="list-panel">
                         <div class="min-w-0">
                             <p class="truncate text-sm font-bold text-gray-900 dark:text-white">${esc(syndicate.name)}</p>
@@ -687,12 +671,6 @@
                         <span class="badge ${syndicate.status === 'active' ? 'badge-success' : 'badge-danger'}">${esc(statusLabel(syndicate.status))}</span>
                     </a>
                 `).join('');
-
-                container.innerHTML = markup;
-
-                if (summaryContainer) {
-                    summaryContainer.innerHTML = markup;
-                }
             }
 
             function renderTopVendors(rows) {
