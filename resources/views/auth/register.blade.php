@@ -10,17 +10,20 @@
             <h1 class="mt-6 font-display text-4xl font-extrabold tracking-tight text-ink-900 dark:text-white">{{ __('auth.create_account_title') }}</h1>
             <p class="mt-4 text-base leading-8 text-ink-500 dark:text-slate-400">{{ __('auth.join_today') }}</p>
 
-            <div class="mt-8 grid gap-4">
-                <div class="surface-card-muted p-5">
+            <div class="auth-role-list mt-8">
+                <div class="auth-role-item">
+                    <span class="auth-role-index">01</span>
                     <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-brand-600 dark:text-brand-300">{{ __('auth.register_customer_title') }}</p>
                     <p class="mt-2 text-sm leading-7 text-ink-500 dark:text-slate-400">{{ __('auth.register_customer_copy') }}</p>
                 </div>
-                <div class="surface-card-muted p-5">
-                    <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-emerald-600 dark:text-emerald-300">{{ __('auth.register_vendor_title') }}</p>
+                <div class="auth-role-item">
+                    <span class="auth-role-index">02</span>
+                    <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-brand-600 dark:text-brand-300">{{ __('auth.register_vendor_title') }}</p>
                     <p class="mt-2 text-sm leading-7 text-ink-500 dark:text-slate-400">{{ __('auth.register_vendor_copy') }}</p>
                 </div>
-                <div class="surface-card-muted p-5">
-                    <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-cyan-600 dark:text-cyan-300">{{ __('auth.register_platform_title') }}</p>
+                <div class="auth-role-item">
+                    <span class="auth-role-index">03</span>
+                    <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-brand-600 dark:text-brand-300">{{ __('auth.register_platform_title') }}</p>
                     <p class="mt-2 text-sm leading-7 text-ink-500 dark:text-slate-400">{{ __('auth.register_platform_copy') }}</p>
                 </div>
             </div>

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 if (! function_exists('redirectAuthenticatedUser')) {
     function redirectAuthenticatedUser(\App\Models\User $user)
@@ -18,12 +19,25 @@ if (! function_exists('redirectAuthenticatedUser')) {
     }
 }
 
-Route::get('/', function () {
-    return view('home');
+Route::get('/', function (\Illuminate\Http\Request $request) {
+    return Inertia::render('Home', [
+        'selectedType' => app(\App\Services\SelectedProductTypeService::class)->resolve($request),
+    ]);
 })->name('home');
 
+// robots.txt and sitemap.xml must be served from the domain root — crawlers
+// don't look under /api for them — so these live here rather than in
+// routes/api.php (which is mounted at the /api prefix).
+Route::get('/sitemap.xml', [\App\Http\Controllers\Api\SeoController::class, 'sitemap'])->middleware('throttle:public.browse')->name('sitemap');
+Route::get('/robots.txt', [\App\Http\Controllers\Api\SeoController::class, 'robots'])->middleware('throttle:public.browse')->name('robots');
+
 Route::get('/pages/{slug}', function (string $slug) {
-    return view('pages.show', ['slug' => $slug]);
+    $page = \App\Models\Page::query()->where('slug', $slug)->where('is_published', true)->first();
+
+    return Inertia::render('Pages/Show', [
+        'slug' => $slug,
+        'page' => $page,
+    ]);
 })->name('pages.show');
 
 Route::get('/product-type/select', [\App\Http\Controllers\ProductTypePreferenceController::class, 'show'])->name('product-type.select');
@@ -46,14 +60,14 @@ Route::get('/locale/{locale}', function (string $locale) {
 Route::get('/login', function () {
     // If logout parameter is present, don't redirect even if authenticated
     if (request()->has('logout')) {
-        return view('auth.login');
+        return Inertia::render('Auth/Login');
     }
 
     if (auth()->check()) {
         return redirectAuthenticatedUser(auth()->user());
     }
 
-    return view('auth.login');
+    return Inertia::render('Auth/Login');
 })->name('login');
 
 Route::get('/register', function () {
@@ -61,22 +75,20 @@ Route::get('/register', function () {
         return redirectAuthenticatedUser(auth()->user());
     }
 
-    return view('auth.register');
+    return Inertia::render('Auth/Register');
 })->name('register');
 
 Route::get('/profile', function () {
-    return view('profile');
+    return Inertia::render('Profile/Index');
 })->name('profile');
 
 Route::middleware('auth')->group(function () {
     Route::get('/orders/{id}', function (string $id) {
-        return view('orders.show', ['orderId' => $id]);
+        return Inertia::render('Orders/Show', ['orderId' => $id]);
     })->name('orders.show');
 
     Route::get('/checkout', function () {
-        return view('checkout.index', [
-            'addressLabels' => \App\Models\UserAddress::LABELS,
-        ]);
+        return Inertia::render('Checkout/Index');
     })->name('checkout');
 
     Route::get('/invoices/{invoice}/print', function (\App\Models\Invoice $invoice) {
@@ -93,19 +105,34 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::get('/products', function () {
-    return view('products.index');
+    return Inertia::render('Products/Index');
 })->middleware('product.type.selected')->name('products.index');
 
-Route::get('/products/{id}', function (string $id) {
-    return view('products.show', ['productId' => $id]);
+Route::get('/products/{product}', function (\Illuminate\Http\Request $request, \App\Models\Product $product) {
+    // Reuses the exact same controller method /api/products/{id} calls (same
+    // cache key, same 404/type-mismatch rules) so this SSR-rendered payload
+    // can never drift from what the client-side API would have returned.
+    $response = app(\App\Http\Controllers\Api\ProductController::class)->publicShow($request, $product);
+    $payload = json_decode($response->getContent(), true);
+
+    return Inertia::render('Products/Show', [
+        'productId' => (string) $product->id,
+        'product' => $payload['data'] ?? null,
+    ]);
 })->middleware('product.type.selected')->name('products.show');
 
 Route::get('/categories', function () {
-    return view('categories.index');
+    return Inertia::render('Categories/Index');
 })->middleware('product.type.selected')->name('categories.index');
 
-Route::get('/categories/{id}', function (string $id) {
-    return view('categories.show', ['categoryId' => $id]);
+Route::get('/categories/{category}', function (\Illuminate\Http\Request $request, \App\Models\Category $category) {
+    $response = app(\App\Http\Controllers\Api\Admin\CategoryController::class)->show($request, $category);
+    $payload = json_decode($response->getContent(), true);
+
+    return Inertia::render('Categories/Show', [
+        'categoryId' => $category->id,
+        'category' => $payload['data'] ?? null,
+    ]);
 })->middleware('product.type.selected')->name('categories.show');
 
 Route::redirect('/vendors', '/', 302)->name('vendors.index');
@@ -129,52 +156,52 @@ Route::prefix('vendor')->as('vendor.')->middleware(['auth', 'vendor'])->group(fu
     });
 
     Route::get('/dashboard', function () {
-        return view('vendor.dashboard');
+        return Inertia::render('Vendor/Dashboard');
     })->name('dashboard');
 
     // Product Management
     Route::get('/products', function () {
-        return view('vendor.products.index');
+        return Inertia::render('Vendor/Products/Index');
     })->name('products.index');
 
     Route::get('/discounts', function () {
-        return view('vendor.products.index', ['discountOnly' => true]);
+        return Inertia::render('Vendor/Products/Index', ['discountOnly' => true]);
     })->name('discounts.index');
 
     Route::get('/orders', function () {
-        return view('vendor.orders.index');
+        return Inertia::render('Vendor/Orders/Index');
     })->name('orders.index');
 
     Route::get('/orders/{id}', function (string $id) {
-        return view('vendor.orders.show', ['orderId' => $id]);
+        return Inertia::render('Vendor/Orders/Show', ['orderId' => $id]);
     })->name('orders.show');
 
     Route::get('/commission', function () {
-        return view('vendor.commission');
+        return Inertia::render('Vendor/Commission');
     })->name('commission');
 
     Route::get('/notifications', function () {
-        return view('vendor.notifications.index');
+        return Inertia::render('Vendor/Notifications/Index');
     })->name('notifications.index');
 
     Route::get('/products/create', function () {
-        return view('vendor.products.create');
+        return Inertia::render('Vendor/Products/Create');
     })->name('products.create');
 
     Route::get('/products/{id}/edit', function (string $id) {
-        return view('vendor.products.edit', ['productId' => $id]);
+        return Inertia::render('Vendor/Products/Edit', ['productId' => $id]);
     })->name('products.edit');
 
     Route::get('/products/{id}/reviews', \App\Http\Controllers\Vendor\ProductReviewViewController::class)->name('products.reviews');
     Route::delete('/products/{id}/reviews/{review}', [\App\Http\Controllers\Vendor\ProductReviewViewController::class, 'destroy'])->name('products.reviews.destroy');
 
     Route::get('/products/{id}', function (string $id) {
-        return view('vendor.products.show', ['productId' => $id]);
+        return Inertia::render('Vendor/Products/Show', ['productId' => $id]);
     })->name('products.show');
 
     // Profile
     Route::get('/profile', function () {
-        return view('vendor.profile');
+        return Inertia::render('Vendor/Profile');
     })->name('profile');
 });
 
@@ -185,7 +212,7 @@ Route::prefix('syndicate')->as('syndicate.')->middleware(['auth', 'syndicate'])-
 
     foreach (['dashboard', 'categories', 'vendors', 'products', 'podcasts', 'orders', 'sales', 'reports'] as $section) {
         Route::get('/'.$section, function () use ($section) {
-            return view('syndicate.dashboard', ['section' => $section]);
+            return Inertia::render('Syndicate/Dashboard', ['section' => $section]);
         })->name($section);
     }
 });
@@ -196,19 +223,19 @@ Route::prefix('employee')->as('employee.')->middleware(['auth', 'employee'])->gr
     });
 
     Route::get('/dashboard', function () {
-        return view('employee.dashboard');
+        return Inertia::render('Employee/Dashboard');
     })->name('dashboard');
 
-    Route::get('/products', function () {
-        return view('employee.products.index');
+    Route::get('/products', function (\Illuminate\Http\Request $request) {
+        return Inertia::render('Employee/Products/Index', ['status' => $request->query('status')]);
     })->name('products.index');
 
     Route::get('/products/{id}', function (string $id) {
-        return view('employee.products.show', ['productId' => $id]);
+        return Inertia::render('Employee/Products/Show', ['productId' => $id]);
     })->name('products.show');
 
     Route::get('/products/{id}/edit', function (string $id) {
-        return view('employee.products.edit', ['productId' => $id]);
+        return Inertia::render('Employee/Products/Edit', ['productId' => $id]);
     })->name('products.edit');
 });
 
@@ -229,93 +256,93 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(funct
 
     // Dashboard
     Route::get('/dashboard', function () {
-        return view('admin.dashboard');
+        return Inertia::render('Admin/Dashboard');
     })->name('dashboard');
 
     // Vendor Management
     Route::get('/vendors', function () {
-        return view('admin.vendors.index');
+        return Inertia::render('Admin/Vendors/Index');
     })->name('vendors.index');
 
     Route::get('/syndicates', function () {
-        return view('admin.syndicates.index');
+        return Inertia::render('Admin/Syndicates/Index');
     })->name('syndicates.index');
 
     Route::get('/syndicates/create', function () {
-        return view('admin.syndicates.create');
+        return Inertia::render('Admin/Syndicates/Create');
     })->name('syndicates.create');
 
     Route::get('/syndicates/{id}', function (string $id) {
-        return view('admin.syndicates.show', ['syndicateId' => $id]);
+        return Inertia::render('Admin/Syndicates/Show', ['syndicateId' => (int) $id]);
     })->name('syndicates.show');
 
     Route::get('/syndicates/{id}/edit', function (string $id) {
-        return view('admin.syndicates.edit', ['syndicateId' => $id]);
+        return Inertia::render('Admin/Syndicates/Edit', ['syndicateId' => (int) $id]);
     })->name('syndicates.edit');
 
     Route::get('/vendors/create', function () {
-        return view('admin.vendors.create');
+        return Inertia::render('Admin/Vendors/Create');
     })->name('vendors.create');
 
     Route::get('/vendors/{id}', function (string $id) {
-        return view('admin.vendors.show', ['vendorId' => $id]);
+        return Inertia::render('Admin/Vendors/Show', ['vendorId' => (int) $id]);
     })->name('vendors.show');
 
     Route::get('/vendors/{id}/edit', function (string $id) {
-        return view('admin.vendors.edit', ['vendorId' => $id]);
+        return Inertia::render('Admin/Vendors/Edit', ['vendorId' => (int) $id]);
     })->name('vendors.edit');
 
     Route::get('/vendors/{id}/commission', function (string $id) {
-        return view('admin.vendors.commission', ['vendorId' => $id]);
+        return Inertia::render('Admin/Vendors/Commission', ['vendorId' => (int) $id]);
     })->name('vendors.commission');
 
     // Product Management
     Route::get('/products', function () {
-        return view('admin.products.index');
+        return Inertia::render('Admin/Products/Index');
     })->name('products.index');
 
     Route::get('/discounts', function () {
-        return view('admin.products.index', ['discountOnly' => true]);
+        return Inertia::render('Admin/Products/Index', ['discountOnly' => true]);
     })->name('discounts.index');
 
     Route::get('/coupons', function () {
-        return view('admin.coupons.index');
+        return Inertia::render('Admin/Coupons/Index');
     })->name('coupons.index');
 
     Route::get('/pages', function () {
-        return view('admin.pages.index');
+        return Inertia::render('Admin/Pages/Index');
     })->name('pages.index');
 
     Route::get('/banners', function () {
-        return view('admin.banners.index');
+        return Inertia::render('Admin/Banners/Index');
     })->name('banners.index');
 
     Route::get('/orders', function () {
-        return view('admin.orders.index');
+        return Inertia::render('Admin/Orders/Index');
     })->name('orders.index');
 
     Route::get('/orders/{id}', function (string $id) {
-        return view('admin.orders.show', ['orderId' => $id]);
+        return Inertia::render('Admin/Orders/Show', ['orderId' => (int) $id]);
     })->name('orders.show');
 
     Route::get('/products/create', function () {
-        return view('admin.products.create');
+        return Inertia::render('Admin/Products/Create');
     })->name('products.create');
 
     Route::get('/products/{id}/edit', function (string $id) {
-        return view('admin.products.edit', ['productId' => $id]);
+        return Inertia::render('Admin/Products/Edit', ['productId' => (int) $id]);
     })->name('products.edit');
 
     Route::get('/products/{id}/reviews', \App\Http\Controllers\Admin\ProductReviewViewController::class)->name('products.reviews');
     Route::delete('/products/{id}/reviews/{review}', [\App\Http\Controllers\Admin\ProductReviewViewController::class, 'destroy'])->name('products.reviews.destroy');
 
     Route::get('/products/{id}', function (string $id) {
-        return view('admin.products.show', ['productId' => $id]);
+        return Inertia::render('Admin/Products/Show', ['productId' => (int) $id]);
     })->name('products.show');
 
     // User Management
     Route::get('/users', function () {
-        return view('admin.users.index');
+        return Inertia::render('Admin/Users/Index');
     })->name('users.index');
 
     Route::get('/employees', function () {
@@ -323,23 +350,23 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(funct
     })->name('employees.index');
 
     Route::get('/users/create', function () {
-        return view('admin.users.create');
+        return Inertia::render('Admin/Users/Create');
     })->name('users.create');
 
     Route::get('/users/{id}', function (string $id) {
-        return view('admin.users.show', ['userId' => $id]);
+        return Inertia::render('Admin/Users/Show', ['userId' => (int) $id]);
     })->name('users.show');
 
     Route::get('/users/{id}/edit', function (string $id) {
-        return view('admin.users.edit', ['userId' => $id]);
+        return Inertia::render('Admin/Users/Edit', ['userId' => (int) $id]);
     })->name('users.edit');
 
     Route::get('/notifications', function () {
-        return view('admin.notifications.index');
+        return Inertia::render('Admin/Notifications/Index');
     })->name('notifications.index');
 
     Route::get('/notifications/send', function () {
-        return view('admin.notifications.send');
+        return Inertia::render('Admin/Notifications/Send');
     })->name('notifications.send');
 
     Route::get('/contact-messages', [\App\Http\Controllers\Admin\ContactMessageViewController::class, 'index'])->name('contact-messages.index');

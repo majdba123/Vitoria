@@ -42,7 +42,7 @@
             {{-- ── Left column ── --}}
             <div class="space-y-6">
                 {{-- Delivery address --}}
-                <section class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900" aria-labelledby="checkout-address-heading">
+                <section class="surface-card p-5" aria-labelledby="checkout-address-heading">
                     <div class="mb-4 flex items-center justify-between gap-3">
                         <h2 id="checkout-address-heading" class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('checkout.delivery_address') }}</h2>
                         <button type="button" id="checkout-new-address-btn" class="text-xs font-semibold text-brand-600 hover:underline dark:text-brand-400">
@@ -67,42 +67,42 @@
                             </div>
                             <div>
                                 <label for="addr-recipient_name" class="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">{{ __('checkout.field.recipient_name') }}</label>
-                                <input id="addr-recipient_name" name="recipient_name" type="text" required class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                <input id="addr-recipient_name" name="recipient_name" type="text" required class="form-input">
                             </div>
                             <div>
                                 <label for="addr-phone" class="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">{{ __('checkout.field.phone') }}</label>
-                                <input id="addr-phone" name="phone" type="tel" required dir="ltr" class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                <input id="addr-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required dir="ltr" class="form-input">
                             </div>
                             <div>
                                 <label for="addr-governorate" class="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">{{ __('checkout.field.governorate') }}</label>
-                                <input id="addr-governorate" name="governorate" type="text" required class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                <input id="addr-governorate" name="governorate" type="text" required class="form-input">
                             </div>
                             <div>
                                 <label for="addr-city" class="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">{{ __('checkout.field.city') }}</label>
-                                <input id="addr-city" name="city" type="text" required class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                <input id="addr-city" name="city" type="text" required class="form-input">
                             </div>
                             <div>
                                 <label for="addr-district" class="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">{{ __('checkout.field.district') }}</label>
-                                <input id="addr-district" name="district" type="text" class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                <input id="addr-district" name="district" type="text" class="form-input">
                             </div>
                             <div class="sm:col-span-2">
                                 <label for="addr-street" class="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">{{ __('checkout.field.street') }}</label>
-                                <input id="addr-street" name="street" type="text" class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                <input id="addr-street" name="street" type="text" class="form-input">
                             </div>
                             <div class="sm:col-span-2">
                                 <label for="addr-notes" class="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">{{ __('checkout.field.notes') }}</label>
-                                <textarea id="addr-notes" name="notes" rows="2" class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"></textarea>
+                                <textarea id="addr-notes" name="notes" rows="2" class="form-textarea"></textarea>
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            <button type="submit" class="rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600">{{ __('checkout.save_address') }}</button>
-                            <button type="button" id="checkout-address-cancel" class="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 dark:border-gray-700 dark:text-gray-300">{{ __('checkout.cancel') }}</button>
+                            <button type="submit" class="btn-primary">{{ __('checkout.save_address') }}</button>
+                            <button type="button" id="checkout-address-cancel" class="btn-secondary">{{ __('checkout.cancel') }}</button>
                         </div>
                     </form>
                 </section>
 
                 {{-- Order review --}}
-                <section class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900" aria-labelledby="checkout-items-heading">
+                <section class="surface-card p-5" aria-labelledby="checkout-items-heading">
                     <h2 id="checkout-items-heading" class="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('checkout.order_review') }}</h2>
                     <p id="checkout-multi-vendor" class="mb-4 hidden rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-medium text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-300">
                         {{ __('checkout.multi_vendor_notice') }}
@@ -111,22 +111,22 @@
                 </section>
 
                 {{-- Payment --}}
-                <section class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900" aria-labelledby="checkout-payment-heading">
+                <section class="surface-card p-5" aria-labelledby="checkout-payment-heading">
                     <h2 id="checkout-payment-heading" class="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('checkout.payment_method') }}</h2>
                     <div id="checkout-payment-methods" class="space-y-2"></div>
                 </section>
             </div>
 
             {{-- ── Summary rail ── --}}
-            <aside class="rounded-xl border border-gray-200 bg-white p-5 lg:sticky lg:top-24 dark:border-gray-800 dark:bg-gray-900" aria-labelledby="checkout-summary-heading">
+            <aside class="surface-card p-5 lg:sticky lg:top-24" aria-labelledby="checkout-summary-heading">
                 <h2 id="checkout-summary-heading" class="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('checkout.total') }}</h2>
 
                 <div class="mb-4">
                     <label for="checkout-coupon" class="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">{{ __('checkout.discount_code') }}</label>
                     <div class="flex gap-2">
                         <input id="checkout-coupon" type="text" placeholder="{{ __('checkout.coupon_placeholder') }}"
-                            class="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white">
-                        <button type="button" id="checkout-coupon-apply" class="shrink-0 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800">
+                            class="form-input min-w-0 flex-1">
+                        <button type="button" id="checkout-coupon-apply" class="btn-secondary shrink-0">
                             {{ __('checkout.apply') }}
                         </button>
                     </div>
@@ -158,7 +158,7 @@
                 <div id="checkout-error" class="mt-4 hidden rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300" role="alert"></div>
 
                 <button type="button" id="checkout-place-order"
-                    class="mt-5 w-full rounded-lg bg-brand-500 py-3 text-sm font-bold text-white transition-colors hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50">
+                    class="btn-primary mt-5 w-full">
                     {{ __('checkout.place_order') }}
                 </button>
             </aside>
@@ -169,7 +169,7 @@
             <h2 class="text-lg font-bold text-emerald-800 dark:text-emerald-300">{{ __('checkout.order_placed') }}</h2>
             <p id="checkout-success-message" class="mt-2 text-sm text-emerald-700 dark:text-emerald-300"></p>
             <div id="checkout-success-orders" class="mx-auto mt-4 max-w-sm space-y-1 text-sm text-emerald-800 dark:text-emerald-200"></div>
-            <a href="{{ route('profile') }}" class="mt-6 inline-flex rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700">
+            <a href="{{ route('profile') }}" class="btn-primary mt-6">
                 {{ __('checkout.view_orders') }}
             </a>
         </div>
@@ -194,5 +194,5 @@
         ];
     @endphp
     <script>window.__checkoutStrings = @json($checkoutStrings);</script>
-    @vite('resources/js/pages/checkout.js')
+    @vite('resources/js/entries/checkout.js')
 @endpush

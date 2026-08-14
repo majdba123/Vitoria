@@ -155,6 +155,16 @@
     --dashboard-panel: var(--color-surface);
     --dashboard-panel-strong: var(--color-surface);
     --dashboard-border: var(--color-border);
+
+    /* Raw aliases for the two shadcn token names that collide with an
+       existing semantic token of the same suffix (--color-background,
+       --color-border above). Values are literal copies of those tokens,
+       not var() back-references, to avoid a custom-property cycle once
+       @theme inline re-exposes them as --color-background/--color-border
+       for Tailwind's utility generator. Keep these two in sync by hand if
+       --color-background/--color-border ever change. */
+    --background: #f7faf9;
+    --border: #dce5e2;
 }
 
 .dark {
@@ -203,6 +213,9 @@
     --dashboard-panel: var(--color-surface);
     --dashboard-panel-strong: var(--color-surface);
     --dashboard-border: var(--color-border);
+
+    --background: #0e171c;
+    --border: #2d4049;
 }
 
 /* ==========================================================================
@@ -222,6 +235,52 @@
     --nav-border: var(--color-border);
     --product-card-border: var(--color-border);
     --product-card-border-selected: var(--color-brand);
+
+    /* ---- shadcn/ui bridge ------------------------------------------------
+       Raw tokens shadcn's generated components (button, card, sidebar,
+       table, badge, ...) read via Tailwind's border-input/bg-primary/etc.
+       utilities. Every value below routes back to an existing Vetora
+       semantic or primitive token instead of shadcn's default slate/blue
+       palette - see the @theme inline block at the end of the file for the
+       --color-* aliases that actually turn these into utility classes.
+       --background/--border are the exception: declared per-theme above
+       (literal copies of --color-background/--color-border) to avoid a
+       custom-property cycle. */
+    --foreground: var(--color-text);
+    --card: var(--color-surface);
+    --card-foreground: var(--color-text);
+    --popover: var(--color-surface);
+    --popover-foreground: var(--color-text);
+    --primary: var(--color-brand);
+    --primary-foreground: var(--color-brand-on);
+    --secondary: var(--color-surface-muted);
+    --secondary-foreground: var(--color-text);
+    --muted: var(--color-surface-muted);
+    --muted-foreground: var(--color-text-secondary);
+    --accent: var(--color-brand-soft);
+    --accent-foreground: var(--color-brand-strong);
+    --destructive: var(--color-danger-500);
+    --destructive-foreground: #ffffff;
+    --input: var(--color-border);
+    --ring: var(--color-focus);
+    --radius: var(--radius-control);
+    --chart-1: var(--color-brand-400);
+    --chart-2: var(--color-success-500);
+    --chart-3: var(--color-warning-500);
+    --chart-4: var(--color-danger-500);
+    --chart-5: var(--color-info-500);
+
+    /* The workspace sidebar is a fixed dark-teal shell regardless of the
+       light/dark toggle (matches .dashboard-sidebar below), so these are
+       identical in both blocks rather than swapping per theme. */
+    --sidebar: #10242d;
+    --sidebar-foreground: #cbd5e1;
+    --sidebar-primary: var(--color-brand-400);
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: rgba(255, 255, 255, 0.06);
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: rgba(255, 255, 255, 0.08);
+    --sidebar-ring: var(--color-brand-400);
 }
 
 @keyframes shimmer {
@@ -1445,19 +1504,21 @@
     /* Editorial split hero: real photography occupies its own column instead
        of sitting behind decorative overlays / floating info pills. */
     .storefront-hero {
-        @apply relative grid gap-0 overflow-hidden lg:grid-cols-[1.05fr_0.95fr];
-        border-radius: var(--radius-feature);
+        @apply relative grid gap-0 overflow-hidden lg:grid-cols-[1.08fr_0.92fr];
+        border-radius: var(--radius-card);
         border: 1px solid var(--color-border);
         background: var(--color-surface);
+        box-shadow: var(--shadow-1);
     }
 
     .storefront-hero-copy {
-        @apply flex flex-col justify-center px-5 py-9 sm:px-8 sm:py-12 lg:px-10 lg:py-0;
+        @apply flex flex-col justify-center px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16;
+        background-image: linear-gradient(90deg, color-mix(in srgb, var(--color-brand-soft) 45%, transparent), transparent 42%);
     }
 
     .storefront-hero-media {
         position: relative;
-        min-height: 15rem;
+        min-height: 17rem;
         background: var(--color-ink-900);
     }
 
@@ -1465,7 +1526,103 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        object-position: center;
+        object-position: 58% center;
+    }
+
+    .hero-context-note {
+        @apply mt-8 border-t pt-4 text-xs font-semibold leading-5;
+        max-width: 34rem;
+        border-color: var(--color-border);
+        color: var(--color-text-secondary);
+    }
+
+    .auth-role-list {
+        border-block: 1px solid var(--color-border);
+    }
+
+    .auth-role-item {
+        @apply relative py-5 pe-12;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .auth-role-item:last-child {
+        border-bottom: 0;
+    }
+
+    .auth-role-index {
+        @apply absolute end-0 top-5 text-lg font-bold tabular-nums;
+        color: var(--color-text-muted);
+    }
+
+    .site-footer {
+        border-top: 1px solid var(--color-border);
+        background: var(--color-surface);
+    }
+
+    .footer-social-link {
+        @apply flex h-11 w-11 items-center justify-center border transition-colors;
+        border-radius: var(--radius-control);
+        border-color: var(--color-border);
+        color: var(--color-text-secondary);
+    }
+
+    .footer-social-link:hover {
+        border-color: var(--color-brand);
+        background: var(--color-brand-soft);
+        color: var(--color-brand-strong);
+    }
+
+    .home-type-selector {
+        @apply grid gap-6 py-10 lg:grid-cols-[minmax(15rem,0.72fr)_minmax(0,1.5fr)] lg:items-end lg:py-14;
+    }
+
+    .home-type-intro {
+        @apply max-w-md lg:pb-3;
+    }
+
+    .home-type-grid {
+        @apply grid gap-px overflow-hidden border sm:grid-cols-2;
+        border-radius: var(--radius-card);
+        border-color: var(--color-border);
+        background: var(--color-border);
+    }
+
+    .home-type-card {
+        @apply relative grid min-h-56 grid-cols-[auto_1fr] content-start gap-x-4 gap-y-5 p-5 text-start sm:p-6;
+        background: var(--color-surface);
+        color: var(--color-text);
+        transition: background-color 150ms ease, color 150ms ease;
+    }
+
+    .home-type-card:hover,
+    .home-type-card.is-selected {
+        background: var(--color-brand-soft);
+    }
+
+    .home-type-card.is-selected::before {
+        content: '';
+        position: absolute;
+        inset-block: 0;
+        inset-inline-start: 0;
+        width: 3px;
+        background: var(--color-brand);
+    }
+
+    .home-type-number {
+        @apply absolute end-5 top-4 text-3xl font-bold tabular-nums;
+        color: color-mix(in srgb, var(--color-text-muted) 34%, transparent);
+    }
+
+    .home-type-action {
+        @apply col-span-2 mt-auto inline-flex min-h-11 items-center justify-between border-t pt-4 text-sm font-semibold;
+        border-color: var(--color-border);
+        color: var(--color-brand-strong);
+    }
+
+    @media (max-width: 639px) {
+        .home-type-card {
+            min-height: 12rem;
+        }
     }
 
     .storefront-hero-media::after {
@@ -1484,7 +1641,6 @@
             background: linear-gradient(270deg, rgba(10, 26, 33, 0.08) 0%, transparent 30%);
         }
     }
-
 
     .storefront-category-card {
         @apply relative overflow-hidden border;
@@ -1919,4 +2075,43 @@
             transform: none !important;
         }
     }
+}
+
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
 }

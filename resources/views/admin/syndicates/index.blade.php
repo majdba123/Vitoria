@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'إدارة النقابات - Vetora')
+@section('title', __('admin.manage_syndicates_title'))
 @section('page-title', __('admin.manage_syndicates_title'))
 
 @section('content')

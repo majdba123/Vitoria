@@ -3,26 +3,28 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class CityController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
-        return view('admin.cities.index');
+        return Inertia::render('Admin/Cities/Index');
     }
 
-    public function create()
+    public function create(): Response
     {
-        return view('admin.cities.create');
+        return Inertia::render('Admin/Cities/Create');
     }
 
-    public function show(string $id)
+    public function show(string $id): Response
     {
-        return view('admin.cities.show', ['cityId' => $id]);
+        return Inertia::render('Admin/Cities/Show', ['cityId' => (int) $id]);
     }
 
-    public function edit(string $id)
+    public function edit(string $id): Response
     {
-        return view('admin.cities.edit', ['cityId' => $id]);
+        return Inertia::render('Admin/Cities/Edit', ['cityId' => (int) $id]);
     }
 }

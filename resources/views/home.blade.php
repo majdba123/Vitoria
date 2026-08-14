@@ -25,7 +25,7 @@
 
     <x-home.banner-strip />
 
-    <section id="home-type-selector" class="page-shell pt-2 sm:pt-3">
+    <section id="home-type-selector" class="page-shell home-type-selector" aria-labelledby="home-type-heading">
         @if (session('success'))
             <div class="alert-shell alert-success">
                 {{ session('success') }}
@@ -38,30 +38,39 @@
             </div>
         @enderror
 
-        <p class="mb-3 text-xs font-semibold uppercase tracking-wide" style="color: var(--color-text-secondary);">{{ __('home.explore_product_types') }}</p>
-        <div class="grid gap-3 sm:grid-cols-2">
+        <div class="home-type-intro">
+            <p class="commerce-kicker">{{ __('home.type_selector_kicker') }}</p>
+            <h2 id="home-type-heading" class="commerce-title">{{ __('home.type_selector_title') }}</h2>
+            <p class="commerce-copy">{{ __('home.type_selector_copy') }}</p>
+        </div>
+        <div class="home-type-grid">
             @foreach ($typeCards as $value => $type)
                 @php
                     $isSelected = $selectedHomeType === $value;
                 @endphp
                 <a
                     href="{{ route('product-type.select', ['preferred_product_type' => $value, 'redirect_to' => 'home']) }}"
-                    class="cat-card group flex items-center gap-4 p-5 text-start focus:outline-none focus:ring-2 focus:ring-brand-500/20 {{ $isSelected ? 'border-brand-500' : '' }}"
+                    class="home-type-card group {{ $isSelected ? 'is-selected' : '' }}"
+                    @if ($isSelected) aria-current="true" @endif
                     @if ($isSelected) style="border-color: var(--color-brand); box-shadow: 0 0 0 1px var(--color-brand);" @endif
                 >
-                    <span class="icon-chip h-14 w-14 shrink-0 text-xl">
+                    <span class="home-type-number" aria-hidden="true">0{{ $loop->iteration }}</span>
+                    <span class="icon-chip h-12 w-12 shrink-0 text-lg">
                         <i class="{{ $type['icon'] }}" aria-hidden="true"></i>
                     </span>
                     <span class="min-w-0 flex-1">
                         <span class="flex items-center gap-2">
-                            <span class="text-lg font-bold" style="color: var(--color-text);">{{ $type['label'] }}</span>
+                            <span class="text-xl font-bold" style="color: var(--color-text);">{{ $type['label'] }}</span>
                             @if ($isSelected)
                                 <span class="badge badge-brand">{{ __('home.type_selected_now') }}</span>
                             @endif
                         </span>
                         <span class="mt-1 block text-sm leading-6" style="color: var(--color-text-secondary);">{{ $type['description'] }}</span>
                     </span>
-                    <svg class="h-4 w-4 shrink-0 rtl:-scale-x-100" style="color: var(--color-text-muted);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                    <span class="home-type-action">
+                        {{ $type['button'] }}
+                        <svg class="h-4 w-4 shrink-0 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                    </span>
                 </a>
             @endforeach
         </div>

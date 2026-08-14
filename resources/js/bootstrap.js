@@ -12,7 +12,7 @@ window.axios.defaults.withXSRFToken = true;
  * Backend error parsing utilities.
  */
 window.ApiErrors = {
-    fallbackMessage: 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.',
+    fallbackMessage: window.__appStrings?.generic_error || (document.documentElement.lang === 'ar' ? 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.' : 'Something went wrong. Please try again.'),
 
     parse(error) {
         const responseData = error?.response?.data ?? error?.data ?? error;
@@ -112,7 +112,7 @@ window.ApiErrors = {
 
 window.AppToast = {
     show(message, type = 'error') {
-        const safeMessage = window.ApiErrors?.cleanMessage?.(message) || window.ApiErrors?.fallbackMessage || 'حدث خطأ غير متوقع.';
+        const safeMessage = window.ApiErrors?.cleanMessage?.(message) || window.ApiErrors?.fallbackMessage;
         const toast = document.createElement('div');
         const palette = {
             success: 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200',

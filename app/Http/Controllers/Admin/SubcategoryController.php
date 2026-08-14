@@ -3,26 +3,28 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class SubcategoryController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
-        return view('admin.subcategories.index');
+        return Inertia::render('Admin/Subcategories/Index');
     }
 
-    public function create()
+    public function create(): Response
     {
-        return view('admin.subcategories.create');
+        return Inertia::render('Admin/Subcategories/Create');
     }
 
-    public function show(string $id)
+    public function show(string $id): Response
     {
-        return view('admin.subcategories.show', ['subcategoryId' => $id]);
+        return Inertia::render('Admin/Subcategories/Show', ['subcategoryId' => (int) $id]);
     }
 
-    public function edit(string $id)
+    public function edit(string $id): Response
     {
-        return view('admin.subcategories.edit', ['subcategoryId' => $id]);
+        return Inertia::render('Admin/Subcategories/Edit', ['subcategoryId' => (int) $id]);
     }
 }

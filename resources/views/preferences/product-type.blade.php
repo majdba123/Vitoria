@@ -4,46 +4,47 @@
 
 @section('content')
 <div class="page-shell min-h-[calc(100vh-5rem)] py-10 sm:py-16">
-    <div class="mx-auto max-w-6xl border-y-2 border-gray-950 py-8 dark:border-white sm:py-10">
-        <div class="mx-auto max-w-2xl text-center">
-            <span class="badge-brand">{{ __('preferences.start_browsing') }}</span>
-            <h1 class="mt-4 text-3xl font-black text-white sm:text-4xl">{{ __('preferences.heading') }}</h1>
-            <p class="mt-3 text-sm leading-7 text-slate-200">
+    <div class="mx-auto max-w-6xl border-y-2 py-8 sm:py-10" style="border-color: var(--color-text);">
+        <div class="max-w-2xl text-start">
+            <span class="eyebrow">{{ __('preferences.start_browsing') }}</span>
+            <h1 class="mt-4 text-3xl font-bold tracking-tight sm:text-4xl" style="color: var(--color-text);">{{ __('preferences.heading') }}</h1>
+            <p class="mt-3 text-sm leading-7" style="color: var(--color-text-secondary);">
                 {{ __('preferences.description') }}
             </p>
         </div>
 
         @if (session('success'))
-            <div class="mx-auto mt-8 max-w-2xl rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
+            <div class="alert-shell alert-success mx-auto mt-8 max-w-2xl">
                 {{ session('success') }}
             </div>
         @endif
 
         @if (session('error'))
-            <div class="mx-auto mt-8 max-w-2xl rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+            <div class="alert-shell alert-error mx-auto mt-8 max-w-2xl">
                 {{ session('error') }}
             </div>
         @endif
 
         @error('preferred_product_type')
-            <div class="mx-auto mt-8 max-w-2xl rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">{{ $message }}</div>
+            <div class="alert-shell alert-error mx-auto mt-8 max-w-2xl">{{ $message }}</div>
         @enderror
 
-        <div class="mt-10 grid gap-5 lg:grid-cols-2">
+        <div class="home-type-grid mt-10">
             @foreach ($types as $value => $type)
                 @php
                     $isSelected = old('preferred_product_type', $selectedType) === $value;
                 @endphp
                 <a
                     href="{{ route('product-type.select', ['preferred_product_type' => $value, 'redirect_to' => 'categories']) }}"
-                    class="block h-full border p-6 text-start transition-colors hover:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30 sm:p-7 {{ $isSelected ? 'border-brand-500 bg-brand-50/40 dark:bg-brand-500/10' : 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-950' }}"
+                    class="home-type-card {{ $isSelected ? 'is-selected' : '' }}"
                     aria-label="{{ $type['button'] }}"
+                    @if ($isSelected) aria-current="true" @endif
                 >
                     <span class="flex items-start justify-between gap-4">
                         <span class="icon-chip flex h-12 w-12 text-xl">
                             <i class="{{ $type['icon'] }} text-3xl" aria-hidden="true"></i>
                         </span>
-                        <span class="inline-flex rounded-full px-3 py-1 text-[11px] font-bold {{ $isSelected ? 'bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' }}">
+                        <span class="badge {{ $isSelected ? 'badge-brand' : '' }}">
                             {{ $isSelected ? __('preferences.currently_selected') : __('preferences.choose') }}
                         </span>
                     </span>
@@ -64,8 +65,9 @@
                         </span>
                     </span>
 
-                    <span class="btn-primary mt-8 inline-flex px-5 py-3 text-sm">
+                    <span class="home-type-action mt-8">
                         {{ $type['button'] }}
+                        <svg class="h-4 w-4 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
                     </span>
                 </a>
             @endforeach

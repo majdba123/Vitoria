@@ -3,18 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProductTypePreferenceRequest;
-use App\Models\Category;
 use App\Models\User;
 use App\Services\SelectedProductTypeService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ProductTypePreferenceController extends Controller
 {
     public function __construct(protected SelectedProductTypeService $selectedProductTypeService) {}
 
-    public function show(Request $request): View|RedirectResponse
+    public function show(Request $request): Response|RedirectResponse
     {
         if ($request->filled('preferred_product_type')) {
             return $this->storeFromRequest($request);
@@ -26,9 +26,8 @@ class ProductTypePreferenceController extends Controller
             return redirect()->to($this->dashboardPathFor($user));
         }
 
-        return view('preferences.product-type', [
+        return Inertia::render('Preferences/ProductType', [
             'selectedType' => $this->selectedProductTypeService->resolve($request),
-            'types' => $this->types(),
         ]);
     }
 
@@ -75,27 +74,6 @@ class ProductTypePreferenceController extends Controller
         return redirect()
             ->to($route)
             ->with('success', __('preferences.saved_success'));
-    }
-
-    /**
-     * @return array<string, array{label: string, description: string, icon: string, button: string}>
-     */
-    private function types(): array
-    {
-        return [
-            Category::TYPE_AGRICULTURE => [
-                'label' => __('preferences.agriculture_label'),
-                'description' => __('preferences.agriculture_description'),
-                'icon' => 'fa-solid fa-seedling',
-                'button' => __('preferences.agriculture_button'),
-            ],
-            Category::TYPE_VETERINARY => [
-                'label' => __('preferences.veterinary_label'),
-                'description' => __('preferences.veterinary_description'),
-                'icon' => 'fa-solid fa-stethoscope',
-                'button' => __('preferences.veterinary_button'),
-            ],
-        ];
     }
 
     private function dashboardPathFor(User $user): string

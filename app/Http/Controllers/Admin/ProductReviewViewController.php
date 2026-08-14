@@ -7,14 +7,15 @@ use App\Models\Product;
 use App\Models\ProductReview;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ProductReviewViewController extends Controller
 {
     /**
      * Display paginated reviews for a product. Data loaded server-side so the page always works.
      */
-    public function __invoke(Request $request, string $id): View
+    public function __invoke(Request $request, string $id): Response
     {
         $product = Product::find($id);
         if (! $product) {
@@ -28,8 +29,8 @@ class ProductReviewViewController extends Controller
             ->paginate($perPage)
             ->withQueryString();
 
-        return view('admin.products.reviews', [
-            'product' => $product,
+        return Inertia::render('Admin/Products/Reviews', [
+            'product' => ['id' => $product->id, 'name' => $product->name],
             'reviews' => $reviews,
         ]);
     }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Page;
 use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 /**
@@ -17,9 +18,9 @@ use Illuminate\Http\Response;
  */
 class SeoController extends Controller
 {
-    public function sitemap(): Response
+    public function sitemap(Request $request): Response
     {
-        $baseUrl = rtrim(config('app.frontend_url', config('app.url')), '/');
+        $baseUrl = rtrim($request->getSchemeAndHttpHost(), '/');
 
         $urls = collect();
 
@@ -52,15 +53,26 @@ class SeoController extends Controller
         return response($xml, 200)->header('Content-Type', 'application/xml');
     }
 
-    public function robots(): Response
+    public function robots(Request $request): Response
     {
-        $baseUrl = rtrim(config('app.url'), '/');
+        $baseUrl = rtrim($request->getSchemeAndHttpHost(), '/');
 
         $lines = [
             'User-agent: *',
             'Allow: /',
-            'Disallow: /api/admin/',
-            'Disallow: /api/vendor/',
+            // Role-gated dashboards and API namespaces: real crawlers only ever
+            // hit a login redirect here, so keep them out of the crawl budget.
+            'Disallow: /admin/',
+            'Disallow: /vendor/',
+            'Disallow: /syndicate/',
+            'Disallow: /employee/',
+            'Disallow: /api/',
+            // Checkout/profile/order pages are per-user and carry no indexable
+            // content of their own; they already ship <meta name="robots"
+            // content="noindex"> too, this just saves the crawl budget.
+            'Disallow: /checkout',
+            'Disallow: /profile',
+            'Disallow: /orders/',
             'Sitemap: '.$baseUrl.'/sitemap.xml',
         ];
 

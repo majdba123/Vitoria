@@ -3,38 +3,40 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class CategoryController extends Controller
 {
     /**
      * Display a listing of categories.
      */
-    public function index()
+    public function index(): Response
     {
-        return view('admin.categories.index');
+        return Inertia::render('Admin/Categories/Index');
     }
 
     /**
      * Show the form for creating a new category.
      */
-    public function create()
+    public function create(): Response
     {
-        return view('admin.categories.create');
+        return Inertia::render('Admin/Categories/Create');
     }
 
     /**
      * Display the specified category.
      */
-    public function show(string $id)
+    public function show(string $id): Response
     {
-        return view('admin.categories.show', ['categoryId' => $id]);
+        return Inertia::render('Admin/Categories/Show', ['categoryId' => (int) $id]);
     }
 
     /**
      * Show the form for editing the specified category.
      */
-    public function edit(string $id)
+    public function edit(string $id): Response
     {
-        return view('admin.categories.edit', ['categoryId' => $id]);
+        return Inertia::render('Admin/Categories/Edit', ['categoryId' => (int) $id]);
     }
 }

@@ -4,18 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\FooterSetting;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class AboutUsController extends Controller
 {
     /**
      * Show the About us (footer) settings form.
      */
-    public function edit(): View
+    public function edit(): Response
     {
         $setting = FooterSetting::instance();
 
-        return view('admin.about-us.edit', [
+        return Inertia::render('Admin/AboutUs/Edit', [
             'about_description' => $setting->about_description,
             'facebook_url' => $setting->facebook_url,
             'instagram_url' => $setting->instagram_url,

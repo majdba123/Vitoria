@@ -25,7 +25,7 @@
         <div id="profile-guest" class="empty-state hidden py-20">
             <svg class="mx-auto h-16 w-16 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
             <p class="mt-4 text-base font-bold text-gray-900 dark:text-white">{{ __('profile.sign_in_to_view') }}</p>
-            <a href="{{ route('login') }}" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-sm font-bold text-white hover:bg-brand-600">{{ __('auth.sign_in') }}</a>
+            <a href="{{ route('login') }}" class="btn-primary mt-4">{{ __('auth.sign_in') }}</a>
         </div>
 
         {{-- Profile Form --}}
@@ -66,7 +66,7 @@
                 <form id="profile-form" class="space-y-5">
                     <div>
                         <label for="p-name" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('profile.full_name') }}</label>
-                        <input type="text" id="p-name" class="form-input" placeholder="Your full name">
+                        <input type="text" id="p-name" class="form-input" placeholder="{{ __('profile.placeholder_full_name') }}">
                         <p id="err-name" class="mt-1 hidden text-xs text-red-500"></p>
                     </div>
                     <div>
@@ -115,9 +115,9 @@
                         <span id="save-error-msg">{{ __('profile.something_wrong') }}</span>
                     </div>
 
-                    <button type="submit" id="save-btn" class="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 py-3.5 text-sm font-bold text-white transition-all hover:bg-brand-600 active:scale-[.97] dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">
+                    <button type="submit" id="save-btn" class="btn-primary w-full">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                        Save Changes
+                        {{ __('profile.save_changes') }}
                     </button>
                 </form>
             </div>
@@ -144,9 +144,9 @@
                     <div id="fav-grid" class="responsive-product-grid"></div>
                     <div id="fav-empty" class="hidden py-12 text-center">
                         <svg class="mx-auto h-12 w-12 text-gray-200 dark:text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
-                        <p class="mt-3 text-sm font-bold text-gray-500 dark:text-gray-400">No favourites yet</p>
-                        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Click the heart icon on any product to add it here</p>
-                        <a href="{{ route('products.index') }}" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-bold text-white hover:bg-brand-600 dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">Browse Products</a>
+                        <p class="mt-3 text-sm font-bold text-gray-500 dark:text-gray-400">{{ __('profile.no_favourites') }}</p>
+                        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{ __('profile.add_favourites_hint') }}</p>
+                        <a href="{{ route('products.index') }}" class="btn-primary mt-4">{{ __('profile.browse_products') }}</a>
                     </div>
                 </div>
 
@@ -160,19 +160,19 @@
                     </div>
 
                     <div class="filter-grid mb-4">
-                        <input id="orders-filter-search" type="text" placeholder="Search order/product"
+                        <input id="orders-filter-search" type="search" placeholder="{{ __('profile.search_order') }}"
                             class="form-input text-xs">
                         <select id="orders-filter-status"
                             class="form-select text-xs">
                             <option value="">{{ __('profile.all_statuses') }}</option>
-                            <option value="pending">Pending</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="completed">Completed</option>
-                            <option value="cancelled">Cancelled</option>
+                            <option value="pending">{{ __('profile.status_pending') }}</option>
+                            <option value="confirmed">{{ __('profile.status_confirmed') }}</option>
+                            <option value="completed">{{ __('profile.status_completed') }}</option>
+                            <option value="cancelled">{{ __('profile.status_cancelled') }}</option>
                         </select>
                         <button id="orders-filter-reset" type="button"
                             class="btn-secondary btn-sm w-full sm:w-auto">
-                            Reset
+                            {{ __('profile.reset_filters') }}
                         </button>
                     </div>
 
@@ -186,14 +186,14 @@
 
                     <div id="orders-empty" class="hidden py-10 text-center">
                         <svg class="mx-auto h-12 w-12 text-gray-200 dark:text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h11.25m-11.25 4.5h11.25m-11.25 4.5h11.25M3.75 6.75h.008v.008H3.75V6.75zm0 4.5h.008v.008H3.75v-.008zm0 4.5h.008v.008H3.75v-.008z"/></svg>
-                        <p class="mt-3 text-sm font-bold text-gray-500 dark:text-gray-400">No orders yet</p>
+                        <p class="mt-3 text-sm font-bold text-gray-500 dark:text-gray-400">{{ __('profile.no_orders') }}</p>
                     </div>
 
                     <div id="orders-pagination" class="mt-5 hidden items-center justify-between border-t border-gray-100 pt-4 dark:border-gray-800">
                         <p id="orders-page-info" class="text-xs text-gray-500 dark:text-gray-400"></p>
                         <div class="flex gap-2">
-                            <button id="orders-prev" class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">Prev</button>
-                            <button id="orders-next" class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">Next</button>
+                        <button id="orders-prev" class="btn-secondary btn-xs">{{ __('pagination.previous') }}</button>
+                        <button id="orders-next" class="btn-secondary btn-xs">{{ __('pagination.next') }}</button>
                         </div>
                     </div>
                 </div>
@@ -206,8 +206,8 @@
                                 <svg class="h-5 w-5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
                             </div>
                             <div>
-                                <h3 class="text-base font-bold text-gray-900 dark:text-white">Contact history</h3>
-                                <p id="contact-msgs-count" class="text-xs text-gray-400 dark:text-gray-500">Loading...</p>
+                                <h3 class="text-base font-bold text-gray-900 dark:text-white">{{ __('profile.contact_history') }}</h3>
+                                <p id="contact-msgs-count" class="text-xs text-gray-400 dark:text-gray-500">{{ __('common.loading') }}</p>
                             </div>
                         </div>
                     </div>
@@ -218,15 +218,15 @@
                     <div id="contact-msgs-list" class="space-y-3"></div>
                     <div id="contact-msgs-empty" class="hidden py-10 text-center">
                         <svg class="mx-auto h-12 w-12 text-gray-200 dark:text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
-                        <p class="mt-3 text-sm font-bold text-gray-500 dark:text-gray-400">No contact messages yet</p>
-                        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Use the Contact Us form on the home page to get in touch.</p>
-                        <a href="{{ route('home') }}#contact" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-bold text-white hover:bg-brand-600 dark:bg-white dark:text-gray-900 dark:hover:bg-brand-500 dark:hover:text-white">Contact Us</a>
+                        <p class="mt-3 text-sm font-bold text-gray-500 dark:text-gray-400">{{ __('profile.no_contact_messages') }}</p>
+                        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{ __('profile.contact_hint') }}</p>
+                        <a href="{{ route('home') }}#contact" class="btn-primary mt-4">{{ __('profile.contact_us') }}</a>
                     </div>
                     <div id="contact-msgs-pagination" class="mt-4 hidden items-center justify-between border-t border-gray-100 pt-4 dark:border-gray-800">
                         <p id="contact-msgs-page-info" class="text-xs text-gray-500 dark:text-gray-400"></p>
                         <div class="flex gap-2">
-                            <button type="button" id="contact-msgs-prev" class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">Prev</button>
-                            <button type="button" id="contact-msgs-next" class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">Next</button>
+                        <button type="button" id="contact-msgs-prev" class="btn-secondary btn-xs">{{ __('pagination.previous') }}</button>
+                        <button type="button" id="contact-msgs-next" class="btn-secondary btn-xs">{{ __('pagination.next') }}</button>
                         </div>
                     </div>
                 </div>
@@ -245,10 +245,25 @@
         2 => __('nav.business_account'),
     ];
     $profileNavDefaultRole = __('nav.customer');
+    $profileUiStrings = [
+        'orderId' => __('profile.order_id'),
+        'items' => __('profile.items'),
+        'subtotal' => __('profile.subtotal'),
+        'coupon' => __('profile.coupon'),
+        'total' => __('profile.total'),
+        'viewDetails' => __('profile.view_details'),
+        'quantity' => __('profile.quantity_short'),
+        'each' => __('profile.each'),
+        'original' => __('profile.original_price'),
+        'discount' => __('profile.discount'),
+        'saved' => __('profile.saved'),
+        'orderPrefix' => __('profile.order_prefix'),
+    ];
 @endphp
 <script>
 const PROFILE_ROLE_MAP = @json($profileNavRoleLabels);
 const PROFILE_ROLE_DEFAULT = @json($profileNavDefaultRole);
+const PROFILE_UI = @json($profileUiStrings);
 document.addEventListener('DOMContentLoaded', async function () {
     const $ = id => document.getElementById(id);
 
@@ -475,15 +490,15 @@ document.addEventListener('DOMContentLoaded', async function () {
             const unit = parseFloat(item.unit_price || 0).toLocaleString();
             const total = parseFloat(item.line_total || 0).toLocaleString();
             const discountPart = item.has_discount
-                ? `<p class="text-[11px] text-emerald-600 dark:text-emerald-400">Discount ${parseFloat(item.applied_discount_percentage || 0)}% · Saved ${parseFloat(item.discount_amount || 0).toLocaleString()} SYP</p>`
+                ? `<p class="text-[11px] text-success-600 dark:text-success-300">${PROFILE_UI.discount} ${parseFloat(item.applied_discount_percentage || 0)}% · ${PROFILE_UI.saved} ${parseFloat(item.discount_amount || 0).toLocaleString()} SYP</p>`
                 : '';
 
             return `<div class="rounded-lg border border-gray-100 p-2.5 dark:border-gray-800">
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <p class="truncate text-xs font-bold text-gray-900 dark:text-white">${escH(item.product_name)}</p>
-                        <p class="text-[11px] text-gray-500 dark:text-gray-400">Qty ${item.quantity} · ${unit} SYP each</p>
-                        ${item.has_discount ? `<p class="text-[11px] text-gray-400 line-through">Original ${original} SYP</p>` : ''}
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400">${PROFILE_UI.quantity} ${item.quantity} · ${unit} SYP ${PROFILE_UI.each}</p>
+                        ${item.has_discount ? `<p class="text-[11px] text-gray-400 line-through">${PROFILE_UI.original} ${original} SYP</p>` : ''}
                         ${discountPart}
                     </div>
                     <p class="shrink-0 text-xs font-bold text-gray-800 dark:text-gray-100">${total} SYP</p>
@@ -494,7 +509,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         return `<article class="overflow-hidden border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
             <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 bg-gray-50/80 px-4 py-3 dark:border-gray-800 dark:bg-gray-800/40">
                 <div>
-                    <p><span class="inline-flex rounded-lg bg-gray-900 px-2.5 py-1 text-[11px] font-bold text-white dark:bg-white dark:text-gray-900">${escH(order.order_number || ('Order #' + order.id))}</span></p>
+                    <p><span class="badge badge-brand">${escH(order.order_number || (PROFILE_UI.orderPrefix + order.id))}</span></p>
                     <p class="text-xs text-gray-500 dark:text-gray-400">${date}</p>
                 </div>
                 <div class="flex items-center gap-2">
@@ -507,16 +522,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                 <div class="space-y-2">${itemsHtml}</div>
 
                 <div class="mt-3 grid gap-2 text-xs sm:grid-cols-2 lg:grid-cols-4">
-                    <div class="rounded-lg border border-gray-100 bg-gray-50 px-2.5 py-2 dark:border-gray-800 dark:bg-gray-800/60"><p class="text-gray-400">Order ID</p><p class="mt-0.5 font-semibold text-gray-800 dark:text-gray-200">${order.id ?? '—'}</p></div>
-                    <div class="rounded-lg border border-gray-100 bg-gray-50 px-2.5 py-2 dark:border-gray-800 dark:bg-gray-800/60"><p class="text-gray-400">Items</p><p class="mt-0.5 font-semibold text-gray-800 dark:text-gray-200">${order.items_count ?? (order.items || []).length}</p></div>
-                    <div class="rounded-lg border border-gray-100 bg-gray-50 px-2.5 py-2 dark:border-gray-800 dark:bg-gray-800/60"><p class="text-gray-400">Subtotal</p><p class="mt-0.5 font-semibold text-gray-800 dark:text-gray-200">${parseFloat(order.subtotal_amount || 0).toLocaleString()} SYP</p></div>
-                    <div class="rounded-lg border border-gray-100 bg-gray-50 px-2.5 py-2 dark:border-gray-800 dark:bg-gray-800/60"><p class="text-gray-400">Coupon</p><p class="mt-0.5 font-semibold text-gray-800 dark:text-gray-200">${coupon ? escH(coupon.code) : '—'}</p></div>
+                    <div class="storefront-spec-card"><p class="text-gray-400">${PROFILE_UI.orderId}</p><p class="mt-0.5 font-semibold text-gray-800 dark:text-gray-200">${order.id ?? '—'}</p></div>
+                    <div class="storefront-spec-card"><p class="text-gray-400">${PROFILE_UI.items}</p><p class="mt-0.5 font-semibold text-gray-800 dark:text-gray-200">${order.items_count ?? (order.items || []).length}</p></div>
+                    <div class="storefront-spec-card"><p class="text-gray-400">${PROFILE_UI.subtotal}</p><p class="mt-0.5 font-semibold text-gray-800 dark:text-gray-200">${parseFloat(order.subtotal_amount || 0).toLocaleString()} SYP</p></div>
+                    <div class="storefront-spec-card"><p class="text-gray-400">${PROFILE_UI.coupon}</p><p class="mt-0.5 font-semibold text-gray-800 dark:text-gray-200">${coupon ? escH(coupon.code) : '—'}</p></div>
                 </div>
 
                 <div class="mt-3 flex items-center justify-between border-t border-gray-100 pt-3 text-sm dark:border-gray-800">
-                    <p class="font-bold text-gray-900 dark:text-white">Total: ${parseFloat(order.total_amount || 0).toLocaleString()} SYP</p>
-                    <a href="/orders/${order.id}" class="inline-flex items-center gap-1 rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-700 transition-all hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:text-gray-300 dark:hover:border-brand-500/40 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">
-                        View Details
+                    <p class="font-bold text-gray-900 dark:text-white">${PROFILE_UI.total}: ${parseFloat(order.total_amount || 0).toLocaleString()} SYP</p>
+                    <a href="/orders/${order.id}" class="btn-secondary btn-xs">
+                        ${PROFILE_UI.viewDetails}
                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>
                 </div>

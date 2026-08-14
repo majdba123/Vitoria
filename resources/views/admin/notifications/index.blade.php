@@ -1,39 +1,39 @@
 @extends('layouts.admin')
 
-@section('title', 'Notifications — Vetora Admin')
-@section('page-title', 'سجل الإشعارات')
+@section('title', __('admin.notifications_page_title'))
+@section('page-title', __('admin.notifications_log'))
 
 @section('content')
 <div class="space-y-4">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p class="text-sm text-gray-500 dark:text-gray-400">عرض وإدارة جميع الإشعارات المرسلة إليك.</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('admin.notifications_page_copy') }}</p>
         <div class="flex flex-wrap items-center gap-2">
             <button type="button" id="notif-mark-all-read" class="btn-secondary btn-sm">
-                تحديد الكل كمقروء
+                {{ __('admin.mark_all_read') }}
             </button>
             <a href="{{ route('admin.notifications.send') }}" class="btn-primary btn-sm inline-flex items-center gap-1.5">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                Send notification
+                {{ __('admin.send_notification') }}
             </a>
         </div>
     </div>
 
     <div id="notif-loading" class="card py-14 text-center">
         <div class="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-500 dark:border-gray-700 dark:border-t-brand-400"></div>
-        <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Loading...</p>
+        <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">{{ __('admin.loading') }}</p>
     </div>
 
     <div id="notif-empty" class="hidden card py-14 text-center">
-        <p class="text-sm font-medium text-gray-600 dark:text-gray-300">لا توجد إشعارات.</p>
+        <p class="text-sm font-medium text-gray-600 dark:text-gray-300">{{ __('admin.no_notifications') }}</p>
     </div>
 
-    <div id="notif-list-wrap" class="hidden overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <div id="notif-list-wrap" class="card hidden overflow-hidden">
         <ul id="notif-list" class="divide-y divide-gray-100 dark:divide-gray-800"></ul>
         <div id="notif-pagination" class="flex items-center justify-between border-t border-gray-100 px-4 py-3 dark:border-gray-800">
             <p id="notif-page-info" class="text-xs text-gray-500 dark:text-gray-400"></p>
             <div class="flex gap-2">
-                <button type="button" id="notif-prev" class="btn-secondary btn-xs">السابق</button>
-                <button type="button" id="notif-next" class="btn-secondary btn-xs">Next</button>
+                <button type="button" id="notif-prev" class="btn-secondary btn-xs">{{ __('pagination.previous') }}</button>
+                <button type="button" id="notif-next" class="btn-secondary btn-xs">{{ __('pagination.next') }}</button>
             </div>
         </div>
     </div>
@@ -45,6 +45,11 @@
 (function () {
     const state = { page: 1 };
     const context = 'admin';
+    const messages = @json([
+        'markRead' => __('admin.mark_one_read'),
+        'pageOf' => __('admin.page_of'),
+        'failedLoad' => __('admin.notifications_load_failed'),
+    ]);
 
     function linkUrl(actionType, actionId) {
         if (!actionType || actionId == null) return null;
@@ -107,14 +112,14 @@
                     '<div class="min-w-0 flex-1">' +
                     '<p class="text-sm font-medium text-gray-900 dark:text-white">' + body + '</p>' +
                     '<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">' + time + (sender ? ' · ' + sender : '') + '</p>' +
-                    (isUnread ? '<button type="button" class="notif-mark-one mt-2 text-xs font-medium text-brand-600 hover:underline dark:text-brand-400" data-id="' + esc(String(n.id)) + '">تحديد كمقروء</button>' : '') +
+                    (isUnread ? '<button type="button" class="notif-mark-one mt-2 text-xs font-medium text-brand-600 hover:underline dark:text-brand-400" data-id="' + esc(String(n.id)) + '">' + esc(messages.markRead) + '</button>' : '') +
                     '</div>' +
                     (href ? '<svg class="h-4 w-4 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>' : '') +
                     '</div></' + tag + '></li>';
             }).join('');
 
             document.getElementById('notif-list-wrap').classList.remove('hidden');
-            document.getElementById('notif-page-info').textContent = 'Page ' + currentPage + ' of ' + lastPage + (total ? ' (' + total + ')' : '');
+            document.getElementById('notif-page-info').textContent = messages.pageOf.replace(':current', currentPage).replace(':last', lastPage).replace(':total', total);
             document.getElementById('notif-prev').disabled = currentPage <= 1;
             document.getElementById('notif-next').disabled = currentPage >= lastPage;
 
@@ -134,7 +139,7 @@
         }).catch(function () {
             document.getElementById('notif-loading').classList.add('hidden');
             document.getElementById('notif-empty').classList.remove('hidden');
-            document.getElementById('notif-empty').querySelector('p').textContent = 'Failed to load notifications.';
+            document.getElementById('notif-empty').querySelector('p').textContent = messages.failedLoad;
         });
     }
 
