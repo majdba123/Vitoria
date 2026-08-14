@@ -83,7 +83,6 @@ Route::middleware(['web', 'cache.response:120'])->group(function () {
     Route::get('banners', [\App\Http\Controllers\Api\BannerController::class, 'index'])->name('banners.index');
 });
 
-
 Route::prefix('external/products')->as('external.products.')->group(function () {
     Route::get('/', [\App\Http\Controllers\Api\ProductController::class, 'externalIndex'])->name('index');
     Route::get('/{product}', [\App\Http\Controllers\Api\ProductController::class, 'externalShow'])->name('show');
