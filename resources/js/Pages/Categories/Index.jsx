@@ -114,7 +114,6 @@ export default function CategoriesIndex() {
                                 <Link href={typedHref(`/categories/${category.id}`)} className="flex min-w-0 items-center gap-4 p-5">
                                     <div className="min-w-0 flex-1">
                                         <h2 className="text-lg font-bold text-foreground">{category.name}</h2>
-                                        <p className="mt-1 text-xs text-muted-foreground">{(categoriesI18n.commission_line ?? '').replace(':count', String(category.commission))}</p>
                                     </div>
                                     <ArrowRight className="h-5 w-5 shrink-0 text-muted-foreground rtl:-scale-x-100" />
                                 </Link>

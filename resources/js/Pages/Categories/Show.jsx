@@ -47,10 +47,7 @@ export default function CategoriesShow({ categoryId, category }) {
         );
     }
 
-    const description = [
-        (categoryI18n.products_count ?? '').replace(':count', String(category.products_count || 0)),
-        (categoryI18n.commission_meta ?? '').replace(':count', String(category.commission)),
-    ].filter(Boolean).join(' · ') || undefined;
+    const description = (categoryI18n.products_count ?? '').replace(':count', String(category.products_count || 0)) || undefined;
 
     const breadcrumbJsonLd = {
         '@context': 'https://schema.org',

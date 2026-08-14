@@ -1501,32 +1501,132 @@
         @apply py-12 sm:py-16 lg:py-18;
     }
 
-    /* Editorial split hero: real photography occupies its own column instead
-       of sitting behind decorative overlays / floating info pills. */
+    /* One cinematic hero: the approved footage is the full media layer of the
+       section, with copy overlaid directly on top behind a restrained,
+       localized scrim - not a separate image column beside a text card.
+       The section itself runs full-width, flush under the header - no
+       page-shell max-width/padding, no card border or shadow - so the
+       footage reads as a dominant cinematic opening rather than a boxed
+       media panel sitting inside the page. */
     .storefront-hero {
-        @apply relative grid gap-0 overflow-hidden lg:grid-cols-[1.08fr_0.92fr];
-        border-radius: var(--radius-card);
-        border: 1px solid var(--color-border);
-        background: var(--color-surface);
-        box-shadow: var(--shadow-1);
+        width: 100%;
     }
 
-    .storefront-hero-copy {
-        @apply flex flex-col justify-center px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16;
-        background-image: linear-gradient(90deg, color-mix(in srgb, var(--color-brand-soft) 45%, transparent), transparent 42%);
-    }
-
-    .storefront-hero-media {
-        position: relative;
-        min-height: 17rem;
+    .storefront-hero-frame {
+        @apply relative overflow-hidden;
         background: var(--color-ink-900);
+        min-height: 520px;
     }
 
-    .storefront-hero-media img {
+    @media (min-width: 640px) {
+        .storefront-hero-frame {
+            min-height: 620px;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .storefront-hero-frame {
+            min-height: 700px;
+        }
+    }
+
+    .storefront-hero-video {
+        position: absolute;
+        inset: 0;
+        display: block;
         width: 100%;
         height: 100%;
         object-fit: cover;
-        object-position: 58% center;
+        object-position: center 42%;
+    }
+
+    /* Bottom-weighted scrim on mobile (copy sits at the base of the frame),
+       side-weighted scrim on desktop (copy sits on the start side) - just
+       enough contrast for the overlaid text, never a full dark wash. */
+    .storefront-hero-scrim {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(0deg, rgba(9, 20, 24, 0.72) 0%, rgba(9, 20, 24, 0.38) 42%, rgba(9, 20, 24, 0.05) 72%);
+    }
+
+    @media (min-width: 1024px) {
+        .storefront-hero-scrim {
+            background: linear-gradient(90deg, rgba(9, 20, 24, 0.66) 0%, rgba(9, 20, 24, 0.3) 40%, rgba(9, 20, 24, 0) 64%);
+        }
+
+        html[dir='rtl'] .storefront-hero-scrim {
+            background: linear-gradient(270deg, rgba(9, 20, 24, 0.66) 0%, rgba(9, 20, 24, 0.3) 40%, rgba(9, 20, 24, 0) 64%);
+        }
+    }
+
+    .storefront-hero-copy {
+        @apply relative flex flex-col justify-end px-5 pb-8 pt-24 sm:px-8 sm:pb-10 sm:pt-32;
+        z-index: 10;
+        min-height: inherit;
+        max-width: 36rem;
+    }
+
+    @media (min-width: 1024px) {
+        .storefront-hero-copy {
+            @apply justify-center px-12 py-16 xl:px-20;
+            max-width: 30rem;
+        }
+    }
+
+    .storefront-hero-eyebrow {
+        @apply inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em];
+        color: var(--color-brand-300, #74c6de);
+    }
+
+    .storefront-hero-title {
+        @apply mt-5 font-display text-3xl font-bold leading-[1.08] tracking-[-0.035em] sm:text-4xl lg:text-[3.2rem];
+        color: #fbfdfc;
+        text-wrap: balance;
+    }
+
+    .storefront-hero-title-highlight {
+        display: block;
+        color: var(--color-brand-300, #74c6de);
+    }
+
+    .storefront-hero-subtitle {
+        @apply mt-5 max-w-md text-sm leading-7 sm:text-base;
+        color: rgba(251, 253, 252, 0.86);
+    }
+
+    .storefront-hero-note {
+        @apply mt-6 max-w-sm text-xs font-medium leading-5;
+        color: rgba(251, 253, 252, 0.66);
+    }
+
+    /* Arabic is a cursive, joining script - any added or removed
+       letter-spacing (tuned above for the Latin display face) breaks how
+       letters connect and reads as visually noisy rather than clean.
+       Uppercase transforms are a Latin-only convention too. Neutralize both
+       for RTL, and give the tighter Latin title line-height a touch more
+       room so Arabic ascenders/diacritics aren't crowded. */
+    html[dir='rtl'] .storefront-hero-eyebrow {
+        letter-spacing: normal;
+        text-transform: none;
+    }
+
+    html[dir='rtl'] .storefront-hero-title {
+        letter-spacing: normal;
+        line-height: 1.25;
+    }
+
+    html[dir='rtl'] .storefront-hero-subtitle {
+        line-height: 1.9;
+    }
+
+    .storefront-hero-secondary-cta {
+        @apply inline-flex items-center gap-1.5 text-sm font-semibold;
+        color: rgba(251, 253, 252, 0.92);
+    }
+
+    .storefront-hero-secondary-cta:hover {
+        color: #ffffff;
     }
 
     .hero-context-note {

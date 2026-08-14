@@ -1,0 +1,19 @@
+{
+  "name": "vetora-hero-video",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Build-only Remotion tool for post-processing the approved Vetora hero footage into web derivatives. Not part of the website runtime.",
+  "scripts": {
+    "render": "remotion render src/index.ts VetoraHero out/vetora-hero-post.mp4 --codec h264 --crf 16 --overwrite",
+    "still": "remotion still src/index.ts VetoraHero"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remotion": "^4.0.290",
+    "@remotion/cli": "^4.0.290"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

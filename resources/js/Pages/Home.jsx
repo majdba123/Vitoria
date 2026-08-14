@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { Sprout, Stethoscope, ArrowRight, Layers, CheckCircle2, AlertTriangle } from 'lucide-react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { ProductCard } from '@/Components/public/ProductCard';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { useReducedMotion } from '@/hooks/use-reduced-motion';
 
 const TYPE_META = {
     agriculture: { icon: Sprout, labelKey: 'type_agriculture_label', descKey: 'type_agriculture_description', buttonKey: 'type_agriculture_button' },
@@ -20,6 +21,67 @@ function categoryImageUrl(category) {
 
 function subLabel(sub, locale) {
     return locale === 'ar' ? (sub.name_ar || sub.name_en || '') : (sub.name_en || sub.name_ar || '');
+}
+
+function HeroMedia({ alt }) {
+    const reducedMotion = useReducedMotion();
+    const videoRef = useRef(null);
+
+    // Belt-and-suspenders for the `autoPlay` attribute: on a hard reload some
+    // browsers start the element paused for a moment (buffering, tab not yet
+    // painted) and never receive the implicit nudge a SPA navigation gives
+    // them. Kicking play() explicitly once data is available - and again if
+    // the tab becomes visible - keeps the loop running even in those cases.
+    // play() on a muted element is allowed by every browser autoplay policy.
+    useEffect(() => {
+        if (reducedMotion) return;
+        const video = videoRef.current;
+        if (!video) return;
+
+        const tryPlay = () => {
+            if (video.paused) video.play().catch(() => {});
+        };
+
+        tryPlay();
+        video.addEventListener('loadeddata', tryPlay);
+        video.addEventListener('canplay', tryPlay);
+        document.addEventListener('visibilitychange', tryPlay);
+
+        return () => {
+            video.removeEventListener('loadeddata', tryPlay);
+            video.removeEventListener('canplay', tryPlay);
+            document.removeEventListener('visibilitychange', tryPlay);
+        };
+    }, [reducedMotion]);
+
+    if (reducedMotion) {
+        return (
+            <img
+                src="/images/vetora-hero-poster.webp"
+                alt={alt}
+                width={1280}
+                height={720}
+                fetchpriority="high"
+                className="storefront-hero-video"
+            />
+        );
+    }
+
+    return (
+        <video
+            ref={videoRef}
+            className="storefront-hero-video"
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="/images/vetora-hero-poster.webp"
+            preload="auto"
+            aria-label={alt}
+        >
+            <source src="/videos/vetora-hero-loop.mp4" type="video/mp4" />
+        </video>
+    );
 }
 
 function BannerStrip() {
@@ -259,29 +321,28 @@ export default function Home({ selectedType }) {
 
     return (
         <PublicLayout title="Vetora" description={home.hero_subtitle} jsonLd={[organizationJsonLd, websiteJsonLd, ...(faqJsonLd ? [faqJsonLd] : [])]}>
-            <section className="page-shell pb-5 pt-2 sm:pb-6 sm:pt-3">
-                <div className="storefront-hero">
+            <section className="storefront-hero">
+                <div className="storefront-hero-frame">
+                    <HeroMedia alt={home.hero_image_alt} />
+                    <div className="storefront-hero-scrim" aria-hidden="true" />
                     <div className="storefront-hero-copy">
-                        <span className="eyebrow">{home.hero_badge}</span>
-                        <h1 className="mt-5 max-w-xl font-display text-3xl font-bold leading-[1.08] tracking-[-0.035em] text-foreground sm:text-4xl lg:text-[3.4rem]">
+                        <span className="storefront-hero-eyebrow">{home.hero_badge}</span>
+                        <h1 className="storefront-hero-title">
                             {home.hero_title_line_one}
-                            <span className="block text-primary">{home.hero_title_highlight}</span>
+                            <span className="storefront-hero-title-highlight">{home.hero_title_highlight}</span>
                         </h1>
-                        <p className="mt-4 max-w-lg text-sm leading-7 text-muted-foreground sm:text-base">{home.hero_subtitle}</p>
-                        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+                        <p className="storefront-hero-subtitle">{home.hero_subtitle}</p>
+                        <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
                             <a href="#products" className="btn-primary">
                                 {home.hero_primary_cta}
                                 <ArrowRight className="h-4 w-4 rtl:-scale-x-100" />
                             </a>
-                            <a href="#categories" className="inline-flex items-center gap-1.5 text-sm font-semibold text-foreground">
+                            <a href="#categories" className="storefront-hero-secondary-cta">
                                 {home.hero_secondary_cta}
                                 <ArrowRight className="h-3.5 w-3.5 rtl:-scale-x-100" />
                             </a>
                         </div>
-                        <p className="hero-context-note">{home.hero_context_note}</p>
-                    </div>
-                    <div className="storefront-hero-media">
-                        <img src="/images/hero-agriculture.webp" alt={home.hero_image_alt} width={1200} height={900} fetchpriority="high" />
+                        <p className="storefront-hero-note">{home.hero_context_note}</p>
                     </div>
                 </div>
             </section>

@@ -110,6 +110,26 @@ class User extends Authenticatable
     }
 
     /**
+     * Where an already-authenticated user should land instead of /login or
+     * /register. Lives here (not as a routes/web.php closure-scoped helper)
+     * so it still resolves once routes are cached in production - cached
+     * routes never re-load routes/web.php, so a function defined inline
+     * there via `if (!function_exists())` silently disappears.
+     */
+    public function redirectAfterLogin(): \Illuminate\Http\RedirectResponse
+    {
+        return match ($this->type) {
+            self::TYPE_ADMIN => redirect()->route('admin.dashboard'),
+            self::TYPE_VENDOR => redirect()->route('vendor.dashboard'),
+            self::TYPE_SYNDICATE => redirect()->route('syndicate.dashboard'),
+            self::TYPE_EMPLOYEE => redirect()->route('employee.dashboard'),
+            default => $this->preferred_product_type
+                ? redirect()->route('home')
+                : redirect()->route('product-type.select'),
+        };
+    }
+
+    /**
      * The city of this user.
      */
     public function city(): BelongsTo

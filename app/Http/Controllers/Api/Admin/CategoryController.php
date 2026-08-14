@@ -55,9 +55,13 @@ class CategoryController extends Controller
                 ->paginate($perPage);
         }
 
+        $isAdminRequest = $this->isAdminRequest($request);
+
         return response()->json([
             'message' => __('Categories retrieved successfully.'),
-            'data' => $categories->items(),
+            'data' => collect($categories->items())
+                ->map(fn (Category $category) => $this->serializeCategory($category, $isAdminRequest))
+                ->all(),
             'meta' => [
                 'current_page' => $categories->currentPage(),
                 'last_page' => $categories->lastPage(),
@@ -72,7 +76,9 @@ class CategoryController extends Controller
      */
     public function show(Request $request, Category $category): JsonResponse
     {
-        if (! $this->isAdminRequest($request)) {
+        $isAdminRequest = $this->isAdminRequest($request);
+
+        if (! $isAdminRequest) {
             $this->selectedProductTypeService->abortIfTypeMismatch($request, $category->type);
         }
 
@@ -88,8 +94,25 @@ class CategoryController extends Controller
 
         return response()->json([
             'message' => __('Category retrieved successfully.'),
-            'data' => $data,
+            'data' => $this->serializeCategory($data, $isAdminRequest),
         ]);
+    }
+
+    /**
+     * Vendor commission is internal business data (the marketplace's own take
+     * rate) - it must never reach the public storefront, only the admin panel
+     * that manages it. This shared controller serves both, so the field is
+     * stripped here rather than trusted to the caller.
+     */
+    protected function serializeCategory(Category $category, bool $isAdminRequest): array
+    {
+        $data = $category->toArray();
+
+        if (! $isAdminRequest) {
+            unset($data['commission']);
+        }
+
+        return $data;
     }
 
     public function store(StoreCategoryRequest $request): JsonResponse

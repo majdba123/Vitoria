@@ -4,21 +4,6 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-if (! function_exists('redirectAuthenticatedUser')) {
-    function redirectAuthenticatedUser(\App\Models\User $user)
-    {
-        return match ($user->type) {
-            \App\Models\User::TYPE_ADMIN => redirect()->route('admin.dashboard'),
-            \App\Models\User::TYPE_VENDOR => redirect()->route('vendor.dashboard'),
-            \App\Models\User::TYPE_SYNDICATE => redirect()->route('syndicate.dashboard'),
-            \App\Models\User::TYPE_EMPLOYEE => redirect()->route('employee.dashboard'),
-            default => $user->preferred_product_type
-                ? redirect()->route('home')
-                : redirect()->route('product-type.select'),
-        };
-    }
-}
-
 Route::get('/', function (\Illuminate\Http\Request $request) {
     return Inertia::render('Home', [
         'selectedType' => app(\App\Services\SelectedProductTypeService::class)->resolve($request),
@@ -64,7 +49,7 @@ Route::get('/login', function () {
     }
 
     if (auth()->check()) {
-        return redirectAuthenticatedUser(auth()->user());
+        return auth()->user()->redirectAfterLogin();
     }
 
     return Inertia::render('Auth/Login');
@@ -72,7 +57,7 @@ Route::get('/login', function () {
 
 Route::get('/register', function () {
     if (auth()->check()) {
-        return redirectAuthenticatedUser(auth()->user());
+        return auth()->user()->redirectAfterLogin();
     }
 
     return Inertia::render('Auth/Register');
