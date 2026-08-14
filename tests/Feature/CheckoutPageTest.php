@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Inertia\Testing\AssertableInertia as Assert;
 
 /**
  * Checkout page and the storefront's migration off the localStorage cart
@@ -11,12 +12,13 @@ it('requires authentication to reach the checkout page', function () {
 });
 
 it('renders the checkout page for a signed-in customer', function () {
+    // Checkout/Index.jsx fetches its own data client-side (/api/checkout/summary),
+    // so the only thing the backend route itself guarantees is that the right
+    // Inertia component is served to an authenticated user.
     $this->actingAs(User::factory()->create())
         ->get('/checkout')
         ->assertOk()
-        ->assertSee('checkout-place-order', escape: false)
-        ->assertSee('checkout-addresses', escape: false)
-        ->assertSee('checkout-payment-methods', escape: false);
+        ->assertInertia(fn (Assert $page) => $page->component('Checkout/Index'));
 });
 
 it('no longer ships a localStorage cart anywhere in the storefront', function () {

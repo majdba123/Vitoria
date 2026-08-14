@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Sanctum\Sanctum;
 
 function repairAdmin(): User
@@ -116,9 +117,7 @@ test('normal website users can choose product type from the homepage', function 
     $this->actingAs($user)
         ->get('/')
         ->assertOk()
-        ->assertSee('preferred_product_type='.Category::TYPE_AGRICULTURE, false)
-        ->assertSee('preferred_product_type='.Category::TYPE_VETERINARY, false)
-        ->assertSee('redirect_to=home', false);
+        ->assertInertia(fn (Assert $page) => $page->component('Home'));
 
     $this->actingAs($user)
         ->post(route('product-type.store'), [
@@ -135,15 +134,19 @@ test('normal website users can choose product type from the homepage', function 
 test('guests can choose product type from the homepage and still use the dedicated selection page', function () {
     $this->get('/')
         ->assertOk()
-        ->assertSee('preferred_product_type='.Category::TYPE_AGRICULTURE, false)
-        ->assertSee('preferred_product_type='.Category::TYPE_VETERINARY, false)
-        ->assertSee('redirect_to=home', false);
+        ->assertInertia(fn (Assert $page) => $page->component('Home')->where('selectedType', null));
 
     $this->get(route('product-type.select'))
         ->assertOk()
-        ->assertSee('preferred_product_type='.Category::TYPE_AGRICULTURE, false)
-        ->assertSee('preferred_product_type='.Category::TYPE_VETERINARY, false)
-        ->assertSee('redirect_to=categories', false);
+        ->assertInertia(fn (Assert $page) => $page->component('Preferences/ProductType')->where('selectedType', null));
+
+    // Both pages build their type-selector links from these same route
+    // definitions client-side (Ziggy) — proving the routes themselves
+    // produce the right query string is the backend's share of this test.
+    expect(route('product-type.select', ['preferred_product_type' => Category::TYPE_AGRICULTURE, 'redirect_to' => 'home']))
+        ->toContain('redirect_to=home');
+    expect(route('product-type.select', ['preferred_product_type' => Category::TYPE_AGRICULTURE, 'redirect_to' => 'categories']))
+        ->toContain('redirect_to=categories');
 });
 
 test('public products api allows explicit all types filter', function () {
@@ -253,13 +256,19 @@ test('public products api filters by subcategory without leaking sibling product
 test('category page preserves selected type in view all link', function () {
     $set = repairCategorySet(Category::TYPE_AGRICULTURE, 'Linked Category');
 
+    // Categories/Show.jsx builds its "view all" link client-side from the
+    // `categoryId` prop plus the `type` query param already on the request
+    // URL, so that's what the backend contract now is (route model binding
+    // uses `{category}`, not the old `{id}` key this test used to pass).
     $this->get(route('categories.show', [
-        'id' => $set['category']->id,
+        'category' => $set['category']->id,
         'type' => Category::TYPE_AGRICULTURE,
     ]))
         ->assertOk()
-        ->assertSee('category_id='.$set['category']->id, false)
-        ->assertSee('type=agriculture', false);
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Categories/Show')
+            ->where('categoryId', $set['category']->id)
+        );
 });
 
 test('selected user product type filters categories and public products on backend', function () {

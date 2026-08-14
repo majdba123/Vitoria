@@ -4,8 +4,16 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Vendor;
+use Inertia\Testing\AssertableInertia as Assert;
 
-test('admin product show page renders the upgraded detail layout', function () {
+/**
+ * Admin/Vendor Products/Show pages only receive a `productId` prop and fetch
+ * the rest (labels, photos, per-type detail fields) client-side via API, so
+ * this now verifies the backend's actual contract — right component, right
+ * product, right role, right locale context — rather than rendered section
+ * headings/DOM markers that React (not Blade) owns post-migration.
+ */
+test('admin product show page renders for the correct product and locale', function () {
     $admin = User::factory()->admin()->create();
     $vendor = Vendor::factory()->create();
     $category = Category::query()->create([
@@ -22,13 +30,14 @@ test('admin product show page renders the upgraded detail layout', function () {
         ->withSession(['locale' => 'en'])
         ->get("/admin/products/{$product->id}")
         ->assertOk()
-        ->assertSee('Product Overview', false)
-        ->assertSee('Core product parameters', false)
-        ->assertSee('Agricultural Profile', false)
-        ->assertSee('product-photo-modal', false);
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Products/Show')
+            ->where('productId', $product->id)
+            ->where('locale', 'en')
+        );
 });
 
-test('vendor product show page renders the upgraded detail layout', function () {
+test('vendor product show page renders for the correct product and locale', function () {
     $vendor = Vendor::factory()->create([
         'business_type' => Vendor::BUSINESS_TYPE_VETERINARY,
     ]);
@@ -48,8 +57,9 @@ test('vendor product show page renders the upgraded detail layout', function () 
         ->withSession(['locale' => 'en'])
         ->get("/vendor/products/{$product->id}")
         ->assertOk()
-        ->assertSee('Product Gallery', false)
-        ->assertSee('Shared Profile', false)
-        ->assertSee('Veterinary Profile', false)
-        ->assertSee('vendor-product-photo-modal', false);
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Vendor/Products/Show')
+            ->where('productId', (string) $product->id)
+            ->where('locale', 'en')
+        );
 });

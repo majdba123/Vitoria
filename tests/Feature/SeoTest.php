@@ -40,7 +40,9 @@ it('only lists published pages and approved active products in the sitemap', fun
     Product::factory()->for($vendor)->create(['status' => Product::STATUS_APPROVED, 'is_active' => true]);
     Product::factory()->for($vendor)->create(['status' => Product::STATUS_PENDING, 'is_active' => true]);
 
-    $response = $this->get('/api/sitemap.xml')->assertOk();
+    // Moved from /api/sitemap.xml to /sitemap.xml (routes/web.php) — crawlers
+    // don't look under /api for it.
+    $response = $this->get('/sitemap.xml')->assertOk();
     $xml = $response->getContent();
 
     expect($response->headers->get('Content-Type'))->toContain('xml')
@@ -54,8 +56,10 @@ it('only lists published pages and approved active products in the sitemap', fun
 });
 
 it('serves robots.txt pointing at the sitemap', function () {
-    $response = $this->get('/api/robots.txt')->assertOk();
+    // Moved from /api/robots.txt to /robots.txt (routes/web.php); it disallows
+    // /admin/ (the dashboard routes), not /api/admin/ (there is no such path).
+    $response = $this->get('/robots.txt')->assertOk();
 
     expect($response->getContent())->toContain('Sitemap:')
-        ->and($response->getContent())->toContain('Disallow: /api/admin/');
+        ->and($response->getContent())->toContain('Disallow: /admin/');
 });

@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
+use Inertia\Testing\AssertableInertia as Assert;
 
 uses(RefreshDatabase::class);
 
@@ -58,7 +59,11 @@ test('locale switch persists and updates page direction', function () {
         ->assertSee('lang="ar"', false);
 });
 
-test('admin and vendor product detail pages respect selected locale labels', function () {
+test('admin and vendor product detail pages carry the selected locale to the frontend', function () {
+    // Admin/Vendor Products/Show only receive a `productId` prop and fetch
+    // their own localized labels client-side, so what the backend actually
+    // guarantees — and what this now checks — is that the right product and
+    // the right `locale`/`i18n` context reach the right page for each role.
     $category = Category::query()->create([
         'name' => 'Localized Category',
         'type' => Category::TYPE_AGRICULTURE,
@@ -80,17 +85,23 @@ test('admin and vendor product detail pages respect selected locale labels', fun
         ->withSession(['locale' => 'en'])
         ->get("/admin/products/{$product->id}")
         ->assertOk()
-        ->assertSee('Product Overview')
-        ->assertSee('Product Gallery')
-        ->assertSee('Core product parameters');
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Products/Show')
+            ->where('productId', $product->id)
+            ->where('locale', 'en')
+            ->where('i18n.products.overview_badge', trans('products.overview_badge', [], 'en'))
+        );
 
     $this->actingAs($vendor->user)
         ->withSession(['locale' => 'ar'])
         ->get("/vendor/products/{$product->id}")
         ->assertOk()
-        ->assertSee('نظرة عامة على المنتج')
-        ->assertSee('معرض صور المنتج')
-        ->assertSee('المعلومات الأساسية للمنتج');
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Vendor/Products/Show')
+            ->where('productId', (string) $product->id)
+            ->where('locale', 'ar')
+            ->where('i18n.products.overview_badge', trans('products.overview_badge', [], 'ar'))
+        );
 });
 
 /**
