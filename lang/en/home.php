@@ -4,6 +4,9 @@ return [
     'meta_title' => 'Home',
     'tagline' => 'Smart marketplace for agricultural and veterinary products',
     'explore_product_types' => 'Explore product types',
+    'type_selector_kicker' => 'Choose your trade',
+    'type_selector_title' => 'One marketplace, two specialist catalogues',
+    'type_selector_copy' => 'Select the field you work in. Prices, categories, and available stock will follow that choice throughout the store.',
     'could_not_load' => 'Could not load the requested data.',
     'products' => 'Products',
     'categories' => 'Categories',
@@ -48,6 +51,8 @@ return [
     'hero_title_line_one' => 'Choose faster.',
     'hero_title_highlight' => 'Browse smarter.',
     'hero_subtitle' => 'Start from the right product type, move into the right category and subcategory, and reach the products that matter without clutter.',
+    'hero_context_note' => 'Built for growers, veterinary teams, suppliers, and purchasing staff.',
+    'hero_image_alt' => 'Agricultural specialist inspecting crops in the field',
     'hero_primary_cta' => 'Explore products',
     'hero_secondary_cta' => 'Browse categories',
     'hero_flow_badge' => 'Discovery flow',
@@ -98,4 +103,34 @@ return [
     'category_open' => 'Open category',
     'type_agriculture_short' => 'Agriculture',
     'type_veterinary_short' => 'Veterinary',
+
+    'faq_kicker' => 'Good to know',
+    'faq_title' => 'Frequently asked questions',
+    'faq_subtitle' => 'Quick answers about how ordering, vendors, and payment work on Vetora.',
+    'faq' => [
+        [
+            'q' => 'What is Vetora and who is it for?',
+            'a' => 'Vetora is a marketplace connecting agricultural and veterinary product buyers with vetted vendors. It serves farmers, veterinary clinics, pharmacies, and purchasing teams who need one place to compare products, prices, and stock across both fields.',
+        ],
+        [
+            'q' => 'How do I choose between agriculture and veterinary products?',
+            'a' => 'Select your product type from the homepage toggle before browsing. Vetora then filters categories, subcategories, and stock to match that field, so agriculture and veterinary catalogues never mix while you shop.',
+        ],
+        [
+            'q' => 'How do I place an order on Vetora?',
+            'a' => 'Add products to your cart, choose a saved delivery address at checkout, and confirm the order. If your cart includes items from multiple vendors, Vetora splits them into separate orders automatically.',
+        ],
+        [
+            'q' => 'What payment methods does Vetora currently accept?',
+            'a' => 'Cash on delivery is currently the only payment method available at checkout — you pay the courier directly when your order arrives, with no online payment step required.',
+        ],
+        [
+            'q' => 'Can I register as a vendor on Vetora?',
+            'a' => 'Yes. Choose the vendor account type during registration, pick your business type (agriculture, veterinary, or both), select your product categories, and upload your commercial register document for review.',
+        ],
+        [
+            'q' => 'How can I contact Vetora for support?',
+            'a' => 'Use the contact form on the homepage with your name, email, and message, and the Vetora team will respond directly. No account or login is required to send a message.',
+        ],
+    ],
 ];

@@ -56,4 +56,5 @@ return [
     'completed' => 'مكتمل',
     'avatar_alt' => 'الصورة الرمزية',
     'logo_alt' => 'الشعار',
+    'last_updated' => 'آخر تحديث',
 ];

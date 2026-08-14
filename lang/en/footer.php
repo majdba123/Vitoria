@@ -11,4 +11,7 @@ return [
     'privacy' => 'Privacy Policy',
     'terms' => 'Terms of Service',
     'rights' => 'All rights reserved.',
+    'follow_facebook' => 'Follow Vetora on Facebook',
+    'follow_instagram' => 'Follow Vetora on Instagram',
+    'follow_twitter' => 'Follow Vetora on Twitter',
 ];

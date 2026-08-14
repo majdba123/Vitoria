@@ -56,4 +56,5 @@ return [
     'completed' => 'Completed',
     'avatar_alt' => 'Avatar',
     'logo_alt' => 'Logo',
+    'last_updated' => 'Last updated',
 ];
