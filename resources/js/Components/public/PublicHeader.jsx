@@ -96,7 +96,6 @@ export function PublicHeader() {
                     <div className="site-header-category-inner">
                         <CategoryMegaMenu categories={categories} />
                         <Link href={route('products.index')} className="nav-primary-link">{nav.products}</Link>
-                        <Link href={route('categories.index')} className="nav-primary-link">{nav.categories}</Link>
                     </div>
                 </div>
             </header>

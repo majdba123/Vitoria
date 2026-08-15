@@ -73,7 +73,6 @@ export default function CategoriesIndex() {
                     </div>
                     <div className="flex flex-wrap gap-2" aria-label={nav.all_types}>
                         {[
-                            { value: '', label: nav.all_types },
                             { value: 'agriculture', label: home.type_agriculture_short },
                             { value: 'veterinary', label: home.type_veterinary_short },
                         ].map((opt) => (

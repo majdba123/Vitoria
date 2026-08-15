@@ -65,7 +65,16 @@ export function CartModal() {
                             return (
                                 <div key={item.product_id} className="flex items-center gap-3 rounded-md border border-border bg-background p-3">
                                     <div className="size-14 shrink-0 overflow-hidden rounded-md bg-muted">
-                                        {item.photo ? <img src={item.photo} alt="" className="size-full object-contain p-1" /> : <div className="flex size-full items-center justify-center"><ShoppingBag className="size-5 text-muted-foreground/30" /></div>}
+                                        {item.photo_url ? (
+                                            <img
+                                                src={item.photo_url}
+                                                alt=""
+                                                className="size-full object-contain p-1"
+                                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/product-placeholder.svg'; }}
+                                            />
+                                        ) : (
+                                            <div className="flex size-full items-center justify-center"><ShoppingBag className="size-5 text-muted-foreground/30" /></div>
+                                        )}
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <h4 className="truncate text-sm font-bold text-foreground">{item.name}</h4>

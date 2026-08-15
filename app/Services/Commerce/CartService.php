@@ -5,6 +5,7 @@ namespace App\Services\Commerce;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use App\Models\ProductPhoto;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -282,7 +283,7 @@ class CartService
      */
     public function summarize(Cart $cart): array
     {
-        $cart->loadMissing('items.product.vendor');
+        $cart->loadMissing('items.product.vendor', 'items.product.photos');
 
         $lines = [];
         $subtotal = 0.0;
@@ -298,9 +299,14 @@ class CartService
             $lineTotal = round($unitPrice * $item->quantity, 2);
             $subtotal = round($subtotal + $lineTotal, 2);
 
+            $photo = $product->photos->firstWhere('image_type', ProductPhoto::TYPE_PRIMARY)
+                ?? $product->photos->firstWhere('is_primary', true)
+                ?? $product->photos->first();
+
             $lines[] = [
                 'product_id' => $product->id,
                 'name' => $product->name,
+                'photo_url' => $photo ? asset('storage/'.$photo->path) : null,
                 'vendor_id' => $product->vendor_id,
                 'vendor_name' => $product->vendor?->store_name,
                 'original_unit_price' => round((float) $product->price, 2),
