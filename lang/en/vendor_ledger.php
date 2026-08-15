@@ -28,4 +28,5 @@ return [
     'settlement_exceeds_outstanding' => 'The settlement amount exceeds this vendor\'s outstanding balance.',
     'settlement_recorded' => 'Settlement recorded.',
     'adjustment_recorded' => 'Adjustment recorded.',
+    'paid_amount_not_greater_than_settled' => 'This vendor already has :settled recorded as settled. Enter a higher total to record an additional payout.',
 ];

@@ -20,6 +20,36 @@ trait InteractsWithProductDetails
     }
 
     /**
+     * Prevents a vendor/admin from setting a minimum order quantity above the
+     * product's own stock, which would silently make the product permanently
+     * unpurchasable (every cart attempt would fail either the minimum-quantity
+     * check or the stock check) with no warning at write time.
+     *
+     * Falls back to the existing product's `quantity` when this request
+     * doesn't submit one (e.g. a partial update that only touches
+     * minimum_order_quantity) — `route('product')` is bound on update
+     * requests only, but `quantity` is always required (and therefore always
+     * present) on store requests, where there is no existing product to
+     * fall back to.
+     */
+    protected function minimumOrderQuantityRule(): \Closure
+    {
+        return function (string $attribute, mixed $value, \Closure $fail): void {
+            if ($value === null || $value === '') {
+                return;
+            }
+
+            $quantity = $this->has('quantity')
+                ? (int) $this->input('quantity')
+                : (int) ($this->route('product')?->quantity ?? 0);
+
+            if ((int) $value > $quantity) {
+                $fail(__('The minimum order quantity may not exceed the product quantity.'));
+            }
+        };
+    }
+
+    /**
      * SEO meta fields (spec §39) — optional on every product form regardless
      * of actor (admin/vendor/employee).
      *

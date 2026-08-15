@@ -183,6 +183,13 @@ class VendorLedgerService
                 'settled_at' => now(),
             ]);
 
+            // `vendors.paid_amount` is kept as a denormalized read-cache of the
+            // ledger's cumulative settled total — cheap to display on list
+            // views without recomputing `summary()` per row — but this is now
+            // the *only* place that ever writes it, so it can never drift out
+            // of sync with, or be double-written independently of, the ledger.
+            $vendor->increment('paid_amount', $amount);
+
             $this->auditLogService->record(
                 $actor,
                 'vendor_ledger.settlement',

@@ -114,34 +114,54 @@ class CouponService
     /**
      * Atomically claim one use of the coupon.
      *
-     * The conditional UPDATE is what enforces the cap. `lockForUpdate()` would
-     * be a no-op on SQLite (audit §1.1), so the guard lives in the WHERE clause
-     * and correctness comes from the affected-row count.
+     * The global usage_limit is enforced by the conditional UPDATE — that
+     * part needs no row lock, correctness comes from the affected-row count.
+     * `per_user_limit`/`first_order_only`, however, are a *count of related
+     * rows*, which a conditional UPDATE can't express directly. Those were
+     * previously only checked once in `resolveUsable()`, well before this
+     * method runs, leaving a window where two concurrent checkouts from the
+     * same user could each pass that earlier check and both insert a
+     * redemption, exceeding the limit. `lockForUpdate()` on the coupon row
+     * closes that window on any database that honors row locks (it's a
+     * no-op on SQLite, same caveat as the rest of this service — the
+     * global-limit conditional UPDATE above remains the real backstop
+     * there): two concurrent claims for the *same* coupon+user necessarily
+     * serialize on this lock, so the re-check just before insert sees the
+     * other transaction's redemption once it commits.
      *
-     * @throws CartException when the coupon was exhausted by a concurrent order
+     * @throws CartException when the coupon was exhausted, or the per-user
+     *                        limit was already reached, by a concurrent order
      */
     public function claim(Coupon $coupon, User $user, Order $order, float $discountAmount): void
     {
-        $query = Coupon::query()->whereKey($coupon->id);
+        DB::transaction(function () use ($coupon, $user, $order, $discountAmount): void {
+            $locked = Coupon::query()->whereKey($coupon->id)->lockForUpdate()->firstOrFail();
 
-        if ($coupon->usage_limit !== null) {
-            $query->whereRaw('used_count < usage_limit');
-        }
+            if (! $this->passesUserRules($locked, $user)) {
+                throw new CartException(__('cart.coupon_invalid'));
+            }
 
-        $claimed = $query->update([
-            'used_count' => DB::raw('used_count + 1'),
-            'updated_at' => now(),
-        ]);
+            $query = Coupon::query()->whereKey($coupon->id);
 
-        if ($claimed === 0) {
-            throw new CartException(__('cart.coupon_exhausted'));
-        }
+            if ($locked->usage_limit !== null) {
+                $query->whereRaw('used_count < usage_limit');
+            }
 
-        CouponRedemption::create([
-            'coupon_id' => $coupon->id,
-            'user_id' => $user->id,
-            'order_id' => $order->id,
-            'discount_amount' => $discountAmount,
-        ]);
+            $claimed = $query->update([
+                'used_count' => DB::raw('used_count + 1'),
+                'updated_at' => now(),
+            ]);
+
+            if ($claimed === 0) {
+                throw new CartException(__('cart.coupon_exhausted'));
+            }
+
+            CouponRedemption::create([
+                'coupon_id' => $coupon->id,
+                'user_id' => $user->id,
+                'order_id' => $order->id,
+                'discount_amount' => $discountAmount,
+            ]);
+        });
     }
 }

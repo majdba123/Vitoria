@@ -177,7 +177,7 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                             <ReportCard title={syndicate.reports_categories_title} rows={[
                                 [syndicate.categories, reports.categories?.total_categories || 0],
                                 [admin.categories_without_products_title, reports.categories?.categories_without_products || 0],
-                                [admin.categories_without_vendors_title, reports.categories?.categories_without_vendors || 0],
+                                [admin.categories_without_vendors_title, reports.categories?.categories_without_merchants || 0],
                             ]} />
                             <ReportCard title={syndicate.reports_merchants_title} rows={[
                                 [syndicate.vendors, reports.merchants?.total_merchants || 0],

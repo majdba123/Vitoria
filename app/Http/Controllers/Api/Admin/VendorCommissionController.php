@@ -7,11 +7,17 @@ use App\Http\Requests\Admin\UpdateVendorCommissionPaidRequest;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Vendor;
+use App\Services\Commerce\CartException;
+use App\Services\Commerce\VendorLedgerService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 
 class VendorCommissionController extends Controller
 {
+    public function __construct(
+        private readonly VendorLedgerService $vendorLedgerService,
+    ) {}
+
     /**
      * Show commission and payout statistics for a vendor.
      */
@@ -37,7 +43,7 @@ class VendorCommissionController extends Controller
 
         $completedOrders = Order::query()
             ->where('vendor_id', $vendor->id)
-            ->whereIn('status', [Order::STATUS_CONFIRMED, 'completed'])
+            ->whereIn('status', [Order::STATUS_CONFIRMED, Order::STATUS_COMPLETED])
             ->where('created_at', '>=', now()->subDays(365))
             ->with([
                 'items:id,order_id,product_id,line_total',
@@ -49,7 +55,6 @@ class VendorCommissionController extends Controller
         $completedOrderTotal = (float) $completedOrders->sum(fn (Order $order) => (float) $order->total_amount);
 
         $categoryBreakdownMap = [];
-        $commissionTotal = 0.0;
         $last7Days = $this->buildLastSevenDaysBuckets();
 
         foreach ($completedOrders as $order) {
@@ -67,8 +72,6 @@ class VendorCommissionController extends Controller
                 $lineTotal = (float) $item->line_total;
                 $commissionAmount = ($lineTotal * $commissionRate) / 100;
 
-                $commissionTotal += $commissionAmount;
-
                 if (! isset($categoryBreakdownMap[$categoryId])) {
                     $categoryBreakdownMap[$categoryId] = [
                         'category_id' => $categoryId,
@@ -84,11 +87,16 @@ class VendorCommissionController extends Controller
             }
         }
 
-        $commissionTotal = round($commissionTotal, 2);
+        // Same fix as Api\Vendor\CommissionController: the authoritative
+        // owed-to-vendor figures come from the immutable ledger snapshot
+        // (taken once at order completion), not recomputed live from the
+        // category's current commission rate on every request.
+        $ledger = $this->vendorLedgerService->summary($vendor);
+        $commissionTotal = $ledger['commission'];
+        $paidAmount = $ledger['settled'];
+        $remainingAmount = $ledger['outstanding'];
         $completedOrderTotal = round($completedOrderTotal, 2);
         $vendorNetTotal = round(max($completedOrderTotal - $commissionTotal, 0), 2);
-        $paidAmount = round((float) ($vendor->paid_amount ?? 0), 2);
-        $remainingAmount = round(max($commissionTotal - $paidAmount, 0), 2);
 
         $categoryBreakdown = collect($categoryBreakdownMap)
             ->map(function (array $row) {
@@ -133,18 +141,51 @@ class VendorCommissionController extends Controller
 
     /**
      * Update vendor paid amount used in commission settlement.
+     *
+     * This screen's UX is "type the new total amount paid to date" — but the
+     * ledger (the single source of truth for payouts, see VendorLedgerService)
+     * only understands incremental settlements, capped at what's outstanding.
+     * Previously this endpoint wrote `vendors.paid_amount` directly: a bare,
+     * uncapped, unaudited scalar overwrite completely disconnected from the
+     * ledger, so the same vendor could be paid twice — once here, once via
+     * the proper Admin\SettlementController — with nothing to notice or
+     * prevent it. This now computes the *difference* against what the ledger
+     * already has recorded as settled, and records only that difference as a
+     * real, capped, audited settlement — so the two payout paths can never
+     * double-pay the same money.
      */
     public function updatePaidAmount(UpdateVendorCommissionPaidRequest $request, Vendor $vendor): JsonResponse
     {
-        $vendor->update([
-            'paid_amount' => (float) $request->validated('paid_amount'),
-        ]);
+        $newTotal = round((float) $request->validated('paid_amount'), 2);
+        $alreadySettled = $this->vendorLedgerService->summary($vendor)['settled'];
+        $delta = round($newTotal - $alreadySettled, 2);
+
+        if ($delta <= 0) {
+            return response()->json([
+                'message' => __('vendor_ledger.paid_amount_not_greater_than_settled', ['settled' => $alreadySettled]),
+            ], 422);
+        }
+
+        try {
+            $this->vendorLedgerService->recordSettlement(
+                $vendor,
+                $request->user(),
+                $delta,
+                'other',
+                null,
+                'Recorded from the vendor commission paid-amount screen.',
+            );
+        } catch (CartException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        }
+
+        $summary = $this->vendorLedgerService->summary($vendor);
 
         return response()->json([
             'message' => 'Vendor paid amount updated successfully.',
             'data' => [
                 'id' => $vendor->id,
-                'paid_amount' => (float) $vendor->paid_amount,
+                'paid_amount' => $summary['settled'],
             ],
         ]);
     }

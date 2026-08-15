@@ -6,12 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Vendor;
+use App\Services\Commerce\VendorLedgerService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CommissionController extends Controller
 {
+    public function __construct(
+        private readonly VendorLedgerService $vendorLedgerService,
+    ) {}
+
     /**
      * Show authenticated vendor commission statistics.
      */
@@ -53,7 +58,6 @@ class CommissionController extends Controller
         $completedOrderTotal = (float) $completedOrders->sum(fn (Order $order) => (float) $order->total_amount);
 
         $categoryBreakdownMap = [];
-        $commissionTotal = 0.0;
         $last7Days = $this->buildLastSevenDaysBuckets();
 
         foreach ($completedOrders as $order) {
@@ -71,8 +75,6 @@ class CommissionController extends Controller
                 $lineTotal = (float) $item->line_total;
                 $commissionAmount = ($lineTotal * $commissionRate) / 100;
 
-                $commissionTotal += $commissionAmount;
-
                 if (! isset($categoryBreakdownMap[$categoryId])) {
                     $categoryBreakdownMap[$categoryId] = [
                         'category_id' => $categoryId,
@@ -88,10 +90,18 @@ class CommissionController extends Controller
             }
         }
 
-        $commissionTotal = round($commissionTotal, 2);
+        // The per-category breakdown below stays a live, informational preview
+        // (including in-progress orders) — but the authoritative "what do we
+        // owe this vendor" figures come from the ledger: an immutable
+        // snapshot taken once when each order actually completes, not
+        // recomputed from the category's *current* commission rate on every
+        // request (that recompute previously meant editing a category's rate
+        // retroactively rewrote every past order's commission).
+        $ledger = $this->vendorLedgerService->summary($vendor);
+        $commissionTotal = $ledger['commission'];
+        $paidAmount = $ledger['settled'];
+        $remainingAmount = $ledger['outstanding'];
         $completedOrderTotal = round($completedOrderTotal, 2);
-        $paidAmount = round((float) ($vendor->paid_amount ?? 0), 2);
-        $remainingAmount = round(max($commissionTotal - $paidAmount, 0), 2);
 
         $categoryBreakdown = collect($categoryBreakdownMap)
             ->map(function (array $row) {

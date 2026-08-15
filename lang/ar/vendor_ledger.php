@@ -28,4 +28,5 @@ return [
     'settlement_exceeds_outstanding' => 'مبلغ التسوية يتجاوز الرصيد المستحق لهذا التاجر.',
     'settlement_recorded' => 'تم تسجيل التسوية.',
     'adjustment_recorded' => 'تم تسجيل التسوية اليدوية.',
+    'paid_amount_not_greater_than_settled' => 'هذا التاجر لديه بالفعل :settled مسجلة كمسددة. أدخل مبلغاً إجمالياً أكبر لتسجيل دفعة إضافية.',
 ];

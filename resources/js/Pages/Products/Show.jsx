@@ -127,6 +127,7 @@ function ReviewForm({ productId, onSubmitted }) {
  */
 function ProductDetail({ product, productId }) {
     const { nav, products, common, productSpecs } = useI18n();
+    const locale = useLocale();
     const user = useAuthUser();
     const { addToCart } = useCart();
     const { ids: favIds, toggle: toggleFav } = useFavourites();
@@ -271,7 +272,12 @@ function ProductDetail({ product, productId }) {
                                 </div>
                                 <div className="storefront-spec-card">
                                     <p className="text-xs font-medium text-muted-foreground">{products.fields.subcategory}</p>
-                                    <p className="mt-1 text-sm font-semibold text-foreground">{product.subcategory?.name || products.no_subcategory}</p>
+                                    <p className="mt-1 text-sm font-semibold text-foreground">
+                                        {(locale === 'ar'
+                                            ? (product.subcategory?.name_ar || product.subcategory?.name_en)
+                                            : (product.subcategory?.name_en || product.subcategory?.name_ar)
+                                        ) || products.no_subcategory}
+                                    </p>
                                 </div>
                                 <div className="storefront-spec-card">
                                     <p className="text-xs font-medium text-muted-foreground">{products.fields.quantity}</p>

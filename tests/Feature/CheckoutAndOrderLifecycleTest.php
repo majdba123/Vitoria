@@ -200,6 +200,40 @@ it('enforces a per-user coupon limit', function () {
     ])->assertStatus(422);
 });
 
+it('closes the per-user coupon limit race: claim() itself rejects a second claim even if an earlier check already passed', function () {
+    // Full-stack audit finding: the per-user limit was only ever checked in
+    // resolveUsable() — well before claim() runs — so two concurrent
+    // checkouts that both read the count before either committed could both
+    // reach claim() and both succeed, exceeding per_user_limit. This proves
+    // claim() itself now enforces the limit, closing the window regardless
+    // of what an earlier, possibly-stale check already decided.
+    $vendor = Vendor::factory()->create(['is_active' => true, 'status' => Vendor::STATUS_ACTIVE]);
+    $user = User::factory()->create();
+
+    $coupon = Coupon::factory()->create([
+        'code' => 'RACEONCE',
+        'discount_type' => 'fixed',
+        'discount_value' => 10,
+        'per_user_limit' => 1,
+        'is_active' => true,
+        'status' => Coupon::STATUS_ACTIVE,
+    ]);
+
+    $firstOrder = Order::factory()->for($vendor)->for($user)->create();
+    app(\App\Services\Commerce\CouponService::class)->claim($coupon, $user, $firstOrder, 10.0);
+
+    expect(\App\Models\CouponRedemption::query()->where('coupon_id', $coupon->id)->where('user_id', $user->id)->count())->toBe(1);
+
+    $secondOrder = Order::factory()->for($vendor)->for($user)->create();
+
+    expect(fn () => app(\App\Services\Commerce\CouponService::class)->claim($coupon, $user, $secondOrder, 10.0))
+        ->toThrow(CartException::class);
+
+    // The second claim must not have inserted a redemption or incremented used_count.
+    expect(\App\Models\CouponRedemption::query()->where('coupon_id', $coupon->id)->where('user_id', $user->id)->count())->toBe(1)
+        ->and($coupon->fresh()->used_count)->toBe(1);
+});
+
 it('rejects checkout against another customer address', function () {
     $product = checkoutProduct();
     $context = checkoutContext([$product->id => 1]);
