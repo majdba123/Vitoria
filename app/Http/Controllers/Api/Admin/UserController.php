@@ -7,10 +7,12 @@ use App\Http\Requests\Admin\StoreUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Http\Resources\Auth\UserResource;
 use App\Models\ProductPhoto;
+use App\Models\Role;
 use App\Models\User;
 use App\Services\Admin\UserService;
 use App\Services\AuditLogService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -47,9 +49,48 @@ class UserController extends Controller
      */
     public function show(User $user): JsonResponse
     {
+        if ($user->type === User::TYPE_EMPLOYEE) {
+            $user->load('employeeRoles');
+        }
+
         return response()->json([
             'message' => __('User retrieved successfully.'),
             'data' => new UserResource($user),
+        ]);
+    }
+
+    /**
+     * Assign this employee's role(s) — stakeholder review #24. Restricted to
+     * the employee-designated roles only, so an admin can never use this
+     * endpoint to hand an employee a vendor-scoped role (owner/manager/...)
+     * that was never meant to apply outside a vendor_members membership.
+     */
+    public function updateEmployeeRoles(Request $request, User $user): JsonResponse
+    {
+        if ($user->type !== User::TYPE_EMPLOYEE) {
+            abort(422, __('Roles can only be assigned to employee accounts.'));
+        }
+
+        $validated = $request->validate([
+            'role_keys' => ['present', 'array'],
+            'role_keys.*' => ['string', \Illuminate\Validation\Rule::in([Role::KEY_CATALOG_MODERATOR, Role::KEY_ORDER_REVIEWER])],
+        ]);
+
+        $roleIds = Role::query()->whereIn('key', $validated['role_keys'])->pluck('id');
+        $user->employeeRoles()->sync($roleIds);
+
+        $this->auditLogService->record(
+            $request->user(),
+            'user.employee_roles_changed',
+            'User',
+            $user->id,
+            [],
+            ['role_keys' => $validated['role_keys']],
+        );
+
+        return response()->json([
+            'message' => __('Employee roles updated successfully.'),
+            'data' => new UserResource($user->load('employeeRoles')),
         ]);
     }
 

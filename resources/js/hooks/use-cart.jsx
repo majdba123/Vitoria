@@ -63,8 +63,8 @@ export function CartProvider({ children }) {
             .finally(() => setIsBusy(false));
     }, [applyPayload, sync, cart.checkout_failed]);
 
-    const addToCart = useCallback((productId) => {
-        return mutate(() => window.axios.post('/api/cart/items', { product_id: Number(productId), quantity: 1 }, { silent: true }))
+    const addToCart = useCallback((productId, quantity = 1) => {
+        return mutate(() => window.axios.post('/api/cart/items', { product_id: Number(productId), quantity: Math.max(1, Number(quantity) || 1) }, { silent: true }))
             .then(() => window.AppToast?.show(cart.added_to_cart_toast || '', 'success'))
             .catch(() => {});
     }, [mutate, cart.added_to_cart_toast]);

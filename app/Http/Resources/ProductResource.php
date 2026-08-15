@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Http\Resources\Admin\VendorResource;
+use App\Http\Resources\PublicVendorResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -45,17 +46,16 @@ class ProductResource extends JsonResource
             && ($user->type === User::TYPE_ADMIN || $user->type === User::TYPE_VENDOR);
     }
 
+    /**
+     * Agricultural/veterinary spec fields (dosage, application rates, withdrawal
+     * periods, warnings, ...) are buying-decision data for this marketplace's
+     * domain, not internal review notes, so every viewer — including anonymous
+     * shoppers — gets them (stakeholder review #19). Nothing in these detail
+     * models holds vendor-private or internal-only data.
+     */
     protected function shouldExposeSpecializedDetails(Request $request): bool
     {
-        $user = $request->user();
-
-        return $user instanceof User
-            && in_array($user->type, [
-                User::TYPE_ADMIN,
-                User::TYPE_VENDOR,
-                User::TYPE_EMPLOYEE,
-                User::TYPE_SYNDICATE,
-            ], true);
+        return true;
     }
 
     /**
@@ -96,6 +96,7 @@ class ProductResource extends JsonResource
             'discounted_price' => number_format($discountedPrice, 2, '.', ''),
             'discount_amount' => number_format($discountAmount, 2, '.', ''),
             'quantity' => $this->quantity,
+            'minimum_order_quantity' => $this->minimum_order_quantity,
             'is_active' => $this->is_active,
             'status' => $this->status,
             'product_type' => $this->resolvedProductType(),
@@ -175,10 +176,12 @@ class ProductResource extends JsonResource
                 ];
             }),
             'photos' => ProductPhotoResource::collection($this->whenLoaded('photos')),
-            'vendor' => $this->when(
-                $this->shouldExposeVendor($request) && $this->relationLoaded('vendor'),
-                fn () => new VendorResource($this->vendor)
-            ),
+            // Every shopper gets a public-safe vendor identity (name, logo, city) so
+            // they know who they're buying from; only admin/vendor viewers get the
+            // full resource (contact details, documents, payout figures).
+            'vendor' => $this->whenLoaded('vendor', fn () => $this->shouldExposeVendor($request)
+                ? new VendorResource($this->vendor)
+                : new PublicVendorResource($this->vendor)),
             'average_rating' => round((float) ($this->reviews_avg_rating ?? 0), 2),
             'review_count' => (int) ($this->reviews_count ?? 0),
             'created_at' => $this->created_at,

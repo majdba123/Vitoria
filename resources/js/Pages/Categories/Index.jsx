@@ -5,13 +5,7 @@ import PublicLayout from '@/Layouts/PublicLayout';
 import { DataState } from '@/Components/public/DataState';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { useI18n } from '@/hooks/use-i18n';
-
-function categoryImageUrl(category) {
-    if (category.image_url) return category.image_url;
-    if (category.logo) return `/storage/${category.logo}`;
-    if (category.icon) return `/storage/${category.icon}`;
-    return null;
-}
+import { categoryImageUrl } from '@/lib/category-image';
 
 export default function CategoriesIndex() {
     const { nav, categories: categoriesI18n, home } = useI18n();

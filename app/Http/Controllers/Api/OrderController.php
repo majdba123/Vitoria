@@ -36,7 +36,10 @@ class OrderController extends Controller
         $search = trim((string) $request->query('search', ''));
 
         $query = Order::query()
-            ->with(['items:id,order_id,product_id,product_name,original_unit_price,has_discount,applied_discount_percentage,unit_price,quantity,line_total,discount_amount'])
+            ->with([
+                'items:id,order_id,product_id,product_name,original_unit_price,has_discount,applied_discount_percentage,unit_price,quantity,line_total,discount_amount',
+                'vendor:id,store_name,logo',
+            ])
             ->where('user_id', $userId);
 
         if ($status !== '' && array_key_exists($status, Order::TRANSITIONS)) {
@@ -79,6 +82,7 @@ class OrderController extends Controller
                 'returns',
                 'shipment.method',
                 'shipment.events',
+                'vendor:id,store_name,logo',
             ])
             ->findOrFail($orderId);
 
@@ -294,6 +298,11 @@ class OrderController extends Controller
             'total_amount' => $order->total_amount,
             'currency' => $order->currency,
             'created_at' => $order->created_at,
+            'vendor' => $order->relationLoaded('vendor') && $order->vendor ? [
+                'id' => $order->vendor->id,
+                'store_name' => $order->vendor->store_name,
+                'logo_url' => $order->vendor->logo ? asset('storage/'.$order->vendor->logo) : null,
+            ] : null,
             'coupon' => $order->coupon_code ? [
                 'code' => $order->coupon_code,
                 'type' => $order->coupon_type,

@@ -3,6 +3,7 @@
 return [
     'categories' => 'Categories',
     'products' => 'Products',
+    'faq' => 'FAQ',
     'stores' => 'Stores',
     'sign_in' => 'Sign In',
     'register' => 'Register',

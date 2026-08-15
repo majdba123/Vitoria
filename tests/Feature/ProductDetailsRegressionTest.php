@@ -150,7 +150,7 @@ test('seed product stores crop names instead of crop id', function () {
         ->and($detail->crop_name_en)->toBe('Wheat');
 });
 
-test('public product details exclude specialized detail payloads', function () {
+test('public product details include specialized detail payloads (stakeholder review #19)', function () {
     $category = Category::query()->create([
         'name' => 'Crop Protection',
         'type' => Category::TYPE_AGRICULTURE,
@@ -187,8 +187,8 @@ test('public product details exclude specialized detail payloads', function () {
     $this->getJson('/api/products/'.$product->id.'?type='.Category::TYPE_AGRICULTURE)
         ->assertOk()
         ->assertJsonPath('data.shared_detail.commercial_name', 'Protect Plus')
-        ->assertJsonMissingPath('data.agricultural_detail')
-        ->assertJsonMissingPath('data.veterinary_detail');
+        ->assertJsonPath('data.agricultural_detail.agricultural_product_type', 'pesticide')
+        ->assertJsonPath('data.veterinary_detail', null);
 });
 
 test('product listing filters by subcategory product type and search', function () {

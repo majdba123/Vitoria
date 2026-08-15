@@ -10,7 +10,7 @@ export function useI18n() {
 
     return props.i18n ?? {
         admin: {}, vendor: {}, syndicate: {}, employee: {}, nav: {}, common: {}, lang: {},
-        products: {}, categories: {}, category: {}, cart: {}, checkout: {}, orders: {}, footer: {}, home: {}, startup: {}, profile: {}, authPage: {}, preferences: {}, addresses: {}, pagination: {},
+        products: {}, categories: {}, category: {}, cart: {}, checkout: {}, orders: {}, footer: {}, home: {}, startup: {}, profile: {}, authPage: {}, preferences: {}, addresses: {}, pagination: {}, vendors: {}, productSpecs: {},
     };
 }
 

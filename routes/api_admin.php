@@ -53,6 +53,7 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::apiResource('users', UserController::class)->except(['index', 'show'])->middleware('throttle:api.write');
     Route::apiResource('users', UserController::class)->only(['index', 'show']);
     Route::get('users/{user}/favourites', [UserController::class, 'favourites'])->name('users.favourites');
+    Route::patch('users/{user}/employee-roles', [UserController::class, 'updateEmployeeRoles'])->middleware('throttle:api.write')->name('users.employee-roles');
     Route::get('products/{product}/reviews', [ProductReviewController::class, 'indexForAdmin'])->name('products.reviews.index');
     Route::post('products/store-basic', [ProductController::class, 'storeBasic'])->middleware(['throttle:api.write', 'throttle:uploads'])->name('products.store-basic');
     Route::post('products/store-agriculture', [ProductController::class, 'storeAgriculture'])->middleware(['throttle:api.write', 'throttle:uploads'])->name('products.store-agriculture');

@@ -205,6 +205,33 @@ class User extends Authenticatable
     }
 
     /**
+     * Every role assigned to this marketplace employee (stakeholder review
+     * #24). An employee may hold more than one role — e.g. both catalog
+     * moderation and order review — so permissions are the union across all
+     * assigned roles.
+     */
+    public function employeeRoles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'employee_roles')->withTimestamps();
+    }
+
+    /**
+     * Whether this employee's assigned role(s) grant `$permission`.
+     *
+     * Admins are never routed through this — they bypass via
+     * ProductPolicy/OrderPolicy checking `isAdmin()` first, the same pattern
+     * `hasVendorPermission()` uses for vendor owners. An employee with no
+     * assigned role has no permissions at all, rather than falling back to
+     * the old all-or-nothing behaviour.
+     */
+    public function hasEmployeePermission(string $permission): bool
+    {
+        return $this->employeeRoles()
+            ->whereHas('permissions', fn ($query) => $query->where('key', $permission))
+            ->exists();
+    }
+
+    /**
      * The syndicate profile linked to this user.
      */
     public function syndicate(): HasOne

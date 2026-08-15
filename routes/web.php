@@ -106,6 +106,10 @@ Route::get('/products/{product}', function (\Illuminate\Http\Request $request, \
     ]);
 })->middleware('product.type.selected')->name('products.show');
 
+Route::get('/faq', function () {
+    return Inertia::render('Faq');
+})->name('faq');
+
 Route::get('/categories', function () {
     return Inertia::render('Categories/Index');
 })->middleware('product.type.selected')->name('categories.index');
@@ -122,9 +126,15 @@ Route::get('/categories/{category}', function (\Illuminate\Http\Request $request
 
 Route::redirect('/vendors', '/', 302)->name('vendors.index');
 
-Route::get('/vendors/{id}', function () {
-    return redirect('/');
-})->whereNumber('id')->name('vendors.show');
+Route::get('/vendors/{vendor}', function (\App\Models\Vendor $vendor) {
+    $response = app(\App\Http\Controllers\Api\VendorController::class)->show($vendor);
+    $payload = json_decode($response->getContent(), true);
+
+    return Inertia::render('Vendors/Show', [
+        'vendorId' => $vendor->id,
+        'vendor' => $payload['data'] ?? null,
+    ]);
+})->whereNumber('vendor')->name('vendors.show');
 
 /*
 |--------------------------------------------------------------------------

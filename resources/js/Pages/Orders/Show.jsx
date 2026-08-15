@@ -75,6 +75,14 @@ export default function OrdersShow({ orderId }) {
                                         <div className="min-w-0">
                                             <h1 className="text-xl font-bold text-foreground">{order.order_number || `Order #${order.id}`}</h1>
                                             <p className="mt-1 text-sm text-muted-foreground">{order.created_at ? new Date(order.created_at).toLocaleDateString() : '—'}</p>
+                                            {order.vendor && (
+                                                <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                                                    Sold by
+                                                    <Link href={route('vendors.show', order.vendor.id)} className="font-medium text-foreground hover:text-primary hover:underline">
+                                                        {order.vendor.store_name}
+                                                    </Link>
+                                                </p>
+                                            )}
                                         </div>
                                         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                                             <StatusBadge tone={STATUS_TONE[order.status] ?? 'warning'}>{order.status}</StatusBadge>

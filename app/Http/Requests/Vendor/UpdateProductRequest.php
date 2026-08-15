@@ -37,6 +37,7 @@ class UpdateProductRequest extends FormRequest
             'price' => ['sometimes', 'nullable', 'numeric', 'min:0'],
             'discount_percentage' => ['sometimes', 'nullable', 'numeric', 'min:0', 'max:100'],
             'quantity' => ['sometimes', 'nullable', 'integer', 'min:0'],
+            'minimum_order_quantity' => ['sometimes', 'nullable', 'integer', 'min:1'],
             'is_active' => ['sometimes', 'nullable', 'boolean'],
             'discount_starts_at' => ['sometimes', 'nullable', 'date'],
             'discount_ends_at' => ['sometimes', 'nullable', 'date', 'after_or_equal:discount_starts_at'],

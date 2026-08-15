@@ -10,10 +10,12 @@ function useEndpoint(url, params) {
     const [status, setStatus] = useState('loading');
     const [data, setData] = useState(null);
 
-    const fetchData = useCallback(() => {
+    // Accepts an optional override so callers (e.g. a chart period selector)
+    // can refetch with different params without recreating the hook.
+    const fetchData = useCallback((overrideParams) => {
         setStatus('loading');
         window.axios
-            .get(url, { params, silent: true })
+            .get(url, { params: overrideParams ?? params, silent: true })
             .then((res) => {
                 setData(res.data);
                 setStatus('ready');

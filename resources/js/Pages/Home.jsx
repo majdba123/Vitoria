@@ -7,18 +7,12 @@ import { DataState } from '@/Components/public/DataState';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { useReducedMotion } from '@/hooks/use-reduced-motion';
+import { categoryImageUrl } from '@/lib/category-image';
 
 const TYPE_META = {
     agriculture: { icon: Sprout, labelKey: 'type_agriculture_label', descKey: 'type_agriculture_description', buttonKey: 'type_agriculture_button' },
     veterinary: { icon: Stethoscope, labelKey: 'type_veterinary_label', descKey: 'type_veterinary_description', buttonKey: 'type_veterinary_button' },
 };
-
-function categoryImageUrl(category) {
-    if (category.image_url) return category.image_url;
-    if (category.logo) return `/storage/${category.logo}`;
-    if (category.icon) return `/storage/${category.icon}`;
-    return null;
-}
 
 function subLabel(sub, locale) {
     return locale === 'ar' ? (sub.name_ar || sub.name_en || '') : (sub.name_en || sub.name_ar || '');
@@ -133,35 +127,6 @@ function ProductGrid({ status, rows, emptyMessage, rank = false, onRetry }) {
                 ))}
             </div>
         </DataState>
-    );
-}
-
-function FaqSection() {
-    const { home } = useI18n();
-    const items = home.faq ?? [];
-    if (items.length === 0) return null;
-
-    return (
-        <section id="faq" className="scroll-mt-20 py-10 sm:py-14" aria-labelledby="faq-heading">
-            <div className="page-shell">
-                <div className="mx-auto max-w-3xl text-center">
-                    <p className="commerce-kicker">{home.faq_kicker}</p>
-                    <h2 id="faq-heading" className="commerce-title mt-2">{home.faq_title}</h2>
-                    <p className="commerce-copy mt-2">{home.faq_subtitle}</p>
-                </div>
-                <div className="mx-auto mt-8 max-w-3xl divide-y divide-border border-y border-border">
-                    {items.map((item, index) => (
-                        <details key={index} id={`faq-${index + 1}`} className="group py-4">
-                            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-start text-sm font-bold text-foreground marker:content-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
-                                {item.q}
-                                <ArrowRight className="h-4 w-4 shrink-0 rotate-90 text-muted-foreground transition-transform rtl:-rotate-90 group-open:rotate-[270deg]" />
-                            </summary>
-                            <p className="mt-3 text-sm leading-7 text-muted-foreground">{item.a}</p>
-                        </details>
-                    ))}
-                </div>
-            </div>
-        </section>
     );
 }
 
@@ -314,19 +279,8 @@ export default function Home({ selectedType }) {
             'query-input': 'required name=search_term_string',
         },
     };
-    const faqItems = home.faq ?? [];
-    const faqJsonLd = faqItems.length > 0 ? {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: faqItems.map((item) => ({
-            '@type': 'Question',
-            name: item.q,
-            acceptedAnswer: { '@type': 'Answer', text: item.a },
-        })),
-    } : null;
-
     return (
-        <PublicLayout title="Vetora" description={home.hero_subtitle} jsonLd={[organizationJsonLd, websiteJsonLd, ...(faqJsonLd ? [faqJsonLd] : [])]}>
+        <PublicLayout title="Vetora" description={home.hero_subtitle} jsonLd={[organizationJsonLd, websiteJsonLd]}>
             <section className="storefront-hero">
                 <div className="storefront-hero-frame">
                     <HeroMedia alt={home.hero_image_alt} />
@@ -355,7 +309,7 @@ export default function Home({ selectedType }) {
 
             <BannerStrip />
 
-            <section id="home-type-selector" className="page-shell home-type-selector" aria-labelledby="home-type-heading">
+            <section id="home-type-selector" className="page-shell py-0 home-type-selector" aria-labelledby="home-type-heading">
                 <div className="home-type-intro">
                     <p className="commerce-kicker">{home.type_selector_kicker}</p>
                     <h2 id="home-type-heading" className="commerce-title">{home.type_selector_title}</h2>
@@ -574,9 +528,7 @@ export default function Home({ selectedType }) {
                         </div>
                     )}
 
-                    <FaqSection />
-
-                    <section id="contact" className="scroll-mt-20 py-10 sm:py-14">
+                    <section id="contact" className="storefront-section scroll-mt-24">
                         <div className="workspace-shell">
                             <div className="surface-card overflow-hidden">
                                 <div className="grid gap-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">

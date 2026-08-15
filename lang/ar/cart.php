@@ -28,6 +28,7 @@ return [
     'item_not_in_cart' => 'هذا العنصر غير موجود في سلتك.',
     'insufficient_stock' => 'لم يتبقَّ سوى :available من :product.',
     'quantity_too_large' => 'يمكنك طلب :max كحد أقصى من المنتج الواحد.',
+    'minimum_order_quantity_not_met' => 'يجب طلب :min على الأقل من :product.',
     'stock_taken' => 'نفدت كمية :product للتو. يُرجى مراجعة سلتك.',
     'coupon_invalid' => 'هذا الكوبون غير صالح لسلتك.',
     'coupon_exhausted' => 'وصل هذا الكوبون إلى حد الاستخدام للتو.',

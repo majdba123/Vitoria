@@ -6,13 +6,7 @@ import { ProductCard } from '@/Components/public/ProductCard';
 import { PublicPagination } from '@/Components/public/PublicPagination';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { useI18n } from '@/hooks/use-i18n';
-
-function categoryImageUrl(category) {
-    if (category.image_url) return category.image_url;
-    if (category.logo) return `/storage/${category.logo}`;
-    if (category.icon) return `/storage/${category.icon}`;
-    return null;
-}
+import { categoryImageUrl } from '@/lib/category-image';
 
 export default function CategoriesShow({ categoryId, category }) {
     const { nav, category: categoryI18n } = useI18n();

@@ -56,6 +56,7 @@ return [
     'fields' => [
         'price' => 'السعر',
         'quantity' => 'الكمية',
+        'minimum_order_quantity' => 'الحد الأدنى لكمية الطلب',
         'commission' => 'العمولة',
         'created' => 'تاريخ الإنشاء',
         'discount_value' => 'قيمة الخصم',

@@ -97,6 +97,35 @@ it('will not add a product that is unapproved, inactive, or from an inactive ven
     expect(CartItem::query()->count())->toBe(0);
 });
 
+it('rejects an add-to-cart request below the product\'s minimum order quantity', function () {
+    $product = cartProduct(quantity: 50);
+    $product->update(['minimum_order_quantity' => 5]);
+
+    $this->postJson('/api/cart/items', ['product_id' => $product->id, 'quantity' => 2])
+        ->assertStatus(422);
+
+    expect(CartItem::query()->count())->toBe(0);
+
+    $this->postJson('/api/cart/items', ['product_id' => $product->id, 'quantity' => 5])
+        ->assertOk()
+        ->assertJsonPath('data.items.0.quantity', 5);
+});
+
+it('removes a line during reconcile once it falls below a raised minimum order quantity', function () {
+    $product = cartProduct(quantity: 50);
+
+    $this->postJson('/api/cart/items', ['product_id' => $product->id, 'quantity' => 2])->assertOk();
+
+    // Vendor raises the minimum after the line was already in the cart.
+    $product->update(['minimum_order_quantity' => 10]);
+
+    $this->getJson('/api/cart')
+        ->assertOk()
+        ->assertJsonPath('data.items_count', 0);
+
+    expect(CartItem::query()->count())->toBe(0);
+});
+
 it('removes a line when its quantity is set to zero', function () {
     $product = cartProduct();
     $this->postJson('/api/cart/items', ['product_id' => $product->id, 'quantity' => 2])->assertOk();

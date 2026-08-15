@@ -31,6 +31,7 @@ return [
     'item_not_in_cart' => 'That item is not in your cart.',
     'insufficient_stock' => 'Only :available left of :product.',
     'quantity_too_large' => 'You can order at most :max of a single item.',
+    'minimum_order_quantity_not_met' => 'A minimum of :min :product must be ordered.',
     'stock_taken' => ':product just sold out. Please review your cart.',
     'coupon_invalid' => 'This coupon is not valid for your cart.',
     'coupon_exhausted' => 'This coupon has just reached its usage limit.',

@@ -43,7 +43,7 @@ export default function ProductsEdit({ productId }) {
     const [subcategoryId, setSubcategoryId] = useState('');
     const [agriculturalProductType, setAgriculturalProductType] = useState('');
 
-    const [core, setCore] = useState({ name_ar: '', name_en: '', price: '', discount_percentage: '', quantity: '', discount_starts_at: '', discount_ends_at: '', description: '' });
+    const [core, setCore] = useState({ name_ar: '', name_en: '', price: '', discount_percentage: '', quantity: '', minimum_order_quantity: '1', discount_starts_at: '', discount_ends_at: '', description: '' });
     const [isActive, setIsActive] = useState(true);
     const [sharedDetail, setSharedDetail] = useState(baseSharedDetail());
     const [agriculturalDetail, setAgriculturalDetail] = useState(baseAgriculturalDetail());
@@ -59,8 +59,8 @@ export default function ProductsEdit({ productId }) {
     const [isSavingPhotos, setIsSavingPhotos] = useState(false);
     const [photoMessage, setPhotoMessage] = useState(null);
 
-    useEffect(() => {
-        Promise.all([
+    const loadProduct = () => {
+        return Promise.all([
             window.axios.get('/api/admin/categories', { silent: true }),
             window.axios.get(`/api/admin/products/${productId}`, { silent: true }),
         ]).then(([categoriesRes, productRes]) => {
@@ -72,6 +72,7 @@ export default function ProductsEdit({ productId }) {
                 price: String(p.price ?? ''),
                 discount_percentage: p.discount_percentage != null ? String(p.discount_percentage) : '',
                 quantity: String(p.quantity ?? 0),
+                minimum_order_quantity: String(p.minimum_order_quantity ?? 1),
                 discount_starts_at: toDateInput(p.discount_starts_at),
                 discount_ends_at: toDateInput(p.discount_ends_at),
                 description: p.description ?? '',
@@ -87,7 +88,9 @@ export default function ProductsEdit({ productId }) {
             setVendorLabel(p.vendor ? `${p.vendor.store_name}${p.vendor.user?.name ? ' - ' + p.vendor.user.name : ''}` : '-');
             setStatus('ready');
         }).catch(() => setStatus('error'));
-    }, [productId]);
+    };
+
+    useEffect(() => { loadProduct(); }, [productId]);
 
     const selectedCategory = categories.find((c) => String(c.id) === String(categoryId));
     const categoryType = selectedCategory?.type ?? '';
@@ -107,6 +110,7 @@ export default function ProductsEdit({ productId }) {
                 price: parseFloat(core.price) || 0,
                 discount_percentage: core.discount_percentage !== '' ? parseFloat(core.discount_percentage) || 0 : undefined,
                 quantity: parseInt(core.quantity, 10) || 0,
+                minimum_order_quantity: parseInt(core.minimum_order_quantity, 10) || 1,
                 is_active: isActive ? '1' : '0',
                 description: core.description.trim() || undefined,
                 discount_starts_at: core.discount_starts_at || undefined,
@@ -123,6 +127,11 @@ export default function ProductsEdit({ productId }) {
         try {
             await submit('post', `/api/admin/products/${productId}`, formData, { isMultipart: 'raw' });
             setSuccessMessage('Product updated successfully.');
+            // Re-fetch rather than trusting local form state — the server may
+            // normalize values (discount_status, name fallback, ...), and this
+            // page also has a separate photo-save action below it, so unlike
+            // Categories/Edit.jsx a full navigate-away would break that flow.
+            await loadProduct();
         } catch {
             // handled by hook
         }
@@ -206,6 +215,7 @@ export default function ProductsEdit({ productId }) {
                             <TextField id="price" label="Price (SYP)" type="number" step="0.01" required value={core.price} onChange={(e) => setField('price')(e.target.value)} error={errors.price} />
                             <TextField id="discount_percentage" label="Discount (%)" type="number" step="0.01" min="0" max="100" value={core.discount_percentage} onChange={(e) => setField('discount_percentage')(e.target.value)} error={errors.discount_percentage} />
                             <TextField id="quantity" label="Quantity" type="number" required value={core.quantity} onChange={(e) => setField('quantity')(e.target.value)} error={errors.quantity} />
+                            <TextField id="minimum_order_quantity" label="Minimum order quantity" type="number" min="1" value={core.minimum_order_quantity} onChange={(e) => setField('minimum_order_quantity')(e.target.value)} error={errors.minimum_order_quantity} />
                             <TextField id="discount_starts_at" label="Discount start" type="date" value={core.discount_starts_at} onChange={(e) => setField('discount_starts_at')(e.target.value)} error={errors.discount_starts_at} />
                             <TextField id="discount_ends_at" label="Discount end" type="date" value={core.discount_ends_at} onChange={(e) => setField('discount_ends_at')(e.target.value)} error={errors.discount_ends_at} />
                         </div>

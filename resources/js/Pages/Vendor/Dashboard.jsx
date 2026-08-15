@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { CheckCircle2, Package, PackageCheck, ShoppingBag } from 'lucide-react';
+import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 import VendorLayout from '@/Layouts/VendorLayout';
 import { StatCard } from '@/Components/admin/dashboard/StatCard';
 import { ListRow, StatusBadge } from '@/Components/admin/dashboard/ListRow';
 import { InsightPanel } from '@/Components/admin/dashboard/InsightPanel';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/Components/ui/chart';
 import { useI18n } from '@/hooks/use-i18n';
+
+const ORDERS_CHART_CONFIG = { count: { label: 'Completed orders', color: 'var(--chart-1)' } };
 
 export default function VendorDashboard() {
     const { vendor, common } = useI18n();
@@ -15,6 +19,7 @@ export default function VendorDashboard() {
     const [products, setProducts] = useState([]);
     const [stats, setStats] = useState({ totalProducts: 0, activeProducts: 0, orders: 0, storeActive: false });
     const [profile, setProfile] = useState(null);
+    const [orderTrend, setOrderTrend] = useState([]);
 
     const load = () => {
         setStatus('loading');
@@ -23,7 +28,8 @@ export default function VendorDashboard() {
             window.axios.get('/api/vendor/products', { params: { per_page: 1, is_active: 1 }, silent: true }),
             window.axios.get('/api/vendor/orders', { params: { per_page: 1 }, silent: true }),
             window.axios.get('/api/vendor/profile', { silent: true }),
-        ]).then(([productsRes, activeRes, ordersRes, profileRes]) => {
+            window.axios.get('/api/vendor/commission-stats', { silent: true }),
+        ]).then(([productsRes, activeRes, ordersRes, profileRes, commissionRes]) => {
             setProducts(productsRes.data?.data ?? []);
             setStats({
                 totalProducts: productsRes.data?.meta?.total ?? 0,
@@ -32,6 +38,7 @@ export default function VendorDashboard() {
                 storeActive: !!profileRes.data?.data?.vendor?.is_active,
             });
             setProfile(profileRes.data?.data ?? null);
+            setOrderTrend(commissionRes.data?.data?.completed_orders_last_7_days ?? []);
             setStatus('ready');
         }).catch(() => setStatus('error'));
     };
@@ -107,6 +114,27 @@ export default function VendorDashboard() {
                     </CardContent>
                 </Card>
             </div>
+
+            <InsightPanel
+                title="Completed orders, last 7 days"
+                copy="Real order counts for your store, updated daily."
+                status={status}
+                isEmpty={orderTrend.every((row) => row.count === 0)}
+                emptyMessage="No completed orders in the last 7 days."
+                onRetry={load}
+            >
+                <ChartContainer config={ORDERS_CHART_CONFIG} className="aspect-auto h-48 w-full">
+                    <AreaChart data={orderTrend} margin={{ left: 0, right: 8, top: 8 }}>
+                        <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                        <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value?.slice?.(5) ?? value} />
+                        <ChartTooltip content={<ChartTooltipContent labelKey="date" />} cursor={{ fill: 'var(--color-accent)' }} />
+                        <Area dataKey="count" type="monotone" fill="var(--color-count)" fillOpacity={0.2} stroke="var(--color-count)" strokeWidth={2} />
+                    </AreaChart>
+                </ChartContainer>
+                <p className="sr-only">
+                    {orderTrend.map((row) => `${row.date}: ${row.count} completed orders.`).join(' ')}
+                </p>
+            </InsightPanel>
 
             <InsightPanel title={vendor.store_information_title} copy={vendor.store_information_copy} status={status} isEmpty={false} onRetry={load}>
                 <div className="grid gap-3 sm:grid-cols-2">

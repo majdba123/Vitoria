@@ -24,6 +24,42 @@ function formatDateOnly(value) {
     return date.toLocaleDateString();
 }
 
+/**
+ * Agricultural/veterinary detail fields are a loose mix of strings, numbers,
+ * flat arrays, and arrays of small objects (e.g. application_rates: [{value, unit}]).
+ * This renders any of those shapes as one readable line instead of "[object Object]".
+ */
+function formatSpecValue(value) {
+    if (value === null || value === undefined || value === '') return null;
+    if (Array.isArray(value)) {
+        if (value.length === 0) return null;
+        return value.map((entry) => (
+            typeof entry === 'object' && entry !== null
+                ? Object.values(entry).filter(Boolean).join(' ')
+                : String(entry)
+        )).filter(Boolean).join(', ');
+    }
+    if (typeof value === 'object') {
+        const parts = Object.entries(value).filter(([, v]) => v !== null && v !== undefined && v !== '');
+        return parts.length ? parts.map(([k, v]) => `${k}: ${v}`).join(', ') : null;
+    }
+    return String(value);
+}
+
+const AGRICULTURAL_SPEC_FIELDS = ['agricultural_product_type', 'target_crops', 'application_methods', 'application_rates', 'max_applications', 'application_interval_days', 'pre_harvest_intervals', 'storage_conditions', 'warnings'];
+const VETERINARY_SPEC_FIELDS = ['target_species', 'indications', 'dosage_instructions', 'treatment_duration', 'contraindications', 'withdrawal_meat_days', 'withdrawal_milk_days', 'withdrawal_eggs_days', 'storage_conditions', 'warnings'];
+
+function buildSpecRows(product, productSpecs) {
+    const detail = product.agricultural_detail ? { source: product.agricultural_detail, fields: AGRICULTURAL_SPEC_FIELDS }
+        : product.veterinary_detail ? { source: product.veterinary_detail, fields: VETERINARY_SPEC_FIELDS }
+        : null;
+    if (!detail) return [];
+
+    return detail.fields
+        .map((key) => ({ key, label: productSpecs[key] || key, value: formatSpecValue(detail.source[key]) }))
+        .filter((row) => row.value !== null);
+}
+
 function ReviewForm({ productId, onSubmitted }) {
     const { products } = useI18n();
     const [rating, setRating] = useState(0);
@@ -90,7 +126,7 @@ function ReviewForm({ productId, onSubmitted }) {
  * would run before that provider exists in the tree.
  */
 function ProductDetail({ product, productId }) {
-    const { nav, products } = useI18n();
+    const { nav, products, common, productSpecs } = useI18n();
     const user = useAuthUser();
     const { addToCart } = useCart();
     const { ids: favIds, toggle: toggleFav } = useFavourites();
@@ -137,8 +173,11 @@ function ProductDetail({ product, productId }) {
     const effectivePrice = parseFloat(hasDiscount ? product.discounted_price : product.price || 0);
     const reviewCount = parseInt(product.review_count, 10) || 0;
     const averageRating = parseFloat(product.average_rating) || 0;
+    const minOrderQuantity = Math.max(1, Number(product.minimum_order_quantity) || 1);
+    const [orderQuantity, setOrderQuantity] = useState(minOrderQuantity);
 
-    const discountStatusLabel = { active: products.discount_status_active, pending: products.discount_status_pending, expired: products.discount_status_expired }[product.discount_status] ?? '—';
+    const discountStatusLabel = { active: products.discount_status_active, pending: products.discount_status_pending, expired: products.discount_status_expired }[product.discount_status] ?? common.not_specified;
+    const specRows = buildSpecRows(product, productSpecs);
 
     return (
         <div className="bg-transparent">
@@ -228,7 +267,7 @@ function ProductDetail({ product, productId }) {
                             <div className="storefront-spec-grid mt-5">
                                 <div className="storefront-spec-card">
                                     <p className="text-xs font-medium text-muted-foreground">{products.fields.category}</p>
-                                    <p className="mt-1 text-sm font-semibold text-foreground">{product.category?.name || '—'}</p>
+                                    <p className="mt-1 text-sm font-semibold text-foreground">{product.category?.name || common.not_specified}</p>
                                 </div>
                                 <div className="storefront-spec-card">
                                     <p className="text-xs font-medium text-muted-foreground">{products.fields.subcategory}</p>
@@ -238,9 +277,21 @@ function ProductDetail({ product, productId }) {
                                     <p className="text-xs font-medium text-muted-foreground">{products.fields.quantity}</p>
                                     <p className="mt-1 text-sm font-semibold tabular-nums text-foreground">{product.quantity || 0} {products.units}</p>
                                 </div>
+                                {minOrderQuantity > 1 && (
+                                    <div className="storefront-spec-card">
+                                        <p className="text-xs font-medium text-muted-foreground">{products.fields.minimum_order_quantity}</p>
+                                        <p className="mt-1 text-sm font-semibold tabular-nums text-foreground">{minOrderQuantity} {products.units}</p>
+                                    </div>
+                                )}
                                 <div className="storefront-spec-card">
                                     <p className="text-xs font-medium text-muted-foreground">{products.fields.vendor}</p>
-                                    <p className="mt-1 truncate text-sm font-semibold text-foreground">{product.vendor?.store_name || product.vendor?.name || products.no_vendor}</p>
+                                    <p className="mt-1 truncate text-sm font-semibold text-foreground">
+                                        {product.vendor?.id ? (
+                                            <Link href={route('vendors.show', product.vendor.id)} className="hover:text-primary hover:underline">
+                                                {product.vendor.store_name || product.vendor.name}
+                                            </Link>
+                                        ) : (product.vendor?.store_name || product.vendor?.name || products.no_vendor)}
+                                    </p>
                                 </div>
                             </div>
 
@@ -273,7 +324,37 @@ function ProductDetail({ product, productId }) {
                             </div>
 
                             <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                                <button type="button" onClick={() => addToCart(product.id)} disabled={!inStock} className="btn-primary flex-1 py-3.5">
+                                {inStock && minOrderQuantity > 1 && (
+                                    <div className="flex items-center gap-2 border border-border px-2 py-1.5" role="group" aria-label={products.fields.minimum_order_quantity}>
+                                        <button
+                                            type="button"
+                                            className="flex h-8 w-8 items-center justify-center text-lg font-semibold text-foreground disabled:opacity-40"
+                                            onClick={() => setOrderQuantity((q) => Math.max(minOrderQuantity, q - 1))}
+                                            disabled={orderQuantity <= minOrderQuantity}
+                                            aria-label="-"
+                                        >
+                                            −
+                                        </button>
+                                        <input
+                                            type="number"
+                                            min={minOrderQuantity}
+                                            max={product.quantity || minOrderQuantity}
+                                            value={orderQuantity}
+                                            onChange={(e) => setOrderQuantity(Math.max(minOrderQuantity, Number(e.target.value) || minOrderQuantity))}
+                                            className="w-14 border-0 bg-transparent text-center text-sm font-semibold tabular-nums text-foreground focus:outline-none"
+                                            aria-label={products.fields.quantity}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="flex h-8 w-8 items-center justify-center text-lg font-semibold text-foreground"
+                                            onClick={() => setOrderQuantity((q) => q + 1)}
+                                            aria-label="+"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                )}
+                                <button type="button" onClick={() => addToCart(product.id, minOrderQuantity > 1 ? orderQuantity : 1)} disabled={!inStock} className="btn-primary flex-1 py-3.5">
                                     <span className="flex items-center justify-center gap-2">
                                         {inStock ? <ShoppingBag className="h-5 w-5" /> : <Ban className="h-5 w-5" />}
                                         {inStock ? products.add_to_cart_btn : products.out_of_stock_button}
@@ -289,6 +370,21 @@ function ProductDetail({ product, productId }) {
                         </div>
                     </div>
                 </div>
+
+                {specRows.length > 0 && (
+                    <div className="mt-10 border-t border-border py-9">
+                        <p className="commerce-kicker">{productSpecs.heading}</p>
+                        <h2 className="mt-2 text-lg font-bold text-foreground">{productSpecs.heading}</h2>
+                        <dl className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+                            {specRows.map((row) => (
+                                <div key={row.key} className="border-s-2 border-border ps-3">
+                                    <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{row.label}</dt>
+                                    <dd className="mt-1 text-sm font-medium text-foreground">{row.value}</dd>
+                                </div>
+                            ))}
+                        </dl>
+                    </div>
+                )}
 
                 <div className="mt-10">
                     <div className="border-t border-border py-9">

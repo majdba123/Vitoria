@@ -18,20 +18,46 @@ const TYPE_OPTIONS = [
     { value: '4', label: 'Employee' },
 ];
 
+const EMPLOYEE_ROLE_OPTIONS = [
+    { key: 'catalog_moderator', label: 'Catalog Moderator', hint: 'Can view and approve/reject vendor product submissions.' },
+    { key: 'order_reviewer', label: 'Order Reviewer', hint: 'Can view orders and their fulfilling vendor.' },
+];
+
 export default function UsersEdit({ userId }) {
     const { common } = useI18n();
     const { submit, errors, generalError, isSubmitting } = useAdminForm();
     const [status, setStatus] = useState('loading');
     const [form, setForm] = useState({ name: '', phone_number: '', national_id: '', email: '', password: '', type: '0' });
     const [successMessage, setSuccessMessage] = useState(null);
+    const [employeeRoleKeys, setEmployeeRoleKeys] = useState([]);
+    const [rolesSaving, setRolesSaving] = useState(false);
+    const [rolesMessage, setRolesMessage] = useState(null);
 
     useEffect(() => {
         window.axios.get(`/api/admin/users/${userId}`, { silent: true }).then((res) => {
             const u = res.data.data;
             setForm({ name: u.name ?? '', phone_number: u.phone_number ?? '', national_id: u.national_id ?? '', email: u.email ?? '', password: '', type: String(u.type ?? 0) });
+            setEmployeeRoleKeys((u.employee_roles ?? []).map((r) => r.key));
             setStatus('ready');
         }).catch(() => setStatus('error'));
     }, [userId]);
+
+    const toggleRole = (key) => {
+        setEmployeeRoleKeys((keys) => (keys.includes(key) ? keys.filter((k) => k !== key) : [...keys, key]));
+    };
+
+    const saveEmployeeRoles = async () => {
+        setRolesSaving(true);
+        setRolesMessage(null);
+        try {
+            await window.axios.patch(`/api/admin/users/${userId}/employee-roles`, { role_keys: employeeRoleKeys }, { silent: true });
+            setRolesMessage({ tone: 'success', text: 'Employee roles updated.' });
+        } catch (err) {
+            setRolesMessage({ tone: 'error', text: err.response?.data?.message || 'Failed to update roles.' });
+        } finally {
+            setRolesSaving(false);
+        }
+    };
 
     const set = (key) => (value) => setForm((f) => ({ ...f, [key]: value }));
 
@@ -88,6 +114,43 @@ export default function UsersEdit({ userId }) {
                     </form>
                 </CardContent>
             </Card>
+
+            {form.type === '4' && (
+                <Card className="mt-5 max-w-2xl border-border/80 shadow-none">
+                    <CardContent className="p-5 sm:p-6">
+                        <h2 className="text-sm font-bold text-foreground">Employee roles</h2>
+                        <p className="mt-1 text-xs text-muted-foreground">What this employee can do depends on the role(s) assigned here.</p>
+
+                        {rolesMessage && (
+                            <p className={`mt-3 rounded-md border px-4 py-2.5 text-sm font-medium ${rolesMessage.tone === 'success' ? 'border-[var(--color-success-200)] bg-[var(--color-success-soft)] text-[var(--color-success-strong)]' : 'border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] text-[var(--color-danger-strong)]'}`}>
+                                {rolesMessage.text}
+                            </p>
+                        )}
+
+                        <div className="mt-4 space-y-3">
+                            {EMPLOYEE_ROLE_OPTIONS.map((role) => (
+                                <label key={role.key} className="flex items-start gap-3 rounded-md border border-border px-4 py-3">
+                                    <input
+                                        type="checkbox"
+                                        className="mt-0.5 h-4 w-4"
+                                        checked={employeeRoleKeys.includes(role.key)}
+                                        onChange={() => toggleRole(role.key)}
+                                    />
+                                    <span>
+                                        <span className="block text-sm font-medium text-foreground">{role.label}</span>
+                                        <span className="block text-xs text-muted-foreground">{role.hint}</span>
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+
+                        <Button type="button" className="mt-4" onClick={saveEmployeeRoles} disabled={rolesSaving}>
+                            {rolesSaving && <Loader2 className="size-4 animate-spin" />}
+                            Save roles
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
         </AdminLayout>
     );
 }

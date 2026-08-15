@@ -83,25 +83,31 @@ class CartService
      */
     public function add(Cart $cart, int $productId, int $quantity): Cart
     {
-        $product = $this->findPurchasableProduct($productId);
+        // Locks the product row for the duration of the transaction so two
+        // concurrent "add to cart" requests for the same product can't both
+        // read stale stock and both pass the availability check.
+        return DB::transaction(function () use ($cart, $productId, $quantity) {
+            $product = $this->findPurchasableProduct($productId, lock: true);
 
-        $existing = CartItem::query()
-            ->where('cart_id', $cart->id)
-            ->where('product_id', $product->id)
-            ->first();
+            $existing = CartItem::query()
+                ->where('cart_id', $cart->id)
+                ->where('product_id', $product->id)
+                ->lockForUpdate()
+                ->first();
 
-        $desired = ($existing?->quantity ?? 0) + $quantity;
+            $desired = ($existing?->quantity ?? 0) + $quantity;
 
-        $this->assertQuantityAvailable($product, $desired);
+            $this->assertQuantityAvailable($product, $desired);
 
-        CartItem::query()->updateOrCreate(
-            ['cart_id' => $cart->id, 'product_id' => $product->id],
-            ['quantity' => $desired],
-        );
+            CartItem::query()->updateOrCreate(
+                ['cart_id' => $cart->id, 'product_id' => $product->id],
+                ['quantity' => $desired],
+            );
 
-        $cart->touchActivity();
+            $cart->touchActivity();
 
-        return $cart->fresh();
+            return $cart->fresh();
+        });
     }
 
     /**
@@ -115,21 +121,23 @@ class CartService
             return $this->remove($cart, $productId);
         }
 
-        $product = $this->findPurchasableProduct($productId);
-        $this->assertQuantityAvailable($product, $quantity);
+        return DB::transaction(function () use ($cart, $productId, $quantity) {
+            $product = $this->findPurchasableProduct($productId, lock: true);
+            $this->assertQuantityAvailable($product, $quantity);
 
-        $updated = CartItem::query()
-            ->where('cart_id', $cart->id)
-            ->where('product_id', $product->id)
-            ->update(['quantity' => $quantity, 'updated_at' => now()]);
+            $updated = CartItem::query()
+                ->where('cart_id', $cart->id)
+                ->where('product_id', $product->id)
+                ->update(['quantity' => $quantity, 'updated_at' => now()]);
 
-        if ($updated === 0) {
-            throw new CartException(__('cart.item_not_in_cart'));
-        }
+            if ($updated === 0) {
+                throw new CartException(__('cart.item_not_in_cart'));
+            }
 
-        $cart->touchActivity();
+            $cart->touchActivity();
 
-        return $cart->fresh();
+            return $cart->fresh();
+        });
     }
 
     public function remove(Cart $cart, int $productId): Cart
@@ -262,6 +270,17 @@ class CartService
                 continue;
             }
 
+            $minimum = max(1, (int) $product->minimum_order_quantity);
+            if ($item->quantity < $minimum) {
+                // The vendor raised the minimum after this line was added. Clamping
+                // upward would silently grow the customer's total without consent,
+                // so the line is dropped like any other no-longer-purchasable item.
+                $removed[] = $product->name;
+                $item->delete();
+
+                continue;
+            }
+
             if ($item->quantity > $product->quantity) {
                 $item->update(['quantity' => $product->quantity]);
                 $adjusted[] = ['name' => $product->name, 'quantity' => (int) $product->quantity];
@@ -330,9 +349,15 @@ class CartService
     /**
      * @throws CartException
      */
-    private function findPurchasableProduct(int $productId): Product
+    private function findPurchasableProduct(int $productId, bool $lock = false): Product
     {
-        $product = Product::query()->with('vendor:id,is_active')->find($productId);
+        $query = Product::query()->with('vendor:id,is_active');
+
+        if ($lock) {
+            $query->lockForUpdate();
+        }
+
+        $product = $query->find($productId);
 
         if (! $this->isPurchasable($product)) {
             throw new CartException(__('cart.product_unavailable'));
@@ -357,6 +382,14 @@ class CartService
     {
         if ($desired > self::MAX_LINE_QUANTITY) {
             throw new CartException(__('cart.quantity_too_large', ['max' => self::MAX_LINE_QUANTITY]));
+        }
+
+        $minimum = max(1, (int) $product->minimum_order_quantity);
+        if ($desired < $minimum) {
+            throw new CartException(__('cart.minimum_order_quantity_not_met', [
+                'min' => $minimum,
+                'product' => $product->name,
+            ]));
         }
 
         if ($product->quantity < $desired) {

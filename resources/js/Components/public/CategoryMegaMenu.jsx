@@ -3,13 +3,7 @@ import { Link } from '@inertiajs/react';
 import { LayoutGrid, ChevronDown, ChevronRight, Layers, ArrowRight } from 'lucide-react';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
-
-function categoryImageUrl(category) {
-    if (category.image_url) return category.image_url;
-    if (category.logo) return `/storage/${category.logo}`;
-    if (category.icon) return `/storage/${category.icon}`;
-    return null;
-}
+import { categoryImageUrl } from '@/lib/category-image';
 
 function subLabel(sub, locale) {
     return locale === 'ar' ? (sub.name_ar || sub.name_en || '') : (sub.name_en || sub.name_ar || '');

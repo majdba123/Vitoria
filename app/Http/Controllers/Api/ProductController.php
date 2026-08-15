@@ -78,7 +78,7 @@ class ProductController extends Controller
 
     public function publicIndex(Request $request): JsonResponse
     {
-        $filters = $request->only(['category_id', 'subcategory_id', 'category_type', 'product_type', 'has_discount', 'per_page', 'sort', 'search']);
+        $filters = $request->only(['vendor_id', 'category_id', 'subcategory_id', 'category_type', 'product_type', 'has_discount', 'per_page', 'sort', 'search']);
         $perPage = min((int) ($filters['per_page'] ?? 15), 50);
         $filters['per_page'] = $perPage;
         $filters['category_type'] = $request->has('category_type')
@@ -119,7 +119,7 @@ class ProductController extends Controller
         $cacheKey = "pub_product:{$product->id}:".app()->getLocale();
         try {
             $productData = Cache::tags(['products'])->remember($cacheKey, 1800, function () use ($product) {
-                $product->load(['photos', 'category', 'subcategory', 'sharedDetail']);
+                $product->load(['vendor.city', 'photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
                 $product->loadCount('reviews')->loadAvg('reviews', 'rating');
 
                 return new ProductResource($product);
@@ -129,7 +129,7 @@ class ProductController extends Controller
                 'product_id' => $product->id,
                 'exception' => $e->getMessage(),
             ]);
-            $product->load(['photos', 'category', 'subcategory', 'sharedDetail']);
+            $product->load(['vendor.city', 'photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']);
             $product->loadCount('reviews')->loadAvg('reviews', 'rating');
             $productData = new ProductResource($product);
         }
@@ -271,16 +271,8 @@ class ProductController extends Controller
         $targetVendor = $product->vendor;
 
         if ($user && $user->type === User::TYPE_VENDOR) {
+            $this->authorize('update', $product);
             $vendor = $user->managedVendor();
-            if (! $vendor) {
-                abort(403, __('Vendor profile not found.'));
-            }
-            if ($product->vendor_id !== $vendor->id) {
-                abort(403, __('You do not own this product.'));
-            }
-            if (! $user->hasVendorPermission($vendor, 'products.manage')) {
-                abort(403, __('You are not allowed to manage this vendor\'s products.'));
-            }
             $validated = app(VendorUpdateProductRequest::class)->validated();
             $targetVendor = $vendor;
         } elseif ($user && $user->type === User::TYPE_EMPLOYEE) {
@@ -310,7 +302,10 @@ class ProductController extends Controller
             $validated['discount_ends_at'] ?? optional($product->discount_ends_at)->toDateTimeString(),
         );
 
-        if (isset($validated['status']) && (! $user || ! in_array($user->type, [User::TYPE_ADMIN, User::TYPE_EMPLOYEE], true))) {
+        // A vendor can never approve/reject their own product, even if they somehow
+        // pass `status` through this endpoint — that decision belongs to admin/employee
+        // review only (ProductPolicy::manageStatus, stakeholder review #26).
+        if (isset($validated['status']) && (! $user || ! app(\App\Policies\ProductPolicy::class)->manageStatus($user, $product))) {
             unset($validated['status']);
         }
 
@@ -373,6 +368,8 @@ class ProductController extends Controller
 
     public function updateStatus(Request $request, Product $product): JsonResponse
     {
+        $this->authorize('manageStatus', $product);
+
         $request->validate([
             'status' => ['required', 'string', 'in:pending,approved,rejected'],
         ]);
@@ -404,16 +401,7 @@ class ProductController extends Controller
         $user = $request->user();
 
         if ($user && $user->type === User::TYPE_VENDOR) {
-            $vendor = $user->managedVendor();
-            if (! $vendor) {
-                abort(403, __('Vendor profile not found.'));
-            }
-            if ($product->vendor_id !== $vendor->id) {
-                abort(403, __('You do not own this product.'));
-            }
-            if (! $user->hasVendorPermission($vendor, 'products.manage')) {
-                abort(403, __('You are not allowed to manage this vendor\'s products.'));
-            }
+            $this->authorize('update', $product);
         }
 
         $this->productService->setPrimaryPhoto($product, $photo);
@@ -429,16 +417,7 @@ class ProductController extends Controller
         $user = $request->user();
 
         if ($user && $user->type === User::TYPE_VENDOR) {
-            $vendor = $user->managedVendor();
-            if (! $vendor) {
-                abort(403, __('Vendor profile not found.'));
-            }
-            if ($product->vendor_id !== $vendor->id) {
-                abort(403, __('You do not own this product.'));
-            }
-            if (! $user->hasVendorPermission($vendor, 'products.manage')) {
-                abort(403, __('You are not allowed to manage this vendor\'s products.'));
-            }
+            $this->authorize('delete', $product);
         }
 
         $this->productService->delete($product);

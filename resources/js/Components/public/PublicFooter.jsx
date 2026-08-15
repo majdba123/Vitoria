@@ -49,8 +49,7 @@ export function PublicFooter() {
                     <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
                         <div className="col-span-1 sm:col-span-2 lg:col-span-2">
                             <Link href={route('home')} className="inline-flex items-center gap-3 text-2xl font-black tracking-tight text-foreground">
-                                <img src="/images/vetora-logo-transparent.png" alt="" className="h-11 w-11 object-contain" />
-                                Vetora
+                                <img src="/images/vetora-logo-transparent.png" alt="Vetora" className="h-11 w-11 object-contain" />
                             </Link>
                             <p className="mt-4 max-w-md text-sm leading-7 text-muted-foreground">
                                 {settings.about_description || home.tagline}
@@ -78,6 +77,7 @@ export function PublicFooter() {
                             <ul className="mt-4 space-y-3 text-sm">
                                 <li><Link href={route('categories.index')} className="text-muted-foreground transition-colors hover:text-primary">{nav.categories}</Link></li>
                                 <li><Link href={route('products.index')} className="text-muted-foreground transition-colors hover:text-primary">{footer.all_products}</Link></li>
+                                <li><Link href={route('faq')} className="text-muted-foreground transition-colors hover:text-primary">{nav.faq}</Link></li>
                             </ul>
                         </div>
 

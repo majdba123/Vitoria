@@ -44,11 +44,23 @@ export default function ProductsIndex() {
     const [rows, setRows] = useState([]);
     const [meta, setMeta] = useState(null);
     const requestSeq = useRef(0);
+    const isFirstRun = useRef(true);
+    const skipNextPush = useRef(false);
 
     useEffect(() => {
         window.axios.get('/api/categories', { params: { per_page: 100 }, silent: true }).then((res) => {
             setAllCategories(res.data?.data ?? []);
         }).catch(() => {});
+    }, []);
+
+    // Sync browser back/forward navigation into filter state without re-pushing a history entry.
+    useEffect(() => {
+        const onPopState = () => {
+            skipNextPush.current = true;
+            setFilters(readFilters(window.location.search.slice(1)));
+        };
+        window.addEventListener('popstate', onPopState);
+        return () => window.removeEventListener('popstate', onPopState);
     }, []);
 
     const loadProducts = () => {
@@ -72,7 +84,16 @@ export default function ProductsIndex() {
         });
         url.searchParams.delete('type');
         if (filters.page > 1) url.searchParams.set('page', String(filters.page)); else url.searchParams.delete('page');
-        window.history.replaceState({}, '', url.pathname + url.search);
+
+        // Push a new history entry for genuine filter changes so browser Back/Forward can step
+        // through them; the initial mount and popstate-driven syncs only replace, never push.
+        if (isFirstRun.current || skipNextPush.current) {
+            window.history.replaceState({}, '', url.pathname + url.search);
+        } else {
+            window.history.pushState({}, '', url.pathname + url.search);
+        }
+        isFirstRun.current = false;
+        skipNextPush.current = false;
 
         window.axios.get('/api/products', { params, silent: true }).then((res) => {
             if (seq !== requestSeq.current) return;

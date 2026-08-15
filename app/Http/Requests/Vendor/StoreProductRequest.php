@@ -32,6 +32,7 @@ class StoreProductRequest extends FormRequest
             'price' => ['required', 'numeric', 'min:0'],
             'discount_percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'quantity' => ['required', 'integer', 'min:0'],
+            'minimum_order_quantity' => ['nullable', 'integer', 'min:1'],
             'is_active' => ['sometimes', 'boolean', 'nullable'],
             'discount_starts_at' => ['nullable', 'date'],
             'discount_ends_at' => ['nullable', 'date', 'after_or_equal:discount_starts_at'],

@@ -73,6 +73,8 @@ class HandleInertiaRequests extends Middleware
                 'preferences' => trans('preferences'),
                 'addresses' => trans('addresses'),
                 'pagination' => trans('pagination'),
+                'vendors' => trans('vendors'),
+                'productSpecs' => trans('productSpecs'),
             ],
             'footerSettings' => fn () => app(ApplicationCacheService::class)->remember(
                 ApplicationCacheService::SETTINGS_WEBSITE,

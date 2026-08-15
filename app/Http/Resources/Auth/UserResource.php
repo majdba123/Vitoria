@@ -38,6 +38,11 @@ class UserResource extends JsonResource
             'timezone' => $this->timezone,
             'locale' => $this->locale,
             'preferred_product_type' => $this->preferred_product_type,
+            'employee_roles' => $this->whenLoaded('employeeRoles', fn () => $this->employeeRoles->map(fn ($role) => [
+                'id' => $role->id,
+                'key' => $role->key,
+                'name' => app()->getLocale() === 'ar' ? $role->name_ar : $role->name_en,
+            ])),
             'email_verified_at' => $this->email_verified_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

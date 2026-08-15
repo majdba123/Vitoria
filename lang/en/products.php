@@ -56,6 +56,7 @@ return [
     'fields' => [
         'price' => 'Price',
         'quantity' => 'Quantity',
+        'minimum_order_quantity' => 'Minimum Order Quantity',
         'commission' => 'Commission',
         'created' => 'Created',
         'discount_value' => 'Discount Value',

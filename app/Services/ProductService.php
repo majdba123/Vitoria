@@ -65,6 +65,7 @@ class ProductService
      */
     public function listPublic(int $perPage = 15, array $filters = []): LengthAwarePaginator
     {
+        $vendorId = ! empty($filters['vendor_id']) ? (int) $filters['vendor_id'] : null;
         $categoryId = ! empty($filters['category_id']) ? (int) $filters['category_id'] : null;
         $subcategoryId = ! empty($filters['subcategory_id']) ? (int) $filters['subcategory_id'] : null;
         $categoryType = ! empty($filters['category_type']) ? (string) $filters['category_type'] : null;
@@ -83,6 +84,7 @@ class ProductService
         // locale for the rest of the cache lifetime.
         $cacheKey = 'pub_products:'.sha1(json_encode([
             'locale' => app()->getLocale(),
+            'vendor_id' => $vendorId,
             'category_id' => $categoryId,
             'subcategory_id' => $subcategoryId,
             'category_type' => $categoryType,
@@ -94,8 +96,8 @@ class ProductService
             'page' => $page,
         ]));
 
-        return $this->cachedOrFetch(['products'], $cacheKey, 900, function () use ($perPage, $categoryId, $subcategoryId, $categoryType, $productType, $search, $hasDiscount, $sort) {
-            return $this->fetchPublicProducts($perPage, $categoryId, $subcategoryId, $categoryType, $productType, $search, $hasDiscount, $sort);
+        return $this->cachedOrFetch(['products'], $cacheKey, 900, function () use ($perPage, $vendorId, $categoryId, $subcategoryId, $categoryType, $productType, $search, $hasDiscount, $sort) {
+            return $this->fetchPublicProducts($perPage, $vendorId, $categoryId, $subcategoryId, $categoryType, $productType, $search, $hasDiscount, $sort);
         });
     }
 
@@ -104,6 +106,7 @@ class ProductService
      */
     protected function fetchPublicProducts(
         int $perPage,
+        ?int $vendorId = null,
         ?int $categoryId = null,
         ?int $subcategoryId = null,
         ?string $categoryType = null,
@@ -128,6 +131,7 @@ class ProductService
             ]);
 
         $this->applyListFilters($query, [
+            'vendor_id' => $vendorId,
             'category_id' => $categoryId,
             'subcategory_id' => $subcategoryId,
             'category_type' => $categoryType,
@@ -135,7 +139,7 @@ class ProductService
             'search' => $search,
             'has_discount' => $hasDiscount,
             'in_stock' => true,
-        ], false);
+        ], true);
 
         match ($sort) {
             'top_rated' => $query->having('reviews_count', '>=', 1)->orderByDesc('reviews_avg_rating')->orderByDesc('reviews_count'),

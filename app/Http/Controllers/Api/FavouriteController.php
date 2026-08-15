@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductPhoto;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FavouriteController extends Controller
 {
@@ -54,20 +56,33 @@ class FavouriteController extends Controller
         $user = $request->user();
         Product::query()->findOrFail($product);
 
-        $exists = $user->favouriteProducts()
-            ->where('favourites.product_id', $product)
-            ->exists();
+        // Atomic delete-if-present, else insert. Avoids the exists()-then-attach/detach
+        // race where two concurrent toggles could both see "not favourited" and both
+        // attempt to attach, which the unique (user_id, product_id) constraint would
+        // otherwise turn into an unhandled 500 for the loser of the race.
+        $removed = DB::table('favourites')
+            ->where('user_id', $user->id)
+            ->where('product_id', $product)
+            ->delete();
 
-        if ($exists) {
-            $user->favouriteProducts()->detach($product);
-
+        if ($removed > 0) {
             return response()->json([
                 'message' => __('common.removed_from_favourites'),
                 'favourited' => false,
             ]);
         }
 
-        $user->favouriteProducts()->attach($product);
+        try {
+            DB::table('favourites')->insert([
+                'user_id' => $user->id,
+                'product_id' => $product,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (QueryException $e) {
+            // A concurrent request already inserted the same pair; the row exists
+            // either way, so this is still a successful "favourited" outcome.
+        }
 
         return response()->json([
             'message' => __('common.added_to_favourites'),

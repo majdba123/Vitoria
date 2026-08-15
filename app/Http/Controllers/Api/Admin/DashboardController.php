@@ -9,18 +9,36 @@ use App\Models\Syndicate;
 use App\Models\Vendor;
 use App\Services\ApplicationCacheService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    /**
+     * Allowed growth-chart windows, in months. The chart itself is
+     * month-grained (a day-level 7/30/90 window doesn't map onto "products
+     * created per month"), so this is the monthly equivalent.
+     *
+     * @var list<int>
+     */
+    private const GROWTH_RANGE_MONTHS = [3, 6, 12];
+
     public function __construct(protected ApplicationCacheService $cacheService) {}
 
     /**
      * Vendor and category overview statistics for the admin dashboard.
      */
-    public function overview(): JsonResponse
+    public function overview(Request $request): JsonResponse
     {
-        $data = $this->cacheService->remember(ApplicationCacheService::DASHBOARD_ADMIN_STATS, 300, function (): array {
+        $rangeMonths = (int) $request->query('range_months', 12);
+        if (! in_array($rangeMonths, self::GROWTH_RANGE_MONTHS, true)) {
+            $rangeMonths = 12;
+        }
+
+        $data = $this->cacheService->remember(
+            ApplicationCacheService::DASHBOARD_ADMIN_STATS.":range={$rangeMonths}",
+            300,
+            function () use ($rangeMonths): array {
             $totalVendors = Vendor::query()->count();
             $totalProducts = Product::query()->count();
             $totalCategories = Category::query()->count();
@@ -120,7 +138,7 @@ class DashboardController extends Controller
 
             $monthlyProductGrowth = Product::query()
                 ->selectRaw("{$monthExpression} as month, count(*) as total")
-                ->where('created_at', '>=', now()->subMonths(11)->startOfMonth())
+                ->where('created_at', '>=', now()->subMonths($rangeMonths - 1)->startOfMonth())
                 ->groupBy('month')
                 ->orderBy('month')
                 ->get()
@@ -209,6 +227,7 @@ class DashboardController extends Controller
                 'recent_vendor_registrations' => $recentVendors,
                 'recent_products' => $recentProducts,
                 'monthly_product_growth' => $monthlyProductGrowth,
+                'selected_range_months' => $rangeMonths,
                 'type_stats' => [
                     'products_in_agriculture' => $productsByCategoryType->firstWhere('type', Category::TYPE_AGRICULTURE)['total'] ?? 0,
                     'products_in_veterinary' => $productsByCategoryType->firstWhere('type', Category::TYPE_VETERINARY)['total'] ?? 0,

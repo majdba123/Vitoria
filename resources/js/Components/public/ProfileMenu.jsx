@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { ChevronDown, User, LayoutGrid, LogOut } from 'lucide-react';
 import { useAuthUser, useI18n } from '@/hooks/use-i18n';
+import { useFocusTrap } from '@/hooks/use-focus-trap';
 
 const ROLE_KEY = { 0: 'customer', 1: 'admin', 2: 'business_account', 3: 'syndicate', 4: 'employee' };
 const DASHBOARD_ROUTE = { 1: 'admin.dashboard', 2: 'vendor.dashboard', 3: 'syndicate.dashboard', 4: 'employee.dashboard' };
@@ -19,6 +20,8 @@ export function ProfileMenu() {
         return () => document.removeEventListener('click', onClick);
     }, [open]);
 
+    useFocusTrap(ref, open, () => setOpen(false));
+
     if (!user) return null;
 
     const initial = (user.name || nav.customer || '?').charAt(0).toUpperCase();
@@ -34,7 +37,7 @@ export function ProfileMenu() {
 
     return (
         <div className="relative" ref={ref}>
-            <button type="button" onClick={() => setOpen((v) => !v)} className="flex items-center gap-2.5 rounded-lg border border-transparent px-2 py-1.5 hover:bg-accent/50">
+            <button type="button" onClick={() => setOpen((v) => !v)} aria-haspopup="menu" aria-expanded={open} className="flex items-center gap-2.5 rounded-lg border border-transparent px-2 py-1.5 hover:bg-accent/50">
                 <div className="flex size-8 items-center justify-center overflow-hidden rounded-full bg-primary">
                     {user.avatar_url ? <img src={user.avatar_url} alt="" className="size-full object-cover" /> : <span className="text-sm font-bold text-primary-foreground">{initial}</span>}
                 </div>

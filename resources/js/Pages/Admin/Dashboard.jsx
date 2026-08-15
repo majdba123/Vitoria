@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Plus, Store, Package, Users, ArrowRight } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
@@ -28,6 +29,12 @@ function typeLabel(admin, type, fallback) {
 export default function Dashboard() {
     const { admin } = useI18n();
     const { overview, categoryStats, users, vendors, products } = useAdminDashboard();
+    const [rangeMonths, setRangeMonths] = useState(12);
+
+    const changeRange = (months) => {
+        setRangeMonths(months);
+        overview.refetch({ range_months: months });
+    };
 
     const overviewData = overview.data?.data ?? null;
     const vendorsData = vendors.data;
@@ -190,9 +197,22 @@ export default function Dashboard() {
                         status={overview.status}
                         isEmpty={!(overviewData?.monthly_product_growth ?? []).length}
                         emptyMessage={admin.no_growth_data}
-                        onRetry={overview.refetch}
+                        onRetry={() => overview.refetch({ range_months: rangeMonths })}
                         rows={1}
                     >
+                        <div className="mb-3 flex items-center justify-end gap-1.5" role="group" aria-label="Chart period">
+                            {[3, 6, 12].map((months) => (
+                                <button
+                                    key={months}
+                                    type="button"
+                                    onClick={() => changeRange(months)}
+                                    aria-pressed={rangeMonths === months}
+                                    className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${rangeMonths === months ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent'}`}
+                                >
+                                    {months}mo
+                                </button>
+                            ))}
+                        </div>
                         <GrowthChart rows={overviewData?.monthly_product_growth ?? []} totalLabel={admin.total_products} />
                     </InsightPanel>
                 </div>

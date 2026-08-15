@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { Label } from '@/Components/ui/label';
 import { Input } from '@/Components/ui/input';
 import { Textarea } from '@/Components/ui/textarea';
@@ -24,11 +26,40 @@ function FieldShell({ id, label, required, error, hint, descriptionId, children 
     );
 }
 
-export function TextField({ id, label, required, error, hint, className, ...props }) {
+export function TextField({ id, label, required, error, hint, className, type, ...props }) {
     const descriptionId = (error || hint) ? `${id}-description` : undefined;
+    const [visible, setVisible] = useState(false);
+
+    if (type === 'password') {
+        return (
+            <FieldShell id={id} label={label} required={required} error={error} hint={hint} descriptionId={descriptionId}>
+                <div className="relative">
+                    <Input
+                        id={id}
+                        name={id}
+                        type={visible ? 'text' : 'password'}
+                        aria-invalid={!!error}
+                        aria-describedby={descriptionId}
+                        className={cn('pe-10', error && 'border-[var(--color-danger-500)]', className)}
+                        {...props}
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setVisible((v) => !v)}
+                        aria-label={visible ? 'Hide password' : 'Show password'}
+                        aria-pressed={visible}
+                        className="absolute inset-y-0 flex w-10 items-center justify-center text-muted-foreground transition-colors hover:text-foreground ltr:right-0 rtl:left-0"
+                    >
+                        {visible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                </div>
+            </FieldShell>
+        );
+    }
+
     return (
         <FieldShell id={id} label={label} required={required} error={error} hint={hint} descriptionId={descriptionId}>
-            <Input id={id} name={id} aria-invalid={!!error} aria-describedby={descriptionId} className={cn(error && 'border-[var(--color-danger-500)]', className)} {...props} />
+            <Input id={id} name={id} type={type} aria-invalid={!!error} aria-describedby={descriptionId} className={cn(error && 'border-[var(--color-danger-500)]', className)} {...props} />
         </FieldShell>
     );
 }

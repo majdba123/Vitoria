@@ -21,6 +21,15 @@ class Role extends Model
     public const KEY_VIEWER = 'viewer';
 
     /**
+     * Marketplace-employee roles (stakeholder review #24). Assigned via
+     * `employee_roles`, never `vendor_members` — employees are not scoped
+     * to a vendor.
+     */
+    public const KEY_CATALOG_MODERATOR = 'catalog_moderator';
+
+    public const KEY_ORDER_REVIEWER = 'order_reviewer';
+
+    /**
      * Roles that may actually be assigned to a `vendor_members` row.
      * `owner` is excluded — ownership is `vendors.user_id`, never a
      * membership row (spec §22; see the RBAC migration's class doc).
