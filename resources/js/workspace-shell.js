@@ -58,12 +58,23 @@
 
     async function logout(loginUrl) {
         try {
-            const token = window.Auth?.getToken?.() || localStorage.getItem('auth_token');
-            if (token && window.axios) {
+            // Always call the real logout endpoint, not just when a bearer
+            // token is present in localStorage. The four operator
+            // workspaces (admin/vendor/employee/syndicate) authenticate via
+            // Sanctum's session-cookie guard, not a bearer token, so `token`
+            // here is normally null for them — the old token-gated call
+            // meant this endpoint was never actually reached for those
+            // users, leaving their server-side session alive after
+            // "logout" (the client redirected to /login?logout=1, but
+            // auth()->check() was still true server-side). AuthController
+            // @logout revokes any Sanctum token AND destroys the web
+            // session; axios already sends the session cookie + CSRF token
+            // (withCredentials/withXSRFToken in bootstrap.js), and
+            // localhost/the app's own domain is a configured Sanctum
+            // stateful domain, so this authenticates correctly either way.
+            if (window.axios) {
                 try {
-                    await window.axios.post('/api/auth/logout', {}, {
-                        headers: { Authorization: 'Bearer ' + token },
-                    });
+                    await window.axios.post('/api/auth/logout');
                 } catch (error) {
                     console.log('Logout API call failed (continuing):', error);
                 }
