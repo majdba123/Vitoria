@@ -53,6 +53,14 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // The app sits behind an nginx reverse proxy (confirmed in production).
+        // Without this, Laravel never sees the client's real scheme/IP - it
+        // sees the proxy's internal (often plain HTTP) connection instead.
+        // That misdetected scheme is exactly what causes session/CSRF cookies
+        // to be issued inconsistently (e.g. a "secure" cookie config paired
+        // with a request Laravel itself believes isn't secure), which reads
+        // to users as random logouts, lost cart state, or stale CSRF tokens.
+        $middleware->trustProxies(at: '*');
         $middleware->statefulApi();
         $middleware->validateCsrfTokens(except: ['api/*']);
         $middleware->alias([
