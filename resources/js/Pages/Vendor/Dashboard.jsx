@@ -116,11 +116,11 @@ export default function VendorDashboard() {
             </div>
 
             <InsightPanel
-                title="Completed orders, last 7 days"
-                copy="Real order counts for your store, updated daily."
+                title="Orders, last 7 days"
+                copy="Real order counts for your store (confirmed + completed), updated daily."
                 status={status}
                 isEmpty={orderTrend.every((row) => row.count === 0)}
-                emptyMessage="No completed orders in the last 7 days."
+                emptyMessage="No orders in the last 7 days."
                 onRetry={load}
             >
                 <ChartContainer config={ORDERS_CHART_CONFIG} className="aspect-auto h-48 w-full">
@@ -132,7 +132,7 @@ export default function VendorDashboard() {
                     </AreaChart>
                 </ChartContainer>
                 <p className="sr-only">
-                    {orderTrend.map((row) => `${row.date}: ${row.count} completed orders.`).join(' ')}
+                    {orderTrend.map((row) => `${row.date}: ${row.count} orders.`).join(' ')}
                 </p>
             </InsightPanel>
 

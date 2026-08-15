@@ -23,6 +23,8 @@ return [
     'quick_summary' => 'ملخص سريع',
     'top_performance' => 'الأعلى أداءً',
     'top_performance_copy' => 'أفضل التصنيفات والمنتجات والتجار حسب حركة المبيعات.',
+    'monthly_order_growth_title' => 'الطلبات شهريًا (آخر 12 شهرًا)',
+    'monthly_order_growth_copy' => 'أعداد حقيقية للطلبات عبر تصنيفات نقابتك.',
     'records_title' => 'السجلات',
     'records_subtitle' => 'يتم تحديث القائمة بحسب القسم الحالي ونوع النقابة.',
     'loading_data' => 'جارٍ تحميل البيانات...',

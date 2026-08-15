@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import { Layers, Store, Package, ShoppingBag } from 'lucide-react';
 import { useI18n } from '@/hooks/use-i18n';
+import { GrowthChart } from '@/Components/admin/dashboard/GrowthChart';
 
 const TABLE_SECTIONS = ['categories', 'vendors', 'products', 'orders'];
 const TYPE_LABEL_KEY = { agriculture: 'type_agriculture', veterinary: 'type_veterinary' };
@@ -78,6 +79,7 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
     const orderStats = overview.order_stats ?? {};
     const merchantStats = overview.merchant_stats ?? {};
     const topRows = (overview.top_merchants_by_sales || overview.top_selling_categories || []).slice(0, 6);
+    const monthlyOrderGrowth = overview.monthly_order_growth || [];
 
     return (
         <SyndicateLayout title={syndicate[section] ?? syndicate.dashboard}>
@@ -232,6 +234,19 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                         </CardContent>
                     </Card>
                 </div>
+            )}
+
+            {isOverview && (
+                <InsightPanel
+                    title={syndicate.monthly_order_growth_title}
+                    copy={syndicate.monthly_order_growth_copy}
+                    status={overviewStatus}
+                    isEmpty={monthlyOrderGrowth.every((row) => Number(row.total || 0) === 0)}
+                    emptyMessage={syndicate.noData}
+                    onRetry={loadOverview}
+                >
+                    <GrowthChart rows={monthlyOrderGrowth} totalLabel={syndicate.total_orders} />
+                </InsightPanel>
             )}
         </SyndicateLayout>
     );

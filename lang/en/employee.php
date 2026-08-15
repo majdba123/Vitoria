@@ -27,6 +27,8 @@ return [
     'products_by_category_copy' => 'See which categories hold the most products right now.',
     'products_by_type' => 'Products by Type',
     'products_by_type_copy' => 'Track whether agriculture or veterinary products need more attention.',
+    'monthly_product_growth_title' => 'Products Added per Month (Last 12 Months)',
+    'monthly_product_growth_copy' => 'Real submission counts across every vendor you moderate.',
     'live_mix' => 'Live Mix',
     'type_view' => 'Type View',
     'refresh' => 'Refresh',

@@ -274,6 +274,27 @@ test('syndicate dashboard statistics are filtered by assigned category type', fu
         ->and($response->json('data.podcast_stats.total'))->toBe(0);
 });
 
+test('syndicate overview exposes a real monthly order growth trend for the dashboard chart', function () {
+    Cache::flush();
+    $user = syndicateUser(Category::TYPE_AGRICULTURE);
+    syndicateCategorySet(Category::TYPE_AGRICULTURE, 'Trend Seeds');
+
+    Sanctum::actingAs($user);
+
+    $response = $this->getJson('/api/syndicate/overview')->assertOk();
+
+    $rows = $response->json('data.monthly_order_growth');
+    expect($rows)->toBeArray()->not->toBeEmpty();
+    // Real DB-backed data feeding the Syndicate dashboard's growth chart:
+    // each bucket is a real month with a real completed-order-inclusive count,
+    // not a placeholder — the seeded completed order from
+    // syndicateCategorySet() must appear in the current month's bucket.
+    $currentMonth = now()->format('Y-m');
+    $currentBucket = collect($rows)->firstWhere('month', $currentMonth);
+    expect($currentBucket)->not->toBeNull();
+    expect($currentBucket['total'])->toBeGreaterThanOrEqual(1);
+});
+
 test('syndicate podcasts endpoint is type protected and ready for future podcast module', function () {
     $user = syndicateUser(Category::TYPE_VETERINARY);
 

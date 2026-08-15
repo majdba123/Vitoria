@@ -7,6 +7,32 @@ import { StatCard } from '@/Components/admin/dashboard/StatCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import { useI18n } from '@/hooks/use-i18n';
+import { GrowthChart } from '@/Components/admin/dashboard/GrowthChart';
+import { InsightPanel } from '@/Components/admin/dashboard/InsightPanel';
+
+/**
+ * Built from the same `allProducts` list already fetched for the category/type
+ * breakdowns below — no new endpoint, no fabricated data. Buckets by
+ * `created_at` month, matching the Admin/Vendor growth-chart shape exactly
+ * (`{ month: 'YYYY-MM', total }`) so the shared GrowthChart component works
+ * unchanged.
+ */
+function monthlyProductGrowth(products) {
+    const buckets = new Map();
+    for (let i = 11; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(1);
+        d.setMonth(d.getMonth() - i);
+        buckets.set(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`, 0);
+    }
+    products.forEach((p) => {
+        const key = p?.created_at ? String(p.created_at).slice(0, 7) : null;
+        if (key && buckets.has(key)) {
+            buckets.set(key, buckets.get(key) + 1);
+        }
+    });
+    return [...buckets.entries()].map(([month, total]) => ({ month, total }));
+}
 
 async function fetchAllProducts() {
     const products = [];
@@ -27,6 +53,7 @@ export default function EmployeeDashboard() {
     const [stats, setStats] = useState({ total: 0, pending: 0, approved: 0, rejected: 0, active: 0, inactive: 0 });
     const [categoryRows, setCategoryRows] = useState([]);
     const [typeRows, setTypeRows] = useState([]);
+    const [monthlyGrowth, setMonthlyGrowth] = useState([]);
 
     const load = () => {
         setStatus('loading');
@@ -58,6 +85,7 @@ export default function EmployeeDashboard() {
             });
             setCategoryRows([...categoryCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6));
             setTypeRows([...typeCounts.entries()].sort((a, b) => b[1] - a[1]));
+            setMonthlyGrowth(monthlyProductGrowth(allProducts));
             setStatus('ready');
         }).catch(() => setStatus('error'));
     };
@@ -172,6 +200,17 @@ export default function EmployeeDashboard() {
                     </CardContent>
                 </Card>
             </div>
+
+            <InsightPanel
+                title={employee.monthly_product_growth_title}
+                copy={employee.monthly_product_growth_copy}
+                status={status}
+                isEmpty={monthlyGrowth.every((row) => row.total === 0)}
+                emptyMessage={employee.no_products}
+                onRetry={load}
+            >
+                <GrowthChart rows={monthlyGrowth} totalLabel={employee.total_products} />
+            </InsightPanel>
         </EmployeeLayout>
     );
 }

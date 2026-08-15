@@ -23,6 +23,8 @@ return [
     'quick_summary' => 'Quick summary',
     'top_performance' => 'Top performance',
     'top_performance_copy' => 'Best categories, products, and vendors by sales activity.',
+    'monthly_order_growth_title' => 'Orders per Month (Last 12 Months)',
+    'monthly_order_growth_copy' => "Real order counts across your syndicate's categories.",
     'records_title' => 'Records',
     'records_subtitle' => 'The list updates based on the current section and syndicate type.',
     'loading_data' => 'Loading data...',
