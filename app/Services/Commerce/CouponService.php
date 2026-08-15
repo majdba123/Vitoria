@@ -130,7 +130,7 @@ class CouponService
      * other transaction's redemption once it commits.
      *
      * @throws CartException when the coupon was exhausted, or the per-user
-     *                        limit was already reached, by a concurrent order
+     *                       limit was already reached, by a concurrent order
      */
     public function claim(Coupon $coupon, User $user, Order $order, float $discountAmount): void
     {

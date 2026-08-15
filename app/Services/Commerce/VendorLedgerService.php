@@ -141,6 +141,16 @@ class VendorLedgerService
      * Record a payout to the vendor, capped at what is actually outstanding
      * so a settlement can never push the balance negative.
      *
+     * The outstanding-balance check and recomputation happen *inside* the
+     * transaction, against a row-locked vendor — not before it. Reading
+     * `summary()` before the transaction opened (the previous shape of this
+     * method) meant two concurrent settlement requests for the same vendor
+     * could each read the same stale `outstanding`, both pass the cap check,
+     * and together settle more than was ever owed. Locking the vendor row
+     * first forces a second concurrent call to block until the first
+     * transaction commits, so its own recomputation of `outstanding`
+     * reflects the first settlement and is capped correctly against it.
+     *
      * @throws CartException
      */
     public function recordSettlement(Vendor $vendor, User $actor, float $amount, string $method, ?string $reference = null, ?string $notes = null): VendorSettlement
@@ -155,15 +165,17 @@ class VendorLedgerService
             throw new CartException(__('vendor_ledger.settlement_method_invalid'));
         }
 
-        $outstanding = $this->summary($vendor)['outstanding'];
-
-        if ($amount > $outstanding) {
-            throw new CartException(__('vendor_ledger.settlement_exceeds_outstanding'));
-        }
-
         return DB::transaction(function () use ($actor, $amount, $method, $notes, $reference, $vendor) {
+            $lockedVendor = Vendor::query()->whereKey($vendor->id)->lockForUpdate()->firstOrFail();
+
+            $outstanding = $this->summary($lockedVendor)['outstanding'];
+
+            if ($amount > $outstanding) {
+                throw new CartException(__('vendor_ledger.settlement_exceeds_outstanding'));
+            }
+
             $entry = VendorLedgerEntry::create([
-                'vendor_id' => $vendor->id,
+                'vendor_id' => $lockedVendor->id,
                 'order_id' => null,
                 'type' => VendorLedgerEntry::TYPE_SETTLEMENT,
                 'direction' => VendorLedgerEntry::DIRECTION_DEBIT,
@@ -173,7 +185,7 @@ class VendorLedgerService
             ]);
 
             $settlement = VendorSettlement::create([
-                'vendor_id' => $vendor->id,
+                'vendor_id' => $lockedVendor->id,
                 'ledger_entry_id' => $entry->id,
                 'amount' => $amount,
                 'method' => $method,
@@ -188,7 +200,7 @@ class VendorLedgerService
             // views without recomputing `summary()` per row — but this is now
             // the *only* place that ever writes it, so it can never drift out
             // of sync with, or be double-written independently of, the ledger.
-            $vendor->increment('paid_amount', $amount);
+            $lockedVendor->increment('paid_amount', $amount);
 
             $this->auditLogService->record(
                 $actor,
@@ -196,7 +208,7 @@ class VendorLedgerService
                 'VendorSettlement',
                 $settlement->id,
                 null,
-                ['vendor_id' => $vendor->id, 'amount' => $amount, 'method' => $method, 'reference' => $reference],
+                ['vendor_id' => $lockedVendor->id, 'amount' => $amount, 'method' => $method, 'reference' => $reference],
             );
 
             return $settlement;

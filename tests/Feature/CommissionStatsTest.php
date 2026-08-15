@@ -47,7 +47,7 @@ test('vendor commission stats endpoint stays bounded and does not error with old
     $response = $this->getJson('/api/vendor/commission-stats');
 
     $response->assertOk()
-        ->assertJsonPath('data.financials.completed_order_total', 100)
+        ->assertJsonPath('data.financials.projected_order_total', 100)
         ->assertJsonPath('data.category_breakdown.0.sales_total', 100);
 });
 

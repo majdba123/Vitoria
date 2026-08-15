@@ -11,7 +11,7 @@ import { Button } from '@/Components/ui/button';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/Components/ui/chart';
 import { useI18n } from '@/hooks/use-i18n';
 
-const ORDERS_CHART_CONFIG = { count: { label: 'Completed orders', color: 'var(--chart-1)' } };
+const ORDERS_CHART_CONFIG = { count: { label: 'Confirmed + completed orders', color: 'var(--chart-1)' } };
 
 export default function VendorDashboard() {
     const { vendor, common } = useI18n();
@@ -38,7 +38,7 @@ export default function VendorDashboard() {
                 storeActive: !!profileRes.data?.data?.vendor?.is_active,
             });
             setProfile(profileRes.data?.data ?? null);
-            setOrderTrend(commissionRes.data?.data?.completed_orders_last_7_days ?? []);
+            setOrderTrend(commissionRes.data?.data?.recent_orders_last_7_days ?? []);
             setStatus('ready');
         }).catch(() => setStatus('error'));
     };

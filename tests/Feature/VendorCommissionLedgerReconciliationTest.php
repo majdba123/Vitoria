@@ -133,3 +133,143 @@ test('the ledger backfill command records a missing sale entry for a pre-existin
     $this->artisan('ledger:backfill-completed-orders')->assertSuccessful();
     expect(\App\Models\VendorLedgerEntry::query()->where('order_id', $order->id)->count())->toBe(2);
 });
+
+test('the commission dashboard response explicitly separates ledger-authoritative figures from the projected preview', function () {
+    $vendor = Vendor::factory()->create();
+    $vendor->user->update(['type' => User::TYPE_VENDOR]);
+    $category = Category::query()->create(['name' => 'Semantics Category', 'type' => Category::TYPE_AGRICULTURE, 'commission' => 10]);
+    $product = Product::factory()->for($vendor)->create(['category_id' => $category->id]);
+
+    // One completed (ledgered) order and one merely confirmed (not yet
+    // completed, not yet ledgered) order for the same vendor — the two
+    // response sections must disagree on whether the confirmed order counts.
+    completedOrderWithLedgerEntry($vendor, $product, 1000);
+    $confirmedOrder = Order::factory()->for($vendor)->create([
+        'status' => Order::STATUS_CONFIRMED,
+        'subtotal_amount' => 500,
+        'total_amount' => 500,
+    ]);
+    OrderItem::factory()->for($confirmedOrder)->for($product)->create(['line_total' => 500]);
+
+    Sanctum::actingAs($vendor->user);
+    $response = $this->getJson('/api/vendor/commission-stats')->assertOk();
+
+    // Ledger-authoritative: only the completed order's commission (10% of
+    // 1000 = 100) is counted — the confirmed order is invisible to it.
+    $response->assertJsonPath('data.financials.commission_total', 100);
+
+    // Projected preview: includes BOTH orders (1000 + 500 = 1500) — this is
+    // never the same number as anything ledger-sourced, and the response
+    // must say so explicitly via `basis`, not leave it to be inferred.
+    $response->assertJsonPath('data.financials.projected_order_total', 1500);
+
+    $response->assertJsonPath('data.basis.ledger', [
+        'financials.commission_total', 'financials.paid_amount', 'financials.remaining_amount',
+    ]);
+    $response->assertJsonPath('data.basis.projected', [
+        'financials.projected_order_total', 'category_breakdown', 'recent_orders_last_7_days',
+    ]);
+
+    // No field anywhere in the response is still named with the ambiguous
+    // "completed_order..." wording that previously implied ledger semantics
+    // while actually being a live confirmed+completed preview.
+    $raw = json_encode($response->json('data'));
+    expect($raw)->not->toContain('completed_order_total');
+    expect($raw)->not->toContain('completed_orders_last_7_days');
+});
+
+test('the ledger backfill --dry-run writes nothing, even against legacy data with a since-changed commission rate', function () {
+    $vendor = Vendor::factory()->create();
+    $category = Category::query()->create(['name' => 'Legacy Rate Category', 'type' => Category::TYPE_AGRICULTURE, 'commission' => 10]);
+    $product = Product::factory()->for($vendor)->create(['category_id' => $category->id]);
+
+    // Simulate a legacy order that completed under a 10% rate, long before
+    // the ledger existed — no recordSale() was ever called for it.
+    $order = Order::factory()->for($vendor)->create([
+        'status' => Order::STATUS_COMPLETED,
+        'subtotal_amount' => 500,
+        'total_amount' => 500,
+    ]);
+    OrderItem::factory()->for($order)->for($product)->create(['line_total' => 500]);
+
+    // The rate has since drifted upward — the backfill can only ever see
+    // this current rate, not the 10% that was actually in effect.
+    $category->update(['commission' => 40]);
+
+    $this->artisan('ledger:backfill-completed-orders', ['--dry-run' => true])
+        ->assertSuccessful();
+
+    // Dry-run must be a true no-op: no ledger entries, no vendor balance change.
+    expect(\App\Models\VendorLedgerEntry::query()->where('order_id', $order->id)->count())->toBe(0);
+    expect(app(VendorLedgerService::class)->summary($vendor->fresh())['gross_sales'])->toBe(0.0);
+});
+
+/**
+ * Proves the settlement race (fullstack audit item, financial closure round)
+ * is closed: two settlement requests for the same vendor can never together
+ * settle more than was ever outstanding.
+ *
+ * PHP/Pest test execution is single-threaded, so this cannot spin up two
+ * literal OS-level concurrent HTTP requests — the same limitation applies to
+ * every other TOCTOU-style test already in this suite (the coupon per-user
+ * race in CheckoutAndOrderLifecycleTest, the paid-amount cap test above).
+ * The property that actually needs proving is not "do two real network
+ * requests overlap in wall-clock time" — it's "does recordSettlement() ever
+ * trust a value read before its own lock was acquired". The scenario below
+ * reproduces exactly the bug the old code had: two actors each read
+ * `outstanding` from the SAME stale snapshot (as they would under genuine
+ * concurrency, before either had committed), then both attempt to settle
+ * against that stale figure. Under the old code (outstanding read before
+ * DB::transaction() opened) the second call would have used its own stale
+ * pre-read and let a settlement through that pushed the total past
+ * outstanding. Under the fixed code, recordSettlement() re-reads outstanding
+ * fresh, inside its own row lock, at call time — so it cannot be fooled by
+ * what an earlier "concurrent" reader believed the balance was.
+ */
+test('two settlement requests racing off the same stale outstanding balance can never together exceed it', function () {
+    $vendor = Vendor::factory()->create();
+    $category = Category::query()->create(['name' => 'Race Category', 'type' => Category::TYPE_AGRICULTURE, 'commission' => 0]);
+    $product = Product::factory()->for($vendor)->create(['category_id' => $category->id]);
+    completedOrderWithLedgerEntry($vendor, $product, 1000); // commission = 0, outstanding = 1000
+
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
+
+    // Both "actors" observe the same stale outstanding = 1000 before either
+    // has settled anything — the exact read a concurrent request would make.
+    $staleOutstanding = app(VendorLedgerService::class)->summary($vendor->fresh())['outstanding'];
+    expect($staleOutstanding)->toBe(1000.0);
+
+    // Actor A settles 700 against that stale 1000 — passes, since nothing
+    // has been settled yet.
+    $this->postJson("/api/admin/vendors/{$vendor->id}/settlements", [
+        'amount' => 700,
+        'method' => 'bank_transfer',
+    ])->assertCreated();
+
+    // Actor B, still only aware of the stale outstanding = 1000 (not the 300
+    // truly remaining after A's settlement), attempts to settle 600 — under
+    // the pre-fix code this would have passed (600 <= 1000), pushing the
+    // vendor's total settled to 1300 against only 1000 ever owed. The fixed
+    // recordSettlement() recomputes outstanding fresh inside its own lock
+    // and correctly rejects this as exceeding the true remaining 300.
+    $this->postJson("/api/admin/vendors/{$vendor->id}/settlements", [
+        'amount' => 600,
+        'method' => 'bank_transfer',
+    ])->assertStatus(422);
+
+    $summary = app(VendorLedgerService::class)->summary($vendor->fresh());
+    expect($summary['settled'])->toBe(700.0);
+    expect($summary['outstanding'])->toBe(300.0);
+    expect(\App\Models\VendorSettlement::query()->where('vendor_id', $vendor->id)->sum('amount'))
+        ->toBeLessThanOrEqual(1000.0);
+
+    // A settlement of exactly the true remaining amount still succeeds —
+    // proving this is a correctness fix, not an overly-aggressive rejection.
+    $this->postJson("/api/admin/vendors/{$vendor->id}/settlements", [
+        'amount' => 300,
+        'method' => 'bank_transfer',
+    ])->assertCreated();
+
+    expect(app(VendorLedgerService::class)->summary($vendor->fresh())['outstanding'])->toBe(0.0);
+});

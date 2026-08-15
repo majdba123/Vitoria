@@ -165,7 +165,7 @@ test('an unauthenticated request cannot reach any admin, vendor, or employee pro
     $this->putJson("/api/employee/products/{$product->id}", ['status' => 'approved'])->assertUnauthorized();
     $this->getJson('/api/employee/orders')->assertUnauthorized();
     $this->patchJson("/api/admin/products/{$product->id}/status", ['status' => 'approved'])->assertUnauthorized();
-    $this->patchJson("/api/admin/users/1/employee-roles", ['role_keys' => []])->assertUnauthorized();
+    $this->patchJson('/api/admin/users/1/employee-roles', ['role_keys' => []])->assertUnauthorized();
 
     expect($order->fresh())->not->toBeNull();
 });

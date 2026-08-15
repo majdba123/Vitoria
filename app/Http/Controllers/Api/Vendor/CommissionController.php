@@ -90,18 +90,21 @@ class CommissionController extends Controller
             }
         }
 
-        // The per-category breakdown below stays a live, informational preview
-        // (including in-progress orders) — but the authoritative "what do we
-        // owe this vendor" figures come from the ledger: an immutable
-        // snapshot taken once when each order actually completes, not
-        // recomputed from the category's *current* commission rate on every
-        // request (that recompute previously meant editing a category's rate
-        // retroactively rewrote every past order's commission).
+        // The per-category breakdown and the "projected" total below stay a
+        // live, informational preview (including CONFIRMED orders that have
+        // not completed yet — hence "projected", not "completed") — but the
+        // authoritative "what do we owe this vendor" figures come from the
+        // ledger: an immutable snapshot taken once when each order actually
+        // completes, not recomputed from the category's *current* commission
+        // rate on every request (that recompute previously meant editing a
+        // category's rate retroactively rewrote every past order's
+        // commission). The two must never be labeled the same way — a figure
+        // that includes in-progress orders is never called "completed".
         $ledger = $this->vendorLedgerService->summary($vendor);
         $commissionTotal = $ledger['commission'];
         $paidAmount = $ledger['settled'];
         $remainingAmount = $ledger['outstanding'];
-        $completedOrderTotal = round($completedOrderTotal, 2);
+        $projectedOrderTotal = round($completedOrderTotal, 2);
 
         $categoryBreakdown = collect($categoryBreakdownMap)
             ->map(function (array $row) {
@@ -127,13 +130,27 @@ class CommissionController extends Controller
                     'total' => array_sum($statusCounts),
                 ],
                 'financials' => [
-                    'completed_order_total' => $completedOrderTotal,
+                    // Ledger-authoritative: COMPLETED orders only, snapshotted
+                    // at completion time, never recomputed from today's rates.
                     'commission_total' => $commissionTotal,
                     'paid_amount' => $paidAmount,
                     'remaining_amount' => $remainingAmount,
+                    // Projected/live preview: CONFIRMED + COMPLETED orders
+                    // from the last 365 days, recomputed on every request.
+                    // Never compare this to the ledger figures above as if
+                    // they measured the same thing.
+                    'projected_order_total' => $projectedOrderTotal,
+                ],
+                // Metadata so any consumer of this response (frontend or
+                // otherwise) can tell which top-level fields are the
+                // immutable ledger record and which are a live, in-progress
+                // preview — instead of inferring it from field names alone.
+                'basis' => [
+                    'ledger' => ['financials.commission_total', 'financials.paid_amount', 'financials.remaining_amount'],
+                    'projected' => ['financials.projected_order_total', 'category_breakdown', 'recent_orders_last_7_days'],
                 ],
                 'category_breakdown' => $categoryBreakdown,
-                'completed_orders_last_7_days' => collect($last7Days)->map(function (int $count, string $date) {
+                'recent_orders_last_7_days' => collect($last7Days)->map(function (int $count, string $date) {
                     return [
                         'date' => $date,
                         'count' => $count,

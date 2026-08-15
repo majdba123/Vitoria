@@ -33,7 +33,7 @@ export default function VendorCommission() {
     const statusCounts = orders.status_counts ?? {};
     const total = Number(orders.total || 0);
     const categoryBreakdown = data?.category_breakdown ?? [];
-    const trend = data?.completed_orders_last_7_days ?? [];
+    const trend = data?.recent_orders_last_7_days ?? [];
     const trendMax = Math.max(...trend.map((p) => Number(p.count || 0)), 1);
 
     if (status === 'error') {
@@ -58,7 +58,7 @@ export default function VendorCommission() {
             />
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <StatCard label={vendor.completed_orders_total} value={formatMoney(financials.completed_order_total)} icon={DollarSign} status={status} />
+                <StatCard label={vendor.completed_orders_total} value={formatMoney(financials.projected_order_total)} icon={DollarSign} status={status} />
                 <StatCard label={vendor.commission_total_label} value={formatMoney(financials.commission_total)} icon={Wallet} status={status} />
                 <StatCard label={vendor.paid_to_you} value={formatMoney(financials.paid_amount)} icon={HandCoins} status={status} tone="success" />
                 <StatCard label={vendor.remaining_label} value={formatMoney(financials.remaining_amount)} icon={TrendingDown} status={status} tone="danger" />

@@ -41,8 +41,13 @@ export default function VendorsCommission({ vendorId }) {
             return;
         }
 
-        const commissionTotal = Number(data?.financials?.commission_total ?? 0);
-        if (amount > commissionTotal && !window.confirm(`This paid amount (${formatMoney(amount)}) exceeds the commission total (${formatMoney(commissionTotal)}) and will result in a negative remaining amount. Continue anyway?`)) {
+        // The actual cap the ledger enforces is `remaining_amount` (outstanding),
+        // not `commission_total` — commission is the platform's cut, not the
+        // amount owed to the vendor. Warn against the real cap the backend
+        // will reject against, not a different, unrelated figure.
+        const alreadySettled = Number(data?.financials?.paid_amount ?? 0);
+        const trueOutstandingCap = alreadySettled + Number(data?.financials?.remaining_amount ?? 0);
+        if (amount > trueOutstandingCap && !window.confirm(`This paid amount (${formatMoney(amount)}) exceeds the total outstanding to this vendor (${formatMoney(trueOutstandingCap)}) and will be rejected by the ledger. Continue anyway?`)) {
             return;
         }
 
@@ -63,7 +68,7 @@ export default function VendorsCommission({ vendorId }) {
     const statusCounts = orders.status_counts ?? {};
     const total = Number(orders.total || 0);
     const categoryBreakdown = data?.category_breakdown ?? [];
-    const trend = data?.completed_orders_last_7_days ?? [];
+    const trend = data?.recent_orders_last_7_days ?? [];
     const trendMax = Math.max(...trend.map((p) => Number(p.count || 0)), 1);
 
     return (
@@ -86,7 +91,7 @@ export default function VendorsCommission({ vendorId }) {
             )}
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <StatCard label="Completed orders total" value={formatMoney(financials.completed_order_total)} icon={DollarSign} status={status} />
+                <StatCard label="Order total (confirmed + completed)" value={formatMoney(financials.projected_order_total)} icon={DollarSign} status={status} />
                 <StatCard label="Commission total" value={formatMoney(financials.commission_total)} icon={Wallet} status={status} />
                 <StatCard label="Paid to vendor" value={formatMoney(financials.paid_amount)} icon={HandCoins} status={status} tone="success" />
                 <StatCard label="Remaining" value={formatMoney(financials.remaining_amount)} icon={TrendingDown} status={status} tone="danger" />
@@ -173,7 +178,7 @@ export default function VendorsCommission({ vendorId }) {
 
             <Card className="border-border/80 shadow-none">
                 <CardHeader className="border-b border-border/80">
-                    <CardTitle className="text-base font-bold">Last 7 days completed orders</CardTitle>
+                    <CardTitle className="text-base font-bold">Orders in the last 7 days</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-7 gap-2 p-5">
                     {trend.length === 0 ? (
