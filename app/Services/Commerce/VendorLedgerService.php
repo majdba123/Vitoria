@@ -10,6 +10,7 @@ use App\Models\Vendor;
 use App\Models\VendorLedgerEntry;
 use App\Models\VendorSettlement;
 use App\Services\AuditLogService;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -55,27 +56,39 @@ class VendorLedgerService
         $commissionTotal = round($commissionTotal, 2);
         $orderNumber = $order->order_number;
 
-        DB::transaction(function () use ($commissionTotal, $order, $orderNumber): void {
-            VendorLedgerEntry::create([
-                'vendor_id' => $order->vendor_id,
-                'order_id' => $order->id,
-                'type' => VendorLedgerEntry::TYPE_SALE,
-                'direction' => VendorLedgerEntry::DIRECTION_CREDIT,
-                'amount' => $order->subtotal_amount,
-                'description' => __('vendor_ledger.entry.sale', ['order' => $orderNumber]),
-            ]);
-
-            if ($commissionTotal > 0) {
+        try {
+            DB::transaction(function () use ($commissionTotal, $order, $orderNumber): void {
                 VendorLedgerEntry::create([
                     'vendor_id' => $order->vendor_id,
                     'order_id' => $order->id,
-                    'type' => VendorLedgerEntry::TYPE_COMMISSION,
-                    'direction' => VendorLedgerEntry::DIRECTION_DEBIT,
-                    'amount' => $commissionTotal,
-                    'description' => __('vendor_ledger.entry.commission', ['order' => $orderNumber]),
+                    'idempotency_key' => "sale:{$order->id}",
+                    'type' => VendorLedgerEntry::TYPE_SALE,
+                    'direction' => VendorLedgerEntry::DIRECTION_CREDIT,
+                    'amount' => $order->subtotal_amount,
+                    'description' => __('vendor_ledger.entry.sale', ['order' => $orderNumber]),
                 ]);
+
+                if ($commissionTotal > 0) {
+                    VendorLedgerEntry::create([
+                        'vendor_id' => $order->vendor_id,
+                        'order_id' => $order->id,
+                        'idempotency_key' => "commission:{$order->id}",
+                        'type' => VendorLedgerEntry::TYPE_COMMISSION,
+                        'direction' => VendorLedgerEntry::DIRECTION_DEBIT,
+                        'amount' => $commissionTotal,
+                        'description' => __('vendor_ledger.entry.commission', ['order' => $orderNumber]),
+                    ]);
+                }
+            });
+        } catch (QueryException $exception) {
+            // A concurrent call already won the race and inserted the same
+            // idempotency_key - the unique constraint is the real backstop,
+            // the exists() check above is just the cheap common-case path.
+            // Any other integrity/constraint violation should still surface.
+            if (! str_contains($exception->getMessage(), 'idempotency_key')) {
+                throw $exception;
             }
-        });
+        }
     }
 
     /**

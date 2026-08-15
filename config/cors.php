@@ -22,9 +22,15 @@ return [
 
     // Required for Flutter web / Vite / local dev (any localhost or 127.0.0.1 port).
     // Without this, the middleware sends only the single allowed_origin and browser blocks the request.
-    'allowed_origins_patterns' => [
+    // Gated to the local environment only: combined with CORS_SUPPORTS_CREDENTIALS=true
+    // in any non-local environment, an unconditional localhost/127.0.0.1 pattern would let
+    // any local process on that origin pattern make authenticated cross-origin requests.
+    // Uses env() directly (not app()->environment()) - config files are read by
+    // config:cache/config:clear before the container's env/application bindings
+    // are ready, and app() there throws "Target class [env] does not exist".
+    'allowed_origins_patterns' => env('APP_ENV', 'production') === 'local' ? [
         '/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/',
-    ],
+    ] : [],
 
     'allowed_headers' => ['*'],
 

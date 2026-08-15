@@ -9,6 +9,7 @@ use App\Models\SharedProductDetail;
 use App\Models\Vendor;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
@@ -76,7 +77,12 @@ class ProductService
             ? $filters['sort'] : 'latest';
         $page = (int) request()->get('page', 1);
 
+        // Locale is part of the cache key: listed products render a localized
+        // name (see ProductResource::localizedName()), so a locale-blind key
+        // would let the first viewer's language get served to every other
+        // locale for the rest of the cache lifetime.
         $cacheKey = 'pub_products:'.sha1(json_encode([
+            'locale' => app()->getLocale(),
             'category_id' => $categoryId,
             'subcategory_id' => $subcategoryId,
             'category_type' => $categoryType,
@@ -338,7 +344,7 @@ class ProductService
         $photos = [];
 
         foreach ($files as $index => $file) {
-            $path = $file->store('products/'.$product->id, 'public');
+            $path = $this->storeOptimizedPhoto($file, 'products/'.$product->id);
             $itemMetadata = $metadata[$index] ?? [];
             $imageType = $itemMetadata['image_type'] ?? ProductPhoto::TYPE_FRONT;
             $sortOrder = isset($itemMetadata['sort_order']) && $itemMetadata['sort_order'] > 0
@@ -368,6 +374,17 @@ class ProductService
         $this->flushProductCache();
 
         return $photos;
+    }
+
+    /**
+     * Store an uploaded product photo, downscaled and re-encoded by
+     * ImageOptimizationService to keep bandwidth and page-weight down on
+     * high-traffic product grids. Storage path/disk/filename convention
+     * matches what UploadedFile::store() would have produced.
+     */
+    protected function storeOptimizedPhoto(UploadedFile $file, string $directory): string
+    {
+        return app(ImageOptimizationService::class)->storeOptimized($file, $directory);
     }
 
     /**

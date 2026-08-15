@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Search, ShoppingBag, Menu } from 'lucide-react';
 import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
@@ -17,6 +17,12 @@ export function PublicHeader() {
     const [search, setSearch] = useState('');
     const [categories, setCategories] = useState([]);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const mobileTriggerRef = useRef(null);
+
+    const closeMobileDrawer = () => {
+        setMobileOpen(false);
+        mobileTriggerRef.current?.focus();
+    };
 
     useEffect(() => {
         window.axios.get('/api/categories', { params: { per_page: 100 }, silent: true }).then((res) => {
@@ -64,7 +70,7 @@ export function PublicHeader() {
                         >
                             <ShoppingBag className="h-5 w-5" />
                             {itemsCount > 0 && (
-                                <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold leading-none text-primary-foreground shadow">
+                                <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold leading-none text-primary-foreground shadow rtl:-left-0.5 rtl:right-auto">
                                     {itemsCount > 99 ? '99+' : itemsCount}
                                 </span>
                             )}
@@ -83,6 +89,7 @@ export function PublicHeader() {
 
                         <button
                             type="button"
+                            ref={mobileTriggerRef}
                             onClick={() => setMobileOpen(true)}
                             className="nav-action-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-transparent text-muted-foreground md:hidden"
                             aria-label={nav.menu}
@@ -100,7 +107,7 @@ export function PublicHeader() {
                 </div>
             </header>
 
-            <MobileDrawer open={mobileOpen} onClose={() => setMobileOpen(false)} categories={categories} />
+            <MobileDrawer open={mobileOpen} onClose={closeMobileDrawer} categories={categories} />
         </>
     );
 }

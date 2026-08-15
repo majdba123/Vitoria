@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { X, LayoutGrid, Layers, ChevronRight, User, LogOut } from 'lucide-react';
 import { useAuthUser, useI18n, useLocale } from '@/hooks/use-i18n';
+import { useFocusTrap } from '@/hooks/use-focus-trap';
 
 const DASHBOARD_ROUTE = { 1: 'admin.dashboard', 2: 'vendor.dashboard', 3: 'syndicate.dashboard', 4: 'employee.dashboard' };
 
@@ -14,11 +15,14 @@ export function MobileDrawer({ open, onClose, categories }) {
     const user = useAuthUser();
     const [expandedId, setExpandedId] = useState(null);
     const locale = useLocale();
+    const panelRef = useRef(null);
 
     useEffect(() => {
         document.body.style.overflow = open ? 'hidden' : '';
         return () => { document.body.style.overflow = ''; };
     }, [open]);
+
+    useFocusTrap(panelRef, open, onClose);
 
     if (!open) return null;
 
@@ -32,7 +36,7 @@ export function MobileDrawer({ open, onClose, categories }) {
     return (
         <div className="fixed inset-0 z-[60]" role="dialog" aria-modal="true">
             <div className="absolute inset-0 bg-black/45" onClick={onClose} />
-            <div className="absolute top-0 flex h-full w-80 max-w-[88vw] flex-col border-border bg-card ltr:right-0 ltr:border-l rtl:left-0 rtl:border-r">
+            <div ref={panelRef} className="absolute top-0 flex h-full w-80 max-w-[88vw] flex-col border-border bg-card ltr:right-0 ltr:border-l rtl:left-0 rtl:border-r">
                 <div className="flex items-center justify-between border-b border-border/80 px-5 py-4">
                     <span className="text-lg font-extrabold text-foreground">{nav.menu}</span>
                     <button type="button" onClick={onClose} className="rounded-md p-2 text-muted-foreground hover:bg-accent" aria-label={nav.close_menu}>

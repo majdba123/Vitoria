@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Cancellation with exactly-once stock restoration (spec §10, audit R1).
@@ -24,10 +25,31 @@ class OrderCancellationService
         private readonly PaymentService $paymentService,
     ) {}
 
+    public function cancel(
+        Order $order,
+        User $actor,
+        string $actorType,
+        string $reason,
+        ?string $notes = null,
+    ): Order {
+        try {
+            return $this->attemptCancel($order, $actor, $actorType, $reason, $notes);
+        } catch (CartException $exception) {
+            Log::warning('Order cancellation rejected.', [
+                'order_id' => $order->id,
+                'actor_id' => $actor->id,
+                'actor_type' => $actorType,
+                'reason' => $exception->getMessage(),
+            ]);
+
+            throw $exception;
+        }
+    }
+
     /**
      * @throws CartException
      */
-    public function cancel(
+    private function attemptCancel(
         Order $order,
         User $actor,
         string $actorType,

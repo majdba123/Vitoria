@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { ChevronRight, Layers, ArrowRight } from 'lucide-react';
 import PublicLayout from '@/Layouts/PublicLayout';
+import { DataState } from '@/Components/public/DataState';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { useI18n } from '@/hooks/use-i18n';
 
@@ -19,17 +20,23 @@ export default function CategoriesIndex() {
     const [type, setType] = useState(params.get('type') ?? '');
     const [status, setStatus] = useState('loading');
     const [rows, setRows] = useState([]);
+    const requestSeq = useRef(0);
 
     const load = (t) => {
+        const seq = ++requestSeq.current;
         setStatus('loading');
         window.axios.get('/api/categories', { params: { per_page: 100, type: t || undefined }, silent: true }).then((res) => {
+            if (seq !== requestSeq.current) return;
             setRows(res.data?.data ?? []);
             setStatus('ready');
 
             const nextUrl = new URL(window.location.href);
             if (t) nextUrl.searchParams.set('type', t); else nextUrl.searchParams.delete('type');
             window.history.replaceState({}, '', nextUrl.pathname + nextUrl.search);
-        }).catch(() => setStatus('error'));
+        }).catch(() => {
+            if (seq !== requestSeq.current) return;
+            setStatus('error');
+        });
     };
 
     useEffect(() => { load(type); }, []);
@@ -89,15 +96,16 @@ export default function CategoriesIndex() {
                     </div>
                 </div>
 
-                {status === 'loading' && (
-                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                        {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-40 rounded-xl" />)}
-                    </div>
-                )}
-
-                {status === 'error' && <p className="text-sm text-muted-foreground">{categoriesI18n.load_error}</p>}
-
-                {status === 'ready' && (
+                <DataState
+                    status={status}
+                    onRetry={() => load(type)}
+                    errorMessage={<p className="text-sm text-muted-foreground">{categoriesI18n.load_error}</p>}
+                    loadingSkeleton={(
+                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                            {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-40 rounded-xl" />)}
+                        </div>
+                    )}
+                >
                     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                         {rows.map((category) => (
                             <article key={category.id} className="category-directory-card">
@@ -119,7 +127,7 @@ export default function CategoriesIndex() {
                             </article>
                         ))}
                     </div>
-                )}
+                </DataState>
             </div>
         </PublicLayout>
     );

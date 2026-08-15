@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { ChevronRight, PackageX, SlidersHorizontal } from 'lucide-react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { ProductCard } from '@/Components/public/ProductCard';
 import { PublicPagination } from '@/Components/public/PublicPagination';
+import { DataState } from '@/Components/public/DataState';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 
@@ -42,6 +43,7 @@ export default function ProductsIndex() {
     const [status, setStatus] = useState('loading');
     const [rows, setRows] = useState([]);
     const [meta, setMeta] = useState(null);
+    const requestSeq = useRef(0);
 
     useEffect(() => {
         window.axios.get('/api/categories', { params: { per_page: 100 }, silent: true }).then((res) => {
@@ -49,7 +51,8 @@ export default function ProductsIndex() {
         }).catch(() => {});
     }, []);
 
-    useEffect(() => {
+    const loadProducts = () => {
+        const seq = ++requestSeq.current;
         setStatus('loading');
         const params = {
             page: filters.page,
@@ -72,11 +75,17 @@ export default function ProductsIndex() {
         window.history.replaceState({}, '', url.pathname + url.search);
 
         window.axios.get('/api/products', { params, silent: true }).then((res) => {
+            if (seq !== requestSeq.current) return;
             setRows(res.data?.data ?? []);
             setMeta(res.data?.meta ?? null);
             setStatus('ready');
-        }).catch(() => setStatus('error'));
-    }, [filters]);
+        }).catch(() => {
+            if (seq !== requestSeq.current) return;
+            setStatus('error');
+        });
+    };
+
+    useEffect(loadProducts, [filters]);
 
     const visibleCategories = useMemo(
         () => (filters.categoryType ? allCategories.filter((c) => c.type === filters.categoryType) : allCategories),
@@ -205,34 +214,35 @@ export default function ProductsIndex() {
                         <div className="catalog-active-filters">{activeSummary}</div>
                     </div>
 
-                    {status === 'loading' && (
-                        <div className="responsive-shop-grid mt-6">
-                            {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="aspect-square rounded-lg" />)}
-                        </div>
-                    )}
-
-                    {status === 'error' && (
-                        <div className="empty-state py-20">
-                            <PackageX className="mx-auto h-16 w-16 text-muted-foreground/20" />
-                            <p className="mt-4 font-bold text-muted-foreground">{nav.products_error}</p>
-                        </div>
-                    )}
-
-                    {status === 'ready' && rows.length === 0 && (
-                        <div className="empty-state py-20">
-                            <PackageX className="mx-auto h-16 w-16 text-muted-foreground/20" />
-                            <p className="mt-4 font-bold text-muted-foreground">{nav.products_empty}</p>
-                        </div>
-                    )}
-
-                    {status === 'ready' && rows.length > 0 && (
+                    <DataState
+                        status={status}
+                        onRetry={loadProducts}
+                        isEmpty={rows.length === 0}
+                        errorMessage={(
+                            <>
+                                <PackageX className="mx-auto h-16 w-16 text-muted-foreground/20" />
+                                <p className="mt-4 font-bold text-muted-foreground">{nav.products_error}</p>
+                            </>
+                        )}
+                        loadingSkeleton={(
+                            <div className="responsive-shop-grid mt-6">
+                                {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="aspect-square rounded-lg" />)}
+                            </div>
+                        )}
+                        emptyContent={(
+                            <div className="empty-state py-20">
+                                <PackageX className="mx-auto h-16 w-16 text-muted-foreground/20" />
+                                <p className="mt-4 font-bold text-muted-foreground">{nav.products_empty}</p>
+                            </div>
+                        )}
+                    >
                         <div className="responsive-shop-grid mt-6">
                             {rows.map((product) => {
                                 const context = product.vendor?.store_name || subLabel(product.subcategory ?? {}, locale) || categoryTypeLabel(product.category?.type, home);
                                 return <ProductCard key={product.id} product={product} context={context} />;
                             })}
                         </div>
-                    )}
+                    </DataState>
 
                     <PublicPagination meta={meta} onPageChange={(p) => { update({ page: p }); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
                 </div>

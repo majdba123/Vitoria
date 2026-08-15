@@ -65,7 +65,7 @@ export function NotificationsMenu() {
             <button type="button" onClick={() => setOpen((v) => !v)} className="nav-action-btn relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-transparent text-muted-foreground" aria-label={nav.notifications_aria} title={nav.notifications_aria}>
                 <Bell className="h-5 w-5" />
                 {unread > 0 && (
-                    <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[var(--color-warning-500)] px-1 text-[10px] font-bold leading-none text-white shadow">
+                    <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[var(--color-warning-500)] px-1 text-[10px] font-bold leading-none text-white shadow rtl:-left-0.5 rtl:right-auto">
                         {unread > 99 ? '99+' : unread}
                     </span>
                 )}

@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useI18n } from '@/hooks/use-i18n';
 
 const CartContext = createContext(null);
@@ -20,6 +20,7 @@ export function CartProvider({ children }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isBusy, setIsBusy] = useState(false);
     const [message, setMessage] = useState(null);
+    const triggerRef = useRef(null);
 
     const applyPayload = useCallback((payload) => {
         if (!payload) return;
@@ -85,6 +86,7 @@ export function CartProvider({ children }) {
     }, [mutate]);
 
     const openCart = useCallback(() => {
+        triggerRef.current = document.activeElement;
         setMessage(null);
         setIsOpen(true);
         sync();
@@ -93,6 +95,10 @@ export function CartProvider({ children }) {
     const closeCart = useCallback(() => {
         setMessage(null);
         setIsOpen(false);
+        if (triggerRef.current && typeof triggerRef.current.focus === 'function') {
+            triggerRef.current.focus();
+        }
+        triggerRef.current = null;
     }, []);
 
     const value = {

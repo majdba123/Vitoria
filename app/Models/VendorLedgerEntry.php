@@ -35,6 +35,7 @@ class VendorLedgerEntry extends Model
     protected $fillable = [
         'vendor_id',
         'order_id',
+        'idempotency_key',
         'type',
         'direction',
         'amount',

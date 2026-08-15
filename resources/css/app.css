@@ -102,7 +102,10 @@
     /* Text */
     --color-text: var(--color-ink-900);
     --color-text-secondary: var(--color-ink-500);
-    --color-text-muted: var(--color-ink-400);
+    /* ink-400 (#8d9ba0) measured ~2.87:1 against --color-surface (white) -
+       fails WCAG AA (4.5:1) for normal text. This darkened value keeps the
+       same hue but reaches ~4.88:1. */
+    --color-text-muted: #65737d;
     --color-text-inverse: #ffffff;
 
     /* Brand roles */
@@ -2066,6 +2069,24 @@
         @apply mt-0.5 text-base font-bold;
         font-variant-numeric: tabular-nums;
         color: var(--color-text);
+    }
+
+    /* Arabic is a cursive, joining script: added/removed letter-spacing and
+       forced uppercase (a Latin-only convention) both break how its letters
+       connect. Every label/badge/table-header class that applies
+       `tracking-*`/`uppercase` for Latin display purposes needs this reset
+       under RTL - this is the same fix already applied to the hero
+       (.storefront-hero-eyebrow/.storefront-hero-title), generalized to
+       every other place the same pattern occurs. */
+    html[dir='rtl'] .eyebrow,
+    html[dir='rtl'] .badge,
+    html[dir='rtl'] .admin-table th,
+    html[dir='rtl'] .dashboard-body th,
+    html[dir='rtl'] .product-card-badge,
+    html[dir='rtl'] .product-card-context,
+    html[dir='rtl'] .metrics-row-label {
+        letter-spacing: normal;
+        text-transform: none;
     }
 
     /* Migration aid, not a permanent fixture: this block mutes leftover

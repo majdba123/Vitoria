@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Minus, Plus, X, ShoppingBag } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { useCart } from '@/hooks/use-cart';
 import { useI18n } from '@/hooks/use-i18n';
+import { useFocusTrap } from '@/hooks/use-focus-trap';
 
 function formatMoney(amount, currency, locale) {
     const value = Number(amount) || 0;
@@ -17,6 +18,9 @@ export function CartModal() {
         updateQty, removeFromCart, applyCoupon, isBusy,
     } = useCart();
     const [couponCode, setCouponCode] = useState('');
+    const panelRef = useRef(null);
+
+    useFocusTrap(panelRef, isOpen, closeCart);
 
     if (!isOpen) return null;
 
@@ -35,7 +39,7 @@ export function CartModal() {
     return (
         <div className="fixed inset-0 z-[100] flex items-stretch justify-end bg-black/45 backdrop-blur-sm" role="dialog" aria-modal="true">
             <div className="absolute inset-0" onClick={closeCart} />
-            <div className="relative flex h-full w-full max-w-md flex-col bg-card shadow-2xl">
+            <div ref={panelRef} className="relative flex h-full w-full max-w-md flex-col bg-card shadow-2xl">
                 <div className="flex items-center justify-between border-b border-border px-5 py-4">
                     <div>
                         <h2 className="text-lg font-bold text-foreground">{cart.shopping_cart}</h2>

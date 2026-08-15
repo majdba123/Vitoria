@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\StoreCategoryRequest;
 use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Models\Category;
 use App\Services\ApplicationCacheService;
+use App\Services\ImageOptimizationService;
 use App\Services\Import\CsvImportException;
 use App\Services\Import\Importers\CategoryImporter;
 use App\Services\SelectedProductTypeService;
@@ -21,6 +22,7 @@ class CategoryController extends Controller
     public function __construct(
         protected ApplicationCacheService $cacheService,
         protected SelectedProductTypeService $selectedProductTypeService,
+        protected ImageOptimizationService $imageOptimizationService,
     ) {}
 
     /**
@@ -120,7 +122,7 @@ class CategoryController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('logo')) {
-            $data['logo'] = $request->file('logo')->store('categories', 'public');
+            $data['logo'] = $this->imageOptimizationService->storeOptimized($request->file('logo'), 'categories');
             $data['icon'] = $data['logo'];
         }
 
@@ -130,7 +132,11 @@ class CategoryController extends Controller
 
         return response()->json([
             'message' => __('Category created successfully.'),
-            'data' => $category,
+            // Routed through serializeCategory() (currently a no-op here, since
+            // store/update only sit behind routes/api_admin.php) so this stays
+            // correct by construction if it's ever reused on a public route -
+            // matching index()/show(), rather than trusting the caller.
+            'data' => $this->serializeCategory($category, isAdminRequest: true),
         ], 201);
     }
 
@@ -139,7 +145,7 @@ class CategoryController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('logo')) {
-            $newImagePath = $request->file('logo')->store('categories', 'public');
+            $newImagePath = $this->imageOptimizationService->storeOptimized($request->file('logo'), 'categories');
             $this->deleteCategoryImages($category);
             $data['logo'] = $newImagePath;
             $data['icon'] = $data['logo'];
@@ -160,7 +166,7 @@ class CategoryController extends Controller
 
         return response()->json([
             'message' => __('Category updated successfully.'),
-            'data' => $category,
+            'data' => $this->serializeCategory($category, isAdminRequest: true),
         ]);
     }
 

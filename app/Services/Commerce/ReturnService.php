@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\NotificationService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Return requests and their review lifecycle (spec §12).
@@ -57,12 +58,28 @@ class ReturnService
 
     /**
      * Request a return for part or all of a delivered order.
-     *
+     */
+    public function request(Order $order, User $user, array $items, string $reason, ?string $notes = null): OrderReturn
+    {
+        try {
+            return $this->attemptRequest($order, $user, $items, $reason, $notes);
+        } catch (CartException $exception) {
+            Log::warning('Return request rejected.', [
+                'order_id' => $order->id,
+                'user_id' => $user->id,
+                'reason' => $exception->getMessage(),
+            ]);
+
+            throw $exception;
+        }
+    }
+
+    /**
      * @param  list<array{order_item_id: int, quantity: int}>  $items
      *
      * @throws CartException on any customer-actionable rejection
      */
-    public function request(Order $order, User $user, array $items, string $reason, ?string $notes = null): OrderReturn
+    private function attemptRequest(Order $order, User $user, array $items, string $reason, ?string $notes = null): OrderReturn
     {
         if ($order->user_id !== $user->id) {
             // Defence in depth; the controller authorizes via policy first.
@@ -163,11 +180,34 @@ class ReturnService
 
     /**
      * Move a return to a new status.
-     *
+     */
+    public function transition(
+        OrderReturn $return,
+        string $to,
+        User $actor,
+        string $actorType,
+        ?string $notes = null,
+    ): OrderReturn {
+        try {
+            return $this->attemptTransition($return, $to, $actor, $actorType, $notes);
+        } catch (CartException $exception) {
+            Log::warning('Return status transition rejected.', [
+                'return_id' => $return->id,
+                'to' => $to,
+                'actor_id' => $actor->id,
+                'actor_type' => $actorType,
+                'reason' => $exception->getMessage(),
+            ]);
+
+            throw $exception;
+        }
+    }
+
+    /**
      * @throws CartException when the actor may not make this change, or the
      *                       state machine forbids it
      */
-    public function transition(
+    private function attemptTransition(
         OrderReturn $return,
         string $to,
         User $actor,

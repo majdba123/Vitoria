@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { LayoutGrid, ChevronDown, ChevronRight, Layers, ArrowRight } from 'lucide-react';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { useFocusTrap } from '@/hooks/use-focus-trap';
 
 function categoryImageUrl(category) {
     if (category.image_url) return category.image_url;
@@ -19,6 +20,9 @@ export function CategoryMegaMenu({ categories }) {
     const [open, setOpen] = useState(false);
     const [activeId, setActiveId] = useState(null);
     const ref = useRef(null);
+    const triggerRef = useRef(null);
+    const panelRef = useRef(null);
+    const wasOpen = useRef(false);
     const locale = useLocale();
 
     useEffect(() => {
@@ -32,19 +36,37 @@ export function CategoryMegaMenu({ categories }) {
         return () => document.removeEventListener('click', onClick);
     }, [open]);
 
+    useFocusTrap(panelRef, open, () => setOpen(false));
+
+    useEffect(() => {
+        if (open) {
+            wasOpen.current = true;
+        } else if (wasOpen.current) {
+            wasOpen.current = false;
+            triggerRef.current?.focus();
+        }
+    }, [open]);
+
     const active = categories.find((c) => c.id === activeId);
     const subs = active?.subcategories ?? [];
 
     return (
         <div className="relative shrink-0" ref={ref}>
-            <button type="button" onClick={() => setOpen((v) => !v)} className="nav-primary-link font-semibold">
+            <button
+                type="button"
+                ref={triggerRef}
+                onClick={() => setOpen((v) => !v)}
+                className="nav-primary-link font-semibold"
+                aria-haspopup="true"
+                aria-expanded={open}
+            >
                 <LayoutGrid className="h-4 w-4" />
                 {nav.categories}
                 <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
             </button>
 
             {open && (
-                <div className="dropdown-panel absolute top-full z-50 mt-2 w-[780px] ltr:left-0 rtl:right-0">
+                <div ref={panelRef} className="dropdown-panel absolute top-full z-50 mt-2 w-[780px] ltr:left-0 rtl:right-0">
                     <div className="flex" style={{ minHeight: 340 }}>
                         <div className="w-64 shrink-0 overflow-y-auto border-e border-border/80 bg-muted/40 py-2">
                             {categories.length === 0 && <p className="px-5 py-8 text-center text-xs text-muted-foreground">{nav.loading_categories}</p>}

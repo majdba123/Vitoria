@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { Sprout, Stethoscope, ArrowRight, Layers, CheckCircle2, AlertTriangle } from 'lucide-react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { ProductCard } from '@/Components/public/ProductCard';
+import { DataState } from '@/Components/public/DataState';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { useReducedMotion } from '@/hooks/use-reduced-motion';
@@ -111,24 +112,27 @@ function BannerStrip() {
     );
 }
 
-function ProductGrid({ status, rows, emptyMessage, rank = false }) {
+function ProductGrid({ status, rows, emptyMessage, rank = false, onRetry }) {
     const { home } = useI18n();
-    if (status === 'loading') {
-        return (
-            <div className="responsive-shop-grid">
-                {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-[25rem]" />)}
-            </div>
-        );
-    }
-    if (status === 'ready' && rows.length === 0) {
-        return <p className="py-12 text-center text-sm text-muted-foreground">{emptyMessage ?? home.no_products_yet}</p>;
-    }
     return (
-        <div className="responsive-shop-grid">
-            {rows.map((product, index) => (
-                <ProductCard key={product.id} product={product} rank={rank ? index + 1 : null} />
-            ))}
-        </div>
+        <DataState
+            status={status}
+            onRetry={onRetry}
+            isEmpty={rows.length === 0}
+            errorMessage={<p className="py-12 text-center text-sm text-muted-foreground">{home.products_error ?? home.no_products_yet}</p>}
+            loadingSkeleton={(
+                <div className="responsive-shop-grid">
+                    {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-[25rem]" />)}
+                </div>
+            )}
+            emptyContent={<p className="py-12 text-center text-sm text-muted-foreground">{emptyMessage ?? home.no_products_yet}</p>}
+        >
+            <div className="responsive-shop-grid">
+                {rows.map((product, index) => (
+                    <ProductCard key={product.id} product={product} rank={rank ? index + 1 : null} />
+                ))}
+            </div>
+        </DataState>
     );
 }
 
@@ -254,7 +258,7 @@ export default function Home({ selectedType }) {
         window.history.replaceState({}, '', url.pathname + url.search);
     }, [selectedType, categoryId, subcategoryId]);
 
-    useEffect(() => {
+    const loadProducts = () => {
         if (!categoryId) return;
         const params2 = { category_id: categoryId, subcategory_id: subcategoryId || undefined, category_type: selectedType, per_page: 24 };
         setLatest({ status: 'loading', rows: [] });
@@ -265,7 +269,9 @@ export default function Home({ selectedType }) {
 
         setMostFavorited({ status: 'loading', rows: [] });
         window.axios.get('/api/products', { params: { ...params2, per_page: 5, sort: 'most_favorited' }, silent: true }).then((res) => setMostFavorited({ status: 'ready', rows: res.data?.data ?? [] })).catch(() => setMostFavorited({ status: 'error', rows: [] }));
-    }, [categoryId, subcategoryId, selectedType]);
+    };
+
+    useEffect(loadProducts, [categoryId, subcategoryId, selectedType]);
 
     const selectCategory = (id, subId = null) => {
         setCategoryId(id ? String(id) : null);
@@ -417,7 +423,7 @@ export default function Home({ selectedType }) {
                                                 <button type="button" onClick={() => selectCategory(category.id)} className="flex flex-1 flex-col text-start focus:outline-none">
                                                     <div className="shop-card-media" style={{ aspectRatio: '16/9' }}>
                                                         {categoryImageUrl(category) ? (
-                                                            <img src={categoryImageUrl(category)} alt="" className="shop-card-media-img" loading="lazy" />
+                                                            <img src={categoryImageUrl(category)} alt={category.name} className="shop-card-media-img" loading="lazy" />
                                                         ) : (
                                                             <div className="shop-card-media-fallback"><Layers className="h-8 w-8 text-primary/60" /></div>
                                                         )}
@@ -460,7 +466,7 @@ export default function Home({ selectedType }) {
                                         <div className="flex min-w-0 items-center gap-4">
                                             {activeCategory && categoryImageUrl(activeCategory) && (
                                                 <div className="shop-thumb-box hidden h-14 w-14 shrink-0 sm:flex">
-                                                    <img src={categoryImageUrl(activeCategory)} alt="" />
+                                                    <img src={categoryImageUrl(activeCategory)} alt={activeCategory.name} />
                                                 </div>
                                             )}
                                             <div className="min-w-0">
@@ -522,7 +528,7 @@ export default function Home({ selectedType }) {
                                             <ArrowRight className="h-4 w-4 rtl:-scale-x-100" />
                                         </Link>
                                     </div>
-                                    <ProductGrid status={latest.status} rows={latest.rows} emptyMessage={subcategoryId ? home.no_products_in_subcategory : home.no_products_in_category} />
+                                    <ProductGrid status={latest.status} rows={latest.rows} emptyMessage={subcategoryId ? home.no_products_in_subcategory : home.no_products_in_category} onRetry={loadProducts} />
                                     <div className="mt-8 text-center sm:hidden">
                                         <Link href={productsHref(null)} className="btn-secondary btn-sm">
                                             {home.view_all_products_arrow}
@@ -545,7 +551,7 @@ export default function Home({ selectedType }) {
                                             <ArrowRight className="h-4 w-4 rtl:-scale-x-100" />
                                         </Link>
                                     </div>
-                                    <ProductGrid status={bestSelling.status} rows={bestSelling.rows} rank />
+                                    <ProductGrid status={bestSelling.status} rows={bestSelling.rows} rank onRetry={loadProducts} />
                                 </div>
                             </section>
 
@@ -562,7 +568,7 @@ export default function Home({ selectedType }) {
                                             <ArrowRight className="h-4 w-4 rtl:-scale-x-100" />
                                         </Link>
                                     </div>
-                                    <ProductGrid status={mostFavorited.status} rows={mostFavorited.rows} />
+                                    <ProductGrid status={mostFavorited.status} rows={mostFavorited.rows} onRetry={loadProducts} />
                                 </div>
                             </section>
                         </div>

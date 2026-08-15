@@ -26,6 +26,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -111,7 +112,11 @@ class ProductController extends Controller
         $product->loadMissing('category');
         $this->selectedProductTypeService->abortIfTypeMismatch($request, $product->category?->type);
 
-        $cacheKey = "pub_product:{$product->id}";
+        // Keyed by locale: ProductResource renders a localized name/description
+        // from the currently-active locale, so a locale-blind key would let the
+        // first viewer's language get served to every other locale for the rest
+        // of the cache lifetime.
+        $cacheKey = "pub_product:{$product->id}:".app()->getLocale();
         try {
             $productData = Cache::tags(['products'])->remember($cacheKey, 1800, function () use ($product) {
                 $product->load(['photos', 'category', 'subcategory', 'sharedDetail']);
@@ -120,6 +125,10 @@ class ProductController extends Controller
                 return new ProductResource($product);
             });
         } catch (\Exception $e) {
+            Log::warning('Product cache read/write failed; served uncached.', [
+                'product_id' => $product->id,
+                'exception' => $e->getMessage(),
+            ]);
             $product->load(['photos', 'category', 'subcategory', 'sharedDetail']);
             $product->loadCount('reviews')->loadAvg('reviews', 'rating');
             $productData = new ProductResource($product);
@@ -197,10 +206,10 @@ class ProductController extends Controller
             if (! $user->hasVendorPermission($vendor, 'products.manage')) {
                 abort(403, __('You are not allowed to manage this vendor\'s products.'));
             }
-            $validated = $request->validate((new VendorStoreProductRequest)->rules());
+            $validated = app(VendorStoreProductRequest::class)->validated();
             $targetVendor = $vendor;
         } else {
-            $validated = $request->validate((new AdminStoreProductRequest)->rules());
+            $validated = app(AdminStoreProductRequest::class)->validated();
             $targetVendor = Vendor::query()->find((int) $validated['vendor_id']);
             if (! $targetVendor) {
                 throw ValidationException::withMessages([
@@ -272,12 +281,12 @@ class ProductController extends Controller
             if (! $user->hasVendorPermission($vendor, 'products.manage')) {
                 abort(403, __('You are not allowed to manage this vendor\'s products.'));
             }
-            $validated = $request->validate((new VendorUpdateProductRequest)->rules());
+            $validated = app(VendorUpdateProductRequest::class)->validated();
             $targetVendor = $vendor;
         } elseif ($user && $user->type === User::TYPE_EMPLOYEE) {
-            $validated = $request->validate((new EmployeeUpdateProductRequest)->rules());
+            $validated = app(EmployeeUpdateProductRequest::class)->validated();
         } else {
-            $validated = $request->validate((new AdminUpdateProductRequest)->rules());
+            $validated = app(AdminUpdateProductRequest::class)->validated();
         }
 
         if (array_key_exists('category_id', $validated)) {

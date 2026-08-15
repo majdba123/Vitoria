@@ -13,6 +13,7 @@ use App\Services\NotificationService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Order creation from the authoritative server cart (spec §7).
@@ -47,6 +48,31 @@ class CheckoutService
      * @throws CartException on any customer-actionable rejection
      */
     public function place(Cart $cart, User $user, ?UserAddress $address, string $paymentMethod, ?string $shippingMethod = null): Collection
+    {
+        try {
+            return $this->attemptPlace($cart, $user, $address, $paymentMethod, $shippingMethod);
+        } catch (CartException $exception) {
+            // A CartException is customer-actionable (bad address, coupon,
+            // stock taken, ...) rather than a bug, but a business-rule
+            // rejection here still leaves real money on the table with no
+            // trace otherwise - the only prior record of a failed checkout
+            // was an uncaught exception reaching the generic 500 handler.
+            Log::warning('Checkout rejected.', [
+                'cart_id' => $cart->id,
+                'user_id' => $user->id,
+                'payment_method' => $paymentMethod,
+                'shipping_method' => $shippingMethod,
+                'reason' => $exception->getMessage(),
+            ]);
+
+            throw $exception;
+        }
+    }
+
+    /**
+     * @throws CartException on any customer-actionable rejection
+     */
+    private function attemptPlace(Cart $cart, User $user, ?UserAddress $address, string $paymentMethod, ?string $shippingMethod = null): Collection
     {
         if (! in_array($paymentMethod, $this->availablePaymentMethods(), true)) {
             throw new CartException(__('cart.payment_method_unavailable'));
