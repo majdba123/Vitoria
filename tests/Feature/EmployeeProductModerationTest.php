@@ -48,16 +48,18 @@ test('an employee without the products.moderate permission cannot approve a prod
     // No role assigned at all — an employee freshly created after the RBAC
     // system exists starts with zero permissions, not the old blanket access.
     Sanctum::actingAs($employee);
-    $product = Product::factory()->create(['status' => Product::STATUS_PENDING]);
+    $product = Product::factory()->create(['status' => Product::STATUS_PENDING, 'description' => 'Original description.']);
 
     $this->putJson("/api/employee/products/{$product->id}", [
         'status' => 'approved',
         'description' => 'Attempted approval without the moderate permission.',
-    ])->assertOk();
+    ])->assertForbidden();
 
-    // The status field is silently stripped, same as a vendor's own update —
-    // only the description change goes through.
-    expect($product->refresh()->status)->toBe(Product::STATUS_PENDING);
+    // The whole request is rejected, not silently partially applied — neither
+    // the status nor the accompanying field change goes through.
+    $product->refresh();
+    expect($product->status)->toBe(Product::STATUS_PENDING)
+        ->and($product->description)->toBe('Original description.');
 });
 
 test('an employee with only the order_reviewer role cannot moderate products but can view orders', function () {
@@ -67,7 +69,7 @@ test('an employee with only the order_reviewer role cannot moderate products but
     Sanctum::actingAs($employee);
 
     $product = Product::factory()->create(['status' => Product::STATUS_PENDING]);
-    $this->putJson("/api/employee/products/{$product->id}", ['status' => 'approved'])->assertOk();
+    $this->putJson("/api/employee/products/{$product->id}", ['status' => 'approved'])->assertForbidden();
     expect($product->refresh()->status)->toBe(Product::STATUS_PENDING);
 
     $vendor = Vendor::factory()->create(['store_name' => 'Order Reviewer Test Vendor']);
@@ -96,11 +98,11 @@ test('a vendor cannot approve their own product by sending a status field', func
 
     $this->putJson("/api/vendor/products/{$product->id}", [
         'status' => Product::STATUS_APPROVED,
-    ])->assertOk();
+    ])->assertForbidden();
 
-    // The status field is silently stripped from a vendor's own update — a
-    // vendor never qualifies for ProductPolicy::manageStatus() (product approval
-    // workflow, stakeholder review), regardless of any vendor-staff permission.
+    // The whole request is hard-rejected — a vendor never qualifies for
+    // ProductPolicy::manageStatus() (product approval workflow), regardless
+    // of any vendor-staff permission, and the attempt does not silently no-op.
     expect($product->refresh()->status)->toBe(Product::STATUS_PENDING);
 });
 

@@ -302,11 +302,18 @@ class ProductController extends Controller
             $validated['discount_ends_at'] ?? optional($product->discount_ends_at)->toDateTimeString(),
         );
 
-        // A vendor can never approve/reject their own product, even if they somehow
-        // pass `status` through this endpoint — that decision belongs to admin/employee
-        // review only (ProductPolicy::manageStatus, stakeholder review #26).
-        if (isset($validated['status']) && (! $user || ! app(\App\Policies\ProductPolicy::class)->manageStatus($user, $product))) {
-            unset($validated['status']);
+        // A vendor can never approve/reject their own product, and an employee
+        // whose role doesn't grant products.moderate can never approve/reject
+        // anyone's — that decision belongs to an authorized reviewer only
+        // (ProductPolicy::manageStatus). This is a hard 403, not a silent
+        // strip: an actor attempting to set `status` without the permission
+        // is a privilege-escalation attempt and must fail loudly, not appear
+        // to succeed while quietly doing nothing. Checked against the raw
+        // request, not just $validated — VendorUpdateProductRequest doesn't
+        // even declare `status` as a rule, so a vendor's attempt would
+        // otherwise be dropped silently by validation before this ever ran.
+        if ($request->has('status') && (! $user || ! app(\App\Policies\ProductPolicy::class)->manageStatus($user, $product))) {
+            abort(403, __('You are not authorized to change this product\'s approval status.'));
         }
 
         if (array_key_exists('status', $validated)) {

@@ -26,7 +26,7 @@ class EnsureUserIsSyndicate
                 return response()->json(['message' => $message], 403);
             }
 
-            return response()->view('errors.403-vendor', ['message' => $message], 403);
+            return redirect()->route('login')->with('error', $message);
         }
 
         $syndicate = $user->syndicate;
@@ -38,7 +38,7 @@ class EnsureUserIsSyndicate
                 return response()->json(['message' => $message], 403);
             }
 
-            return response()->view('errors.403-vendor', ['message' => $message], 403);
+            return redirect()->route('login')->with('error', $message);
         }
 
         return $next($request);

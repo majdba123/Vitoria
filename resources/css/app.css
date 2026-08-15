@@ -1713,7 +1713,11 @@
 
     .home-type-number {
         @apply absolute end-5 top-4 text-3xl font-bold tabular-nums;
-        color: color-mix(in srgb, var(--color-text-muted) 34%, transparent);
+        /* Raised from 34% to meet the WCAG 3:1 non-text contrast minimum
+           (axe-core flagged 1.56:1 against a white card background) — 80%
+           measures ~3.3:1 against white, with margin, while still reading as
+           a muted decorative index rather than full-strength body text. */
+        color: color-mix(in srgb, var(--color-text-muted) 80%, transparent);
     }
 
     .home-type-action {

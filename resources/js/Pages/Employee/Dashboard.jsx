@@ -105,7 +105,11 @@ export default function EmployeeDashboard() {
                     <Link key={item.label} href={item.href} className={`flex items-center justify-between gap-4 rounded-md border border-border border-s-2 ${item.tone} bg-card px-4 py-4 transition-colors hover:bg-accent/40`}>
                         <div>
                             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-muted-foreground">{employee.status_summary}</p>
-                            <h3 className="mt-2 text-base font-bold text-foreground">{item.label}</h3>
+                            {/* Not a document heading — this is a visual tile label inside a
+                                grid of link-cards, same as CardTitle elsewhere on this page
+                                (which renders a <div>, not an <h*>). Was a stray <h3> with no
+                                preceding <h2>, which axe-core flagged as an invalid heading jump. */}
+                            <p className="mt-2 text-base font-bold text-foreground">{item.label}</p>
                         </div>
                         <span className="rounded-full bg-accent px-2.5 py-1 text-[11px] font-bold text-accent-foreground">{employee.open_tab}</span>
                     </Link>

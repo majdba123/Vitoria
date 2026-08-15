@@ -26,7 +26,7 @@ class EnsureUserIsVendor
                 return response()->json(['message' => $message], 403);
             }
 
-            return response()->view('errors.403-vendor', ['message' => $message], 403);
+            return redirect()->route('login')->with('error', $message);
         }
 
         // Check vendor profile exists and is active. managedVendor() covers
@@ -42,7 +42,7 @@ class EnsureUserIsVendor
                 return response()->json(['message' => $message], 403);
             }
 
-            return response()->view('errors.403-vendor', ['message' => $message], 403);
+            return redirect()->route('login')->with('error', $message);
         }
 
         return $next($request);

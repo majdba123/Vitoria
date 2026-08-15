@@ -27,7 +27,7 @@ export function AdminSidebar(props) {
     const side = pageProps.direction === 'rtl' ? 'right' : 'left';
 
     return (
-        <Sidebar side={side} collapsible="offcanvas" {...props}>
+        <Sidebar side={side} collapsible="offcanvas" role="navigation" aria-label="Admin navigation" {...props}>
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>

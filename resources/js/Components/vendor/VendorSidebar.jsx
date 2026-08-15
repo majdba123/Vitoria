@@ -37,7 +37,7 @@ function CategoryDisclosure({ category, groupLabel }) {
                 </span>
                 <ChevronDown className={`size-4 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
             </button>
-            <p className="mb-2 px-3 text-[11px] font-semibold text-sidebar-foreground/40">{groupLabel}</p>
+            <p className="mb-2 px-3 text-[11px] font-semibold text-sidebar-foreground/70">{groupLabel}</p>
             {open && subcategories.length > 0 && (
                 <div className="ms-4 space-y-1 border-s border-sidebar-border ps-3 pb-2">
                     {subcategories.map((sub) => (
@@ -64,7 +64,7 @@ export function VendorSidebar(props) {
     }, []);
 
     return (
-        <Sidebar side={side} collapsible="offcanvas" {...props}>
+        <Sidebar side={side} collapsible="offcanvas" role="navigation" aria-label="Vendor navigation" {...props}>
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
@@ -108,7 +108,9 @@ export function VendorSidebar(props) {
                     <SidebarGroupLabel>{vendor.categories}</SidebarGroupLabel>
                     <SidebarGroupContent className="space-y-1 px-1">
                         {categories === null && <div className="h-10 animate-pulse rounded-md bg-sidebar-accent" />}
-                        {categories?.length === 0 && <p className="rounded-md bg-sidebar-accent/50 px-3 py-3 text-xs italic text-sidebar-foreground/50">{vendor.assigned_categories_empty}</p>}
+                        {/* text-sidebar-foreground/50 measured 3.6:1 against this background
+                            (axe-core, needs 4.5:1 for normal-size text) — /80 clears it. */}
+                        {categories?.length === 0 && <p className="rounded-md bg-sidebar-accent/50 px-3 py-3 text-xs italic text-sidebar-foreground/80">{vendor.assigned_categories_empty}</p>}
                         {categories?.map((category) => (
                             <CategoryDisclosure key={category.id} category={category} groupLabel={category.type === 'veterinary' ? vendor.group_veterinary : vendor.group_agriculture} />
                         ))}

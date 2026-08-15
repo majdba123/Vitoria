@@ -97,6 +97,10 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                 }
             />
 
+            {/* Visually hidden — gives this section a real heading level so InsightPanel's
+                and ReportCard's h3 titles below don't jump straight from the page's h1,
+                which axe-core flags as an invalid heading order. */}
+            <h2 className="sr-only">{syndicate.dashboard}</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <StatCard label={syndicate.vendors} value={overview.total_merchants ?? 0} icon={Store} status={overviewStatus} onRetry={loadOverview} />
                 <StatCard label={syndicate.products} value={overview.total_products ?? 0} icon={Package} status={overviewStatus} onRetry={loadOverview} />

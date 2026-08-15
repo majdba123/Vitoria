@@ -478,7 +478,12 @@ class ProductService
         Cache::forget(\App\Services\ApplicationCacheService::ADMIN_DASHBOARD_LEGACY);
 
         try {
-            Cache::tags(['products'])->flush();
+            // 'categories' too: a category's cached payload now includes a
+            // live products_count (Product::scopeVisible), so a product
+            // being created/approved/deactivated must invalidate it as well
+            // — otherwise the category page's header count and its actual
+            // product list can disagree for up to the cache TTL.
+            Cache::tags(['products', 'categories'])->flush();
         } catch (\Exception $e) {
             // Silently fail if cache driver doesn't support tags
         }

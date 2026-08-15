@@ -78,7 +78,11 @@ export function SelectField({ id, label, required, error, hint, value, onValueCh
     return (
         <FieldShell id={id} label={label} required={required} error={error} hint={hint} descriptionId={descriptionId}>
             <Select value={value} onValueChange={onValueChange}>
-                <SelectTrigger id={id} aria-describedby={descriptionId} className={cn('w-full', error && 'border-[var(--color-danger-500)]')}>
+                {/* Radix's combobox-role trigger button doesn't reliably pick up
+                    the <label for> association the way native form controls do
+                    (axe-core flagged it as a critical "no discernible name"
+                    violation), so the accessible name is given explicitly. */}
+                <SelectTrigger id={id} aria-label={label} aria-describedby={descriptionId} className={cn('w-full', error && 'border-[var(--color-danger-500)]')}>
                     <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
                 <SelectContent>

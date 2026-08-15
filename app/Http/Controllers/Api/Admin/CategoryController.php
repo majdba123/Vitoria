@@ -86,12 +86,15 @@ class CategoryController extends Controller
 
         $cacheKey = "category:{$category->id}";
 
+        // `products_count` here counts only publicly-visible products (Product::scopeVisible:
+        // active, approved, in stock, vendor active) — the same set the product list below
+        // this page actually renders, so the header count and the listing never disagree.
         try {
             $data = $this->cacheService->remember($cacheKey, 1800, function () use ($category) {
-                return $category->load('subcategories');
+                return $category->loadCount(['products as products_count' => fn ($query) => $query->visible()])->load('subcategories');
             }, ['categories']);
         } catch (\Exception $e) {
-            $data = $category->load('subcategories');
+            $data = $category->loadCount(['products as products_count' => fn ($query) => $query->visible()])->load('subcategories');
         }
 
         return response()->json([

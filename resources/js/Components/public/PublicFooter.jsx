@@ -73,7 +73,7 @@ export function PublicFooter() {
                         </div>
 
                         <div>
-                            <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground">{footer.shop}</h3>
+                            <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground">{footer.shop}</h2>
                             <ul className="mt-4 space-y-3 text-sm">
                                 <li><Link href={route('categories.index')} className="text-muted-foreground transition-colors hover:text-primary">{nav.categories}</Link></li>
                                 <li><Link href={route('products.index')} className="text-muted-foreground transition-colors hover:text-primary">{footer.all_products}</Link></li>
@@ -82,7 +82,7 @@ export function PublicFooter() {
                         </div>
 
                         <div>
-                            <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground">{footer.account}</h3>
+                            <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground">{footer.account}</h2>
                             <ul className="mt-4 space-y-3 text-sm">
                                 <li><Link href={route('login')} className="text-muted-foreground transition-colors hover:text-primary">{nav.sign_in}</Link></li>
                                 <li><Link href={route('register')} className="text-muted-foreground transition-colors hover:text-primary">{footer.create_account}</Link></li>
@@ -90,7 +90,7 @@ export function PublicFooter() {
                         </div>
 
                         <div>
-                            <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground">{footer.contact}</h3>
+                            <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground">{footer.contact}</h2>
                             <ul className="mt-4 space-y-3 text-sm">
                                 <li><a href={`${route('home')}#contact`} className="text-muted-foreground transition-colors hover:text-primary">{footer.contact_us}</a></li>
                                 {settings.contact_email && (
