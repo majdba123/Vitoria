@@ -57,47 +57,13 @@
     }
 
     async function logout(loginUrl) {
-        try {
-            // Always call the real logout endpoint, not just when a bearer
-            // token is present in localStorage. The four operator
-            // workspaces (admin/vendor/employee/syndicate) authenticate via
-            // Sanctum's session-cookie guard, not a bearer token, so `token`
-            // here is normally null for them — the old token-gated call
-            // meant this endpoint was never actually reached for those
-            // users, leaving their server-side session alive after
-            // "logout" (the client redirected to /login?logout=1, but
-            // auth()->check() was still true server-side). AuthController
-            // @logout revokes any Sanctum token AND destroys the web
-            // session; axios already sends the session cookie + CSRF token
-            // (withCredentials/withXSRFToken in bootstrap.js), and
-            // localhost/the app's own domain is a configured Sanctum
-            // stateful domain, so this authenticates correctly either way.
-            if (window.axios) {
-                try {
-                    await window.axios.post('/api/auth/logout');
-                } catch (error) {
-                    console.log('Logout API call failed (continuing):', error);
-                }
-            }
+        if (window.Auth?.logout) {
+            await window.Auth.logout(loginUrl);
 
-            if (window.Auth?.clearAll) {
-                window.Auth.clearAll();
-            } else {
-                localStorage.removeItem('auth_token');
-                localStorage.removeItem('auth_user');
-                sessionStorage.clear();
-                if (window.axios) {
-                    delete window.axios.defaults.headers.common.Authorization;
-                }
-            }
-
-            deleteCookie('XSRF-TOKEN');
-            deleteCookie('laravel_session');
-        } catch (error) {
-            console.error('Error during logout:', error);
-        } finally {
-            window.location.replace(loginUrl + '?logout=1');
+            return;
         }
+
+        throw new Error('The canonical authentication client is unavailable.');
     }
 
     /**

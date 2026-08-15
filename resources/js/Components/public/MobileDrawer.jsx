@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from '@inertiajs/react';
-import { X, LayoutGrid, Layers, ChevronRight, User, LogOut, HelpCircle } from 'lucide-react';
+import { X, LayoutGrid, Layers, ChevronRight, LogOut, HelpCircle, Search } from 'lucide-react';
 import { useAuthUser, useI18n, useLocale } from '@/hooks/use-i18n';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
+import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
+import { ThemeToggle } from '@/Components/workspace/ThemeToggle';
 
 const DASHBOARD_ROUTE = { 1: 'admin.dashboard', 2: 'vendor.dashboard', 3: 'syndicate.dashboard', 4: 'employee.dashboard' };
 
@@ -26,15 +28,12 @@ export function MobileDrawer({ open, onClose, categories }) {
 
     if (!open) return null;
 
-    const handleLogout = () => {
-        window.axios.post('/api/auth/logout').catch(() => {}).finally(() => {
-            window.Auth?.clearAll?.();
-            window.location.href = route('login');
-        });
+    const handleLogout = async () => {
+        await window.Auth.logout(route('login'));
     };
 
     return (
-        <div className="fixed inset-0 z-[60]" role="dialog" aria-modal="true">
+        <div id="public-mobile-drawer" className="fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-label={nav.menu}>
             <div className="absolute inset-0 bg-black/45" onClick={onClose} />
             <div ref={panelRef} className="absolute top-0 flex h-full w-80 max-w-[88vw] flex-col border-border bg-card ltr:right-0 ltr:border-l rtl:left-0 rtl:border-r">
                 <div className="flex items-center justify-between border-b border-border/80 px-5 py-4">
@@ -65,6 +64,15 @@ export function MobileDrawer({ open, onClose, categories }) {
                 )}
 
                 <div className="flex-1 overflow-y-auto px-5 py-4">
+                    <form action={route('products.index')} method="get" className="mb-4 flex gap-2" role="search">
+                        <label htmlFor="mobile-product-search" className="sr-only">{nav.search_products}</label>
+                        <input id="mobile-product-search" name="search" type="search" className="form-input min-w-0 flex-1" placeholder={nav.search_products} />
+                        <button type="submit" className="nav-action-btn flex size-11 shrink-0 items-center justify-center rounded-lg" aria-label={nav.search_products}><Search className="size-5" /></button>
+                    </form>
+                    <div className="mb-4 flex items-center gap-2 border-b border-border pb-4">
+                        <LanguageSwitcher />
+                        <ThemeToggle label={nav.toggle_theme_aria} />
+                    </div>
                     <div className="space-y-1">
                         <Link href={route('products.index')} onClick={onClose} className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent/50">
                             <LayoutGrid className="size-5 text-muted-foreground" />
@@ -137,7 +145,7 @@ export function MobileDrawer({ open, onClose, categories }) {
                     </div>
                 ) : (
                     <div className="border-t border-border/80 px-5 py-4">
-                        <button type="button" onClick={() => { handleLogout(); onClose(); }} className="flex w-full items-center justify-center gap-2 rounded-md border border-[var(--color-danger-200)] py-2.5 text-sm font-bold text-[var(--color-danger-strong)] transition-colors hover:bg-[var(--color-danger-soft)]">
+                        <button type="button" onClick={handleLogout} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-[var(--color-danger-200)] py-2.5 text-sm font-bold text-[var(--color-danger-strong)] transition-colors hover:bg-[var(--color-danger-soft)]">
                             <LogOut className="size-4" />
                             {nav.sign_out}
                         </button>

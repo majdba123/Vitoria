@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\PersonalAccessToken;
 
 /**
  * Bug report: "logout button doesn't work" on the operator workspaces
@@ -29,4 +30,15 @@ test('POST /api/auth/logout invalidates a session-authenticated user\'s web sess
     $this->postJson('/api/auth/logout')->assertOk();
 
     expect(Auth::guard('web')->check())->toBeFalse();
+});
+
+test('POST /api/auth/logout revokes the presented token and leaves api user unauthenticated', function () {
+    $user = User::factory()->create();
+    $plainTextToken = $user->createToken('logout-regression')->plainTextToken;
+
+    $this->withToken($plainTextToken)->postJson('/api/auth/logout')->assertOk();
+
+    expect(PersonalAccessToken::findToken($plainTextToken))->toBeNull();
+    Auth::forgetGuards();
+    $this->withToken($plainTextToken)->getJson('/api/user')->assertUnauthorized();
 });

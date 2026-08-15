@@ -36,7 +36,11 @@ export function ProductCard({ product, href, context = '', rank = null }) {
                     <img
                         src={photo}
                         alt={product.name}
+                        width="640"
+                        height="640"
                         loading="lazy"
+                        decoding="async"
+                        sizes="(max-width: 359px) calc(100vw - 2rem), (max-width: 767px) calc(50vw - 1.5rem), (max-width: 1199px) 33vw, 20vw"
                         onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/product-placeholder.svg'; }}
                     />
                 </Link>

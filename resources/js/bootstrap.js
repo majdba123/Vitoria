@@ -210,6 +210,23 @@ window.Auth = {
         delete window.axios.defaults.headers.common['Authorization'];
     },
 
+    async logout(loginUrl = '/login') {
+        const token = this.getToken();
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+        try {
+            await window.axios.post('/api/auth/logout', {}, { headers, silent: true });
+        } catch (error) {
+            console.error('Logout failed:', error);
+            window.showApiError(error);
+            throw error;
+        }
+
+        this.clearAll();
+        window.dispatchEvent(new CustomEvent('sz:auth:logged-out'));
+        window.location.replace(loginUrl);
+    },
+
     /**
      * Bearer token rejected by API (expired or revoked). Clears client state and lets the
      * UI fall back to guest browsing — most pages that carry a stale token (e.g. a product

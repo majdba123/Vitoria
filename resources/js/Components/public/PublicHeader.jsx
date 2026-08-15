@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { Search, ShoppingBag, Menu } from 'lucide-react';
 import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
 import { ThemeToggle } from '@/Components/workspace/ThemeToggle';
@@ -13,6 +13,7 @@ import { useAuthUser, useI18n } from '@/hooks/use-i18n';
 export function PublicHeader() {
     const { nav } = useI18n();
     const user = useAuthUser();
+    const { url } = usePage();
     const { itemsCount, openCart } = useCart();
     const [search, setSearch] = useState('');
     const [categories, setCategories] = useState([]);
@@ -39,10 +40,16 @@ export function PublicHeader() {
     return (
         <>
             <header className="site-header">
-                <div className="site-header-main">
+                <nav className="site-header-main" aria-label={nav.primary_navigation ?? nav.menu}>
                     <Link href={route('home')} className="flex shrink-0 items-center">
                         <img src="/images/vetora-logo-transparent.png" alt="Vetora" className="h-9 w-auto object-contain sm:h-10" />
                     </Link>
+
+                    <div className="hidden shrink-0 items-center gap-1 lg:flex">
+                        <CategoryMegaMenu categories={categories} />
+                        <Link href={route('products.index')} aria-current={url.startsWith('/products') ? 'page' : undefined} className="nav-primary-link min-h-11">{nav.products}</Link>
+                        <Link href={route('faq')} aria-current={url.startsWith('/faq') ? 'page' : undefined} className="nav-primary-link min-h-11">{nav.faq}</Link>
+                    </div>
 
                     <form onSubmit={submitSearch} className="site-header-search" role="search">
                         <Search className="pointer-events-none" />
@@ -55,16 +62,18 @@ export function PublicHeader() {
                         />
                     </form>
 
-                    <div className="flex-1 md:hidden" />
+                    <div className="flex-1 lg:hidden" />
 
                     <div className="flex shrink-0 items-center gap-1">
-                        <LanguageSwitcher />
-                        <ThemeToggle label={nav.toggle_theme_aria} />
+                        <div className="hidden items-center gap-1 md:flex">
+                            <LanguageSwitcher />
+                            <ThemeToggle label={nav.toggle_theme_aria} />
+                        </div>
 
                         <button
                             type="button"
                             onClick={openCart}
-                            className="nav-action-btn relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-transparent text-muted-foreground"
+                            className="nav-action-btn relative flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-transparent text-muted-foreground"
                             aria-label={nav.cart}
                             title={nav.cart}
                         >
@@ -76,7 +85,7 @@ export function PublicHeader() {
                             )}
                         </button>
 
-                        {user && <NotificationsMenu />}
+                        {user && <div className="hidden md:block"><NotificationsMenu /></div>}
 
                         {!user && (
                             <div className="hidden items-center gap-2 sm:flex">
@@ -91,21 +100,15 @@ export function PublicHeader() {
                             type="button"
                             ref={mobileTriggerRef}
                             onClick={() => setMobileOpen(true)}
-                            className="nav-action-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-transparent text-muted-foreground md:hidden"
+                            className="nav-action-btn flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-transparent text-muted-foreground lg:hidden"
                             aria-label={nav.menu}
+                            aria-expanded={mobileOpen}
+                            aria-controls="public-mobile-drawer"
                         >
                             <Menu className="h-5 w-5" />
                         </button>
                     </div>
-                </div>
-
-                <div className="site-header-category-bar hidden lg:block">
-                    <div className="site-header-category-inner">
-                        <CategoryMegaMenu categories={categories} />
-                        <Link href={route('products.index')} className="nav-primary-link">{nav.products}</Link>
-                        <Link href={route('faq')} className="nav-primary-link">{nav.faq}</Link>
-                    </div>
-                </div>
+                </nav>
             </header>
 
             <MobileDrawer open={mobileOpen} onClose={closeMobileDrawer} categories={categories} />

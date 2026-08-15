@@ -562,6 +562,13 @@
             line-height: 1.25rem;
         }
     }
+
+    @media (max-width: 359px) {
+        .responsive-shop-grid,
+        .responsive-product-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
 }
 
 @layer utilities {
@@ -1258,8 +1265,7 @@
     }
 
     /* ---- Navigation ---------------------------------------------------------
-       Structural marketplace header: no glass panels, no floating capsule,
-       no decorative shadow. Two flat layers separated by hairline borders. */
+       One structural marketplace header: no floating capsule or second row. */
     .site-header {
         position: sticky;
         top: 0;
@@ -1273,8 +1279,8 @@
     }
 
     .site-header-search {
-        @apply relative hidden flex-1 md:block;
-        max-width: 34rem;
+        @apply relative hidden min-w-40 flex-1 md:block;
+        max-width: 28rem;
     }
 
     .site-header-search input {
@@ -1299,20 +1305,6 @@
         color: var(--color-text-muted);
     }
 
-    .site-header-category-bar {
-        border-top: 1px solid var(--nav-border);
-        background: var(--color-surface-muted);
-    }
-
-    .site-header-category-inner {
-        @apply mx-auto flex max-w-screen-2xl items-center gap-1 overflow-x-auto px-4 py-1.5 sm:px-6 lg:px-8;
-        scrollbar-width: none;
-    }
-
-    .site-header-category-inner::-webkit-scrollbar {
-        display: none;
-    }
-
     .nav-primary-link {
         @apply flex shrink-0 items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium whitespace-nowrap;
         color: var(--color-text-secondary);
@@ -1322,6 +1314,11 @@
     .nav-primary-link:hover {
         color: var(--color-text);
         background: var(--color-surface);
+    }
+
+    .nav-primary-link[aria-current='page'] {
+        color: var(--color-brand-strong);
+        background: var(--color-brand-soft);
     }
 
     .nav-logo-shell,

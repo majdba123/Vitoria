@@ -87,23 +87,13 @@ class AuthController extends Controller
             $this->authService->logout($user);
         }
 
-        // Invalidate web session if it exists
-        try {
-            if (Auth::guard('web')->check()) {
-                Auth::guard('web')->logout();
-            }
-        } catch (\Exception $e) {
-            // Ignore
+        if (Auth::guard('web')->check()) {
+            Auth::guard('web')->logout();
         }
 
-        // Safely invalidate session
-        try {
-            if ($request->hasSession()) {
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-            }
-        } catch (\Exception $e) {
-            // Session might not exist, ignore
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
         }
 
         return response()->json([

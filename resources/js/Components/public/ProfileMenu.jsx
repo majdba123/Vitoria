@@ -28,11 +28,9 @@ export function ProfileMenu() {
     const roleLabel = nav[ROLE_KEY[user.type]] ?? nav.customer;
     const dashboardRoute = DASHBOARD_ROUTE[user.type];
 
-    const handleLogout = () => {
-        window.axios.post('/api/auth/logout').catch(() => {}).finally(() => {
-            window.Auth?.clearAll?.();
-            window.location.href = route('login');
-        });
+    const handleLogout = async () => {
+        setOpen(false);
+        await window.Auth.logout(route('login'));
     };
 
     return (
