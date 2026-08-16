@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-labelledby="title">
+  <title id="title">Veterinary professional with an animal</title>
+  <circle cx="310" cy="150" r="70" fill="#c99572"/>
+  <path d="M175 455c0-150 60-230 135-230s135 80 135 230z" fill="#297497"/>
+  <path d="M270 250h80v115h-80z" fill="#d8eef5"/>
+  <path d="M485 395c0-90 55-150 125-150s125 60 125 150z" fill="#d8e6dc" stroke="#6f9478" stroke-width="14"/>
+  <circle cx="565" cy="245" r="26" fill="#6f9478"/><circle cx="655" cy="245" r="26" fill="#6f9478"/>
+  <path d="M430 330c75-38 125-32 180 10" fill="none" stroke="#29a9d1" stroke-width="18" stroke-linecap="round"/>
+</svg>

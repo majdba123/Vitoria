@@ -154,7 +154,7 @@ function ContactForm() {
     };
 
     return (
-        <form onSubmit={submit} className="space-y-5 px-6 py-8 sm:px-8">
+        <form onSubmit={submit} className="space-y-4 px-6 py-6 sm:px-8 sm:py-7">
             <div>
                 <label htmlFor="contact-name" className="form-label">{home.contact_name_label}</label>
                 <input type="text" id="contact-name" maxLength={255} placeholder={home.contact_name_placeholder} className="form-input" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
@@ -167,7 +167,7 @@ function ContactForm() {
             </div>
             <div>
                 <label htmlFor="contact-message" className="form-label">{home.contact_message_label} <span className="text-[var(--color-danger-strong)]">*</span></label>
-                <textarea id="contact-message" required rows={5} maxLength={5000} placeholder={home.contact_message_placeholder} className="form-textarea" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} />
+                <textarea id="contact-message" required rows={4} maxLength={5000} placeholder={home.contact_message_placeholder} className="form-textarea" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} />
                 {errors.message && <p className="form-error">{errors.message}</p>}
             </div>
             {status === 'success' && (
@@ -375,30 +375,30 @@ export default function Home({ selectedType }) {
                                         return (
                                             <article key={category.id} className={`storefront-category-card group flex h-full flex-col ${isActive ? 'is-selected' : ''}`}>
                                                 <button type="button" onClick={() => selectCategory(category.id)} className="flex flex-1 flex-col text-start focus:outline-none">
-                                                    <div className="shop-card-media" style={{ aspectRatio: '16/9' }}>
+                                                    <div className="shop-card-media">
                                                         {categoryImageUrl(category) ? (
                                                             <img src={categoryImageUrl(category)} alt={category.name} className="shop-card-media-img" loading="lazy" />
                                                         ) : (
                                                             <div className="shop-card-media-fallback"><Layers className="h-8 w-8 text-primary/60" /></div>
                                                         )}
                                                     </div>
-                                                    <div className="flex flex-1 flex-col gap-1 p-4">
+                                                    <div className="category-card-body flex flex-1 flex-col gap-1 p-4">
                                                         <div className="flex items-center gap-2">
                                                             <h3 className="text-base font-bold leading-snug text-foreground">{category.name}</h3>
                                                             {category.type && <span className="badge badge-brand shrink-0">{category.type === 'agriculture' ? home.type_agriculture_short : home.type_veterinary_short}</span>}
                                                         </div>
-                                                        <p className="text-xs text-muted-foreground">{subs.length ? (home.category_has_subcategories ?? '').replace(':count', String(subs.length)) : home.category_direct_products}</p>
+                                                        <p className="text-[13px] leading-6 text-muted-foreground">{subs.length ? (home.category_has_subcategories ?? '').replace(':count', String(subs.length)) : home.category_direct_products}</p>
                                                     </div>
                                                 </button>
                                                 {subs.length > 0 && (
-                                                    <div className="flex flex-wrap gap-1.5 border-t border-border px-4 py-3">
+                                                    <div className="category-card-footer flex flex-wrap items-center gap-1.5 border-t border-border px-4 py-2.5">
                                                         {preview.map((sub) => (
-                                                            <button key={sub.id} type="button" onClick={() => selectCategory(category.id, sub.id)} className="inline-flex min-h-8 items-center rounded-md border border-border px-2.5 py-1 text-[11px] font-medium text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20">
+                                                            <button key={sub.id} type="button" onClick={() => selectCategory(category.id, sub.id)} className="inline-flex min-h-11 items-center rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20">
                                                                 {subLabel(sub, locale)}
                                                             </button>
                                                         ))}
                                                         {moreCount > 0 && (
-                                                            <span className="inline-flex items-center rounded-md bg-muted px-2 py-1 text-[11px] font-semibold text-muted-foreground">
+                                                            <span className="inline-flex min-h-11 items-center rounded-md bg-muted px-2 py-1 text-xs font-semibold text-muted-foreground">
                                                                 {(home.category_has_subcategories_more ?? '').replace(':count', String(moreCount))}
                                                             </span>
                                                         )}
@@ -529,13 +529,13 @@ export default function Home({ selectedType }) {
                     )}
 
                     <section id="contact" className="storefront-section scroll-mt-24">
-                        <div className="workspace-shell">
-                            <div className="surface-card overflow-hidden">
-                                <div className="grid gap-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-                                    <div className="border-b border-border bg-muted/40 px-6 py-8 lg:border-b-0 lg:border-e lg:px-8">
+                        <div className="page-shell py-0">
+                            <div className="contact-panel surface-card overflow-hidden">
+                                <div>
+                                    <div className="contact-panel-intro">
                                         <span className="eyebrow">{home.contact}</span>
                                         <h2 className="mt-4 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{home.contact_title}</h2>
-                                        <p className="mt-3 text-sm leading-7 text-muted-foreground">{home.contact_subtitle}</p>
+                                        <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">{home.contact_subtitle}</p>
                                     </div>
                                     <ContactForm />
                                 </div>

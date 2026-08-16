@@ -14,18 +14,18 @@ export function AdminHeader({ title }) {
     const { props } = usePage();
 
     return (
-        <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur-sm">
-            <div className="flex w-full items-center gap-3 px-4 lg:px-6">
-                <SidebarTrigger className="-ms-1.5" />
+        <header className="dashboard-topbar sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur-sm">
+            <div className="dashboard-topbar-inner flex w-full items-center gap-2 px-3 sm:gap-3 sm:px-4 lg:px-6">
+                <SidebarTrigger className="-ms-1 size-11" />
                 <Separator orientation="vertical" className="h-5" />
 
                 <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-primary">{admin.badge}</p>
-                    <h1 className="truncate text-lg font-bold text-foreground">{title}</h1>
+                    <p className="dashboard-eyebrow text-[11px] font-extrabold uppercase tracking-[0.16em] text-primary">{admin.badge}</p>
+                    <h1 className="truncate text-base font-bold text-foreground sm:text-lg">{title}</h1>
                 </div>
 
                 <div className="flex items-center gap-0.5">
-                    <Button asChild variant="ghost" size="icon" aria-label={nav.home ?? 'Home'} title={nav.home ?? 'Home'}>
+                    <Button asChild variant="ghost" size="icon" className="size-11" aria-label={nav.home ?? 'Home'} title={nav.home ?? 'Home'}>
                         <Link href={route('home')}>
                             <Home className="size-4" />
                         </Link>

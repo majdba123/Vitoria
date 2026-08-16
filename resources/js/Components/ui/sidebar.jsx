@@ -53,6 +53,7 @@ function SidebarProvider({
 }) {
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = React.useState(false)
+  const mobileTriggerRef = React.useRef(null)
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
@@ -102,6 +103,7 @@ function SidebarProvider({
     isMobile,
     openMobile,
     setOpenMobile,
+    mobileTriggerRef,
     toggleSidebar,
   }), [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar])
 
@@ -137,7 +139,7 @@ function Sidebar({
   children,
   ...props
 }) {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const { isMobile, state, openMobile, setOpenMobile, mobileTriggerRef } = useSidebar()
 
   if (collapsible === "none") {
     return (
@@ -155,7 +157,16 @@ function Sidebar({
 
   if (isMobile) {
     return (
-      <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+      <Sheet
+        open={openMobile}
+        onOpenChange={(nextOpen) => {
+          setOpenMobile(nextOpen)
+          if (!nextOpen) {
+            window.requestAnimationFrame(() => mobileTriggerRef.current?.focus())
+          }
+        }}
+        {...props}
+      >
         <SheetContent
           data-sidebar="sidebar"
           data-slot="sidebar"
@@ -226,7 +237,7 @@ function SidebarTrigger({
   onClick,
   ...props
 }) {
-  const { toggleSidebar } = useSidebar()
+  const { isMobile, mobileTriggerRef, toggleSidebar } = useSidebar()
 
   return (
     <Button
@@ -236,6 +247,9 @@ function SidebarTrigger({
       size="icon"
       className={cn("size-7", className)}
       onClick={(event) => {
+        if (isMobile) {
+          mobileTriggerRef.current = event.currentTarget
+        }
         onClick?.(event)
         toggleSidebar()
       }}

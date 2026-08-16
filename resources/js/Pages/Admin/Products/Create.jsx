@@ -33,7 +33,7 @@ function emptyVeterinaryDetail() {
 }
 
 export default function ProductsCreate() {
-    const { admin, common } = useI18n();
+    const { admin, common, products } = useI18n();
     const { submit, errors, generalError, isSubmitting } = useAdminForm();
 
     const [vendors, setVendors] = useState([]);
@@ -133,8 +133,8 @@ export default function ProductsCreate() {
                             <TextField id="discount_percentage" label="Discount (%)" type="number" step="0.01" min="0" max="100" placeholder="Optional" value={core.discount_percentage} onChange={(e) => setField('discount_percentage')(e.target.value)} error={errors.discount_percentage} />
                             <TextField id="quantity" label="Quantity" type="number" required value={core.quantity} onChange={(e) => setField('quantity')(e.target.value)} error={errors.quantity} />
                             <TextField id="minimum_order_quantity" label="Minimum order quantity" type="number" min="1" value={core.minimum_order_quantity} onChange={(e) => setField('minimum_order_quantity')(e.target.value)} error={errors.minimum_order_quantity} />
-                            <TextField id="discount_starts_at" label="Discount start" type="date" value={core.discount_starts_at} onChange={(e) => setField('discount_starts_at')(e.target.value)} error={errors.discount_starts_at} />
-                            <TextField id="discount_ends_at" label="Discount end" type="date" value={core.discount_ends_at} onChange={(e) => setField('discount_ends_at')(e.target.value)} error={errors.discount_ends_at} />
+                            <TextField id="discount_starts_at" label={products.fields?.discount_starts ?? 'Discount start'} type="date" value={core.discount_starts_at} onChange={(e) => setField('discount_starts_at')(e.target.value)} error={errors.discount_starts_at} />
+                            <TextField id="discount_ends_at" label={products.fields?.discount_ends ?? 'Discount end'} type="date" value={core.discount_ends_at} onChange={(e) => setField('discount_ends_at')(e.target.value)} error={errors.discount_ends_at} />
                         </div>
                         <TextareaField id="description" label="Description" rows={4} placeholder="Optional" value={core.description} onChange={(e) => setField('description')(e.target.value)} error={errors.description} />
                         <div className="flex items-center justify-between rounded-md bg-muted px-4 py-3">
@@ -142,7 +142,7 @@ export default function ProductsCreate() {
                                 <p className="text-sm font-medium text-foreground">Active status</p>
                                 <p className="text-xs text-muted-foreground">The product becomes visible to customers when active.</p>
                             </div>
-                            <Switch checked={isActive} onCheckedChange={setIsActive} />
+                            <Switch checked={isActive} onCheckedChange={setIsActive} aria-label={common.active ?? 'Active status'} />
                         </div>
                     </CardContent>
                 </Card>

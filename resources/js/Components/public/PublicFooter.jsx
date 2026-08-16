@@ -1,6 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { Mail, MapPin } from 'lucide-react';
-import { useI18n } from '@/hooks/use-i18n';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
 
 /**
  * lucide-react dropped brand/logo glyphs, so these three social marks are
@@ -39,20 +39,21 @@ const SOCIAL_LINKS = [
 
 export function PublicFooter() {
     const { footer, home, nav } = useI18n();
+    const locale = useLocale();
     const { props } = usePage();
     const settings = props.footerSettings ?? {};
 
     return (
-        <footer className="site-footer mt-12">
-            <div className="workspace-shell pb-10 pt-6">
-                <div className="px-2 py-8 sm:px-0">
-                    <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
+        <footer className="site-footer">
+            <div className="footer-shell">
+                <div>
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5">
                         <div className="col-span-1 sm:col-span-2 lg:col-span-2">
                             <Link href={route('home')} className="inline-flex items-center gap-3 text-2xl font-black tracking-tight text-foreground">
-                                <img src="/images/vetora-logo-transparent.png" alt="Vetora" className="h-11 w-11 object-contain" />
+                                <img src="/images/vetora-logo-transparent.png" alt="Vetora" className="h-12 w-auto object-contain" />
                             </Link>
                             <p className="mt-4 max-w-md text-sm leading-7 text-muted-foreground">
-                                {settings.about_description || home.tagline}
+                                {locale === 'ar' ? home.tagline : (settings.about_description || home.tagline)}
                             </p>
                             {SOCIAL_LINKS.some(({ key }) => settings[key]) && (
                                 <div className="mt-5 flex items-center gap-3">
@@ -109,7 +110,7 @@ export function PublicFooter() {
                         </div>
                     </div>
 
-                    <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-border/70 pt-8 sm:flex-row">
+                    <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-border/70 pt-5 sm:flex-row">
                         <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} Vetora. {footer.rights}</p>
                         <div className="flex gap-6 text-xs text-muted-foreground">
                             <Link href={route('pages.show', { slug: 'privacy-policy' })} className="hover:text-foreground">{footer.privacy}</Link>

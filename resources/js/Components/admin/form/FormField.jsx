@@ -11,6 +11,7 @@ import {
     SelectValue,
 } from '@/Components/ui/select';
 import { cn } from '@/lib/utils';
+import { useLocale } from '@/hooks/use-i18n';
 
 function FieldShell({ id, label, required, error, hint, descriptionId, children }) {
     return (
@@ -27,8 +28,12 @@ function FieldShell({ id, label, required, error, hint, descriptionId, children 
 }
 
 export function TextField({ id, label, required, error, hint, className, type, ...props }) {
-    const descriptionId = (error || hint) ? `${id}-description` : undefined;
+    const locale = useLocale();
+    const dateHint = type === 'date' ? (locale === 'ar' ? 'يوم / شهر / سنة' : 'Day / Month / Year') : undefined;
+    const effectiveHint = hint ?? dateHint;
+    const descriptionId = (error || effectiveHint) ? `${id}-description` : undefined;
     const [visible, setVisible] = useState(false);
+    const [dateFocused, setDateFocused] = useState(false);
 
     if (type === 'password') {
         return (
@@ -57,9 +62,44 @@ export function TextField({ id, label, required, error, hint, className, type, .
         );
     }
 
+    if (type === 'date') {
+        const showArabicDateFormat = locale === 'ar' && !props.value && !dateFocused;
+
+        return (
+            <FieldShell id={id} label={label} required={required} error={error} hint={effectiveHint} descriptionId={descriptionId}>
+                <div className="relative">
+                    <Input
+                        id={id}
+                        name={id}
+                        type="date"
+                        lang={locale}
+                        dir={locale === 'ar' ? 'rtl' : 'ltr'}
+                        aria-invalid={!!error}
+                        aria-describedby={descriptionId}
+                        className={cn(error && 'border-[var(--color-danger-500)]', className)}
+                        {...props}
+                        onFocus={(event) => {
+                            setDateFocused(true);
+                            props.onFocus?.(event);
+                        }}
+                        onBlur={(event) => {
+                            setDateFocused(false);
+                            props.onBlur?.(event);
+                        }}
+                    />
+                    {showArabicDateFormat && (
+                        <span aria-hidden="true" className="pointer-events-none absolute inset-y-px start-3 end-10 flex items-center bg-background text-sm text-muted-foreground">
+                            يوم / شهر / سنة
+                        </span>
+                    )}
+                </div>
+            </FieldShell>
+        );
+    }
+
     return (
-        <FieldShell id={id} label={label} required={required} error={error} hint={hint} descriptionId={descriptionId}>
-            <Input id={id} name={id} type={type} aria-invalid={!!error} aria-describedby={descriptionId} className={cn(error && 'border-[var(--color-danger-500)]', className)} {...props} />
+        <FieldShell id={id} label={label} required={required} error={error} hint={effectiveHint} descriptionId={descriptionId}>
+            <Input id={id} name={id} type={type} lang={type === 'date' ? locale : undefined} dir={type === 'date' ? (locale === 'ar' ? 'rtl' : 'ltr') : undefined} aria-invalid={!!error} aria-describedby={descriptionId} className={cn(error && 'border-[var(--color-danger-500)]', className)} {...props} />
         </FieldShell>
     );
 }

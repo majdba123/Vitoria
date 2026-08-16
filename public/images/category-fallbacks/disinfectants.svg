@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-labelledby="title">
+  <title id="title">Veterinary disinfectant pump bottle</title>
+  <path d="M335 105h150v70H335zM365 70h260v42H365z" fill="#297497"/>
+  <path d="M310 175h200c35 0 62 28 62 62v190H248V237c0-34 27-62 62-62z" fill="#d8eef5" stroke="#297497" stroke-width="16"/>
+  <path d="M410 247v108M356 301h108" stroke="#29a9d1" stroke-width="28" stroke-linecap="round"/>
+  <g fill="#74c6de"><circle cx="650" cy="220" r="18"/><circle cx="700" cy="270" r="12"/><circle cx="636" cy="308" r="10"/></g>
+</svg>

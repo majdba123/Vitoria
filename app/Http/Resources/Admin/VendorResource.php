@@ -36,7 +36,7 @@ class VendorResource extends JsonResource
             'registration_source' => $this->registration_source,
             'commercial_register_file' => $this->commercial_register_file,
             'commercial_register_url' => $this->commercial_register_file
-                ? route('admin.vendors.commercial-register', $this->id)
+                ? route('api.admin.vendors.commercial-register', $this->id)
                 : null,
             'paid_amount' => $this->paid_amount,
             'user' => new UserResource($this->whenLoaded('user')),

@@ -348,6 +348,13 @@ test('admin can download a merchant commercial register document', function () {
         'commercial_register_file' => 'commercial-registers/register.pdf',
     ]);
 
+    $this->getJson('/api/admin/vendors/'.$vendor->id)
+        ->assertOk()
+        ->assertJsonPath(
+            'data.commercial_register_url',
+            route('api.admin.vendors.commercial-register', $vendor),
+        );
+
     $this->get('/api/admin/vendors/'.$vendor->id.'/commercial-register')
         ->assertOk()
         ->assertDownload('register.pdf');

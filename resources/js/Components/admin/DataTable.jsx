@@ -34,7 +34,7 @@ export function DataTable({ columns, rows, status, errorMessage, onRetry, rowHre
     }
 
     return (
-        <div className="overflow-x-auto rounded-lg border border-border">
+        <div className="overflow-x-auto rounded-lg border border-border" role="region" aria-label={emptyTitle ?? 'Data table'} tabIndex={0}>
             <Table>
                 <TableHeader>
                     <TableRow className="hover:bg-transparent">

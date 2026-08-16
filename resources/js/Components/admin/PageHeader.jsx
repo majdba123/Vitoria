@@ -8,7 +8,7 @@ import { ChevronRight } from 'lucide-react';
  */
 export function PageHeader({ breadcrumb, title, copy, actions }) {
     return (
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="dashboard-page-header flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
                 {breadcrumb && breadcrumb.length > 0 && (
                     <nav className="mb-2 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
@@ -29,7 +29,7 @@ export function PageHeader({ breadcrumb, title, copy, actions }) {
                 <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">{title}</h1>
                 {copy && <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{copy}</p>}
             </div>
-            {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
+            {actions && <div className="dashboard-page-header-actions flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
         </div>
     );
 }

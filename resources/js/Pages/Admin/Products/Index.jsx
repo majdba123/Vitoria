@@ -130,7 +130,7 @@ export default function ProductsIndex({ discountOnly = false }) {
             label: admin.approval_status_label,
             render: (row) => (
                 <Select value={row.status || 'pending'} onValueChange={(value) => changeStatus(row, value)}>
-                    <SelectTrigger size="sm" className="w-32">
+                    <SelectTrigger size="sm" className="w-32" aria-label={`${admin.approval_status_label}: ${row.name}`}>
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -221,7 +221,7 @@ function FilterSelect({ label, value, onValueChange, allLabel, options }) {
         <div>
             <label className="mb-1.5 block text-sm font-medium">{label}</label>
             <Select value={value} onValueChange={onValueChange}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full" aria-label={label}>
                     <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

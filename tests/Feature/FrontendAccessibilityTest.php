@@ -27,3 +27,20 @@ test('homepage renders successfully for the mobile navigation to mount on', func
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page->component('Home'));
 });
+
+test('public storefront keeps localized footer copy and semantic category fallbacks', function () {
+    app()->setLocale('ar');
+    $arabicTagline = __('home.tagline');
+
+    app()->setLocale('en');
+    $englishTagline = __('home.tagline');
+
+    expect($arabicTagline)
+        ->not->toBe($englishTagline)
+        ->toContain('سوق')
+        ->and($englishTagline)->toContain('marketplace');
+
+    foreach (['irrigation', 'animal-care', 'disinfectants', 'veterinary-services'] as $asset) {
+        expect(public_path("images/category-fallbacks/{$asset}.svg"))->toBeFile();
+    }
+});
