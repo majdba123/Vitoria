@@ -10,7 +10,7 @@ export default function AdminLayout({ title, children }) {
             <AdminSidebar />
             <SidebarInset>
                 <AdminHeader title={title} />
-                <div className="flex flex-1 flex-col gap-6 p-4 sm:p-6 lg:p-8">{children}</div>
+                <div className="@container/main flex flex-1 flex-col gap-6 p-4 sm:p-6 lg:p-8">{children}</div>
             </SidebarInset>
         </SidebarProvider>
     );

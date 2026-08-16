@@ -103,6 +103,7 @@ jobs:
             # Restart services
             systemctl reload php8.3-fpm
             systemctl reload nginx
+            supervisorctl restart msz-reverb
 
             # Verify the app actually came back up before declaring success (APP_URL comes from the server's own .env)
             if [ -n "${APP_URL:-}" ]; then

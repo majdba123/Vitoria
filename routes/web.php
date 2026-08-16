@@ -210,6 +210,10 @@ Route::prefix('syndicate')->as('syndicate.')->middleware(['auth', 'syndicate'])-
             return Inertia::render('Syndicate/Dashboard', ['section' => $section]);
         })->name($section);
     }
+
+    Route::get('/notifications', function () {
+        return Inertia::render('Syndicate/Notifications/Index');
+    })->name('notifications.index');
 });
 
 Route::prefix('employee')->as('employee.')->middleware(['auth', 'employee'])->group(function () {
@@ -220,6 +224,10 @@ Route::prefix('employee')->as('employee.')->middleware(['auth', 'employee'])->gr
     Route::get('/dashboard', function () {
         return Inertia::render('Employee/Dashboard');
     })->name('dashboard');
+
+    Route::get('/notifications', function () {
+        return Inertia::render('Employee/Notifications/Index');
+    })->name('notifications.index');
 
     Route::get('/products', function (\Illuminate\Http\Request $request) {
         return Inertia::render('Employee/Products/Index', ['status' => $request->query('status')]);

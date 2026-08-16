@@ -1,4 +1,4 @@
-import { LayoutGrid, Layers, Store, Package, Mic, ShoppingBag, TrendingUp, BarChart3 } from 'lucide-react';
+import { Bell, LayoutGrid, Layers, Store, Package, Mic, ShoppingBag, TrendingUp, BarChart3 } from 'lucide-react';
 
 export function getSyndicateNavItems(t) {
     return [
@@ -10,5 +10,6 @@ export function getSyndicateNavItems(t) {
         { label: t.orders, route: 'syndicate.orders', active: 'syndicate.orders', icon: ShoppingBag },
         { label: t.sales, route: 'syndicate.sales', active: 'syndicate.sales', icon: TrendingUp },
         { label: t.reports, route: 'syndicate.reports', active: 'syndicate.reports', icon: BarChart3 },
+        { label: t.notifications ?? 'Notifications', route: 'syndicate.notifications.index', active: 'syndicate.notifications.*', icon: Bell },
     ];
 }

@@ -34,7 +34,7 @@ export function NotificationBell({ viewAllRoute = 'admin.notifications.index', l
     // Every workspace's lang file (admin.php, vendor.php, ...) declares the
     // same notification-copy keys under its own group, so the bell can be
     // reused across portals by just switching which bucket it reads.
-    const admin = i18n[group] ?? i18n.admin;
+    const admin = { ...i18n.admin, ...(i18n[group] ?? {}) };
     const notificationsLabel = admin.notifications_log ?? admin.notifications ?? 'Notifications';
     const [open, setOpen] = useState(false);
     const [status, setStatus] = useState('idle'); // idle | loading | ready | error
@@ -50,6 +50,16 @@ export function NotificationBell({ viewAllRoute = 'admin.notifications.index', l
 
     useEffect(() => {
         fetchBadge();
+        const refresh = () => {
+            fetchBadge();
+            if (open) load();
+        };
+        window.addEventListener('vetora:notifications-updated', refresh);
+
+        return () => window.removeEventListener('vetora:notifications-updated', refresh);
+        // The listener is intentionally registered once; open state is not
+        // required for badge accuracy and the dropdown refreshes when opened.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const load = () => {

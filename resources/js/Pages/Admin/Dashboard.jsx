@@ -93,15 +93,15 @@ export default function Dashboard() {
                     <p className="mt-0.5 text-xs text-muted-foreground">{admin.stats_section_copy}</p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 @4xl/main:grid-cols-4">
                     <StatCard label={admin.total_vendors} value={vendorsTotal} icon={Store} status={vendorsStatCardStatus} onRetry={vendors.refetch} />
                     <StatCard label={admin.total_products} value={productsTotal} icon={Package} status={productsStatCardStatus} onRetry={products.refetch} />
                     <StatCard label={admin.total_users} value={usersTotal} icon={Users} status={users.status} onRetry={users.refetch} />
+                    <StatCard label={admin.total_syndicates} value={syndicatesTotal} icon={Users} status={overview.status} onRetry={overview.refetch} />
                 </div>
 
                 <div className="flex flex-wrap gap-y-3 border-t border-border/70 pt-4">
                     {[
-                        { label: admin.total_syndicates, value: syndicatesTotal },
                         { label: admin.active_vendors, value: activeVendors, tone: 'success' },
                         { label: admin.inactive_vendors, value: inactiveVendors, tone: 'danger' },
                         { label: admin.active_products, value: activeProducts, tone: 'success' },

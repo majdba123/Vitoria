@@ -1,14 +1,16 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { Home } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import { Separator } from '@/Components/ui/separator';
 import { SidebarTrigger } from '@/Components/ui/sidebar';
 import { ThemeToggle } from '@/Components/workspace/ThemeToggle';
 import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
+import { NotificationBell } from '@/Components/workspace/NotificationBell';
 import { useI18n } from '@/hooks/use-i18n';
 
 export function EmployeeHeader({ title }) {
     const { employee, nav } = useI18n();
+    const { props } = usePage();
 
     return (
         <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur-sm">
@@ -28,6 +30,7 @@ export function EmployeeHeader({ title }) {
                         </Link>
                     </Button>
                     <LanguageSwitcher />
+                    <NotificationBell viewAllRoute="employee.notifications.index" locale={props.locale} group="employee" />
                     <ThemeToggle label={nav.toggle_theme_aria ?? 'Toggle theme'} />
                 </div>
             </div>

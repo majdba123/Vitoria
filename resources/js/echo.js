@@ -57,6 +57,7 @@ export function setupNotificationEcho(userId) {
     if (!userId) return;
 
     const refresh = () => {
+        window.dispatchEvent(new CustomEvent('vetora:notifications-updated'));
         if (typeof window.updateNotificationBadge === 'function') window.updateNotificationBadge();
         if (typeof window.vendorNotificationBadge === 'function') window.vendorNotificationBadge();
         const listEl = document.getElementById('notification-list');

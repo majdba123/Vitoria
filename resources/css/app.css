@@ -91,6 +91,8 @@
    ========================================================================== */
 :root {
     color-scheme: light;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+    text-rendering: optimizeLegibility;
 
     /* Canvas / surfaces */
     --color-background: #f7faf9;
