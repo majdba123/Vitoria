@@ -392,3 +392,13 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(funct
     Route::get('/cities/{id}', [\App\Http\Controllers\Admin\CityController::class, 'show'])->name('cities.show');
     Route::get('/cities/{id}/edit', [\App\Http\Controllers\Admin\CityController::class, 'edit'])->name('cities.edit');
 });
+
+Route::fallback(function (\Illuminate\Http\Request $request) {
+    if ($request->expectsJson() || $request->is('api/*')) {
+        abort(404);
+    }
+
+    return Inertia::render('Errors/NotFound', [
+        'status' => 404,
+    ])->toResponse($request)->setStatusCode(404);
+})->name('not-found');
