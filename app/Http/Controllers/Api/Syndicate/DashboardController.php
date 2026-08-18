@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\Syndicate;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\VendorMapRequest;
 use App\Models\Syndicate;
 use App\Services\Syndicate\SyndicateDashboardService;
+use App\Services\Vendor\VendorMapService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -39,6 +41,24 @@ class DashboardController extends Controller
             'message' => __('Syndicate merchants retrieved successfully.'),
             'data' => $vendors->items(),
             'meta' => $this->meta($vendors),
+        ]);
+    }
+
+    /**
+     * The Table/Map payload for the Vendors section, restricted to the
+     * canonical syndicate vendor scope and stripped of every admin-only URL.
+     */
+    public function vendorsMap(VendorMapRequest $request, VendorMapService $mapService): JsonResponse
+    {
+        $type = $this->syndicate($request)->type;
+
+        return response()->json([
+            'message' => __('Vendor map retrieved successfully.'),
+            'data' => $mapService->payload(
+                fn () => $this->dashboardService->vendorQuery($type),
+                $request->filters(),
+                withAdminActions: false,
+            ),
         ]);
     }
 

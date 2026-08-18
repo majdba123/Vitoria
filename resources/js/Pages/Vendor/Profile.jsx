@@ -5,6 +5,7 @@ import VendorLayout from '@/Layouts/VendorLayout';
 import { PageHeader } from '@/Components/admin/PageHeader';
 import { TextField, TextareaField } from '@/Components/admin/form/FormField';
 import { ImageUploadCircle } from '@/Components/admin/ImageUploadCircle';
+import { LocationPicker } from '@/Components/maps/LocationPicker';
 import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
@@ -17,7 +18,7 @@ export default function VendorProfile() {
     const { common } = useI18n();
     const { submit, errors, generalError, isSubmitting, setGeneralError } = useAdminForm();
     const [status, setStatus] = useState('loading');
-    const [form, setForm] = useState({ name: '', phone_number: '', national_id: '', email: '', password: '', current_password: '', store_name: '', address: '', description: '' });
+    const [form, setForm] = useState({ name: '', phone_number: '', national_id: '', email: '', password: '', current_password: '', store_name: '', address: '', description: '', latitude: '', longitude: '' });
     const [businessTypeLabel, setBusinessTypeLabel] = useState('Both');
     const [categories, setCategories] = useState([]);
     const [isActive, setIsActive] = useState(true);
@@ -40,6 +41,8 @@ export default function VendorProfile() {
                 store_name: vendor?.store_name ?? '',
                 address: vendor?.address ?? '',
                 description: vendor?.description ?? '',
+                latitude: vendor?.latitude ?? '',
+                longitude: vendor?.longitude ?? '',
             });
             setBusinessTypeLabel(vendor?.business_type_label || 'Both');
             setCategories(vendor?.categories ?? []);
@@ -68,6 +71,10 @@ export default function VendorProfile() {
             email: form.email.trim() || undefined,
             address: form.address.trim() || undefined,
             description: form.description.trim() || undefined,
+            // Always sent as a pair so an emptied picker clears the pin and a
+            // half-filled one is rejected by the API rather than half-saved.
+            latitude: form.latitude,
+            longitude: form.longitude,
         };
         if (form.password) {
             payload.password = form.password;
@@ -173,6 +180,15 @@ export default function VendorProfile() {
                             </div>
                             <TextareaField id="description" label="Description" rows={3} placeholder="Tell customers about your store..." value={form.description} onChange={(e) => set('description')(e.target.value)} error={errors.description} />
                         </fieldset>
+
+                        <Separator />
+
+                        <LocationPicker
+                            latitude={form.latitude}
+                            longitude={form.longitude}
+                            onChange={({ latitude, longitude }) => setForm((f) => ({ ...f, latitude, longitude }))}
+                            error={errors.latitude ?? errors.longitude}
+                        />
 
                         <Separator />
 

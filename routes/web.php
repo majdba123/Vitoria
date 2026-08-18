@@ -211,6 +211,10 @@ Route::prefix('syndicate')->as('syndicate.')->middleware(['auth', 'syndicate'])-
         })->name($section);
     }
 
+    Route::get('/vendors/{id}', function (string $id) {
+        return Inertia::render('Syndicate/Vendors/Show', ['vendorId' => (int) $id]);
+    })->name('vendors.show');
+
     Route::get('/notifications', function () {
         return Inertia::render('Syndicate/Notifications/Index');
     })->name('notifications.index');

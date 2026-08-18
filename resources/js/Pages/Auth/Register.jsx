@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { TextField, SelectField, TextareaField } from '@/Components/admin/form/FormField';
+import { LocationPicker } from '@/Components/maps/LocationPicker';
 import { Button } from '@/Components/ui/button';
 import { useI18n } from '@/hooks/use-i18n';
 
@@ -28,6 +29,7 @@ export default function Register() {
     const [form, setForm] = useState({
         name: '', phone_number: '', national_id: '', age: '', membership_number: '', city_id: '',
         store_name: '', business_type: '', address: '', description: '',
+        latitude: '', longitude: '',
         email: '', password: '', password_confirmation: '',
     });
     const [errors, setErrors] = useState({});
@@ -59,7 +61,7 @@ export default function Register() {
     const selectAccountType = (type) => {
         setAccountType(type);
         if (type !== 'vendor') {
-            setForm((f) => ({ ...f, store_name: '', business_type: '', address: '', description: '' }));
+            setForm((f) => ({ ...f, store_name: '', business_type: '', address: '', description: '', latitude: '', longitude: '' }));
             setCategoryIds([]);
             setCommercialRegisterFile(null);
         }
@@ -89,6 +91,10 @@ export default function Register() {
             categoryIds.forEach((id) => payload.append('category_ids[]', id));
             payload.append('address', form.address.trim());
             payload.append('description', form.description.trim());
+            // Appended as a pair so the API's required_with rules see either
+            // both coordinates or neither.
+            payload.append('latitude', form.latitude);
+            payload.append('longitude', form.longitude);
             if (commercialRegisterFile) payload.append('commercial_register_file', commercialRegisterFile);
         }
 
@@ -240,6 +246,15 @@ export default function Register() {
 
                                             <TextField id="address" label={authPage.store_address} placeholder={authPage.store_address_placeholder} value={form.address} onChange={(e) => set('address')(e.target.value)} error={errors.address} />
                                             <TextareaField id="description" label={authPage.store_description} rows={3} placeholder={authPage.store_description_placeholder} value={form.description} onChange={(e) => set('description')(e.target.value)} error={errors.description} />
+
+                                            <div className="md:col-span-2">
+                                                <LocationPicker
+                                                    latitude={form.latitude}
+                                                    longitude={form.longitude}
+                                                    onChange={({ latitude, longitude }) => setForm((f) => ({ ...f, latitude, longitude }))}
+                                                    error={errors.latitude ?? errors.longitude}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 )}

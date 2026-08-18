@@ -51,6 +51,27 @@ it('still allows editing an existing vendor-type user through the generic admin 
         ->and($vendorUser->fresh()->type)->toBe(User::TYPE_VENDOR);
 });
 
+it('rejects widening a plain user into a vendor-type account through the generic admin edit endpoint', function () {
+    $admin = User::factory()->create(['type' => User::TYPE_ADMIN]);
+    Sanctum::actingAs($admin);
+
+    $plainUser = User::factory()->create(['type' => User::TYPE_USER]);
+
+    // Regression for F-SHARD1-01: UpdateUserRequest allows type=vendor/
+    // syndicate (unlike StoreUserRequest) so an existing vendor/syndicate
+    // account can keep saving other fields, but that must never let a
+    // plain user be *widened* into vendor/syndicate here — that would set
+    // users.type without ever creating the paired vendors row.
+    $this->putJson("/api/admin/users/{$plainUser->id}", [
+        'name' => $plainUser->name,
+        'phone_number' => $plainUser->phone_number,
+        'national_id' => $plainUser->national_id,
+        'type' => User::TYPE_VENDOR,
+    ])->assertUnprocessable()->assertJsonValidationErrors('type');
+
+    expect($plainUser->fresh()->type)->toBe(User::TYPE_USER);
+});
+
 it('allows editing an existing syndicate-type user without corrupting their type', function () {
     $admin = User::factory()->create(['type' => User::TYPE_ADMIN]);
     Sanctum::actingAs($admin);

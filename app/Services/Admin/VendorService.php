@@ -35,6 +35,8 @@ class VendorService
                 'description' => $data['description'] ?? null,
                 'address' => $data['address'] ?? null,
                 'city_id' => $data['city_id'],
+                'latitude' => $data['latitude'] ?? null,
+                'longitude' => $data['longitude'] ?? null,
                 'logo' => $data['logo'] ?? null,
                 'is_active' => true,
                 'status' => Vendor::STATUS_ACTIVE,
@@ -77,6 +79,7 @@ class VendorService
 
             $vendorFields = array_intersect_key($data, array_flip([
                 'store_name', 'business_type', 'description', 'address', 'city_id', 'is_active',
+                'latitude', 'longitude',
             ]));
 
             if (isset($data['logo']) && $data['logo'] instanceof UploadedFile) {

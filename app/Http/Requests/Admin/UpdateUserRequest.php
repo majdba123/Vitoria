@@ -39,7 +39,24 @@ class UpdateUserRequest extends FormRequest
             // resubmits its current type (see admin/users/edit.blade.php),
             // so rejecting it would break saving any other field on that
             // account, not just prevent new broken ones from being created.
-            'type' => ['sometimes', 'nullable', 'integer', Rule::in([User::TYPE_USER, User::TYPE_ADMIN, User::TYPE_VENDOR, User::TYPE_SYNDICATE, User::TYPE_EMPLOYEE])],
+            // The closure below still blocks *widening* into vendor/syndicate
+            // from anything else: only resubmitting the account's own current
+            // type is allowed for those two, exactly like StoreUserRequest
+            // blocks them outright for brand-new accounts (both guard the
+            // same invariant — a vendor/syndicate-typed user must always have
+            // a paired vendors/syndicates row created atomically with it via
+            // the dedicated endpoints, never via this generic one).
+            'type' => [
+                'sometimes', 'nullable', 'integer',
+                Rule::in([User::TYPE_USER, User::TYPE_ADMIN, User::TYPE_VENDOR, User::TYPE_SYNDICATE, User::TYPE_EMPLOYEE]),
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    $target = (int) $value;
+
+                    if (in_array($target, [User::TYPE_VENDOR, User::TYPE_SYNDICATE], true) && $target !== (int) $this->route('user')->type) {
+                        $fail(__('Vendor and syndicate accounts can only be created through their dedicated endpoints.'));
+                    }
+                },
+            ],
         ];
     }
 }

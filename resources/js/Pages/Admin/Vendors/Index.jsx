@@ -17,11 +17,14 @@ import {
     SelectValue,
 } from '@/Components/ui/select';
 import { Card, CardContent } from '@/Components/ui/card';
+import { VendorMapPanel } from '@/Components/maps/VendorMapPanel';
+import { ViewSwitch } from '@/Components/maps/ViewSwitch';
 import { useAdminList } from '@/hooks/use-admin-list';
 import { useI18n } from '@/hooks/use-i18n';
 
 export default function VendorsIndex() {
     const { admin, common } = useI18n();
+    const [view, setView] = useState('table');
     const [page, setPage] = useState(1);
     const [status, setStatusFilter] = useState('all');
     const [businessType, setBusinessType] = useState('all');
@@ -143,17 +146,23 @@ export default function VendorsIndex() {
                 title={admin.manage_vendors_title}
                 copy={admin.manage_vendor_accounts_copy}
                 actions={
-                    <Button asChild size="sm">
-                        <Link href={route('admin.vendors.create')}>
-                            <Plus className="size-4" />
-                            {admin.add_vendor}
-                        </Link>
-                    </Button>
+                    <>
+                        <ViewSwitch view={view} onChange={setView} />
+                        <Button asChild size="sm">
+                            <Link href={route('admin.vendors.create')}>
+                                <Plus className="size-4" />
+                                {admin.add_vendor}
+                            </Link>
+                        </Button>
+                    </>
                 }
             />
 
             {flash && <p className="rounded-md border border-[var(--color-success-200)] bg-[var(--color-success-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-success-strong)]">{flash}</p>}
 
+            {view === 'map' && <VendorMapPanel endpoint="/api/admin/vendors/map" />}
+
+            {view === 'table' && (
             <Card className="border-border/80 shadow-none">
                 <CardContent className="grid gap-4 p-4 sm:grid-cols-3 lg:grid-cols-6">
                     <FilterSelect label={admin.status_label} value={status} onValueChange={(v) => { setStatusFilter(v); setPage(1); }} allLabel={admin.all_statuses} options={[{ value: 'pending', label: common.pending }, { value: 'active', label: common.active }, { value: 'inactive', label: common.inactive }]} />
@@ -170,7 +179,9 @@ export default function VendorsIndex() {
                     </div>
                 </CardContent>
             </Card>
+            )}
 
+            {view === 'table' && (
             <div>
                 <DataTable
                     columns={columns}
@@ -187,6 +198,7 @@ export default function VendorsIndex() {
                     </div>
                 )}
             </div>
+            )}
 
             <DeleteConfirmDialog
                 open={!!deleteTarget}

@@ -37,6 +37,8 @@ class VendorProfileController extends Controller
                     'business_type_label' => Vendor::businessTypeLabels()[$vendor->business_type] ?? $vendor->business_type,
                     'description' => $vendor->description,
                     'address' => $vendor->address,
+                    'latitude' => $vendor->latitude !== null ? (float) $vendor->latitude : null,
+                    'longitude' => $vendor->longitude !== null ? (float) $vendor->longitude : null,
                     'logo' => $vendor->logo,
                     'logo_url' => $vendor->logo ? asset('storage/'.$vendor->logo) : null,
                     'is_active' => $vendor->is_active,
@@ -63,7 +65,12 @@ class VendorProfileController extends Controller
         $data = $request->validated();
 
         $vendorFieldKeys = ['store_name', 'description', 'address'];
-        $requestsVendorChange = $request->hasFile('logo') || collect($vendorFieldKeys)->some(fn ($field) => isset($data[$field]));
+        // Coordinates are checked with array_key_exists rather than isset so
+        // that *clearing* the pin (both sent as null) is gated too.
+        $requestsLocationChange = array_key_exists('latitude', $data) || array_key_exists('longitude', $data);
+        $requestsVendorChange = $request->hasFile('logo')
+            || $requestsLocationChange
+            || collect($vendorFieldKeys)->some(fn ($field) => isset($data[$field]));
 
         if ($vendor && $requestsVendorChange && ! $user->hasVendorPermission($vendor, 'profile.manage')) {
             abort(403, __('You are not allowed to update the store profile.'));
@@ -124,6 +131,12 @@ class VendorProfileController extends Controller
                     }
                 }
 
+                foreach (['latitude', 'longitude'] as $field) {
+                    if (array_key_exists($field, $data)) {
+                        $vendorFields[$field] = $data[$field];
+                    }
+                }
+
                 if ($request->hasFile('logo')) {
                     if ($vendor->logo) {
                         Storage::disk('public')->delete($vendor->logo);
@@ -156,6 +169,8 @@ class VendorProfileController extends Controller
                         'business_type_label' => Vendor::businessTypeLabels()[$vendor->business_type] ?? $vendor->business_type,
                         'description' => $vendor->description,
                         'address' => $vendor->address,
+                        'latitude' => $vendor->latitude !== null ? (float) $vendor->latitude : null,
+                        'longitude' => $vendor->longitude !== null ? (float) $vendor->longitude : null,
                         'logo' => $vendor->logo,
                         'logo_url' => $vendor->logo ? asset('storage/'.$vendor->logo) : null,
                         'is_active' => $vendor->is_active,

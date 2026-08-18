@@ -64,9 +64,21 @@ class SyndicateDashboardService
 
     public function vendors(Syndicate $syndicate, int $perPage = 15): LengthAwarePaginator
     {
-        return $this->vendorQuery($syndicate->type)
-            ->with(['user:id,name,email,phone_number', 'categories:id,name,type'])
-            ->withCount('products')
+        $type = $syndicate->type;
+
+        return $this->vendorQuery($type)
+            ->with(['user:id,name,email,phone_number', 'city:id,name', 'categories' => fn ($query) => $query->where('categories.type', $type)->select('categories.id', 'categories.name', 'categories.type')])
+            ->withCount(['products' => fn ($query) => $query->whereHas('category', fn ($category) => $category->where('type', $type))])
+            ->addSelect([
+                'completed_orders_count' => Order::query()->selectRaw('COUNT(DISTINCT orders.id)')->whereColumn('orders.vendor_id', 'vendors.id')
+                    ->where('orders.status', Order::STATUS_COMPLETED)->whereHas('items.product.category', fn ($category) => $category->where('type', $type)),
+                'domain_sales' => DB::table('order_items')->join('orders', 'orders.id', '=', 'order_items.order_id')
+                    ->join('products', 'products.id', '=', 'order_items.product_id')->join('categories', 'categories.id', '=', 'products.category_id')
+                    ->selectRaw('COALESCE(SUM(order_items.line_total), 0)')->whereColumn('orders.vendor_id', 'vendors.id')
+                    ->where('orders.status', Order::STATUS_COMPLETED)->where('categories.type', $type),
+                'last_activity_at' => Order::query()->select('created_at')->whereColumn('orders.vendor_id', 'vendors.id')
+                    ->whereHas('items.product.category', fn ($category) => $category->where('type', $type))->latest('created_at')->limit(1),
+            ])
             ->latest()
             ->paginate($perPage);
     }

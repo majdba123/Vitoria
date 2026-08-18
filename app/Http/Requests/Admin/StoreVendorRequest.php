@@ -42,6 +42,10 @@ class StoreVendorRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:1000'],
             'address' => ['nullable', 'string', 'max:255'],
             'city_id' => ['required', 'integer', 'exists:cities,id'],
+            // A map pin is only meaningful as a pair, so each coordinate is
+            // required as soon as the other one is present.
+            'latitude' => ['nullable', 'numeric', 'between:-90,90', 'required_with:longitude'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180', 'required_with:latitude'],
             'logo' => ['nullable', 'string', 'max:255'],
 
             // Allowed categories

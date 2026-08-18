@@ -30,6 +30,10 @@ class UpdateProfileRequest extends FormRequest
             'store_name' => ['sometimes', 'nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
             'address' => ['nullable', 'string', 'max:255'],
+            // A map pin is only meaningful as a pair: sending both clears or
+            // sets the store location, sending one alone is rejected.
+            'latitude' => ['nullable', 'numeric', 'between:-90,90', 'required_with:longitude'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180', 'required_with:latitude'],
             'logo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:2048'],
         ];
     }

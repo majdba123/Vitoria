@@ -5,6 +5,7 @@ import { PageHeader } from '@/Components/admin/PageHeader';
 import { TextField, SelectField, TextareaField } from '@/Components/admin/form/FormField';
 import { CategoryCheckboxGroup } from '@/Components/admin/CategoryCheckboxGroup';
 import { ImageUploadCircle } from '@/Components/admin/ImageUploadCircle';
+import { LocationPicker } from '@/Components/maps/LocationPicker';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
 import { Switch } from '@/Components/ui/switch';
@@ -17,7 +18,7 @@ export default function VendorsEdit({ vendorId }) {
     const { admin, common } = useI18n();
     const { submit, errors, generalError, isSubmitting } = useAdminForm();
     const [status, setStatus] = useState('loading');
-    const [form, setForm] = useState({ name: '', phone_number: '', national_id: '', email: '', password: '', store_name: '', address: '', business_type: '', city_id: '', description: '' });
+    const [form, setForm] = useState({ name: '', phone_number: '', national_id: '', email: '', password: '', store_name: '', address: '', business_type: '', city_id: '', description: '', latitude: '', longitude: '' });
     const [isActive, setIsActive] = useState(true);
     const [cities, setCities] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -49,6 +50,8 @@ export default function VendorsEdit({ vendorId }) {
                 business_type: vendor.business_type ?? 'both',
                 city_id: vendor.city_id ? String(vendor.city_id) : '',
                 description: vendor.description ?? '',
+                latitude: vendor.latitude ?? '',
+                longitude: vendor.longitude ?? '',
             });
             setIsActive(!!vendor.is_active);
             setAvatarPreview(vendor.user?.avatar_url ?? null);
@@ -177,6 +180,15 @@ export default function VendorsEdit({ vendorId }) {
                             </div>
                             <TextareaField id="description" label="Description" rows={3} value={form.description} onChange={(e) => set('description')(e.target.value)} error={errors.description} />
                         </fieldset>
+
+                        <Separator />
+
+                        <LocationPicker
+                            latitude={form.latitude}
+                            longitude={form.longitude}
+                            onChange={({ latitude, longitude }) => setForm((f) => ({ ...f, latitude, longitude }))}
+                            error={errors.latitude ?? errors.longitude}
+                        />
 
                         <Separator />
 

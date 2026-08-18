@@ -9,7 +9,9 @@ import { InsightPanel } from '@/Components/admin/dashboard/InsightPanel';
 import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
-import { Layers, Store, Package, ShoppingBag } from 'lucide-react';
+import { VendorMapPanel } from '@/Components/maps/VendorMapPanel';
+import { ViewSwitch } from '@/Components/maps/ViewSwitch';
+import { Store, Package, ShoppingBag } from 'lucide-react';
 import { useI18n } from '@/hooks/use-i18n';
 import { GrowthChart } from '@/Components/admin/dashboard/GrowthChart';
 
@@ -60,7 +62,10 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
     useEffect(loadOverview, []);
 
     const [page, setPage] = useState(1);
-    const { status: tableStatus, rows: tableRows, meta: tableMeta, errorMessage: tableError, reload: reloadTable } = useSyndicateTable(section, isTableSection, page);
+    const [vendorView, setVendorView] = useState('table');
+    const isVendorSection = section === 'vendors';
+    const showVendorMap = isVendorSection && vendorView === 'map';
+    const { status: tableStatus, rows: tableRows, meta: tableMeta, errorMessage: tableError, reload: reloadTable } = useSyndicateTable(section, isTableSection && !showVendorMap, page);
 
     const [reportsStatus, setReportsStatus] = useState('loading');
     const [reports, setReports] = useState(null);
@@ -125,14 +130,26 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                 </div>
             )}
 
-            {isTableSection && (
+            {showVendorMap && (
+                <>
+                    <div className="flex justify-end">
+                        <ViewSwitch view={vendorView} onChange={setVendorView} />
+                    </div>
+                    <VendorMapPanel endpoint="/api/syndicate/vendors/map" />
+                </>
+            )}
+
+            {isTableSection && !showVendorMap && (
                 <Card className="gap-0 border-border/80 py-0 shadow-none">
                     <CardHeader className="flex-row items-center justify-between border-b border-border/80 py-4">
                         <div>
                             <CardTitle className="text-base font-bold">{syndicate.records_title}</CardTitle>
                             <p className="mt-1 text-xs text-muted-foreground">{syndicate.records_subtitle}</p>
                         </div>
-                        {tableStatus === 'ready' && <StatusBadge tone="brand">{tableMeta.total}</StatusBadge>}
+                        <div className="flex items-center gap-3">
+                            {isVendorSection && <ViewSwitch view={vendorView} onChange={setVendorView} />}
+                            {tableStatus === 'ready' && <StatusBadge tone="brand">{tableMeta.total}</StatusBadge>}
+                        </div>
                     </CardHeader>
                     <CardContent className="p-4">
                         <SyndicateTable section={section} rows={tableRows} status={tableStatus} errorMessage={tableError} onRetry={reloadTable} i18n={syndicate} common={common} />
@@ -286,9 +303,12 @@ function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, co
         ],
         vendors: [
             { key: 'store_name', label: i18n.th_store, render: (r) => <span className="font-semibold text-foreground">{r.store_name}</span> },
-            { key: 'owner', label: i18n.th_owner, render: (r) => r.user?.name || '—' },
-            { key: 'category', label: i18n.th_category, render: (r) => (r.categories || []).map((c) => c.name).join(', ') || '—' },
+            { key: 'business_type', label: i18n.th_type, render: (r) => typeLabel(r.business_type, i18n) },
+            { key: 'city', label: i18n.th_city ?? 'City', render: (r) => r.city?.name || '—' },
             { key: 'products_count', label: i18n.th_products, align: 'end', render: (r) => Number(r.products_count || 0) },
+            { key: 'completed_orders_count', label: i18n.completed_orders, align: 'end', render: (r) => Number(r.completed_orders_count || 0) },
+            { key: 'domain_sales', label: i18n.completed_sales, align: 'end', render: (r) => money(r.domain_sales) },
+            { key: 'last_activity_at', label: i18n.last_activity ?? 'Last activity', render: (r) => r.last_activity_at ? new Date(r.last_activity_at).toLocaleDateString() : '—' },
             { key: 'status', label: i18n.th_status, render: (r) => <StatusBadge tone={r.is_active ? 'success' : 'danger'}>{r.is_active ? common.active : common.inactive}</StatusBadge> },
         ],
         products: [
@@ -313,6 +333,7 @@ function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, co
             status={status}
             errorMessage={errorMessage}
             onRetry={onRetry}
+            rowHref={section === 'vendors' ? (row) => route('syndicate.vendors.show', row.id) : undefined}
             emptyTitle={common.no_data ?? 'No data available.'}
         />
     );

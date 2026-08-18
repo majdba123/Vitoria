@@ -218,7 +218,7 @@ class VendorLedgerService
     /**
      * The six figures the vendor finance screen shows (spec §20).
      *
-     * @return array{gross_sales: float, commission: float, refunds: float, net_earnings: float, settled: float, outstanding: float}
+     * @return array{gross_sales: float, commission: float, refunds: float, adjustments: float, net_earnings: float, settled: float, outstanding: float}
      */
     public function summary(Vendor $vendor): array
     {
@@ -249,6 +249,7 @@ class VendorLedgerService
             'gross_sales' => round($grossSales, 2),
             'commission' => round($commission, 2),
             'refunds' => round($refunds, 2),
+            'adjustments' => round($adjustmentsNet, 2),
             'net_earnings' => $netEarnings,
             'settled' => round($settled, 2),
             'outstanding' => $outstanding,

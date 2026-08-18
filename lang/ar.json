@@ -390,6 +390,7 @@
     "Coupon deleted successfully.": "تم حذف الكوبون بنجاح.",
     "Allowed categories retrieved successfully.": "تم جلب التصنيفات المسموحة بنجاح.",
     "Vendors retrieved successfully.": "تم جلب البائعين بنجاح.",
+    "Vendor map retrieved successfully.": "تم جلب خريطة البائعين بنجاح.",
     "Vendor retrieved successfully.": "تم جلب البائع بنجاح.",
     "Vendor created successfully.": "تم إنشاء البائع بنجاح.",
     "Vendor updated successfully.": "تم تحديث البائع بنجاح.",

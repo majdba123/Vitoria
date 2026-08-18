@@ -44,8 +44,10 @@ class RegisterRequest extends FormRequest
             'age' => ['required', 'integer', 'min:1', 'max:120'],
             'membership_number' => ['required', 'string', 'max:100', 'unique:users,membership_number'],
             'city_id' => ['required', 'integer', 'exists:cities,id'],
-            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
-            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
+            // A map pin is only meaningful as a pair, so each coordinate is
+            // required as soon as the other one is present.
+            'latitude' => ['nullable', 'numeric', 'between:-90,90', 'required_with:longitude'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180', 'required_with:latitude'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
             'store_name' => ['required_if:account_type,vendor', 'string', 'max:255'],

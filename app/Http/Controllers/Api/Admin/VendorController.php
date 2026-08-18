@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreVendorRequest;
 use App\Http\Requests\Admin\UpdateVendorRequest;
+use App\Http\Requests\VendorMapRequest;
 use App\Http\Resources\Admin\VendorResource;
 use App\Models\Vendor;
 use App\Services\Admin\VendorService;
 use App\Services\AuditLogService;
+use App\Services\Vendor\VendorMapService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -63,6 +65,22 @@ class VendorController extends Controller
                 'per_page' => $vendors->perPage(),
                 'total' => $vendors->total(),
             ],
+        ]);
+    }
+
+    /**
+     * Map points, unmapped vendors and mapped/unmapped counts for the
+     * Table/Map view on the Vendors page.
+     */
+    public function map(VendorMapRequest $request, VendorMapService $mapService): JsonResponse
+    {
+        return response()->json([
+            'message' => __('Vendor map retrieved successfully.'),
+            'data' => $mapService->payload(
+                fn () => Vendor::query(),
+                $request->filters(),
+                withAdminActions: true,
+            ),
         ]);
     }
 

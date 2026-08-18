@@ -43,8 +43,17 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::patch('syndicates/{syndicate}/toggle-active', [SyndicateController::class, 'toggleActive'])->middleware('throttle:api.write')->name('syndicates.toggle-active');
     Route::apiResource('syndicates', SyndicateController::class)->except(['index', 'show'])->middleware('throttle:api.write');
     Route::apiResource('syndicates', SyndicateController::class)->only(['index', 'show']);
+    // Registered ahead of the `vendors/{vendor}` resource route so the literal
+    // /vendors/map segment is never resolved through the {vendor} binding.
+    Route::get('vendors/map', [VendorController::class, 'map'])->name('vendors.map');
     Route::apiResource('vendors', VendorController::class)->except(['index', 'show'])->middleware('throttle:api.write');
     Route::apiResource('vendors', VendorController::class)->only(['index', 'show']);
+    Route::get('vendors/{vendor}/analytics/overview', [\App\Http\Controllers\Api\Admin\VendorAnalyticsController::class, 'overview'])->name('vendors.analytics.overview');
+    Route::get('vendors/{vendor}/analytics/products', [\App\Http\Controllers\Api\Admin\VendorAnalyticsController::class, 'products'])->name('vendors.analytics.products');
+    Route::get('vendors/{vendor}/analytics/orders', [\App\Http\Controllers\Api\Admin\VendorAnalyticsController::class, 'orders'])->name('vendors.analytics.orders');
+    Route::get('vendors/{vendor}/analytics/returns', [\App\Http\Controllers\Api\Admin\VendorAnalyticsController::class, 'returns'])->name('vendors.analytics.returns');
+    Route::get('vendors/{vendor}/analytics/activity', [\App\Http\Controllers\Api\Admin\VendorAnalyticsController::class, 'activity'])->name('vendors.analytics.activity');
+    Route::get('vendors/{vendor}/analytics/export-summary', [\App\Http\Controllers\Api\Admin\VendorAnalyticsController::class, 'exportSummary'])->name('vendors.analytics.export-summary');
     Route::get('vendors/{vendor}/commission-stats', [VendorCommissionController::class, 'show'])->name('vendors.commission-stats');
     Route::post('vendors/{vendor}/commission-paid', [VendorCommissionController::class, 'updatePaidAmount'])->middleware('throttle:api.write')->name('vendors.commission-paid');
     Route::get('vendors/{vendor}/commercial-register', [VendorController::class, 'downloadCommercialRegister'])->name('vendors.commercial-register');
