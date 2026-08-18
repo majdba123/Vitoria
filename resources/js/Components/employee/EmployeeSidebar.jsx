@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { LogOut, ClipboardCheck } from 'lucide-react';
+import { ClipboardCheck } from 'lucide-react';
 import {
     Sidebar,
     SidebarContent,
@@ -28,10 +28,6 @@ export function EmployeeSidebar(props) {
         const [path, query] = href.split('?');
         const status = new URLSearchParams(query ?? '').get('status') ?? '';
         return path === currentPath && status === currentStatus;
-    };
-
-    const handleLogout = () => {
-        window.VetoraWorkspace?.logout?.(route('login'));
     };
 
     return (
@@ -77,19 +73,6 @@ export function EmployeeSidebar(props) {
             </SidebarContent>
 
             <SidebarFooter>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        {/* The sidebar always has a dark background regardless of the site's
-                            light/dark theme, so the theme-swapping --color-danger-strong token
-                            (which resolves to a dark, low-contrast red in light mode) is wrong
-                            here — axe-core measured 1.68:1 against the required 4.5:1. Use the
-                            fixed dark-background-safe danger tone instead. */}
-                        <SidebarMenuButton onClick={handleLogout} className="text-[var(--color-danger-300)] hover:bg-[rgba(185,56,69,0.16)] hover:text-[var(--color-danger-300)]">
-                            <LogOut />
-                            <span>{nav.sign_out}</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
                 <p className="px-2 pb-1 text-[11px] text-sidebar-foreground/70">{employee.workspace_footer}</p>
             </SidebarFooter>
         </Sidebar>

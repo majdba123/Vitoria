@@ -6,6 +6,7 @@ import { SidebarTrigger } from '@/Components/ui/sidebar';
 import { ThemeToggle } from '@/Components/workspace/ThemeToggle';
 import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
 import { NotificationBell } from '@/Components/workspace/NotificationBell';
+import { LogoutButton } from '@/Components/workspace/LogoutButton';
 import { useI18n } from '@/hooks/use-i18n';
 
 export function EmployeeHeader({ title }) {
@@ -32,6 +33,7 @@ export function EmployeeHeader({ title }) {
                     <LanguageSwitcher />
                     <NotificationBell viewAllRoute="employee.notifications.index" locale={props.locale} group="employee" />
                     <ThemeToggle label={nav.toggle_theme_aria ?? 'Toggle theme'} />
+                    <LogoutButton />
                 </div>
             </div>
         </header>

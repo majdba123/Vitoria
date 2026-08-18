@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { LogOut, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
 import {
     Sidebar,
     SidebarContent,
@@ -20,10 +20,6 @@ export function SyndicateSidebar(props) {
     const { props: pageProps } = usePage();
     const items = getSyndicateNavItems(syndicate);
     const side = pageProps.direction === 'rtl' ? 'right' : 'left';
-
-    const handleLogout = () => {
-        window.VetoraWorkspace?.logout?.(route('login'));
-    };
 
     return (
         <Sidebar side={side} collapsible="offcanvas" role="navigation" aria-label="Syndicate navigation" {...props}>
@@ -66,17 +62,6 @@ export function SyndicateSidebar(props) {
             </SidebarContent>
 
             <SidebarFooter>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        {/* Same fixed-dark-background fix as EmployeeSidebar — the sidebar
-                            is always dark, so the theme-swapping danger-strong token reads
-                            as a near-invisible dark red in light mode. */}
-                        <SidebarMenuButton onClick={handleLogout} className="text-[var(--color-danger-300)] hover:bg-[rgba(185,56,69,0.16)] hover:text-[var(--color-danger-300)]">
-                            <LogOut />
-                            <span>{syndicate.sign_out}</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
                 <p className="px-2 pb-1 text-[11px] text-sidebar-foreground/70">{syndicate.workspace_footer}</p>
             </SidebarFooter>
         </Sidebar>

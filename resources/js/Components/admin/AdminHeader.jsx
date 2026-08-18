@@ -6,6 +6,7 @@ import { SidebarTrigger } from '@/Components/ui/sidebar';
 import { NotificationBell } from '@/Components/workspace/NotificationBell';
 import { ThemeToggle } from '@/Components/workspace/ThemeToggle';
 import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
+import { LogoutButton } from '@/Components/workspace/LogoutButton';
 import { useI18n } from '@/hooks/use-i18n';
 import { usePage } from '@inertiajs/react';
 
@@ -33,6 +34,7 @@ export function AdminHeader({ title }) {
                     <LanguageSwitcher />
                     <NotificationBell viewAllRoute="admin.notifications.index" locale={props.locale} />
                     <ThemeToggle label={admin.toggle_theme ?? 'Toggle theme'} />
+                    <LogoutButton />
                 </div>
             </div>
         </header>

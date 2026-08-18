@@ -6,6 +6,7 @@ import { SidebarTrigger } from '@/Components/ui/sidebar';
 import { NotificationBell } from '@/Components/workspace/NotificationBell';
 import { ThemeToggle } from '@/Components/workspace/ThemeToggle';
 import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
+import { LogoutButton } from '@/Components/workspace/LogoutButton';
 import { useI18n } from '@/hooks/use-i18n';
 
 export function VendorHeader({ title }) {
@@ -32,6 +33,7 @@ export function VendorHeader({ title }) {
                     <LanguageSwitcher />
                     <NotificationBell viewAllRoute="vendor.notifications.index" locale={props.locale} group="vendor" />
                     <ThemeToggle label={vendor.toggle_theme ?? 'Toggle theme'} />
+                    <LogoutButton />
                 </div>
             </div>
         </header>

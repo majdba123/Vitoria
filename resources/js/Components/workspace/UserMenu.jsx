@@ -1,4 +1,4 @@
-import { ChevronsUpDown, LogOut, Home } from 'lucide-react';
+import { ChevronsUpDown, Home } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import {
     Avatar,
@@ -21,20 +21,14 @@ import {
 } from '@/Components/ui/sidebar';
 import { useAuthUser, useI18n } from '@/hooks/use-i18n';
 
-export function UserMenu({ roleLabel, group = 'admin' }) {
+export function UserMenu({ roleLabel }) {
     const { isMobile } = useSidebar();
     const user = useAuthUser();
-    const i18n = useI18n();
-    const nav = i18n.nav;
-    const admin = i18n[group] ?? i18n.admin;
+    const { nav } = useI18n();
 
     if (!user) return null;
 
     const initials = (user.name || '?').trim().charAt(0).toUpperCase();
-
-    const handleLogout = () => {
-        window.VetoraWorkspace?.logout?.(route('login'));
-    };
 
     return (
         <SidebarMenu>
@@ -71,11 +65,6 @@ export function UserMenu({ roleLabel, group = 'admin' }) {
                                 <Home />
                                 {nav.home ?? 'Home'}
                             </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onSelect={handleLogout} variant="destructive">
-                            <LogOut />
-                            {admin.sign_out ?? 'Sign out'}
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

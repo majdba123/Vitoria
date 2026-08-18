@@ -6,6 +6,7 @@ import { SidebarTrigger } from '@/Components/ui/sidebar';
 import { ThemeToggle } from '@/Components/workspace/ThemeToggle';
 import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
 import { NotificationBell } from '@/Components/workspace/NotificationBell';
+import { LogoutButton } from '@/Components/workspace/LogoutButton';
 import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
 import { useI18n, useAuthUser } from '@/hooks/use-i18n';
 
@@ -38,6 +39,7 @@ export function SyndicateHeader({ title }) {
                     <LanguageSwitcher />
                     <NotificationBell viewAllRoute="syndicate.notifications.index" locale={props.locale} group="syndicate" />
                     <ThemeToggle label={nav.toggle_theme_aria ?? 'Toggle theme'} />
+                    <LogoutButton />
                 </div>
             </div>
         </header>
