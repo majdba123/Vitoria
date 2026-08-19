@@ -24,6 +24,30 @@ function subLabel(sub, locale) {
     return locale === 'ar' ? (sub.name_ar || sub.name_en || '') : (sub.name_en || sub.name_ar || '');
 }
 
+// The visible window is capped to ~3 logos wide (see .logo-marquee in app.css), so the
+// list is duplicated only once - the minimum needed for the seamless-scroll technique
+// (animate exactly one list-width so the loop point is invisible) - without ever showing
+// two full passes of the (short) list side by side, at any viewport width.
+function PartnerLogoMarquee({ locale, reducedMotion }) {
+    const logos = [...PARTNER_LOGOS, ...PARTNER_LOGOS];
+
+    return (
+        <div className="logo-marquee mt-10">
+            <div className="logo-marquee-track" style={reducedMotion ? { animation: 'none' } : undefined}>
+                {logos.map((logo, index) => (
+                    <img
+                        key={`${logo.src}-${index}`}
+                        src={logo.src}
+                        alt={locale === 'ar' ? logo.altAr : logo.altEn}
+                        loading="lazy"
+                        className="h-16 w-auto shrink-0 object-contain opacity-90 transition duration-300 hover:opacity-100 sm:h-20"
+                    />
+                ))}
+            </div>
+        </div>
+    );
+}
+
 function HeroMedia({ alt }) {
     const reducedMotion = useReducedMotion();
     const videoRef = useRef(null);
@@ -555,19 +579,7 @@ export default function Home({ selectedType }) {
                             <span className="eyebrow justify-center">{home.partners_kicker}</span>
                             <h2 className="section-title mt-3">{home.partners_title}</h2>
                             <p className="section-copy mx-auto mt-3 max-w-2xl">{home.partners_subtitle}</p>
-                            <div className="logo-marquee mt-10">
-                                <div className="logo-marquee-track" style={reducedMotion ? { animation: 'none' } : undefined}>
-                                    {[...PARTNER_LOGOS, ...PARTNER_LOGOS].map((logo, index) => (
-                                        <img
-                                            key={`${logo.src}-${index}`}
-                                            src={logo.src}
-                                            alt={locale === 'ar' ? logo.altAr : logo.altEn}
-                                            loading="lazy"
-                                            className="h-16 w-auto shrink-0 object-contain opacity-90 transition duration-300 hover:opacity-100 sm:h-20"
-                                        />
-                                    ))}
-                                </div>
-                            </div>
+                            <PartnerLogoMarquee locale={locale} reducedMotion={reducedMotion} />
                         </div>
                     </section>
                 </>

@@ -1526,10 +1526,16 @@
 
     /* Infinite-scroll partner logo strip. The track renders the logo list
        twice back to back and animates exactly one list-width of translation,
-       so the loop point is seamless regardless of how many logos there are. */
+       so the loop point is seamless regardless of how many logos there are.
+       The visible window itself is capped to roughly 3 logos wide and
+       centered, on every breakpoint - so widening the viewport never reveals
+       the second (duplicate) pass sitting beside the first; it only ever
+       reveals more empty margin around the same narrow strip. */
     .logo-marquee {
         position: relative;
         overflow: hidden;
+        max-width: 26rem;
+        margin-inline: auto;
         -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
         mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
     }
