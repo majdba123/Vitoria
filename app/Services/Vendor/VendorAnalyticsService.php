@@ -84,7 +84,7 @@ class VendorAnalyticsService
     public function orders(Vendor $vendor, array $period, array $filters, int $perPage, ?string $domain = null): LengthAwarePaginator
     {
         $query = $this->period($this->orderQuery($vendor, $domain), $period, 'orders.created_at')
-            ->with(['user:id,name,email', 'payment:id,order_id,method,status', 'statusHistories' => fn ($query) => $query->where('new_status', Order::STATUS_COMPLETED)])
+            ->with(['user:id,name,email,phone_number', 'payment', 'cancelledBy:id,name', 'statusHistories.changedBy:id,name'])
             ->with(['items' => fn ($query) => $query->when($domain, fn ($items) => $items->whereHas('product.category', fn ($category) => $category->where('type', $domain)))])->withCount('items')
             ->when($filters['order_status'] ?? null, fn (Builder $query, string $status) => $query->where('status', $status))
             ->when($filters['search'] ?? null, fn (Builder $query, string $search) => $query->where(fn (Builder $nested) => $nested->where('order_number', 'like', "%{$search}%")->orWhereHas('user', fn (Builder $user) => $user->where('name', 'like', "%{$search}%"))));
@@ -194,20 +194,55 @@ class VendorAnalyticsService
         ];
     }
 
+    /**
+     * Full order detail for the vendor-360 orders list. Admin and syndicate
+     * viewers both see the complete order - what was sold, to whom, the
+     * delivery address, payment, coupon, and full status history - since
+     * this is an operational drill-down, not a public-facing summary. Only
+     * the domain-gated financial totals stay scoped, to preserve the
+     * cross-syndicate revenue-leak protection already in place above.
+     */
     private function presentOrder(Order $order, ?string $domain): array
     {
         $scopedSubtotal = round((float) $order->items->sum('line_total'), 2);
         $scopedDiscount = round((float) $order->items->sum('discount_amount'), 2);
         $pure = $domain === null || $order->items->count() === (int) $order->items_count;
+        $completedAt = $order->statusHistories->where('new_status', Order::STATUS_COMPLETED)->sortByDesc('created_at')->first()?->created_at;
 
         return [
-            'id' => $order->id, 'order_number' => $order->order_number, 'customer' => $order->user?->only(['id', 'name', 'email']),
-            'item_count' => $order->items->sum('quantity'), 'products' => $order->items->map(fn ($item) => ['id' => $item->product_id, 'name' => $item->product_name, 'quantity' => $item->quantity, 'line_total' => (float) $item->line_total])->values(),
+            'id' => $order->id, 'order_number' => $order->order_number,
+            'customer' => $order->user?->only(['id', 'name', 'email', 'phone_number']),
+            'shipping_address' => $order->shippingAddress(),
+            'item_count' => $order->items->sum('quantity'),
+            'products' => $order->items->map(fn ($item) => [
+                'id' => $item->product_id, 'name' => $item->product_name, 'quantity' => $item->quantity,
+                'unit_price' => (float) $item->unit_price, 'original_unit_price' => (float) $item->original_unit_price,
+                'has_discount' => (bool) $item->has_discount, 'discount_amount' => (float) $item->discount_amount,
+                'line_total' => (float) $item->line_total,
+            ])->values(),
             'subtotal' => $pure ? (float) $order->subtotal_amount : $scopedSubtotal, 'discount' => $pure ? (float) $order->coupon_discount_amount : $scopedDiscount,
             'shipping' => $pure ? (float) $order->shipping_total : null, 'tax' => $pure ? (float) $order->tax_total : null,
             'grand_total' => $pure ? (float) $order->grand_total : null, 'scoped_sales' => $scopedSubtotal, 'financial_attribution_complete' => $pure,
-            'status' => $order->status, 'payment_method' => $order->payment?->method ?? $order->payment_way, 'payment_status' => $order->payment?->status,
-            'created_at' => $order->created_at, 'completed_at' => $order->statusHistories->sortByDesc('created_at')->first()?->created_at,
+            'coupon' => $order->coupon_code ? [
+                'code' => $order->coupon_code, 'type' => $order->coupon_type, 'value' => (float) $order->coupon_value,
+            ] : null,
+            'payment' => $order->payment ? [
+                'provider' => $order->payment->provider, 'method' => $order->payment->method, 'status' => $order->payment->status,
+                'amount' => (float) $order->payment->amount, 'refunded_amount' => (float) $order->payment->refunded_amount,
+                'provider_reference' => $order->payment->provider_reference, 'paid_at' => $order->payment->paid_at,
+                'failed_at' => $order->payment->failed_at, 'failure_reason' => $order->payment->failure_reason,
+            ] : null,
+            'status' => $order->status,
+            'status_history' => $order->statusHistories->map(fn ($history) => [
+                'from' => $history->previous_status, 'to' => $history->new_status,
+                'changed_by' => $history->changedBy?->name, 'reason' => $history->reason, 'notes' => $history->notes,
+                'created_at' => $history->created_at,
+            ])->values(),
+            'cancellation' => $order->status === Order::STATUS_CANCELLED ? [
+                'reason' => $order->cancellation_reason, 'notes' => $order->cancellation_notes,
+                'cancelled_by' => $order->cancelledBy?->name, 'cancelled_at' => $order->cancelled_at,
+            ] : null,
+            'created_at' => $order->created_at, 'completed_at' => $completedAt,
         ];
     }
 

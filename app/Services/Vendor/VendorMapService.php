@@ -4,6 +4,7 @@ namespace App\Services\Vendor;
 
 use App\Models\City;
 use App\Models\Vendor;
+use App\Support\SyriaGovernorates;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -17,9 +18,15 @@ class VendorMapService
      * caller's scope - a Syndicate can therefore never be widened past the
      * vendors its own scope already allows.
      *
+     * The map is deliberately governorate-level only: individual vendor
+     * `latitude`/`longitude` never leave this service. Vendors are grouped by
+     * their city's governorate and only the count per governorate is
+     * returned, plotted at a fixed governorate centroid - never a real
+     * vendor address.
+     *
      * @param  Closure(): Builder  $scope
      * @param  array{city_id?: int|null, business_type?: string|null, status?: string|null}  $filters
-     * @return array{vendors: list<array<string, mixed>>, unmapped: list<array<string, mixed>>, counts: array<string, int>, cities: list<array{id: int, name: string}>}
+     * @return array{governorates: list<array<string, mixed>>, unassigned: list<array<string, mixed>>, counts: array<string, int>, cities: list<array{id: int, name: string}>}
      */
     public function payload(Closure $scope, array $filters, bool $withAdminActions): array
     {
@@ -29,17 +36,38 @@ class VendorMapService
             ->orderBy('store_name')
             ->get();
 
-        [$mapped, $unmapped] = $vendors->partition(
-            fn (Vendor $vendor): bool => $vendor->latitude !== null && $vendor->longitude !== null,
+        [$assigned, $unassigned] = $vendors->partition(
+            fn (Vendor $vendor): bool => $vendor->city_id !== null,
         );
 
+        $countsByGovernorate = [];
+        foreach ($assigned as $vendor) {
+            $key = SyriaGovernorates::keyForCity($vendor->city?->name);
+            if ($key === null) {
+                continue;
+            }
+            $countsByGovernorate[$key] = ($countsByGovernorate[$key] ?? 0) + 1;
+        }
+
+        $governorates = collect(SyriaGovernorates::ALL)
+            ->map(fn (array $governorate): array => [
+                'key' => $governorate['key'],
+                'name_en' => $governorate['name_en'],
+                'name_ar' => $governorate['name_ar'],
+                'lat' => $governorate['lat'],
+                'lng' => $governorate['lng'],
+                'vendor_count' => $countsByGovernorate[$governorate['key']] ?? 0,
+            ])
+            ->values()
+            ->all();
+
         return [
-            'vendors' => $mapped->map(fn (Vendor $vendor): array => $this->point($vendor, $withAdminActions))->values()->all(),
-            'unmapped' => $unmapped->map(fn (Vendor $vendor): array => $this->point($vendor, $withAdminActions))->values()->all(),
+            'governorates' => $governorates,
+            'unassigned' => $unassigned->map(fn (Vendor $vendor): array => $this->point($vendor, $withAdminActions))->values()->all(),
             'counts' => [
                 'total' => $vendors->count(),
-                'mapped' => $mapped->count(),
-                'unmapped' => $unmapped->count(),
+                'assigned' => $assigned->count(),
+                'unassigned' => $unassigned->count(),
             ],
             'cities' => $this->cities($scope()),
         ];
@@ -82,9 +110,12 @@ class VendorMapService
     }
 
     /**
-     * A single map point. Deliberately hand-built rather than reusing
-     * VendorResource: the map must never carry account credentials, owner
-     * contact details, commercial-register paths or financial columns.
+     * A single vendor row for the "unassigned" list (vendors with no city
+     * set). Deliberately hand-built rather than reusing VendorResource: this
+     * must never carry account credentials, owner contact details,
+     * commercial-register paths, financial columns, or exact coordinates -
+     * the map is governorate-level only, so `latitude`/`longitude` are never
+     * exposed here at all.
      *
      * @return array<string, mixed>
      */
@@ -98,8 +129,6 @@ class VendorMapService
             'address' => $vendor->address,
             'city_id' => $vendor->city_id,
             'city_name' => $vendor->city?->name,
-            'latitude' => $vendor->latitude !== null ? (float) $vendor->latitude : null,
-            'longitude' => $vendor->longitude !== null ? (float) $vendor->longitude : null,
             'is_active' => (bool) $vendor->is_active,
             'status' => $vendor->status,
             'products_count' => (int) ($vendor->products_count ?? 0),

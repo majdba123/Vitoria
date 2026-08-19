@@ -13,4 +13,10 @@ return [
     'all_statuses' => 'All statuses', 'all_categories' => 'All categories', 'apply' => 'Apply', 'no_data' => 'No data in this scope.',
     'attribution_unavailable' => 'Exact domain net earnings are unavailable because mixed-domain orders have order-level ledger entries. No amount has been estimated.',
     'all_time_finance' => 'All-time ledger balance', 'period_analytics' => 'Period sales analytics', 'view' => 'View', 'load_failed' => 'Vendor analytics could not be loaded.',
+    'order_details' => 'Order details', 'shipping_address' => 'Shipping address', 'payment_info' => 'Payment', 'coupon' => 'Coupon', 'status_history' => 'Status history', 'cancellation' => 'Cancellation',
+    'recipient_name' => 'Recipient', 'phone' => 'Phone', 'alternate_phone' => 'Alternate phone', 'governorate' => 'Governorate', 'city' => 'City', 'district' => 'District',
+    'street' => 'Street', 'building' => 'Building', 'floor' => 'Floor', 'landmark' => 'Landmark', 'postal_code' => 'Postal code', 'notes' => 'Notes',
+    'provider' => 'Provider', 'method' => 'Method', 'payment_amount' => 'Amount', 'refunded_amount' => 'Refunded amount', 'reference' => 'Reference',
+    'paid_at' => 'Paid at', 'failed_at' => 'Failed at', 'failure_reason' => 'Failure reason', 'coupon_code' => 'Code', 'coupon_value' => 'Value',
+    'changed_by' => 'Changed by', 'cancelled_by' => 'Cancelled by', 'cancelled_at' => 'Cancelled at', 'reason' => 'Reason',
 ];

@@ -297,6 +297,16 @@
     --sidebar-ring: var(--color-brand-400);
 }
 
+@keyframes marquee-scroll {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
 @keyframes shimmer {
     0% {
         background-position: 100% 0;
@@ -1512,6 +1522,28 @@
     /* ---- Storefront: hero / catalog / product detail ---------------------- */
     .storefront-section {
         padding-block: var(--section-space);
+    }
+
+    /* Infinite-scroll partner logo strip. The track renders the logo list
+       twice back to back and animates exactly one list-width of translation,
+       so the loop point is seamless regardless of how many logos there are. */
+    .logo-marquee {
+        position: relative;
+        overflow: hidden;
+        -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+        mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+    }
+
+    .logo-marquee-track {
+        display: flex;
+        width: max-content;
+        align-items: center;
+        gap: 4rem;
+        animation: marquee-scroll 28s linear infinite;
+    }
+
+    .logo-marquee:hover .logo-marquee-track {
+        animation-play-state: paused;
     }
 
     /* One cinematic hero: the approved footage is the full media layer of the

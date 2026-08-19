@@ -13,4 +13,10 @@ return [
     'all_statuses' => 'كل الحالات', 'all_categories' => 'كل الفئات', 'apply' => 'تطبيق', 'no_data' => 'لا توجد بيانات ضمن هذا النطاق.',
     'attribution_unavailable' => 'لا يمكن احتساب صافي المستحقات بدقة لهذا النطاق بسبب وجود طلبات متعددة المجالات بقيود مالية على مستوى الطلب. لم يتم تقدير أي مبلغ.',
     'all_time_finance' => 'رصيد دفتر الأستاذ لكامل المدة', 'period_analytics' => 'تحليلات مبيعات الفترة', 'view' => 'عرض', 'load_failed' => 'تعذر تحميل تحليلات المورّد.',
+    'order_details' => 'تفاصيل الطلب', 'shipping_address' => 'عنوان التوصيل', 'payment_info' => 'الدفع', 'coupon' => 'كوبون الخصم', 'status_history' => 'سجل الحالات', 'cancellation' => 'الإلغاء',
+    'recipient_name' => 'المستلم', 'phone' => 'الهاتف', 'alternate_phone' => 'هاتف بديل', 'governorate' => 'المحافظة', 'city' => 'المدينة', 'district' => 'الحي',
+    'street' => 'الشارع', 'building' => 'المبنى', 'floor' => 'الطابق', 'landmark' => 'علامة مميزة', 'postal_code' => 'الرمز البريدي', 'notes' => 'ملاحظات',
+    'provider' => 'مزود الدفع', 'method' => 'طريقة الدفع', 'payment_amount' => 'المبلغ', 'refunded_amount' => 'المبلغ المسترد', 'reference' => 'رقم مرجعي',
+    'paid_at' => 'تاريخ الدفع', 'failed_at' => 'تاريخ الفشل', 'failure_reason' => 'سبب الفشل', 'coupon_code' => 'الرمز', 'coupon_value' => 'القيمة',
+    'changed_by' => 'تم التغيير بواسطة', 'cancelled_by' => 'تم الإلغاء بواسطة', 'cancelled_at' => 'تاريخ الإلغاء', 'reason' => 'السبب',
 ];

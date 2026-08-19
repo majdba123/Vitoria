@@ -14,6 +14,12 @@ const TYPE_META = {
     veterinary: { icon: Stethoscope, labelKey: 'type_veterinary_label', descKey: 'type_veterinary_description', buttonKey: 'type_veterinary_button' },
 };
 
+const PARTNER_LOGOS = [
+    { src: '/images/partners/syrian-veterinarians-syndicate.png', altEn: 'Syrian Veterinarians Syndicate', altAr: 'نقابة الأطباء البيطريين في الجمهورية العربية السورية' },
+    { src: '/images/partners/pharmacists-agricultural-syndicate.png', altEn: 'Agricultural syndicate partner', altAr: 'نقابة زراعية شريكة' },
+    { src: '/images/partners/cli-tool.png', altEn: 'Technology partner', altAr: 'شريك تقني' },
+];
+
 function subLabel(sub, locale) {
     return locale === 'ar' ? (sub.name_ar || sub.name_en || '') : (sub.name_en || sub.name_ar || '');
 }
@@ -192,6 +198,7 @@ function ContactForm() {
 export default function Home({ selectedType }) {
     const { home, common } = useI18n();
     const locale = useLocale();
+    const reducedMotion = useReducedMotion();
     const { url, props: pageProps } = usePage();
     const origin = pageProps.origin ?? '';
     const params = new URLSearchParams(url.split('?')[1] ?? '');
@@ -538,6 +545,27 @@ export default function Home({ selectedType }) {
                                         <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">{home.contact_subtitle}</p>
                                     </div>
                                     <ContactForm />
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="storefront-section border-t border-border/60 bg-muted/20">
+                        <div className="page-shell py-0 text-center">
+                            <span className="eyebrow justify-center">{home.partners_kicker}</span>
+                            <h2 className="section-title mt-3">{home.partners_title}</h2>
+                            <p className="section-copy mx-auto mt-3 max-w-2xl">{home.partners_subtitle}</p>
+                            <div className="logo-marquee mt-10">
+                                <div className="logo-marquee-track" style={reducedMotion ? { animation: 'none' } : undefined}>
+                                    {[...PARTNER_LOGOS, ...PARTNER_LOGOS].map((logo, index) => (
+                                        <img
+                                            key={`${logo.src}-${index}`}
+                                            src={logo.src}
+                                            alt={locale === 'ar' ? logo.altAr : logo.altEn}
+                                            loading="lazy"
+                                            className="h-16 w-auto shrink-0 object-contain opacity-90 transition duration-300 hover:opacity-100 sm:h-20"
+                                        />
+                                    ))}
                                 </div>
                             </div>
                         </div>

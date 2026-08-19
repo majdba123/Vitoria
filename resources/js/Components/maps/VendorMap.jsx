@@ -1,16 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { FALLBACK_CENTER, FALLBACK_ZOOM, TILE_ATTRIBUTION, TILE_URL, isFiniteCoordinate, loadLeaflet } from './leaflet';
+import { FALLBACK_CENTER, FALLBACK_ZOOM, TILE_ATTRIBUTION, TILE_URL, loadLeaflet } from './leaflet';
 
 /**
- * Read-only vendor map. Points come straight from the coordinates saved on each
- * vendor — nothing is geocoded or inferred here.
- *
- * Pins are `circleMarker`s (pure SVG) rather than the default icon so no marker
- * image asset has to be resolved through the bundler. The map is a visual
- * enhancement: `VendorMapPanel` renders the same vendors as real text, so the
- * information is never map-only.
+ * Read-only, Syria-only governorate map. This never plots a vendor's real
+ * address or saved coordinates - it only shows how many vendors have a city
+ * in each governorate, as a count badge centred on that governorate's fixed
+ * reference point. No per-vendor location is ever sent to this component.
  */
-export function VendorMap({ points, labels, className = 'h-[26rem]' }) {
+export function VendorMap({ governorates, labels, locale, className = 'h-[26rem]' }) {
     const containerRef = useRef(null);
     const mapRef = useRef(null);
     const layerRef = useRef(null);
@@ -34,7 +31,7 @@ export function VendorMap({ points, labels, className = 'h-[26rem]' }) {
                     scrollWheelZoom: false,
                 });
 
-                L.tileLayer(TILE_URL, { attribution: TILE_ATTRIBUTION, maxZoom: 18 }).addTo(map);
+                L.tileLayer(TILE_URL, { attribution: TILE_ATTRIBUTION, maxZoom: 10 }).addTo(map);
 
                 mapRef.current = map;
                 layerRef.current = L.layerGroup().addTo(map);
@@ -70,39 +67,20 @@ export function VendorMap({ points, labels, className = 'h-[26rem]' }) {
 
             layer.clearLayers();
 
-            const coordinates = [];
+            governorates.forEach((governorate) => {
+                const position = [governorate.lat, governorate.lng];
+                const name = locale === 'ar' ? governorate.name_ar : governorate.name_en;
+                const count = Number(governorate.vendor_count ?? 0);
 
-            points.forEach((point) => {
-                if (!isFiniteCoordinate(point.latitude, point.longitude)) {
-                    return;
-                }
-
-                const position = [Number(point.latitude), Number(point.longitude)];
-                coordinates.push(position);
-
-                // Literal brand hexes (--color-brand-600/400): Leaflet writes
-                // these into SVG presentation attributes, which cannot resolve
-                // a CSS var().
-                L.circleMarker(position, {
-                    radius: 8,
-                    weight: 2,
-                    color: '#297497',
-                    fillColor: '#29a9d1',
-                    fillOpacity: 0.85,
-                })
-                    .bindPopup(popupElement(point, labels))
+                L.marker(position, { icon: countIcon(L, count) })
+                    .bindTooltip(`${name}: ${count}`, { direction: 'top', offset: [0, -6] })
                     .addTo(layer);
             });
 
-            if (coordinates.length > 0) {
-                map.fitBounds(L.latLngBounds(coordinates).pad(0.2), { maxZoom: 13 });
-            } else {
-                map.setView(FALLBACK_CENTER, FALLBACK_ZOOM);
-            }
-
+            map.setView(FALLBACK_CENTER, FALLBACK_ZOOM);
             map.invalidateSize();
         });
-    }, [isReady, points, labels]);
+    }, [isReady, governorates, locale]);
 
     if (failed) {
         return (
@@ -124,40 +102,18 @@ export function VendorMap({ points, labels, className = 'h-[26rem]' }) {
 }
 
 /**
- * Popups are built as DOM nodes with textContent rather than an HTML string, so
- * store names and addresses can never be interpreted as markup.
+ * A round count badge rather than a pin - visually distinct from a location
+ * marker, since this point is never a real address, just a governorate
+ * total. Literal brand hexes (--color-brand-600/400 equivalents): the icon
+ * is inline HTML/CSS handed to Leaflet, which cannot resolve a CSS var().
  */
-function popupElement(point, labels) {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'space-y-1 text-sm';
+function countIcon(L, count) {
+    const empty = count === 0;
 
-    const name = document.createElement('p');
-    name.className = 'font-semibold';
-    name.textContent = point.store_name ?? '';
-    wrapper.append(name);
-
-    [point.address, point.city_name, point.business_type_label].forEach((value) => {
-        if (!value) {
-            return;
-        }
-        const line = document.createElement('p');
-        line.className = 'text-xs';
-        line.textContent = value;
-        wrapper.append(line);
+    return L.divIcon({
+        className: '',
+        html: `<div style="display:flex;align-items:center;justify-content:center;min-width:2.25rem;height:2.25rem;padding:0 0.375rem;border-radius:9999px;border:2px solid ${empty ? '#9ca3af' : '#297497'};background:${empty ? '#f3f4f6' : '#29a9d1'};color:${empty ? '#6b7280' : '#ffffff'};font-weight:700;font-size:0.8125rem;box-shadow:0 1px 3px rgba(0,0,0,0.25);">${count}</div>`,
+        iconSize: [36, 36],
+        iconAnchor: [18, 18],
     });
-
-    const products = document.createElement('p');
-    products.className = 'text-xs';
-    products.textContent = `${labels.products}: ${Number(point.products_count ?? 0)}`;
-    wrapper.append(products);
-
-    if (point.edit_url) {
-        const edit = document.createElement('a');
-        edit.className = 'inline-block text-xs font-semibold underline';
-        edit.href = point.edit_url;
-        edit.textContent = labels.edit;
-        wrapper.append(edit);
-    }
-
-    return wrapper;
 }

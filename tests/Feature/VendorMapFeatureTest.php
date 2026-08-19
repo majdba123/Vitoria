@@ -15,10 +15,12 @@ use Laravel\Sanctum\Sanctum;
 /**
  * Admin + Syndicate vendor map (Table/Map inside the existing Vendors views).
  *
- * The load-bearing properties: the map is admin/syndicate only, it never
- * carries account credentials or financial columns, coordinates are always a
- * numeric pair or absent entirely, and the syndicate map can never see past the
- * canonical syndicate vendor scope no matter which filters are supplied.
+ * The load-bearing properties: the map is admin/syndicate only, it is
+ * governorate-level only (a vendor's exact `latitude`/`longitude` never
+ * leaves the service - only a per-governorate count), it never carries
+ * account credentials or financial columns, and the syndicate map can never
+ * see past the canonical syndicate vendor scope no matter which filters are
+ * supplied.
  */
 function mapCity(string $name): City
 {
@@ -91,37 +93,35 @@ test('a vendor cannot reach the syndicate vendor map', function () {
 |--------------------------------------------------------------------------
 */
 
-test('the admin map returns mapped points, unmapped vendors, counts and numeric coordinates', function () {
+test('the admin map returns per-governorate counts, unassigned vendors, counts and city options', function () {
     Sanctum::actingAs(User::factory()->admin()->create());
     $city = mapCity('Homs');
 
-    $mapped = mapVendor('Mapped Store', ['city_id' => $city->id, 'latitude' => 34.7325, 'longitude' => 36.7137]);
-    $unmapped = mapVendor('Unmapped Store', ['city_id' => $city->id, 'latitude' => null, 'longitude' => null]);
+    mapVendor('Assigned Store', ['city_id' => $city->id]);
+    $unassigned = mapVendor('Unassigned Store', ['city_id' => null]);
 
     $response = $this->getJson('/api/admin/vendors/map')
         ->assertOk()
         ->assertJsonStructure([
             'message',
             'data' => [
-                'vendors' => [['id', 'store_name', 'address', 'city_id', 'city_name', 'latitude', 'longitude', 'is_active', 'status', 'products_count', 'edit_url']],
-                'unmapped' => [['id', 'store_name', 'address', 'city_name']],
-                'counts' => ['total', 'mapped', 'unmapped'],
+                'governorates' => [['key', 'name_en', 'name_ar', 'lat', 'lng', 'vendor_count']],
+                'unassigned' => [['id', 'store_name', 'address', 'city_id', 'city_name', 'is_active', 'status', 'products_count', 'edit_url']],
+                'counts' => ['total', 'assigned', 'unassigned'],
                 'cities' => [['id', 'name']],
             ],
         ])
         ->assertJsonPath('data.counts.total', 2)
-        ->assertJsonPath('data.counts.mapped', 1)
-        ->assertJsonPath('data.counts.unmapped', 1)
-        ->assertJsonPath('data.vendors.0.id', $mapped->id)
-        ->assertJsonPath('data.vendors.0.address', 'Mapped Store Street 14')
-        ->assertJsonPath('data.vendors.0.city_name', 'Homs')
-        ->assertJsonPath('data.unmapped.0.id', $unmapped->id);
+        ->assertJsonPath('data.counts.assigned', 1)
+        ->assertJsonPath('data.counts.unassigned', 1)
+        ->assertJsonPath('data.unassigned.0.id', $unassigned->id)
+        ->assertJsonPath('data.unassigned.0.address', 'Unassigned Store Street 14');
 
-    $point = $response->json('data.vendors.0');
+    $payload = $response->json('data');
 
-    expect($point['latitude'])->toBeFloat()->toEqualWithDelta(34.7325, 0.0000001)
-        ->and($point['longitude'])->toBeFloat()->toEqualWithDelta(36.7137, 0.0000001)
-        ->and($point['edit_url'])->toBe(route('admin.vendors.edit', $mapped->id));
+    expect($payload['governorates'])->toHaveCount(14);
+    expect(collect($payload['governorates'])->firstWhere('key', 'homs')['vendor_count'])->toBe(1);
+    expect($payload['unassigned'][0])->not->toHaveKey('latitude')->not->toHaveKey('longitude');
 });
 
 test('the admin map narrows by city, business type and status', function () {
@@ -132,25 +132,21 @@ test('the admin map narrows by city, business type and status', function () {
     mapVendor('Homs Agriculture', [
         'city_id' => $homs->id,
         'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
-        'latitude' => 34.73,
-        'longitude' => 36.71,
     ]);
     mapVendor('Hama Veterinary', [
         'city_id' => $hama->id,
         'business_type' => Vendor::BUSINESS_TYPE_VETERINARY,
-        'latitude' => 35.13,
-        'longitude' => 36.75,
     ]);
 
     $this->getJson('/api/admin/vendors/map?city_id='.$homs->id)
         ->assertOk()
-        ->assertJsonPath('data.counts.total', 1)
-        ->assertJsonPath('data.vendors.0.store_name', 'Homs Agriculture');
+        ->assertJsonPath('data.counts.total', 1);
+    expect(collect($this->getJson('/api/admin/vendors/map?city_id='.$homs->id)->json('data.governorates'))->firstWhere('key', 'homs')['vendor_count'])->toBe(1);
 
     $this->getJson('/api/admin/vendors/map?business_type='.Vendor::BUSINESS_TYPE_VETERINARY)
         ->assertOk()
-        ->assertJsonPath('data.counts.total', 1)
-        ->assertJsonPath('data.vendors.0.store_name', 'Hama Veterinary');
+        ->assertJsonPath('data.counts.total', 1);
+    expect(collect($this->getJson('/api/admin/vendors/map?business_type='.Vendor::BUSINESS_TYPE_VETERINARY)->json('data.governorates'))->firstWhere('key', 'hama')['vendor_count'])->toBe(1);
 
     $this->getJson('/api/admin/vendors/map?status='.Vendor::STATUS_INACTIVE)
         ->assertOk()
@@ -160,23 +156,30 @@ test('the admin map narrows by city, business type and status', function () {
     $this->getJson('/api/admin/vendors/map?business_type=aquaculture')->assertUnprocessable();
 });
 
-test('the admin map never exposes credentials, owner contact details or financial columns', function () {
+test('the admin map never exposes credentials, owner contact details, financial columns or exact coordinates', function () {
     Sanctum::actingAs(User::factory()->admin()->create());
 
     mapVendor('Sensitive Store', [
+        'city_id' => mapCity('Homs')->id,
         'latitude' => 33.5,
         'longitude' => 36.3,
         'commercial_register_file' => 'commercial-registers/secret.pdf',
         'paid_amount' => 4200,
     ]);
-    mapVendor('Sensitive Unmapped', ['latitude' => null, 'longitude' => null]);
+    mapVendor('Sensitive Unassigned', ['city_id' => null, 'latitude' => null, 'longitude' => null]);
 
     $payload = $this->getJson('/api/admin/vendors/map')->assertOk()->json('data');
 
-    foreach ([...$payload['vendors'], ...$payload['unmapped']] as $point) {
-        foreach (MAP_FORBIDDEN_FIELDS as $field) {
+    foreach ($payload['unassigned'] as $point) {
+        foreach ([...MAP_FORBIDDEN_FIELDS, 'latitude', 'longitude'] as $field) {
             expect($point)->not->toHaveKey($field);
         }
+    }
+
+    // The governorate objects themselves never carry per-vendor data at all.
+    foreach ($payload['governorates'] as $governorate) {
+        expect($governorate)->toHaveKeys(['key', 'name_en', 'name_ar', 'lat', 'lng', 'vendor_count'])
+            ->and(array_keys($governorate))->toHaveCount(6);
     }
 });
 
@@ -402,8 +405,6 @@ function mapSyndicateFixture(): array
     $matching = mapVendor('Category Matched Store', [
         'city_id' => $city->id,
         'business_type' => Vendor::BUSINESS_TYPE_VETERINARY,
-        'latitude' => 33.51,
-        'longitude' => 36.29,
     ]);
     $matching->categories()->sync([$agricultureCategory->id]);
 
@@ -411,20 +412,14 @@ function mapSyndicateFixture(): array
         'agriculture' => mapVendor('Agriculture Only Store', [
             'city_id' => $city->id,
             'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
-            'latitude' => 33.5138,
-            'longitude' => 36.2765,
         ]),
         'veterinary' => mapVendor('Veterinary Only Store', [
             'city_id' => $city->id,
             'business_type' => Vendor::BUSINESS_TYPE_VETERINARY,
-            'latitude' => 33.52,
-            'longitude' => 36.28,
         ]),
         'both' => mapVendor('Both Store', [
             'city_id' => $city->id,
             'business_type' => Vendor::BUSINESS_TYPE_BOTH,
-            'latitude' => 33.53,
-            'longitude' => 36.3,
         ]),
         'matching' => $matching,
         'city' => $city,
@@ -432,47 +427,36 @@ function mapSyndicateFixture(): array
 }
 
 /**
- * @return list<string>
+ * The Damascus governorate's vendor_count from a map payload - every
+ * `mapSyndicateFixture()` vendor lives in the same Damascus city, so this is
+ * the one number that reflects exactly which of them the current scope let
+ * through, without the payload ever naming an individual vendor.
  */
-function mapStoreNames(array $payload): array
+function damascusCount(array $payload): int
 {
-    return collect([...$payload['vendors'], ...$payload['unmapped']])
-        ->pluck('store_name')
-        ->sort()
-        ->values()
-        ->all();
+    return collect($payload['governorates'])->firstWhere('key', 'damascus')['vendor_count'];
 }
 
 test('an agriculture syndicate map shows only vendors inside its canonical scope', function () {
-    $fixture = mapSyndicateFixture();
+    mapSyndicateFixture();
     Sanctum::actingAs(mapSyndicateUser(Category::TYPE_AGRICULTURE));
 
     $payload = $this->getJson('/api/syndicate/vendors/map')->assertOk()->json('data');
 
-    expect(mapStoreNames($payload))->toBe([
-        'Agriculture Only Store',
-        'Both Store',
-        'Category Matched Store',
-    ])->and($payload['counts']['total'])->toBe(3);
-
-    expect(collect($payload['vendors'])->pluck('id'))
-        ->not->toContain($fixture['veterinary']->id);
+    // Agriculture Only Store, Both Store, Category Matched Store - not Veterinary Only Store.
+    expect($payload['counts']['total'])->toBe(3)
+        ->and(damascusCount($payload))->toBe(3);
 });
 
 test('a veterinary syndicate map shows only vendors inside its canonical scope', function () {
-    $fixture = mapSyndicateFixture();
+    mapSyndicateFixture();
     Sanctum::actingAs(mapSyndicateUser(Category::TYPE_VETERINARY));
 
     $payload = $this->getJson('/api/syndicate/vendors/map')->assertOk()->json('data');
 
-    expect(mapStoreNames($payload))->toBe([
-        'Both Store',
-        'Category Matched Store',
-        'Veterinary Only Store',
-    ]);
-
-    expect(collect($payload['vendors'])->pluck('id'))
-        ->not->toContain($fixture['agriculture']->id);
+    // Both Store, Category Matched Store, Veterinary Only Store - not Agriculture Only Store.
+    expect($payload['counts']['total'])->toBe(3)
+        ->and(damascusCount($payload))->toBe(3);
 });
 
 test('syndicate map filters can only narrow the scope, never widen it', function () {
@@ -485,9 +469,8 @@ test('syndicate map filters can only narrow the scope, never widen it', function
         ->assertOk()
         ->json('data');
 
-    expect(mapStoreNames($payload))->toBe(['Category Matched Store'])
-        ->and($payload['counts']['total'])->toBe(1)
-        ->and(collect($payload['vendors'])->pluck('id'))->not->toContain($fixture['veterinary']->id);
+    expect($payload['counts']['total'])->toBe(1)
+        ->and(damascusCount($payload))->toBe(1);
 
     // City options are drawn from the scope, so they cannot advertise a city the
     // syndicate has no vendors in.
@@ -495,8 +478,6 @@ test('syndicate map filters can only narrow the scope, never widen it', function
     mapVendor('Foreign Vet Store', [
         'city_id' => $foreignCity->id,
         'business_type' => Vendor::BUSINESS_TYPE_VETERINARY,
-        'latitude' => 35.33,
-        'longitude' => 40.14,
     ]);
 
     $refreshed = $this->getJson('/api/syndicate/vendors/map')->assertOk()->json('data');
@@ -508,9 +489,10 @@ test('syndicate map filters can only narrow the scope, never widen it', function
         ->assertJsonPath('data.counts.total', 0);
 });
 
-test('the syndicate map payload carries no admin URLs, credentials or financial columns', function () {
+test('the syndicate map payload carries no admin URLs, credentials, financial columns or exact coordinates', function () {
     mapSyndicateFixture();
-    mapVendor('Syndicate Unmapped Store', [
+    mapVendor('Syndicate Unassigned Store', [
+        'city_id' => null,
         'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
         'latitude' => null,
         'longitude' => null,
@@ -522,10 +504,10 @@ test('the syndicate map payload carries no admin URLs, credentials or financial 
 
     $payload = $this->getJson('/api/syndicate/vendors/map')->assertOk()->json('data');
 
-    expect($payload['unmapped'])->not->toBeEmpty();
+    expect($payload['unassigned'])->not->toBeEmpty();
 
-    foreach ([...$payload['vendors'], ...$payload['unmapped']] as $point) {
-        foreach ([...MAP_FORBIDDEN_FIELDS, 'edit_url'] as $field) {
+    foreach ($payload['unassigned'] as $point) {
+        foreach ([...MAP_FORBIDDEN_FIELDS, 'edit_url', 'latitude', 'longitude'] as $field) {
             expect($point)->not->toHaveKey($field);
         }
     }
@@ -533,15 +515,13 @@ test('the syndicate map payload carries no admin URLs, credentials or financial 
 
 test('syndicate map counts stay inside the syndicate scope', function () {
     mapSyndicateFixture();
-    mapVendor('Scoped Unmapped Store', [
+    mapVendor('Scoped Unassigned Store', [
+        'city_id' => null,
         'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
-        'latitude' => null,
-        'longitude' => null,
     ]);
-    mapVendor('Out Of Scope Unmapped Store', [
+    mapVendor('Out Of Scope Unassigned Store', [
+        'city_id' => null,
         'business_type' => Vendor::BUSINESS_TYPE_VETERINARY,
-        'latitude' => null,
-        'longitude' => null,
     ]);
 
     Sanctum::actingAs(mapSyndicateUser(Category::TYPE_AGRICULTURE));
@@ -549,8 +529,8 @@ test('syndicate map counts stay inside the syndicate scope', function () {
     $this->getJson('/api/syndicate/vendors/map')
         ->assertOk()
         ->assertJsonPath('data.counts.total', 4)
-        ->assertJsonPath('data.counts.mapped', 3)
-        ->assertJsonPath('data.counts.unmapped', 1);
+        ->assertJsonPath('data.counts.assigned', 3)
+        ->assertJsonPath('data.counts.unassigned', 1);
 });
 
 /*

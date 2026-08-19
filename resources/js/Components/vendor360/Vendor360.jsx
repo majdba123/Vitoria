@@ -70,7 +70,7 @@ export function Vendor360({ vendorId, mode = 'admin' }) {
                     <OrdersCards rows={overview?.recent_orders ?? []} title={t.recent_orders} empty={t.no_data} locale={locale} mode={mode} />
                 </TabsContent>
                 {tabs.filter((name) => name !== 'overview' && name !== 'categories').map((name) => (
-                    <TabsContent key={name} value={name} className="pt-5"><RemoteTab active={tab === name} name={name} base={base} params={params} vendorId={vendorId} mode={mode} labels={t} locale={locale} /></TabsContent>
+                    <TabsContent key={name} value={name} className="pt-5"><RemoteTab active={tab === name} name={name} base={base} params={params} vendorId={vendorId} mode={mode} labels={t} common={common} locale={locale} /></TabsContent>
                 ))}
                 <TabsContent value="categories" className="pt-5"><RankedList rows={overview?.category_performance ?? []} title={t.category_performance} empty={t.no_data} locale={locale} /></TabsContent>
             </Tabs>
@@ -103,28 +103,112 @@ function RankedList({ rows, title, empty, locale, horizontal = false }) { return
 function OrdersCards({ rows, title, empty, locale, mode }) { return <Card className="border-border/80 shadow-none"><CardHeader><CardTitle className="text-base">{title}</CardTitle></CardHeader><CardContent className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">{rows.length ? rows.map((row) => <OrderRow key={row.id} row={row} locale={locale} mode={mode} />) : <Empty text={empty} />}</CardContent></Card>; }
 function OrderRow({ row, locale, mode }) { const href = mode === 'admin' ? route('admin.orders.show', row.id) : null; const content = <><span className="font-semibold">{row.order_number}</span><span className="text-sm tabular-nums text-muted-foreground">{formatValue(row.scoped_sales ?? row.subtotal, true, locale)}</span><StatusBadge tone={row.status === 'completed' ? 'success' : row.status === 'cancelled' ? 'danger' : 'warning'}>{row.status}</StatusBadge></>; return href ? <Link href={href} className="flex min-h-12 items-center justify-between gap-3 rounded-md border border-border px-3 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{content}</Link> : <div className="flex min-h-12 items-center justify-between gap-3 rounded-md border border-border px-3">{content}</div>; }
 
-function RemoteTab({ active, name, base, params, vendorId, mode, labels, locale }) {
+function RemoteTab({ active, name, base, params, vendorId, mode, labels, common, locale }) {
     const [state, setState] = useState({ status: 'idle', rows: [], meta: null }); const [page, setPage] = useState(1); const [search, setSearch] = useState('');
     const endpoint = name === 'finance' ? `${base}/ledger` : name === 'staff' ? `${base}/staff` : name === 'documents' ? `/api/admin/vendor-documents` : `${base}/analytics/${name}`;
     const load = useCallback(() => { if (!active) return; setState((s) => ({ ...s, status: 'loading' })); window.axios.get(endpoint, { params: { ...params, page, search, ...(name === 'documents' ? { vendor_id: vendorId } : {}) }, silent: true }).then((res) => { const data = res.data.data; setState({ status: 'ready', rows: name === 'staff' ? [data.owner, ...(data.members || [])].filter(Boolean) : Array.isArray(data) ? data : [], meta: res.data.meta }); }).catch(() => setState({ status: 'error', rows: [], meta: null })); }, [active, endpoint, name, page, params, search, vendorId]);
     useEffect(load, [load]);
     const exportHref = mode === 'admin' && name === 'products' ? `/api/admin/exports/products?vendor_id=${vendorId}` : mode === 'admin' && name === 'orders' ? `/api/admin/exports/orders?vendor_id=${vendorId}` : mode === 'admin' && name === 'finance' ? `${base}/analytics/export-summary?${new URLSearchParams(params)}` : null;
-    return <Card className="border-border/80 shadow-none"><CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between"><CardTitle className="text-base">{labels[name]}</CardTitle><div className="flex flex-wrap items-center gap-2">{exportHref && <Button asChild variant="outline" size="sm"><a href={exportHref}>CSV</a></Button>}{['products', 'orders'].includes(name) && <label className="relative"><Search className="pointer-events-none absolute start-3 top-3 size-4 text-muted-foreground" /><Input aria-label={labels.search} value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="min-h-11 ps-9" placeholder={labels.search} /></label>}</div></CardHeader><CardContent><ResponsiveRecords rows={state.rows} status={state.status} type={name} locale={locale} mode={mode} empty={labels.no_data} />{state.meta && <Pagination meta={state.meta} onPrev={() => setPage((p) => p - 1)} onNext={() => setPage((p) => p + 1)} />}</CardContent></Card>;
+    return <Card className="border-border/80 shadow-none"><CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between"><CardTitle className="text-base">{labels[name]}</CardTitle><div className="flex flex-wrap items-center gap-2">{exportHref && <Button asChild variant="outline" size="sm"><a href={exportHref}>CSV</a></Button>}{['products', 'orders'].includes(name) && <label className="relative"><Search className="pointer-events-none absolute start-3 top-3 size-4 text-muted-foreground" /><Input aria-label={labels.search} value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="min-h-11 ps-9" placeholder={labels.search} /></label>}</div></CardHeader><CardContent><ResponsiveRecords rows={state.rows} status={state.status} type={name} locale={locale} mode={mode} empty={labels.no_data} labels={labels} common={common} /></CardContent>{state.meta && <div className="px-6 pb-4"><Pagination meta={state.meta} onPrev={() => setPage((p) => p - 1)} onNext={() => setPage((p) => p + 1)} /></div>}</Card>;
 }
 
-function ResponsiveRecords({ rows, status, type, locale, mode, empty }) {
+function ResponsiveRecords({ rows, status, type, locale, mode, empty, labels, common }) {
     if (status === 'loading' || status === 'idle') return <div className="space-y-2" aria-busy="true">{[1,2,3,4].map((i) => <div key={i} className="h-14 animate-pulse rounded-md bg-muted" />)}</div>;
     if (!rows.length) return <Empty text={empty} />;
+    if (type === 'orders') return <div className="space-y-2">{rows.map((row, index) => <OrderDetailRow key={row?.id ?? index} row={row} locale={locale} labels={labels} common={common} />)}</div>;
     return <div className="space-y-2">{rows.map((row, index) => <div key={row?.id ?? index} className="grid gap-2 rounded-lg border border-border p-3 text-sm md:grid-cols-[minmax(12rem,2fr)_repeat(4,minmax(7rem,1fr))] md:items-center"><Record row={row} type={type} locale={locale} mode={mode} /></div>)}</div>;
 }
 function Record({ row, type, locale, mode }) {
     if (type === 'products') return <><Link href={mode === 'admin' ? route('admin.products.show', row.id) : '#'} className="flex items-center gap-3 font-semibold"><Avatar className="size-10 rounded-md"><AvatarImage src={row.image_url} /><AvatarFallback><Package className="size-4" /></AvatarFallback></Avatar>{row.name}</Link><span>{row.category?.name}</span><span>{row.units_sold} units</span><span>{formatValue(row.completed_sales_amount, true, locale)}</span><span>{row.status} · {row.is_active ? 'active' : 'inactive'}</span></>;
-    if (type === 'orders') return <><span className="font-semibold">{row.order_number}</span><span>{row.customer?.name}</span><span>{row.item_count} items</span><span>{formatValue(row.scoped_sales ?? row.subtotal, true, locale)}</span><StatusBadge tone={row.status === 'completed' ? 'success' : 'warning'}>{row.status}</StatusBadge></>;
     if (type === 'returns') return <><span className="font-semibold">{row.return_number}</span><span>{row.order?.order_number}</span><span>{row.reason}</span><span>{formatValue(row.refund_amount ?? row.scoped_return_amount, true, locale)}</span><span>{row.status}</span></>;
     if (type === 'finance') return <><span className="font-semibold">{row.type}</span><span>{row.order?.order_number ?? '—'}</span><span>{row.direction}</span><span>{formatValue(row.amount, true, locale)}</span><span>{formatDate(row.created_at, locale)}</span></>;
     if (type === 'documents') return <><span className="font-semibold">{row.title}</span><span>{row.type_name}</span><span>{row.status_name}</span><span>{row.reviewed_by ?? '—'}</span><span>{formatDate(row.created_at, locale)}</span></>;
     if (type === 'staff') return <><span className="font-semibold">{row.name}</span><span>{row.email}</span><span>{row.role_name}</span><span>{row.status ?? 'owner'}</span><span>{formatDate(row.joined_at, locale)}</span></>;
     return <><span className="font-semibold">{row.action}</span><span>{row.actor?.name ?? '—'}</span><span>{row.entity_type}</span><span>{row.entity_id}</span><span>{formatDate(row.created_at, locale)}</span></>;
+}
+
+/**
+ * Full order detail, expanded on demand - admin and syndicate viewers both
+ * get the complete picture (what was sold, to whom, address, payment,
+ * coupon, and full status history), not a restricted summary.
+ */
+function OrderDetailRow({ row, locale, labels, common }) {
+    const [open, setOpen] = useState(false);
+    const address = row.shipping_address ?? {};
+    const addressLine = [address.street, address.district, address.city, address.governorate].filter(Boolean).join(', ');
+
+    return (
+        <div className="rounded-lg border border-border p-3 text-sm">
+            <button type="button" onClick={() => setOpen((o) => !o)} className="grid w-full gap-2 text-start md:grid-cols-[minmax(12rem,2fr)_repeat(4,minmax(7rem,1fr))] md:items-center">
+                <span className="font-semibold">{row.order_number}</span>
+                <span>{row.customer?.name}</span>
+                <span>{row.item_count} items</span>
+                <span>{formatValue(row.scoped_sales ?? row.subtotal, true, locale)}</span>
+                <StatusBadge tone={row.status === 'completed' ? 'success' : row.status === 'cancelled' ? 'danger' : 'warning'}>{row.status}</StatusBadge>
+            </button>
+
+            {open && (
+                <div className="mt-3 space-y-4 border-t border-border pt-3">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        <section>
+                            <h4 className="mb-1.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">{labels.shipping_address}</h4>
+                            <p>{address.recipient_name ?? common.not_specified}</p>
+                            <p className="text-muted-foreground">{[address.phone, address.alternate_phone].filter(Boolean).join(' / ') || common.not_specified}</p>
+                            <p className="text-muted-foreground">{addressLine || common.not_specified}</p>
+                            {address.building && <p className="text-muted-foreground">{labels.building}: {address.building}{address.floor ? ` · ${labels.floor}: ${address.floor}` : ''}</p>}
+                            {address.landmark && <p className="text-muted-foreground">{labels.landmark}: {address.landmark}</p>}
+                            {address.notes && <p className="text-muted-foreground">{labels.notes}: {address.notes}</p>}
+                        </section>
+
+                        <section>
+                            <h4 className="mb-1.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">{labels.payment_info}</h4>
+                            {row.payment ? (
+                                <>
+                                    <p>{row.payment.provider} · {row.payment.method}</p>
+                                    <p className="text-muted-foreground">{labels.payment_amount}: {formatValue(row.payment.amount, true, locale)}{Number(row.payment.refunded_amount) > 0 ? ` · ${labels.refunded_amount}: ${formatValue(row.payment.refunded_amount, true, locale)}` : ''}</p>
+                                    <StatusBadge tone={row.payment.status === 'paid' ? 'success' : row.payment.status === 'failed' ? 'danger' : 'warning'}>{row.payment.status}</StatusBadge>
+                                    {row.payment.provider_reference && <p className="mt-1 text-muted-foreground">{labels.reference}: {row.payment.provider_reference}</p>}
+                                    {row.payment.failure_reason && <p className="text-muted-foreground">{labels.failure_reason}: {row.payment.failure_reason}</p>}
+                                </>
+                            ) : <p className="text-muted-foreground">{common.not_specified}</p>}
+                            {row.coupon && <p className="mt-2 text-muted-foreground">{labels.coupon}: {row.coupon.code} ({row.coupon.type} {row.coupon.value})</p>}
+                        </section>
+                    </div>
+
+                    <section>
+                        <h4 className="mb-1.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">{labels.products}</h4>
+                        <ul className="space-y-1">
+                            {row.products?.map((item) => (
+                                <li key={item.id} className="flex items-center justify-between gap-3 rounded-md bg-muted/30 px-3 py-1.5">
+                                    <span className="min-w-0 truncate">{item.name} × {item.quantity}</span>
+                                    <span className="shrink-0 tabular-nums text-muted-foreground">{item.has_discount ? <><s className="me-1.5">{formatValue(item.original_unit_price, true, locale)}</s>{formatValue(item.unit_price, true, locale)}</> : formatValue(item.unit_price, true, locale)} · {formatValue(item.line_total, true, locale)}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+
+                    {row.status_history?.length > 0 && (
+                        <section>
+                            <h4 className="mb-1.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">{labels.status_history}</h4>
+                            <ul className="space-y-1 text-muted-foreground">
+                                {row.status_history.map((h, i) => (
+                                    <li key={i}>{h.from ? `${h.from} → ${h.to}` : h.to} — {formatDate(h.created_at, locale)}{h.changed_by ? ` · ${labels.changed_by}: ${h.changed_by}` : ''}{h.reason ? ` · ${h.reason}` : ''}</li>
+                                ))}
+                            </ul>
+                        </section>
+                    )}
+
+                    {row.cancellation && (
+                        <section>
+                            <h4 className="mb-1.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">{labels.cancellation}</h4>
+                            <p className="text-muted-foreground">{labels.reason}: {row.cancellation.reason ?? common.not_specified}{row.cancellation.cancelled_by ? ` · ${labels.cancelled_by}: ${row.cancellation.cancelled_by}` : ''}{row.cancellation.cancelled_at ? ` · ${formatDate(row.cancellation.cancelled_at, locale)}` : ''}</p>
+                            {row.cancellation.notes && <p className="text-muted-foreground">{row.cancellation.notes}</p>}
+                        </section>
+                    )}
+                </div>
+            )}
+        </div>
+    );
 }
 
 function Empty({ text }) { return <div className="col-span-full rounded-md border border-dashed border-border py-10 text-center text-sm text-muted-foreground">{text}</div>; }

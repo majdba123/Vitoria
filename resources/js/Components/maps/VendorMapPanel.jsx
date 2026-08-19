@@ -5,10 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
 import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
 import { Skeleton } from '@/Components/ui/skeleton';
-import { useI18n } from '@/hooks/use-i18n';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { VendorMap } from './VendorMap';
 
-const EMPTY_PAYLOAD = { vendors: [], unmapped: [], counts: { total: 0, mapped: 0, unmapped: 0 }, cities: [] };
+const EMPTY_PAYLOAD = { governorates: [], unassigned: [], counts: { total: 0, assigned: 0, unassigned: 0 }, cities: [] };
 
 /**
  * The Map half of the Table/Map switch, shared by the Admin Vendors page and the
@@ -21,6 +21,7 @@ const EMPTY_PAYLOAD = { vendors: [], unmapped: [], counts: { total: 0, mapped: 0
  */
 export function VendorMapPanel({ endpoint, filters = {} }) {
     const { common } = useI18n();
+    const locale = useLocale();
     const [cityId, setCityId] = useState('all');
     const [status, setStatus] = useState('loading');
     const [payload, setPayload] = useState(EMPTY_PAYLOAD);
@@ -55,7 +56,7 @@ export function VendorMapPanel({ endpoint, filters = {} }) {
         [common],
     );
 
-    const { vendors, unmapped, counts, cities } = payload;
+    const { governorates, unassigned, counts, cities } = payload;
 
     if (status === 'error') {
         return (
@@ -98,8 +99,8 @@ export function VendorMapPanel({ endpoint, filters = {} }) {
                 <dl className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     {[
                         [common.map_count_total, counts.total],
-                        [common.map_count_mapped, counts.mapped],
-                        [common.map_count_unmapped, counts.unmapped],
+                        [common.map_count_mapped, counts.assigned],
+                        [common.map_count_unmapped, counts.unassigned],
                     ].map(([label, value]) => (
                         <div key={label} className="rounded-md border border-border bg-muted/40 px-4 py-3">
                             <dt className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{label}</dt>
@@ -110,17 +111,15 @@ export function VendorMapPanel({ endpoint, filters = {} }) {
 
                 {status === 'loading' ? (
                     <Skeleton className="h-[26rem] w-full" />
-                ) : vendors.length === 0 ? (
-                    <p className="rounded-lg border border-dashed border-border px-4 py-12 text-center text-sm text-muted-foreground">{common.map_empty}</p>
                 ) : (
                     <>
-                        <VendorMap points={vendors} labels={mapLabels} />
-                        {/* Text alternative for the canvas: every pin is also reachable
-                            as real content for assistive technology. */}
+                        <VendorMap governorates={governorates} labels={mapLabels} locale={locale} />
+                        {/* Text alternative for the canvas: every governorate count is
+                            also reachable as real content for assistive technology. */}
                         <ul className="sr-only">
-                            {vendors.map((vendor) => (
-                                <li key={vendor.id}>
-                                    {[vendor.store_name, vendor.address, vendor.city_name].filter(Boolean).join(' — ')}
+                            {governorates.map((governorate) => (
+                                <li key={governorate.key}>
+                                    {(locale === 'ar' ? governorate.name_ar : governorate.name_en)}: {governorate.vendor_count}
                                 </li>
                             ))}
                         </ul>
@@ -131,11 +130,11 @@ export function VendorMapPanel({ endpoint, filters = {} }) {
                     <h3 id="map-unmapped-heading" className="text-sm font-bold text-foreground">{common.map_unmapped_title}</h3>
                     {status === 'loading' ? (
                         <Skeleton className="h-20 w-full" />
-                    ) : unmapped.length === 0 ? (
+                    ) : unassigned.length === 0 ? (
                         <p className="rounded-md border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">{common.map_unmapped_empty}</p>
                     ) : (
                         <ul className="space-y-2">
-                            {unmapped.map((vendor) => (
+                            {unassigned.map((vendor) => (
                                 <li key={vendor.id} className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3">
                                     <div className="min-w-0">
                                         <p className="truncate text-sm font-semibold text-foreground">{vendor.store_name}</p>
