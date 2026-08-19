@@ -85,6 +85,18 @@ class ProductController extends Controller
             ? trim((string) $request->input('category_type')) ?: null
             : $this->preferredCategoryType($request);
 
+        // A browsing session can filter this listing to a type that differs from the
+        // stored preference (e.g. switching the in-page filter without redoing onboarding).
+        // Remember it now so the next request — a product detail page, which carries no
+        // filter query string — resolves the same type instead of 404ing on a mismatch
+        // against the stale preference.
+        if ($filters['category_type']) {
+            $normalizedType = $this->selectedProductTypeService->normalize($filters['category_type']);
+            if ($normalizedType) {
+                $this->selectedProductTypeService->remember($request, $normalizedType);
+            }
+        }
+
         $products = $this->productService->listPublic($perPage, $filters);
 
         return response()->json([

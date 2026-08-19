@@ -225,10 +225,17 @@ class CategoryController extends Controller
         if (! $this->isAdminRequest($request)) {
             if ($request->has('type')) {
                 $type = trim((string) $request->input('type'));
+                $normalizedType = $this->selectedProductTypeService->normalize($type);
 
-                return in_array($type, [Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY], true)
-                    ? $type
-                    : null;
+                // A listing filtered to an explicit type must also become the remembered
+                // preference — otherwise the very next request (e.g. opening one of the
+                // categories just shown, which carries no ?type= of its own) resolves the
+                // stale preference instead and 404s on the mismatch check in show().
+                if ($normalizedType) {
+                    $this->selectedProductTypeService->remember($request, $normalizedType);
+                }
+
+                return $normalizedType;
             }
 
             return $this->selectedProductTypeService->resolve($request);

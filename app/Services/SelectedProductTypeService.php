@@ -39,6 +39,15 @@ class SelectedProductTypeService
         }
 
         Cookie::queue(cookie(self::COOKIE_NAME, $normalizedType, 60 * 24 * 30));
+
+        // resolve() prefers the authenticated user's stored preference over session/cookie,
+        // so an in-page filter switch has to update that column too — otherwise a logged-in
+        // regular user's DB preference keeps winning and the mismatch this call is meant to
+        // prevent still happens on the very next request.
+        $user = $request->user();
+        if ($user instanceof User && $user->type === User::TYPE_USER && $user->preferred_product_type !== $normalizedType) {
+            $user->forceFill(['preferred_product_type' => $normalizedType])->save();
+        }
     }
 
     public function normalize(?string $type): ?string

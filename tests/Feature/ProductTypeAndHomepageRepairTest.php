@@ -305,6 +305,25 @@ test('public detail endpoints do not expose opposite type data', function () {
         ->assertNotFound();
 });
 
+test('switching the in-page listing filter away from the stored preference does not 404 the products it just showed', function () {
+    // Regression: a user whose remembered preference is veterinary can filter the
+    // /products listing to agriculture in-page (no re-onboarding). ProductCard links
+    // built from that listing carry no query string, so the follow-up product-detail
+    // request must resolve the same type the listing just used — not the stale
+    // session/cookie preference — or every agricultural product it displayed 404s.
+    $agriculture = repairCategorySet(Category::TYPE_AGRICULTURE, 'Filter Switch Agriculture');
+    $user = User::factory()->create([
+        'type' => User::TYPE_USER,
+        'preferred_product_type' => Category::TYPE_VETERINARY,
+    ]);
+    $this->actingAs($user);
+
+    $listing = $this->getJson('/api/products?category_type='.Category::TYPE_AGRICULTURE)->assertOk();
+    expect(collect($listing->json('data'))->pluck('id'))->toContain($agriculture['product']->id);
+
+    $this->getJson('/api/products/'.$agriculture['product']->id)->assertOk();
+});
+
 test('syndicate login redirects to syndicate dashboard and skips user type selection', function () {
     $user = User::factory()->syndicate()->create([
         'phone_number' => '0998000001',
