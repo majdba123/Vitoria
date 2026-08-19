@@ -7,6 +7,7 @@ import { DataState } from '@/Components/public/DataState';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { useReducedMotion } from '@/hooks/use-reduced-motion';
+import { useInView } from '@/hooks/use-in-view';
 import { categoryImageUrl } from '@/lib/category-image';
 
 const TYPE_META = {
@@ -44,6 +45,57 @@ function PartnerLogoMarquee({ locale, reducedMotion }) {
                     />
                 ))}
             </div>
+        </div>
+    );
+}
+
+// The agriculture/veterinary picker: a large decorative watermark of the type's own
+// icon plus a scroll-triggered, staggered entrance. Each card needs its own
+// intersection state, so this is a real component rather than inline map body.
+function TypeCard({ value, meta, index, isSelected, home }) {
+    const reducedMotion = useReducedMotion();
+    const [ref, inView] = useInView({ skip: reducedMotion });
+    const Icon = meta.icon;
+
+    return (
+        <Link
+            ref={ref}
+            href={route('product-type.select', { preferred_product_type: value, redirect_to: 'home' })}
+            className={`home-type-card group ${isSelected ? 'is-selected' : ''} ${reducedMotion ? '' : 'reveal-up'} ${inView ? 'is-in-view' : ''}`}
+            style={reducedMotion ? undefined : { '--reveal-delay': `${index * 140}ms` }}
+            aria-current={isSelected ? 'true' : undefined}
+        >
+            <Icon className="home-type-watermark" aria-hidden="true" />
+            <span className="home-type-number" aria-hidden="true">0{index + 1}</span>
+            <span className="icon-chip h-12 w-12 shrink-0 text-lg"><Icon className="size-6" /></span>
+            <span className="min-w-0 flex-1">
+                <span className="flex items-center gap-2">
+                    <span className="text-xl font-bold text-foreground">{home[meta.labelKey]}</span>
+                    {isSelected && <span className="badge badge-brand">{home.type_selected_now}</span>}
+                </span>
+                <span className="mt-1 block text-sm leading-6 text-muted-foreground">{home[meta.descKey]}</span>
+            </span>
+            <span className="home-type-action">
+                {home[meta.buttonKey]}
+                <ArrowRight className="h-4 w-4 shrink-0 rtl:-scale-x-100" />
+            </span>
+        </Link>
+    );
+}
+
+// One shared observer for the whole category grid rather than one per card - the grid
+// can hold a couple dozen categories, and they should settle into view together with a
+// light stagger, not each pay for their own IntersectionObserver instance.
+function CategoryGridReveal({ children }) {
+    const reducedMotion = useReducedMotion();
+    const [ref, inView] = useInView({ skip: reducedMotion });
+
+    return (
+        <div
+            ref={ref}
+            className={`grid grid-cols-1 gap-4 min-[520px]:grid-cols-2 xl:grid-cols-4 ${reducedMotion ? '' : 'reveal-stagger'} ${inView ? 'is-in-view' : ''}`}
+        >
+            {children}
         </div>
     );
 }
@@ -347,32 +399,9 @@ export default function Home({ selectedType }) {
                     <p className="commerce-copy">{home.type_selector_copy}</p>
                 </div>
                 <div className="home-type-grid">
-                    {Object.entries(TYPE_META).map(([value, meta], index) => {
-                        const isSelected = selectedType === value;
-                        const Icon = meta.icon;
-                        return (
-                            <Link
-                                key={value}
-                                href={route('product-type.select', { preferred_product_type: value, redirect_to: 'home' })}
-                                className={`home-type-card group ${isSelected ? 'is-selected' : ''}`}
-                                aria-current={isSelected ? 'true' : undefined}
-                            >
-                                <span className="home-type-number" aria-hidden="true">0{index + 1}</span>
-                                <span className="icon-chip h-12 w-12 shrink-0 text-lg"><Icon className="size-6" /></span>
-                                <span className="min-w-0 flex-1">
-                                    <span className="flex items-center gap-2">
-                                        <span className="text-xl font-bold text-foreground">{home[meta.labelKey]}</span>
-                                        {isSelected && <span className="badge badge-brand">{home.type_selected_now}</span>}
-                                    </span>
-                                    <span className="mt-1 block text-sm leading-6 text-muted-foreground">{home[meta.descKey]}</span>
-                                </span>
-                                <span className="home-type-action">
-                                    {home[meta.buttonKey]}
-                                    <ArrowRight className="h-4 w-4 shrink-0 rtl:-scale-x-100" />
-                                </span>
-                            </Link>
-                        );
-                    })}
+                    {Object.entries(TYPE_META).map(([value, meta], index) => (
+                        <TypeCard key={value} value={value} meta={meta} index={index} isSelected={selectedType === value} home={home} />
+                    ))}
                 </div>
             </section>
 
@@ -397,7 +426,7 @@ export default function Home({ selectedType }) {
                             {categoriesStatus === 'error' && <p className="text-sm text-muted-foreground">{home.could_not_load}</p>}
 
                             {categoriesStatus === 'ready' && (
-                                <div className="grid grid-cols-1 gap-4 min-[520px]:grid-cols-2 xl:grid-cols-4">
+                                <CategoryGridReveal>
                                     {categories.map((category) => {
                                         const subs = category.subcategories ?? [];
                                         const preview = subs.slice(0, 3);
@@ -438,7 +467,7 @@ export default function Home({ selectedType }) {
                                             </article>
                                         );
                                     })}
-                                </div>
+                                </CategoryGridReveal>
                             )}
                         </div>
                     </section>

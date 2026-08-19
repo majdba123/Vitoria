@@ -1717,6 +1717,43 @@
         color: var(--color-brand-strong);
     }
 
+    /* Generic scroll-entrance utilities (see useInView): scale rather than translate,
+       so a card revealing near the bottom of an overflow-hidden ancestor never gets
+       clipped mid-animation the way a slide-up would. Skipped entirely under
+       prefers-reduced-motion by the components that use them, not by media query here,
+       since those components render the final, settled markup instead of this class. */
+    .reveal-up {
+        opacity: 0;
+        transform: scale(0.97);
+        transition: opacity 550ms cubic-bezier(0.16, 1, 0.3, 1), transform 550ms cubic-bezier(0.16, 1, 0.3, 1);
+        transition-delay: var(--reveal-delay, 0ms);
+    }
+
+    .reveal-up.is-in-view {
+        opacity: 1;
+        transform: none;
+    }
+
+    .reveal-stagger > * {
+        opacity: 0;
+        transform: scale(0.97);
+        transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1), transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal-stagger.is-in-view > * {
+        opacity: 1;
+        transform: none;
+    }
+
+    .reveal-stagger.is-in-view > *:nth-child(1) { transition-delay: 0ms; }
+    .reveal-stagger.is-in-view > *:nth-child(2) { transition-delay: 60ms; }
+    .reveal-stagger.is-in-view > *:nth-child(3) { transition-delay: 120ms; }
+    .reveal-stagger.is-in-view > *:nth-child(4) { transition-delay: 180ms; }
+    .reveal-stagger.is-in-view > *:nth-child(5) { transition-delay: 240ms; }
+    .reveal-stagger.is-in-view > *:nth-child(6) { transition-delay: 300ms; }
+    .reveal-stagger.is-in-view > *:nth-child(7) { transition-delay: 360ms; }
+    .reveal-stagger.is-in-view > *:nth-child(8) { transition-delay: 420ms; }
+
     .home-type-selector {
         @apply grid gap-5 py-10 lg:py-12;
         max-width: var(--content-max);
@@ -1734,15 +1771,19 @@
     }
 
     .home-type-card {
-        @apply relative grid min-h-52 grid-cols-[auto_1fr] content-start gap-x-4 gap-y-4 p-5 text-start sm:p-6;
+        @apply relative grid min-h-52 grid-cols-[auto_1fr] content-start gap-x-4 gap-y-4 overflow-hidden p-5 text-start sm:p-6;
         background: var(--color-surface);
         color: var(--color-text);
-        transition: background-color 150ms ease, color 150ms ease;
+        transition: background-color 200ms ease, box-shadow 200ms ease;
     }
 
     .home-type-card:hover,
     .home-type-card.is-selected {
         background: var(--color-brand-soft);
+    }
+
+    .home-type-card:hover {
+        box-shadow: inset 0 0 0 1px var(--color-brand);
     }
 
     .home-type-card.is-selected::before {
@@ -1752,6 +1793,44 @@
         inset-inline-start: 0;
         width: 3px;
         background: var(--color-brand);
+        z-index: 1;
+    }
+
+    /* Large, low-opacity copy of the card's own icon, bleeding off the corner - gives
+       each choice its own identity without needing dedicated photography, and stays
+       inert (no motion) unless the visitor is actually pointing at the card. */
+    .home-type-watermark {
+        position: absolute;
+        inset-inline-end: -1.25rem;
+        inset-block-end: -1.25rem;
+        width: 8rem;
+        height: 8rem;
+        color: var(--color-brand);
+        opacity: 0.06;
+        transform: rotate(-8deg) scale(1);
+        transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms ease;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .home-type-card:hover .home-type-watermark,
+    .home-type-card.is-selected .home-type-watermark {
+        opacity: 0.12;
+        transform: rotate(-3deg) scale(1.08);
+    }
+
+    /* Everything but the watermark sits above it, regardless of paint-order edge cases. */
+    .home-type-card > :not(.home-type-watermark) {
+        position: relative;
+        z-index: 1;
+    }
+
+    .home-type-card .icon-chip {
+        transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .home-type-card:hover .icon-chip {
+        transform: scale(1.08) rotate(-4deg);
     }
 
     .home-type-number {
@@ -1797,6 +1876,12 @@
         border-radius: var(--radius-card);
         background: var(--color-surface);
         border-color: var(--color-border);
+        transition: border-color 200ms ease, box-shadow 200ms ease;
+    }
+
+    .storefront-category-card:hover {
+        border-color: var(--color-brand);
+        box-shadow: 0 0 0 1px var(--color-brand);
     }
 
     .storefront-category-card .shop-card-media {
@@ -1806,6 +1891,11 @@
     .storefront-category-card .shop-card-media-img {
         object-fit: cover;
         padding: 0;
+        transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .storefront-category-card:hover .shop-card-media-img {
+        transform: scale(1.06);
     }
 
     .storefront-category-card .shop-card-media-img[src*='/category-fallbacks/'] {
