@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Vendor;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -22,9 +23,10 @@ class VendorCategoryController extends Controller
             ], 404);
         }
 
-        $categories = $vendor->categories()
+        $categories = Category::query()
+            ->compatibleWithVendor($vendor)
             ->with('subcategories')
-            ->when($request->filled('type'), fn ($query) => $query->where('categories.type', (string) $request->string('type')))
+            ->when($request->filled('type'), fn ($query) => $query->where('type', (string) $request->string('type')))
             ->get();
 
         return response()->json([

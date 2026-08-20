@@ -75,6 +75,19 @@ class Vendor extends Model
     }
 
     /**
+     * @return list<string>
+     */
+    public static function categoryTypesForBusinessType(?string $businessType): array
+    {
+        return match ($businessType) {
+            self::BUSINESS_TYPE_AGRICULTURE => [Category::TYPE_AGRICULTURE],
+            self::BUSINESS_TYPE_VETERINARY => [Category::TYPE_VETERINARY],
+            self::BUSINESS_TYPE_BOTH => [Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY],
+            default => [],
+        };
+    }
+
+    /**
      * The city where the store is located.
      */
     public function city(): BelongsTo

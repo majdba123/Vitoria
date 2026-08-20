@@ -93,6 +93,11 @@ class Category extends Model
         return $query->where('type', $type);
     }
 
+    public function scopeCompatibleWithVendor(Builder $query, Vendor $vendor): Builder
+    {
+        return $query->whereIn('type', Vendor::categoryTypesForBusinessType($vendor->business_type));
+    }
+
     public function isAgriculture(): bool
     {
         return $this->type === self::TYPE_AGRICULTURE;
