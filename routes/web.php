@@ -10,6 +10,8 @@ Route::get('/', function (\Illuminate\Http\Request $request) {
     ]);
 })->name('home');
 
+Route::get('/contact', fn () => Inertia::render('Contact'))->name('contact');
+
 // robots.txt and sitemap.xml must be served from the domain root — crawlers
 // don't look under /api for them — so these live here rather than in
 // routes/api.php (which is mounted at the /api prefix).

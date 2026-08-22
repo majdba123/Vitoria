@@ -4,7 +4,6 @@ namespace App\Services\Vendor;
 
 use App\Models\City;
 use App\Models\Vendor;
-use App\Support\SyriaGovernorates;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -18,15 +17,9 @@ class VendorMapService
      * caller's scope - a Syndicate can therefore never be widened past the
      * vendors its own scope already allows.
      *
-     * The map is deliberately governorate-level only: individual vendor
-     * `latitude`/`longitude` never leave this service. Vendors are grouped by
-     * their city's governorate and only the count per governorate is
-     * returned, plotted at a fixed governorate centroid - never a real
-     * vendor address.
-     *
      * @param  Closure(): Builder  $scope
      * @param  array{city_id?: int|null, business_type?: string|null, status?: string|null}  $filters
-     * @return array{governorates: list<array<string, mixed>>, unassigned: list<array<string, mixed>>, counts: array<string, int>, cities: list<array{id: int, name: string}>}
+     * @return array{vendors: list<array<string, mixed>>, unmapped: list<array<string, mixed>>, counts: array<string, int>, cities: list<array{id: int, name: string}>}
      */
     public function payload(Closure $scope, array $filters, bool $withAdminActions): array
     {
@@ -36,38 +29,17 @@ class VendorMapService
             ->orderBy('store_name')
             ->get();
 
-        [$assigned, $unassigned] = $vendors->partition(
-            fn (Vendor $vendor): bool => $vendor->city_id !== null,
+        [$mapped, $unmapped] = $vendors->partition(
+            fn (Vendor $vendor): bool => $vendor->latitude !== null && $vendor->longitude !== null,
         );
 
-        $countsByGovernorate = [];
-        foreach ($assigned as $vendor) {
-            $key = SyriaGovernorates::keyForCity($vendor->city?->name);
-            if ($key === null) {
-                continue;
-            }
-            $countsByGovernorate[$key] = ($countsByGovernorate[$key] ?? 0) + 1;
-        }
-
-        $governorates = collect(SyriaGovernorates::ALL)
-            ->map(fn (array $governorate): array => [
-                'key' => $governorate['key'],
-                'name_en' => $governorate['name_en'],
-                'name_ar' => $governorate['name_ar'],
-                'lat' => $governorate['lat'],
-                'lng' => $governorate['lng'],
-                'vendor_count' => $countsByGovernorate[$governorate['key']] ?? 0,
-            ])
-            ->values()
-            ->all();
-
         return [
-            'governorates' => $governorates,
-            'unassigned' => $unassigned->map(fn (Vendor $vendor): array => $this->point($vendor, $withAdminActions))->values()->all(),
+            'vendors' => $mapped->map(fn (Vendor $vendor): array => $this->point($vendor, $withAdminActions, true))->values()->all(),
+            'unmapped' => $unmapped->map(fn (Vendor $vendor): array => $this->point($vendor, $withAdminActions))->values()->all(),
             'counts' => [
                 'total' => $vendors->count(),
-                'assigned' => $assigned->count(),
-                'unassigned' => $unassigned->count(),
+                'mapped' => $mapped->count(),
+                'unmapped' => $unmapped->count(),
             ],
             'cities' => $this->cities($scope()),
         ];
@@ -119,7 +91,7 @@ class VendorMapService
      *
      * @return array<string, mixed>
      */
-    protected function point(Vendor $vendor, bool $withAdminActions): array
+    protected function point(Vendor $vendor, bool $withAdminActions, bool $withCoordinates = false): array
     {
         $point = [
             'id' => $vendor->id,
@@ -133,6 +105,11 @@ class VendorMapService
             'status' => $vendor->status,
             'products_count' => (int) ($vendor->products_count ?? 0),
         ];
+
+        if ($withCoordinates) {
+            $point['latitude'] = (float) $vendor->latitude;
+            $point['longitude'] = (float) $vendor->longitude;
+        }
 
         if ($withAdminActions) {
             $point['edit_url'] = route('admin.vendors.edit', $vendor->id);

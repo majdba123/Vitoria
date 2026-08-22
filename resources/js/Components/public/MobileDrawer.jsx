@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from '@inertiajs/react';
-import { X, LayoutGrid, Layers, ChevronRight, LogOut, HelpCircle, Search } from 'lucide-react';
+import { X, LayoutGrid, Layers, ChevronRight, LogOut, HelpCircle, Search, Mail } from 'lucide-react';
 import { useAuthUser, useI18n, useLocale } from '@/hooks/use-i18n';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
@@ -85,6 +85,10 @@ export function MobileDrawer({ open, onClose, categories }) {
                         <Link href={route('faq')} onClick={onClose} className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent/50">
                             <HelpCircle className="size-5 text-muted-foreground" />
                             {nav.faq}
+                        </Link>
+                        <Link href={route('contact')} onClick={onClose} className="flex items-center gap-3 rounded-md px-3 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-accent/50">
+                            <Mail className="size-5 text-muted-foreground" />
+                            {nav.contact_us}
                         </Link>
                     </div>
 

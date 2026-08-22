@@ -5,10 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
 import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
 import { Skeleton } from '@/Components/ui/skeleton';
-import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { useI18n } from '@/hooks/use-i18n';
 import { VendorMap } from './VendorMap';
 
-const EMPTY_PAYLOAD = { governorates: [], unassigned: [], counts: { total: 0, assigned: 0, unassigned: 0 }, cities: [] };
+const EMPTY_PAYLOAD = { vendors: [], unmapped: [], counts: { total: 0, mapped: 0, unmapped: 0 }, cities: [] };
 
 /**
  * The Map half of the Table/Map switch, shared by the Admin Vendors page and the
@@ -19,10 +19,11 @@ const EMPTY_PAYLOAD = { governorates: [], unassigned: [], counts: { total: 0, as
  * `filters` are the caller's own table filters, forwarded so the two views stay
  * in step; the city filter lives here because it is map-specific.
  */
-export function VendorMapPanel({ endpoint, filters = {} }) {
+export function VendorMapPanel({ endpoint, filters = {}, cityId: controlledCityId, onCityIdChange, showCityFilter = true }) {
     const { common } = useI18n();
-    const locale = useLocale();
-    const [cityId, setCityId] = useState('all');
+    const [localCityId, setLocalCityId] = useState('all');
+    const cityId = controlledCityId ?? localCityId;
+    const setCityId = onCityIdChange ?? setLocalCityId;
     const [status, setStatus] = useState('loading');
     const [payload, setPayload] = useState(EMPTY_PAYLOAD);
 
@@ -56,7 +57,7 @@ export function VendorMapPanel({ endpoint, filters = {} }) {
         [common],
     );
 
-    const { governorates, unassigned, counts, cities } = payload;
+    const { vendors, unmapped, counts, cities } = payload;
 
     if (status === 'error') {
         return (
@@ -79,7 +80,7 @@ export function VendorMapPanel({ endpoint, filters = {} }) {
                     <CardTitle className="text-base font-bold">{common.map_title}</CardTitle>
                     <p className="mt-1 text-xs text-muted-foreground">{common.map_copy}</p>
                 </div>
-                <div className="w-full sm:w-56">
+                {showCityFilter && <div className="w-full sm:w-56">
                     <label htmlFor="map-city-filter" className="mb-1.5 block text-sm font-medium">{common.map_city_filter}</label>
                     <Select value={cityId} onValueChange={setCityId}>
                         <SelectTrigger id="map-city-filter" className="w-full">
@@ -92,15 +93,15 @@ export function VendorMapPanel({ endpoint, filters = {} }) {
                             ))}
                         </SelectContent>
                     </Select>
-                </div>
+                </div>}
             </CardHeader>
 
             <CardContent className="space-y-5">
                 <dl className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     {[
                         [common.map_count_total, counts.total],
-                        [common.map_count_mapped, counts.assigned],
-                        [common.map_count_unmapped, counts.unassigned],
+                        [common.map_count_mapped, counts.mapped],
+                        [common.map_count_unmapped, counts.unmapped],
                     ].map(([label, value]) => (
                         <div key={label} className="rounded-md border border-border bg-muted/40 px-4 py-3">
                             <dt className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{label}</dt>
@@ -113,14 +114,10 @@ export function VendorMapPanel({ endpoint, filters = {} }) {
                     <Skeleton className="h-[26rem] w-full" />
                 ) : (
                     <>
-                        <VendorMap governorates={governorates} labels={mapLabels} locale={locale} />
-                        {/* Text alternative for the canvas: every governorate count is
-                            also reachable as real content for assistive technology. */}
+                        <VendorMap vendors={vendors} labels={mapLabels} />
                         <ul className="sr-only">
-                            {governorates.map((governorate) => (
-                                <li key={governorate.key}>
-                                    {(locale === 'ar' ? governorate.name_ar : governorate.name_en)}: {governorate.vendor_count}
-                                </li>
+                            {vendors.map((vendor) => (
+                                <li key={vendor.id}>{vendor.store_name}: {vendor.city_name}</li>
                             ))}
                         </ul>
                     </>
@@ -130,11 +127,11 @@ export function VendorMapPanel({ endpoint, filters = {} }) {
                     <h3 id="map-unmapped-heading" className="text-sm font-bold text-foreground">{common.map_unmapped_title}</h3>
                     {status === 'loading' ? (
                         <Skeleton className="h-20 w-full" />
-                    ) : unassigned.length === 0 ? (
+                    ) : unmapped.length === 0 ? (
                         <p className="rounded-md border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">{common.map_unmapped_empty}</p>
                     ) : (
                         <ul className="space-y-2">
-                            {unassigned.map((vendor) => (
+                            {unmapped.map((vendor) => (
                                 <li key={vendor.id} className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3">
                                     <div className="min-w-0">
                                         <p className="truncate text-sm font-semibold text-foreground">{vendor.store_name}</p>

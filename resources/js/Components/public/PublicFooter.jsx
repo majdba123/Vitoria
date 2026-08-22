@@ -93,7 +93,7 @@ export function PublicFooter() {
                         <div>
                             <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground">{footer.contact}</h2>
                             <ul className="mt-4 space-y-3 text-sm">
-                                <li><a href={`${route('home')}#contact`} className="text-muted-foreground transition-colors hover:text-primary">{footer.contact_us}</a></li>
+                                <li><Link href={route('contact')} className="text-muted-foreground transition-colors hover:text-primary">{footer.contact_us}</Link></li>
                                 {settings.contact_email && (
                                     <li className="flex items-center gap-2 text-muted-foreground">
                                         <Mail className="size-4 shrink-0" />

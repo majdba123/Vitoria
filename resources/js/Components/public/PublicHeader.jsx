@@ -49,6 +49,7 @@ export function PublicHeader() {
                         <CategoryMegaMenu categories={categories} />
                         <Link href={route('products.index')} aria-current={url.startsWith('/products') ? 'page' : undefined} className="nav-primary-link min-h-11">{nav.products}</Link>
                         <Link href={route('faq')} aria-current={url.startsWith('/faq') ? 'page' : undefined} className="nav-primary-link min-h-11">{nav.faq}</Link>
+                        <Link href={route('contact')} aria-current={url.startsWith('/contact') ? 'page' : undefined} className="nav-primary-link min-h-11">{nav.contact_us}</Link>
                     </div>
 
                     <form onSubmit={submitSearch} className="site-header-search" role="search">

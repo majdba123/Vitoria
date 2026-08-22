@@ -4,6 +4,7 @@ return [
     'categories' => 'Categories',
     'products' => 'Products',
     'faq' => 'FAQ',
+    'contact_us' => 'Contact Us',
     'stores' => 'Stores',
     'sign_in' => 'Sign In',
     'register' => 'Register',

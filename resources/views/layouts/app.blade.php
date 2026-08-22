@@ -153,7 +153,7 @@
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-[0.12em] text-gray-900 dark:text-gray-200">{{ __('footer.contact') }}</h3>
                     <ul class="mt-4 space-y-3 text-sm">
-                        <li><a href="{{ route('home') }}#contact" class="text-gray-500 transition-colors hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400">{{ __('footer.contact_us') }}</a></li>
+                        <li><a href="{{ route('contact') }}" class="text-gray-500 transition-colors hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400">{{ __('footer.contact_us') }}</a></li>
                         @if(!empty($footerSettings->contact_email))
                             <li class="flex items-center gap-2 text-gray-500 dark:text-gray-400">
                                 <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>

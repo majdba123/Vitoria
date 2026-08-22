@@ -62,11 +62,12 @@ class SyndicateDashboardService
             ->paginate($perPage);
     }
 
-    public function vendors(Syndicate $syndicate, int $perPage = 15): LengthAwarePaginator
+    public function vendors(Syndicate $syndicate, int $perPage = 15, ?int $cityId = null): LengthAwarePaginator
     {
         $type = $syndicate->type;
 
         return $this->vendorQuery($type)
+            ->when($cityId !== null, fn (Builder $query) => $query->where('vendors.city_id', $cityId))
             ->with(['user:id,name,email,phone_number', 'city:id,name', 'categories' => fn ($query) => $query->where('categories.type', $type)->select('categories.id', 'categories.name', 'categories.type')])
             ->withCount(['products' => fn ($query) => $query->whereHas('category', fn ($category) => $category->where('type', $type))])
             ->addSelect([

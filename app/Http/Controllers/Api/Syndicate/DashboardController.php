@@ -33,9 +33,13 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function vendors(Request $request): JsonResponse
+    public function vendors(VendorMapRequest $request): JsonResponse
     {
-        $vendors = $this->dashboardService->vendors($this->syndicate($request), $this->perPage($request));
+        $vendors = $this->dashboardService->vendors(
+            $this->syndicate($request),
+            $this->perPage($request),
+            $request->filters()['city_id'],
+        );
 
         return response()->json([
             'message' => __('Syndicate merchants retrieved successfully.'),

@@ -1,13 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { FALLBACK_CENTER, FALLBACK_ZOOM, TILE_ATTRIBUTION, TILE_URL, loadLeaflet } from './leaflet';
 
-/**
- * Read-only, Syria-only governorate map. This never plots a vendor's real
- * address or saved coordinates - it only shows how many vendors have a city
- * in each governorate, as a count badge centred on that governorate's fixed
- * reference point. No per-vendor location is ever sent to this component.
- */
-export function VendorMap({ governorates, labels, locale, className = 'h-[26rem]' }) {
+/** Read-only map of vendors that have persisted coordinate pairs. */
+export function VendorMap({ vendors, labels, className = 'h-[26rem]' }) {
     const containerRef = useRef(null);
     const mapRef = useRef(null);
     const layerRef = useRef(null);
@@ -67,20 +62,21 @@ export function VendorMap({ governorates, labels, locale, className = 'h-[26rem]
 
             layer.clearLayers();
 
-            governorates.forEach((governorate) => {
-                const position = [governorate.lat, governorate.lng];
-                const name = locale === 'ar' ? governorate.name_ar : governorate.name_en;
-                const count = Number(governorate.vendor_count ?? 0);
-
-                L.marker(position, { icon: countIcon(L, count) })
-                    .bindTooltip(`${name}: ${count}`, { direction: 'top', offset: [0, -6] })
-                    .addTo(layer);
+            const bounds = [];
+            vendors.forEach((vendor) => {
+                const latitude = Number(vendor.latitude);
+                const longitude = Number(vendor.longitude);
+                if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
+                const position = [latitude, longitude];
+                bounds.push(position);
+                L.marker(position).bindPopup(popup(vendor, labels)).addTo(layer);
             });
 
-            map.setView(FALLBACK_CENTER, FALLBACK_ZOOM);
+            if (bounds.length > 0) map.fitBounds(bounds, { padding: [32, 32], maxZoom: 13 });
+            else map.setView(FALLBACK_CENTER, FALLBACK_ZOOM);
             map.invalidateSize();
         });
-    }, [isReady, governorates, locale]);
+    }, [isReady, vendors, labels]);
 
     if (failed) {
         return (
@@ -101,19 +97,19 @@ export function VendorMap({ governorates, labels, locale, className = 'h-[26rem]
     );
 }
 
-/**
- * A round count badge rather than a pin - visually distinct from a location
- * marker, since this point is never a real address, just a governorate
- * total. Literal brand hexes (--color-brand-600/400 equivalents): the icon
- * is inline HTML/CSS handed to Leaflet, which cannot resolve a CSS var().
- */
-function countIcon(L, count) {
-    const empty = count === 0;
-
-    return L.divIcon({
-        className: '',
-        html: `<div style="display:flex;align-items:center;justify-content:center;min-width:2.25rem;height:2.25rem;padding:0 0.375rem;border-radius:9999px;border:2px solid ${empty ? '#9ca3af' : '#297497'};background:${empty ? '#f3f4f6' : '#29a9d1'};color:${empty ? '#6b7280' : '#ffffff'};font-weight:700;font-size:0.8125rem;box-shadow:0 1px 3px rgba(0,0,0,0.25);">${count}</div>`,
-        iconSize: [36, 36],
-        iconAnchor: [18, 18],
+function popup(vendor, labels) {
+    const root = document.createElement('div');
+    root.dir = 'auto';
+    [vendor.store_name, vendor.business_type_label, vendor.city_name, vendor.address].filter(Boolean).forEach((value, index) => {
+        const line = document.createElement(index === 0 ? 'strong' : 'div');
+        line.textContent = value;
+        root.appendChild(line);
     });
+    if (vendor.edit_url) {
+        const link = document.createElement('a');
+        link.href = vendor.edit_url;
+        link.textContent = labels.edit;
+        root.appendChild(link);
+    }
+    return root;
 }
