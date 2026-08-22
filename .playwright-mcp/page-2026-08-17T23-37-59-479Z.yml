@@ -1,0 +1,210 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - navigation:
+          - generic:
+            - generic:
+              - list:
+                - listitem:
+                  - link:
+                    - /url: http://127.0.0.1:8000/admin/dashboard
+                    - generic:
+                      - generic: Vetora
+                      - generic: Admin
+            - generic:
+              - generic:
+                - generic: Overview
+                - generic:
+                  - list:
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/dashboard
+                        - generic: Dashboard
+              - generic:
+                - generic: Management
+                - generic:
+                  - list:
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/vendors
+                        - generic: Vendors
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/syndicates
+                        - generic: Syndicates
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/products
+                        - generic: Products
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/employees
+                        - generic: Employees
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/coupons
+                        - generic: Coupons
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/orders
+                        - generic: Orders
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/users
+                        - generic: Users
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/notifications
+                        - generic: Notifications
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/contact-messages
+                        - generic: Contact messages
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/about-us
+                        - generic: About us
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/pages
+                        - generic: Pages
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/banners
+                        - generic: Banners
+              - generic:
+                - generic: Catalog
+                - generic:
+                  - list:
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/categories
+                        - generic: Categories
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/subcategories
+                        - generic: Subcategories
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8000/admin/cities
+                        - generic: Cities
+            - generic:
+              - list:
+                - listitem:
+                  - button:
+                    - generic: م
+                    - generic:
+                      - generic: مدير النظام
+                      - generic: Admin
+      - main:
+        - generic:
+          - generic:
+            - button:
+              - generic: Toggle Sidebar
+            - generic:
+              - paragraph: Admin
+              - heading [level=1]: Vendor 360
+            - generic:
+              - link:
+                - /url: http://127.0.0.1:8000/
+              - button [expanded]
+              - button
+              - button
+        - generic:
+          - generic:
+            - generic:
+              - navigation:
+                - generic:
+                  - link:
+                    - /url: http://127.0.0.1:8000/admin/vendors
+                    - text: Vendor 360
+              - heading [level=1]:
+                - generic:
+                  - generic:
+                    - generic: تاجر المستلزمات الزراعية
+                    - generic:
+                      - generic: تاجر المستلزمات الزراعية
+                      - generic: Active
+                      - generic: agriculture
+                      - generic: دمشق
+              - paragraph: Period analytics use the order creation date. All-time ledger balance is shown separately.
+            - generic:
+              - link:
+                - /url: http://127.0.0.1:8000/admin/vendors/1/edit
+                - text: Edit
+          - generic:
+            - generic:
+              - generic: Period sales analytics
+              - combobox
+          - generic:
+            - region:
+              - tablist:
+                - tab [selected]: Overview
+                - tab: Products
+                - tab: Sales & Orders
+                - tab: Finance / Ledger
+                - tab: Returns & Refunds
+                - tab: Staff
+                - tab: Documents
+                - tab: Activity
+            - tabpanel:
+              - generic:
+                - generic:
+                  - paragraph: Products
+                  - paragraph: "8"
+                - generic:
+                  - paragraph: Active products
+                  - paragraph: "8"
+                - generic:
+                  - paragraph: Pending products
+                  - paragraph: "0"
+                - generic:
+                  - paragraph: Orders
+                  - paragraph: "0"
+                - generic:
+                  - paragraph: Completed orders
+                  - paragraph: "0"
+                - generic:
+                  - paragraph: Cancelled orders
+                  - paragraph: "0"
+                - generic:
+                  - paragraph: Units sold
+                  - paragraph: "0"
+                - generic:
+                  - paragraph: Completed sales
+                  - paragraph: 0 SYP
+                - generic:
+                  - paragraph: Completed refunds
+                  - paragraph: 0 SYP
+                - generic:
+                  - paragraph: Average completed order value
+                  - paragraph: 0 SYP
+                - generic:
+                  - paragraph: Platform commission
+                  - paragraph: 0 SYP
+                - generic:
+                  - paragraph: Net vendor earnings
+                  - paragraph: 0 SYP
+                - generic:
+                  - paragraph: Settled
+                  - paragraph: 0 SYP
+                - generic:
+                  - paragraph: Outstanding
+                  - paragraph: 0 SYP
+              - generic:
+                - generic:
+                  - generic: Completed sales trend
+                  - generic: No data in this scope.
+                - generic:
+                  - generic: Top products
+                  - generic: No data in this scope.
+              - generic:
+                - generic: Category performance
+                - generic: No data in this scope.
+              - generic:
+                - generic: Recent orders
+                - generic: No data in this scope.
+  - menu "Choose language" [active] [ref=f2e427]:
+    - menuitem "العربية" [ref=f2e428]
+    - menuitem "English" [ref=f2e429]

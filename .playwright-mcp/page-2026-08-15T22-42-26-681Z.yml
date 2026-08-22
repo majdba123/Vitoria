@@ -1,0 +1,256 @@
+- generic [ref=f7e2]:
+  - banner [ref=f7e3]:
+    - navigation "Menu" [ref=f7e4]:
+      - link [ref=f7e5] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/
+        - img "Vetora" [ref=f7e6]
+      - generic [ref=f7e7]:
+        - button "Categories" [ref=f7e9]
+        - link "Products" [ref=f7e17] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/products
+        - link "FAQ" [ref=f7e18] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/faq
+      - search [ref=f7e19]:
+        - searchbox "Search products" [ref=f7e20]
+      - generic [ref=f7e21]:
+        - generic [ref=f7e22]:
+          - button "Choose language" [ref=f7e23]
+          - button "Toggle light or dark theme" [active] [ref=f7e24]
+        - button "Cart" [ref=f7e25]
+        - generic [ref=f7e29]:
+          - link "Sign In" [ref=f7e30] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/login
+          - link "Register" [ref=f7e31] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/register
+  - main [ref=f7e32]:
+    - generic [ref=f7e33]:
+      - navigation [ref=f7e36]:
+        - link "Home" [ref=f7e37] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/
+        - generic [ref=f7e40]: Products
+      - generic [ref=f7e41]:
+        - generic [ref=f7e43]:
+          - paragraph [ref=f7e44]: Vetora Marketplace
+          - heading "Products" [level=1] [ref=f7e45]
+          - paragraph [ref=f7e46]: 8 products
+        - generic [ref=f7e47]:
+          - generic [ref=f7e48]:
+            - generic [ref=f7e49]:
+              - generic [ref=f7e50]: Search products
+              - searchbox "Search products" [ref=f7e51]
+            - generic [ref=f7e52]:
+              - generic [ref=f7e53]: All types
+              - combobox "All types" [ref=f7e54] [cursor=pointer]:
+                - option "All types"
+                - option "Agriculture"
+                - option "Veterinary" [selected]
+            - generic [ref=f7e55]:
+              - generic [ref=f7e56]: All categories
+              - combobox "All categories" [ref=f7e57] [cursor=pointer]:
+                - option "All categories" [selected]
+                - option "الأدوية البيطرية"
+                - option "اللقاحات"
+                - option "معدات العيادات البيطرية"
+                - option "مكملات الأعلاف"
+                - option "أدوات رعاية الحيوانات"
+                - option "مستلزمات المواشي"
+                - option "المطهرات البيطرية"
+                - option "خدمات بيطرية"
+            - generic [ref=f7e58]:
+              - generic [ref=f7e59]: All subcategories
+              - combobox "All subcategories" [ref=f7e60] [cursor=pointer]:
+                - option "All subcategories" [selected]
+            - generic [ref=f7e61]:
+              - generic [ref=f7e62]: Default sorting
+              - combobox "Default sorting" [ref=f7e63] [cursor=pointer]:
+                - option "Default sorting" [selected]
+                - option "Latest"
+                - option "Best selling"
+                - option "Most favorited"
+                - option "Top rated"
+            - generic [ref=f7e64]:
+              - generic [ref=f7e65]: All discounts
+              - combobox "All discounts" [ref=f7e66] [cursor=pointer]:
+                - option "All discounts" [selected]
+                - option "Discounted only"
+                - option "Without discount"
+            - generic [ref=f7e67]:
+              - generic [ref=f7e68]: All stock states
+              - combobox "All stock states" [ref=f7e69] [cursor=pointer]:
+                - option "All stock states" [selected]
+                - option "In stock"
+                - option "Out of stock"
+            - button "Apply" [ref=f7e70]
+            - button "Clear" [ref=f7e71]
+          - generic [ref=f7e72]: Veterinary
+        - generic [ref=f7e73]:
+          - article [ref=f7e74]:
+            - generic [ref=f7e75]:
+              - link [ref=f7e76] [cursor=pointer]:
+                - /url: /products/11
+                - img "Portable Veterinary Diagnostic Device" [ref=f7e77]
+              - button "Portable Veterinary Diagnostic Device" [ref=f7e78]
+            - generic [ref=f7e81]:
+              - paragraph [ref=f7e82]: تاجر المستلزمات البيطرية
+              - link [ref=f7e83] [cursor=pointer]:
+                - /url: /products/11
+                - heading "Portable Veterinary Diagnostic Device" [level=3] [ref=f7e84]
+              - generic [ref=f7e85]:
+                - generic [ref=f7e86]:
+                  - generic [ref=f7e87]: 260 SYP
+                  - generic [ref=f7e88]: In stock
+                - 'button "Add to cart: Portable Veterinary Diagnostic Device" [ref=f7e89]'
+          - article [ref=f7e93]:
+            - generic [ref=f7e94]:
+              - link [ref=f7e95] [cursor=pointer]:
+                - /url: /products/14
+                - img "Complete Stable Supplies Kit" [ref=f7e96]
+              - button "Complete Stable Supplies Kit" [ref=f7e97]
+            - generic [ref=f7e100]:
+              - paragraph [ref=f7e101]: تاجر المستلزمات البيطرية
+              - link [ref=f7e102] [cursor=pointer]:
+                - /url: /products/14
+                - heading "Complete Stable Supplies Kit" [level=3] [ref=f7e103]
+              - generic [ref=f7e104]:
+                - generic [ref=f7e105]:
+                  - generic [ref=f7e106]: 60 SYP
+                  - generic [ref=f7e107]: In stock
+                - 'button "Add to cart: Complete Stable Supplies Kit" [ref=f7e108]'
+          - article [ref=f7e112]:
+            - generic [ref=f7e113]:
+              - link [ref=f7e114] [cursor=pointer]:
+                - /url: /products/5
+                - img "Veterinary Antibiotic" [ref=f7e115]
+              - button "Veterinary Antibiotic" [ref=f7e116]
+            - generic [ref=f7e119]:
+              - paragraph [ref=f7e120]: تاجر المستلزمات البيطرية
+              - link [ref=f7e121] [cursor=pointer]:
+                - /url: /products/5
+                - heading "Veterinary Antibiotic" [level=3] [ref=f7e122]
+              - generic [ref=f7e123]:
+                - generic [ref=f7e124]:
+                  - generic [ref=f7e125]: 46 SYP
+                  - generic [ref=f7e126]: In stock
+                - 'button "Add to cart: Veterinary Antibiotic" [ref=f7e127]'
+          - article [ref=f7e131]:
+            - generic [ref=f7e132]:
+              - link [ref=f7e133] [cursor=pointer]:
+                - /url: /products/15
+                - img "Broad-Spectrum Veterinary Disinfectant" [ref=f7e134]
+              - button "Broad-Spectrum Veterinary Disinfectant" [ref=f7e135]
+            - generic [ref=f7e138]:
+              - paragraph [ref=f7e139]: تاجر المستلزمات البيطرية
+              - link [ref=f7e140] [cursor=pointer]:
+                - /url: /products/15
+                - heading "Broad-Spectrum Veterinary Disinfectant" [level=3] [ref=f7e141]
+              - generic [ref=f7e142]:
+                - generic [ref=f7e143]:
+                  - generic [ref=f7e144]: 30 SYP
+                  - generic [ref=f7e145]: In stock
+                - 'button "Add to cart: Broad-Spectrum Veterinary Disinfectant" [ref=f7e146]'
+          - article [ref=f7e150]:
+            - generic [ref=f7e151]:
+              - link [ref=f7e152] [cursor=pointer]:
+                - /url: /products/13
+                - img "Animal Care Grooming Shears" [ref=f7e153]
+              - button "Animal Care Grooming Shears" [ref=f7e154]
+            - generic [ref=f7e157]:
+              - paragraph [ref=f7e158]: تاجر المستلزمات البيطرية
+              - link [ref=f7e159] [cursor=pointer]:
+                - /url: /products/13
+                - heading "Animal Care Grooming Shears" [level=3] [ref=f7e160]
+              - generic [ref=f7e161]:
+                - generic [ref=f7e162]:
+                  - generic [ref=f7e163]: 24 SYP
+                  - generic [ref=f7e164]: In stock
+                - 'button "Add to cart: Animal Care Grooming Shears" [ref=f7e165]'
+          - article [ref=f7e169]:
+            - generic [ref=f7e170]:
+              - link [ref=f7e171] [cursor=pointer]:
+                - /url: /products/4
+                - img "Sheep Vaccine" [ref=f7e172]
+              - button "Sheep Vaccine" [ref=f7e173]
+            - generic [ref=f7e176]:
+              - paragraph [ref=f7e177]: تاجر المستلزمات البيطرية
+              - link [ref=f7e178] [cursor=pointer]:
+                - /url: /products/4
+                - heading "Sheep Vaccine" [level=3] [ref=f7e179]
+              - generic [ref=f7e180]:
+                - generic [ref=f7e181]:
+                  - generic [ref=f7e182]: 32 SYP
+                  - generic [ref=f7e183]: In stock
+                - 'button "Add to cart: Sheep Vaccine" [ref=f7e184]'
+          - article [ref=f7e188]:
+            - generic [ref=f7e189]:
+              - link [ref=f7e190] [cursor=pointer]:
+                - /url: /products/12
+                - img "Mineral Feed Supplement" [ref=f7e191]
+              - button "Mineral Feed Supplement" [ref=f7e192]
+            - generic [ref=f7e195]:
+              - paragraph [ref=f7e196]: تاجر المستلزمات البيطرية
+              - link [ref=f7e197] [cursor=pointer]:
+                - /url: /products/12
+                - heading "Mineral Feed Supplement" [level=3] [ref=f7e198]
+              - generic [ref=f7e199]:
+                - generic [ref=f7e200]:
+                  - generic [ref=f7e201]: 18.5 SYP
+                  - generic [ref=f7e202]: In stock
+                - 'button "Add to cart: Mineral Feed Supplement" [ref=f7e203]'
+          - article [ref=f7e207]:
+            - generic [ref=f7e208]:
+              - link [ref=f7e209] [cursor=pointer]:
+                - /url: /products/16
+                - img "Home Veterinary Care Service Package" [ref=f7e210]
+              - button "Home Veterinary Care Service Package" [ref=f7e211]
+            - generic [ref=f7e214]:
+              - paragraph [ref=f7e215]: تاجر المستلزمات البيطرية
+              - link [ref=f7e216] [cursor=pointer]:
+                - /url: /products/16
+                - heading "Home Veterinary Care Service Package" [level=3] [ref=f7e217]
+              - generic [ref=f7e218]:
+                - generic [ref=f7e219]:
+                  - generic [ref=f7e220]: 45 SYP
+                  - generic [ref=f7e221]: In stock
+                - 'button "Add to cart: Home Veterinary Care Service Package" [ref=f7e222]'
+  - contentinfo [ref=f7e226]:
+    - generic [ref=f7e228]:
+      - generic [ref=f7e229]:
+        - generic [ref=f7e230]:
+          - link [ref=f7e231] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/
+            - img "Vetora" [ref=f7e232]
+          - paragraph [ref=f7e233]: Your trusted online marketplace.
+        - generic [ref=f7e234]:
+          - heading "Shop" [level=2] [ref=f7e235]
+          - list [ref=f7e236]:
+            - listitem [ref=f7e237]:
+              - link "Categories" [ref=f7e238] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/categories
+            - listitem [ref=f7e239]:
+              - link "All Products" [ref=f7e240] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/products
+            - listitem [ref=f7e241]:
+              - link "FAQ" [ref=f7e242] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/faq
+        - generic [ref=f7e243]:
+          - heading "Account" [level=2] [ref=f7e244]
+          - list [ref=f7e245]:
+            - listitem [ref=f7e246]:
+              - link "Sign In" [ref=f7e247] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+            - listitem [ref=f7e248]:
+              - link "Create Account" [ref=f7e249] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/register
+        - generic [ref=f7e250]:
+          - heading "Contact" [level=2] [ref=f7e251]
+          - list [ref=f7e252]:
+            - listitem [ref=f7e253]:
+              - link "Contact Us" [ref=f7e254] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000#contact
+      - generic [ref=f7e255]:
+        - paragraph [ref=f7e256]: © 2026 Vetora. All rights reserved.
+        - generic [ref=f7e257]:
+          - link "Privacy Policy" [ref=f7e258] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/privacy-policy
+          - link "Terms of Service" [ref=f7e259] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/terms-of-service

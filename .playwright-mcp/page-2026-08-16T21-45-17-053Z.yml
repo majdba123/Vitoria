@@ -1,0 +1,111 @@
+- generic [ref=f141e2]:
+  - banner [ref=f141e3]:
+    - navigation "القائمة" [ref=f141e4]:
+      - link [ref=f141e5] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/
+        - img "Vetora" [ref=f141e6]
+      - generic [ref=f141e7]:
+        - button "السلة" [ref=f141e8]
+        - button "القائمة" [ref=f141e12]
+  - main [ref=f141e14]:
+    - generic [ref=f141e16]:
+      - generic "مختص زراعي يفحص المحاصيل في الحقل" [ref=f141e17]
+      - generic [ref=f141e18]:
+        - generic [ref=f141e19]: تصفح ذكي للمنتجات الزراعية والبيطرية
+        - heading "اختر بسرعة. وتصفّح بذكاء." [level=1] [ref=f141e20]:
+          - text: اختر بسرعة.
+          - generic [ref=f141e21]: وتصفّح بذكاء.
+        - paragraph [ref=f141e22]: ابدأ من نوع المنتج الصحيح، ثم انتقل إلى التصنيف والتصنيف الفرعي المناسبين، لتصل إلى المنتجات المهمة بدون ازدحام بصري.
+        - generic [ref=f141e23]:
+          - link "استكشف المنتجات" [ref=f141e24] [cursor=pointer]:
+            - /url: "#products"
+          - link "تصفح التصنيفات" [ref=f141e27] [cursor=pointer]:
+            - /url: "#categories"
+        - paragraph [ref=f141e30]: مصمم للمزارعين والفرق البيطرية والموردين ومسؤولي المشتريات.
+    - region [ref=f141e31]:
+      - generic [ref=f141e32]:
+        - paragraph [ref=f141e33]: اختر مجالك
+        - heading "سوق واحد، ودليلان متخصصان" [level=2] [ref=f141e34]
+        - paragraph [ref=f141e35]: حدد مجال عملك، وستتكيف الأسعار والتصنيفات والمخزون المتاح مع اختيارك في كامل المتجر.
+      - generic [ref=f141e36]:
+        - link "زراعي منتجات ومستلمزات زراعية بتصفح واضح وسريع. دخول الزراعي" [ref=f141e37] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/product-type/select?preferred_product_type=agriculture&redirect_to=home
+          - generic [ref=f141e38]: "01"
+          - generic [ref=f141e43]:
+            - generic [ref=f141e44]: زراعي
+            - generic [ref=f141e46]: منتجات ومستلمزات زراعية بتصفح واضح وسريع.
+          - generic [ref=f141e47]: دخول الزراعي
+        - link "بيطري محدد الآن منتجات ومستلمزات بيطرية بتجربة أسهل وأكثر سلاسة. دخول البيطري" [ref=f141e50] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/product-type/select?preferred_product_type=veterinary&redirect_to=home
+          - generic [ref=f141e51]: "02"
+          - generic [ref=f141e57]:
+            - generic [ref=f141e58]:
+              - generic [ref=f141e59]: بيطري
+              - generic [ref=f141e60]: محدد الآن
+            - generic [ref=f141e61]: منتجات ومستلمزات بيطرية بتجربة أسهل وأكثر سلاسة.
+          - generic [ref=f141e62]: دخول البيطري
+    - generic [ref=f141e68]:
+      - paragraph [ref=f141e69]: ابدأ من هنا
+      - heading "اختر التصنيف" [level=2] [ref=f141e70]
+      - paragraph [ref=f141e71]: ابدأ بالتصنيف المناسب، ثم انتقل بسهولة إلى التصنيفات الفرعية والمنتجات التابعة له.
+    - generic [ref=f141e80]:
+      - generic [ref=f141e81]:
+        - generic [ref=f141e82]: تواصل معنا
+        - heading "تواصل مع فريق Vetora" [level=2] [ref=f141e83]
+        - paragraph [ref=f141e84]: أرسل استفسارك أو طلبك أو رسالة المورد، وسنعود إليك في أقرب وقت.
+      - generic [ref=f141e85]:
+        - generic [ref=f141e86]:
+          - generic [ref=f141e87]: الاسم
+          - textbox "الاسم" [ref=f141e88]:
+            - /placeholder: أدخل اسمك
+        - generic [ref=f141e89]:
+          - generic [ref=f141e90]: البريد الإلكتروني *
+          - textbox "البريد الإلكتروني *" [ref=f141e91]:
+            - /placeholder: you@example.com
+        - generic [ref=f141e92]:
+          - generic [ref=f141e93]: الرسالة *
+          - textbox "الرسالة *" [ref=f141e94]:
+            - /placeholder: اكتب ما تحتاجه هنا...
+        - button "إرسال الرسالة" [ref=f141e95]
+  - contentinfo [ref=f141e96]:
+    - generic [ref=f141e98]:
+      - generic [ref=f141e99]:
+        - generic [ref=f141e100]:
+          - link [ref=f141e101] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/
+            - img "Vetora" [ref=f141e102]
+          - paragraph [ref=f141e103]: سوق ذكي للمنتجات الزراعية والبيطرية
+        - generic [ref=f141e104]:
+          - heading "تسوق" [level=2] [ref=f141e105]
+          - list [ref=f141e106]:
+            - listitem [ref=f141e107]:
+              - link "التصنيفات" [ref=f141e108] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/categories
+            - listitem [ref=f141e109]:
+              - link "جميع المنتجات" [ref=f141e110] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/products
+            - listitem [ref=f141e111]:
+              - link "الأسئلة الشائعة" [ref=f141e112] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/faq
+        - generic [ref=f141e113]:
+          - heading "حساب" [level=2] [ref=f141e114]
+          - list [ref=f141e115]:
+            - listitem [ref=f141e116]:
+              - link "تسجيل الدخول" [ref=f141e117] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+            - listitem [ref=f141e118]:
+              - link "إنشاء حساب" [ref=f141e119] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/register
+        - generic [ref=f141e120]:
+          - heading "تواصل" [level=2] [ref=f141e121]
+          - list [ref=f141e122]:
+            - listitem [ref=f141e123]:
+              - link "تواصل معنا" [ref=f141e124] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000#contact
+      - generic [ref=f141e125]:
+        - paragraph [ref=f141e126]: © 2026 Vetora. جميع الحقوق محفوظة.
+        - generic [ref=f141e127]:
+          - link "سياسة الخصوصية" [ref=f141e128] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/privacy-policy
+          - link "شروط الخدمة" [ref=f141e129] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/terms-of-service

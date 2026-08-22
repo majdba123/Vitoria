@@ -1,0 +1,172 @@
+- generic [ref=f111e2]:
+  - banner [ref=f111e3]:
+    - navigation "القائمة" [ref=f111e4]:
+      - link [ref=f111e5] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/
+        - img "Vetora" [ref=f111e6]
+      - generic [ref=f111e7]:
+        - button "التصنيفات" [ref=f111e9]
+        - link "المنتجات" [ref=f111e17] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/products
+        - link "الأسئلة الشائعة" [ref=f111e18] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/faq
+      - search [ref=f111e19]:
+        - searchbox "ابحث عن المنتجات" [ref=f111e20]
+      - generic [ref=f111e21]:
+        - generic [ref=f111e22]:
+          - button "اختر اللغة" [ref=f111e23]
+          - button "تبديل الوضع الفاتح أو الداكن" [ref=f111e24]
+        - button "السلة" [ref=f111e25]
+        - generic [ref=f111e29]:
+          - link "تسجيل الدخول" [ref=f111e30] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/login
+          - link "إنشاء حساب" [ref=f111e31] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/register
+  - main [ref=f111e32]:
+    - generic [ref=f111e34]:
+      - complementary [ref=f111e35]:
+        - generic [ref=f111e36]: أنشئ حسابك
+        - heading "إنشاء حساب" [level=1] [ref=f111e37]
+        - paragraph [ref=f111e38]: انضم إلى Vetora اليوم
+        - generic [ref=f111e39]:
+          - generic [ref=f111e40]:
+            - generic [ref=f111e41]: "01"
+            - paragraph [ref=f111e42]: حساب عميل
+            - paragraph [ref=f111e43]: اكتشف المنتجات، واحفظ المفضلة، وأدر طلباتك من مساحة شخصية متقنة.
+          - generic [ref=f111e44]:
+            - generic [ref=f111e45]: "02"
+            - paragraph [ref=f111e46]: حساب تاجر
+            - paragraph [ref=f111e47]: أطلق متجرك، واطلب الموافقة، وابدأ البيع ضمن الفئات التي يخدمها نشاطك.
+          - generic [ref=f111e48]:
+            - generic [ref=f111e49]: "03"
+            - paragraph [ref=f111e50]: منصة موحدة
+            - paragraph [ref=f111e51]: هوية واحدة ونظام واحد وانتقال أكثر سلاسة من الموقع العام إلى لوحة التشغيل.
+      - generic [ref=f111e52]:
+        - generic [ref=f111e53]:
+          - generic [ref=f111e54]:
+            - generic [ref=f111e55]: نموذج التسجيل
+            - heading "أكمل إعداد ملفك في Vetora." [level=2] [ref=f111e56]
+          - link "تسجيل الدخول" [ref=f111e57] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/login
+        - generic [ref=f111e59]:
+          - generic [ref=f111e60]:
+            - generic [ref=f111e61]: نوع الحساب *
+            - generic [ref=f111e62]:
+              - generic [ref=f111e63] [cursor=pointer]:
+                - radio "مستخدم عادي اشترِ وتابع طلباتك" [checked] [ref=f111e64]
+                - generic [ref=f111e65]:
+                  - generic [ref=f111e66]: مستخدم عادي
+                  - generic [ref=f111e67]: اشترِ وتابع طلباتك
+              - generic [ref=f111e68] [cursor=pointer]:
+                - radio "تاجر / بائع بِع عبر عدة فئات" [ref=f111e69]
+                - generic [ref=f111e70]:
+                  - generic [ref=f111e71]: تاجر / بائع
+                  - generic [ref=f111e72]: بِع عبر عدة فئات
+          - generic [ref=f111e73]:
+            - generic [ref=f111e74]:
+              - generic [ref=f111e75]:
+                - text: الاسم الكامل
+                - generic [ref=f111e76]: "*"
+              - textbox "الاسم الكامل *" [ref=f111e77]:
+                - /placeholder: أدخل اسمك الكامل
+            - generic [ref=f111e78]:
+              - generic [ref=f111e79]:
+                - text: رقم الهاتف
+                - generic [ref=f111e80]: "*"
+              - textbox "رقم الهاتف *" [ref=f111e81]:
+                - /placeholder: 09XXXXXXXX
+            - generic [ref=f111e82]:
+              - generic [ref=f111e83]:
+                - text: الرقم الوطني
+                - generic [ref=f111e84]: "*"
+              - textbox "الرقم الوطني *" [ref=f111e85]:
+                - /placeholder: أدخل رقمك الوطني
+            - generic [ref=f111e86]:
+              - generic [ref=f111e87]:
+                - text: العمر
+                - generic [ref=f111e88]: "*"
+              - spinbutton "العمر *" [ref=f111e89]
+            - generic [ref=f111e90]:
+              - generic [ref=f111e91]:
+                - text: رقم العضوية
+                - generic [ref=f111e92]: "*"
+              - textbox "رقم العضوية *" [ref=f111e93]:
+                - /placeholder: "مثال: MEM-12345"
+            - generic [ref=f111e94]:
+              - generic [ref=f111e95]:
+                - text: المدينة
+                - generic [ref=f111e96]: "*"
+              - combobox "المدينة" [ref=f111e97]:
+                - generic: اختر مدينتك
+              - combobox [ref=f111e98]
+          - generic [ref=f111e99]:
+            - generic [ref=f111e100]:
+              - generic [ref=f111e101]:
+                - text: البريد الإلكتروني
+                - generic [ref=f111e102]: "*"
+              - textbox "البريد الإلكتروني *" [ref=f111e103]:
+                - /placeholder: you@example.com
+            - generic [ref=f111e104]:
+              - generic [ref=f111e105]:
+                - text: كلمة المرور
+                - generic [ref=f111e106]: "*"
+              - generic [ref=f111e107]:
+                - textbox "كلمة المرور *" [ref=f111e108]:
+                  - /placeholder: أدخل كلمة المرور
+                - button "Show password" [ref=f111e109]
+            - generic [ref=f111e113]:
+              - generic [ref=f111e114]:
+                - text: تأكيد كلمة المرور
+                - generic [ref=f111e115]: "*"
+              - generic [ref=f111e116]:
+                - textbox "تأكيد كلمة المرور *" [ref=f111e117]:
+                  - /placeholder: أعد كتابة كلمة المرور
+                - button "Show password" [ref=f111e118]
+          - generic [ref=f111e122]:
+            - paragraph [ref=f111e123]:
+              - text: لديك حساب بالفعل؟
+              - link "تسجيل الدخول" [ref=f111e124] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+            - button "إنشاء حساب" [ref=f111e125]
+  - contentinfo [ref=f111e126]:
+    - generic [ref=f111e128]:
+      - generic [ref=f111e129]:
+        - generic [ref=f111e130]:
+          - link [ref=f111e131] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/
+            - img "Vetora" [ref=f111e132]
+          - paragraph [ref=f111e133]: Your trusted online marketplace.
+        - generic [ref=f111e134]:
+          - heading "تسوق" [level=2] [ref=f111e135]
+          - list [ref=f111e136]:
+            - listitem [ref=f111e137]:
+              - link "التصنيفات" [ref=f111e138] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/categories
+            - listitem [ref=f111e139]:
+              - link "جميع المنتجات" [ref=f111e140] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/products
+            - listitem [ref=f111e141]:
+              - link "الأسئلة الشائعة" [ref=f111e142] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/faq
+        - generic [ref=f111e143]:
+          - heading "حساب" [level=2] [ref=f111e144]
+          - list [ref=f111e145]:
+            - listitem [ref=f111e146]:
+              - link "تسجيل الدخول" [ref=f111e147] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+            - listitem [ref=f111e148]:
+              - link "إنشاء حساب" [ref=f111e149] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/register
+        - generic [ref=f111e150]:
+          - heading "تواصل" [level=2] [ref=f111e151]
+          - list [ref=f111e152]:
+            - listitem [ref=f111e153]:
+              - link "تواصل معنا" [ref=f111e154] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000#contact
+      - generic [ref=f111e155]:
+        - paragraph [ref=f111e156]: © 2026 Vetora. جميع الحقوق محفوظة.
+        - generic [ref=f111e157]:
+          - link "سياسة الخصوصية" [ref=f111e158] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/privacy-policy
+          - link "شروط الخدمة" [ref=f111e159] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/terms-of-service

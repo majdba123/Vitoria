@@ -176,6 +176,14 @@ test('the commission dashboard response explicitly separates ledger-authoritativ
     $raw = json_encode($response->json('data'));
     expect($raw)->not->toContain('completed_order_total');
     expect($raw)->not->toContain('completed_orders_last_7_days');
+
+    $component = file_get_contents(resource_path('js/Pages/Vendor/Commission.jsx'));
+    expect($component)
+        ->toContain("{ key: 'projected_order_total', labelKey: 'completed_orders_total'")
+        ->toContain("{ key: 'commission_total', labelKey: 'commission_total_label'")
+        ->toContain("{ key: 'paid_amount', labelKey: 'paid_to_you'")
+        ->toContain("{ key: 'remaining_amount', labelKey: 'remaining_label'")
+        ->toContain('value={formatMoney(financials[key])}');
 });
 
 test('the ledger backfill --dry-run writes nothing, even against legacy data with a since-changed commission rate', function () {

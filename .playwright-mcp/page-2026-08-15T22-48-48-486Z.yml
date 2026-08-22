@@ -1,0 +1,717 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - link "Skip to content" [ref=e4] [cursor=pointer]:
+      - /url: "#start-of-content"
+    - banner [ref=e9]:
+      - heading "Navigation Menu" [level=2] [ref=e10]
+      - generic [ref=e11]:
+        - link "Homepage" [ref=e13] [cursor=pointer]:
+          - /url: /
+        - generic [ref=e16]:
+          - navigation "Global" [ref=e17]:
+            - list [ref=e18]:
+              - listitem [ref=e19]:
+                - button "Platform" [ref=e21] [cursor=pointer]
+              - listitem [ref=e24]:
+                - button "Solutions" [ref=e26] [cursor=pointer]
+              - listitem [ref=e29]:
+                - button "Resources" [ref=e31] [cursor=pointer]
+              - listitem [ref=e34]:
+                - button "Open Source" [ref=e36] [cursor=pointer]
+              - listitem [ref=e39]:
+                - button "Enterprise" [ref=e41] [cursor=pointer]
+              - listitem [ref=e44]:
+                - link "Pricing" [ref=e45] [cursor=pointer]:
+                  - /url: https://github.com/pricing
+          - generic [ref=e46]:
+            - button "Search or jump to, type / to search" [ref=e48] [cursor=pointer]:
+              - generic [ref=e51]:
+                - generic [ref=e52]: Search
+                - generic [ref=e53]: /
+            - link "Sign in" [ref=e55] [cursor=pointer]:
+              - /url: /login?return_to=https%3A%2F%2Fgithub.com%2Fmajdba123%2FVitoria%2Factions
+            - link "Sign up" [ref=e58] [cursor=pointer]:
+              - /url: /signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E%2Factions%2Findex&source=header-repo&source_repo=majdba123%2FVitoria
+            - button "Appearance settings" [ref=e61] [cursor=pointer]
+  - main [ref=e68]:
+    - generic [ref=e69]:
+      - generic [ref=e70]:
+        - generic [ref=e72]:
+          - link "majdba123" [ref=e76] [cursor=pointer]:
+            - /url: /majdba123
+          - generic [ref=e77]: /
+          - strong [ref=e78]:
+            - link "Vitoria" [ref=e79] [cursor=pointer]:
+              - /url: /majdba123/Vitoria
+          - generic [ref=e80]: Public
+        - generic [ref=e81]:
+          - list:
+            - listitem [ref=e82]:
+              - link "You must be signed in to change notification settings" [ref=e83] [cursor=pointer]:
+                - /url: /login?return_to=%2Fmajdba123%2FVitoria
+                - text: Notifications
+            - listitem [ref=e86]:
+              - link "Fork 0" [ref=e87] [cursor=pointer]:
+                - /url: /login?return_to=%2Fmajdba123%2FVitoria
+                - text: Fork
+                - generic "0" [ref=e90]
+            - listitem [ref=e91]:
+              - link "You must be signed in to star a repository" [ref=e93] [cursor=pointer]:
+                - /url: /login?return_to=%2Fmajdba123%2FVitoria
+                - text: Star
+                - generic "0 users starred this repository" [ref=e96]: "0"
+      - navigation "Repository" [ref=e97]:
+        - list [ref=e98]:
+          - listitem [ref=e99]:
+            - link "Code" [ref=e100] [cursor=pointer]:
+              - /url: /majdba123/Vitoria
+          - listitem [ref=e104]:
+            - link "Issues" [ref=e105] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/issues
+          - listitem [ref=e110]:
+            - link "Pull requests" [ref=e111] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/pulls
+          - listitem [ref=e115]:
+            - link "Actions" [ref=e116] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/actions
+          - listitem [ref=e120]:
+            - link "Projects" [ref=e121] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/projects
+          - listitem [ref=e125]:
+            - link "Security and quality" [ref=e126] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/security
+          - listitem [ref=e130]:
+            - link "Insights" [ref=e131] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/pulse
+    - generic [ref=e136]:
+      - 'heading "Actions: majdba123/Vitoria" [level=1] [ref=e137]'
+      - generic [ref=e140]:
+        - generic [ref=e141]:
+          - heading "Actions" [level=2] [ref=e143]
+          - navigation "Actions Workflows" [ref=e147]:
+            - list [ref=e149]:
+              - listitem [ref=e150]:
+                - link "All workflows" [ref=e151] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/actions
+              - listitem [ref=e153]
+              - listitem [ref=e154]:
+                - list "Workflows" [ref=e158]:
+                  - listitem [ref=e159]:
+                    - link "CI" [ref=e160] [cursor=pointer]:
+                      - /url: /majdba123/Vitoria/actions/workflows/ci.yml
+                  - listitem [ref=e162]:
+                    - link "Deploy to Production" [ref=e163] [cursor=pointer]:
+                      - /url: /majdba123/Vitoria/actions/workflows/deploy.yml
+              - listitem [ref=e165]
+              - listitem [ref=e166]:
+                - generic [ref=e169]:
+                  - heading "Management" [level=3] [ref=e171]
+                  - list "Management" [ref=e172]:
+                    - listitem [ref=e173]:
+                      - link "Caches" [ref=e174] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/actions/caches
+        - generic [ref=e178]:
+          - generic [ref=e179]:
+            - generic [ref=e180]:
+              - heading "All workflows" [level=2] [ref=e182]
+              - search [ref=e188]:
+                - combobox "Filter workflow runs" [ref=e189]
+            - generic [ref=e190]: Showing runs from all workflows
+          - generic [ref=e191]:
+            - generic [ref=e192]:
+              - strong [ref=e195]: 202 workflow runs
+              - generic [ref=e196]:
+                - button "Workflow" [ref=e200] [cursor=pointer]
+                - button "Event" [ref=e206] [cursor=pointer]
+                - button "Status" [ref=e212] [cursor=pointer]
+                - button "Branch" [ref=e218] [cursor=pointer]
+                - button "Actor" [ref=e224] [cursor=pointer]
+            - generic [ref=e227]:
+              - generic [ref=e229]:
+                - generic [ref=e230]:
+                  - 'link "currently running: Run 62 of CI. Fix public storefront regressions" [ref=e231] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31913080444
+                    - img "currently running:" [ref=e234]
+                    - generic [ref=e238]: Fix public storefront regressions
+                  - generic [ref=e239]:
+                    - text: "CI #62:"
+                    - generic [ref=e240]:
+                      - text: Commit
+                      - link "8699e5e" [ref=e241] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/8699e5e12b1082674474b8a3c8cfbeb334c945b4
+                      - text: pushed by
+                      - link "YusufJojeh" [ref=e242] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - link "main" [ref=e244] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/tree/refs/heads/main
+                - generic [ref=e246]:
+                  - generic [ref=e247]:
+                    - generic "Aug 16, 2026, 1:48 AM GMT+3" [ref=e252]: now
+                    - generic [ref=e253]: In progress
+                  - group [ref=e257]:
+                    - img "Show options" [ref=e259] [cursor=pointer]
+              - generic [ref=e262]:
+                - generic [ref=e263]:
+                  - 'link "completed successfully: Run 140 of Deploy to Production." [ref=e264] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31911432913
+                    - img "completed successfully:" [ref=e266]
+                    - generic [ref=e268]: Deploy to Production
+                  - generic [ref=e269]:
+                    - text: "Deploy to Production #140:"
+                    - generic [ref=e270]:
+                      - text: completed by
+                      - link "YusufJojeh" [ref=e271] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - generic [ref=e274]:
+                  - generic [ref=e275]:
+                    - generic "Aug 16, 2026, 1:10 AM GMT+3" [ref=e280]: 38 minutes ago
+                    - generic [ref=e281]:
+                      - img "Run duration" [ref=e282]
+                      - text: 2m 3s
+                  - group [ref=e285]:
+                    - img "Show options" [ref=e287] [cursor=pointer]
+              - generic [ref=e290]:
+                - generic [ref=e291]:
+                  - 'link "completed successfully: Run 61 of CI. Fix logout button not actually logging out session-authenticated dash…" [ref=e292] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31911376685
+                    - img "completed successfully:" [ref=e294]
+                    - generic [ref=e296]: Fix logout button not actually logging out session-authenticated dash…
+                  - generic [ref=e297]:
+                    - text: "CI #61:"
+                    - generic [ref=e298]:
+                      - text: Commit
+                      - link "e8e4c95" [ref=e299] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e8e4c9558002ac453dca98efa67eee7076364806
+                      - text: pushed by
+                      - link "YusufJojeh" [ref=e300] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - link "main" [ref=e302] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/tree/refs/heads/main
+                - generic [ref=e304]:
+                  - generic [ref=e305]:
+                    - generic "Aug 16, 2026, 1:09 AM GMT+3" [ref=e310]: 39 minutes ago
+                    - generic [ref=e311]:
+                      - img "Run duration" [ref=e312]
+                      - text: 1m 12s
+                  - group [ref=e315]:
+                    - img "Show options" [ref=e317] [cursor=pointer]
+              - generic [ref=e320]:
+                - generic [ref=e321]:
+                  - 'link "completed successfully: Run 139 of Deploy to Production." [ref=e322] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31907408965
+                    - img "completed successfully:" [ref=e324]
+                    - generic [ref=e326]: Deploy to Production
+                  - generic [ref=e327]:
+                    - text: "Deploy to Production #139:"
+                    - generic [ref=e328]:
+                      - text: completed by
+                      - link "YusufJojeh" [ref=e329] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - generic [ref=e332]:
+                  - generic [ref=e333]:
+                    - generic "Aug 15, 2026, 11:42 PM GMT+3" [ref=e338]: Today at 11:42 PM
+                    - generic [ref=e339]:
+                      - img "Run duration" [ref=e340]
+                      - text: 2m 9s
+                  - group [ref=e343]:
+                    - img "Show options" [ref=e345] [cursor=pointer]
+              - generic [ref=e348]:
+                - generic [ref=e349]:
+                  - 'link "completed successfully: Run 60 of CI. Add real trend charts to Employee and Syndicate dashboards" [ref=e350] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31907360025
+                    - img "completed successfully:" [ref=e352]
+                    - generic [ref=e354]: Add real trend charts to Employee and Syndicate dashboards
+                  - generic [ref=e355]:
+                    - text: "CI #60:"
+                    - generic [ref=e356]:
+                      - text: Commit
+                      - link "a105bba" [ref=e357] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/a105bbaf32e76b701ceeacf1baa9cbe92275db9c
+                      - text: pushed by
+                      - link "YusufJojeh" [ref=e358] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - link "main" [ref=e360] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/tree/refs/heads/main
+                - generic [ref=e362]:
+                  - generic [ref=e363]:
+                    - generic "Aug 15, 2026, 11:41 PM GMT+3" [ref=e368]: Today at 11:41 PM
+                    - generic [ref=e369]:
+                      - img "Run duration" [ref=e370]
+                      - text: 59s
+                  - group [ref=e373]:
+                    - img "Show options" [ref=e375] [cursor=pointer]
+              - generic [ref=e378]:
+                - generic [ref=e379]:
+                  - 'link "completed successfully: Run 138 of Deploy to Production." [ref=e380] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31897372485
+                    - img "completed successfully:" [ref=e382]
+                    - generic [ref=e384]: Deploy to Production
+                  - generic [ref=e385]:
+                    - text: "Deploy to Production #138:"
+                    - generic [ref=e386]:
+                      - text: completed by
+                      - link "YusufJojeh" [ref=e387] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - generic [ref=e390]:
+                  - generic [ref=e391]:
+                    - generic "Aug 15, 2026, 8:06 PM GMT+3" [ref=e396]: Today at 8:06 PM
+                    - generic [ref=e397]:
+                      - img "Run duration" [ref=e398]
+                      - text: 1m 58s
+                  - group [ref=e401]:
+                    - img "Show options" [ref=e403] [cursor=pointer]
+              - generic [ref=e406]:
+                - generic [ref=e407]:
+                  - 'link "completed successfully: Run 59 of CI. Close vendor financial-integrity round: settlement race, backfill saf…" [ref=e408] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31897320032
+                    - img "completed successfully:" [ref=e410]
+                    - generic [ref=e412]: "Close vendor financial-integrity round: settlement race, backfill saf…"
+                  - generic [ref=e413]:
+                    - text: "CI #59:"
+                    - generic [ref=e414]:
+                      - text: Commit
+                      - link "b6320e3" [ref=e415] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/b6320e37f57f1819d32b19dc904d057825685c99
+                      - text: pushed by
+                      - link "YusufJojeh" [ref=e416] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - link "main" [ref=e418] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/tree/refs/heads/main
+                - generic [ref=e420]:
+                  - generic [ref=e421]:
+                    - generic "Aug 15, 2026, 8:05 PM GMT+3" [ref=e426]: Today at 8:05 PM
+                    - generic [ref=e427]:
+                      - img "Run duration" [ref=e428]
+                      - text: 1m 7s
+                  - group [ref=e431]:
+                    - img "Show options" [ref=e433] [cursor=pointer]
+              - generic [ref=e436]:
+                - generic [ref=e437]:
+                  - 'link "skipped: Run 137 of Deploy to Production." [ref=e438] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31895643414
+                    - img "skipped:" [ref=e440]
+                    - generic [ref=e442]: Deploy to Production
+                  - generic [ref=e443]:
+                    - text: "Deploy to Production #137:"
+                    - generic [ref=e444]:
+                      - text: completed by
+                      - link "YusufJojeh" [ref=e445] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - generic [ref=e448]:
+                  - generic [ref=e449]:
+                    - generic "Aug 15, 2026, 7:29 PM GMT+3" [ref=e454]: Today at 7:29 PM
+                    - generic [ref=e455]:
+                      - img "Run duration" [ref=e456]
+                      - text: 2s
+                  - group [ref=e459]:
+                    - img "Show options" [ref=e461] [cursor=pointer]
+              - generic [ref=e464]:
+                - generic [ref=e465]:
+                  - 'link "failed: Run 58 of CI. Full-stack audit fixes: commission ledger reconciliation, MOQ validat…" [ref=e466] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31895599571
+                    - img "failed:" [ref=e468]
+                    - generic [ref=e470]: "Full-stack audit fixes: commission ledger reconciliation, MOQ validat…"
+                  - generic [ref=e471]:
+                    - text: "CI #58:"
+                    - generic [ref=e472]:
+                      - text: Commit
+                      - link "585aaa4" [ref=e473] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/585aaa4066e65291f1dc043b954ea27c5decb885
+                      - text: pushed by
+                      - link "YusufJojeh" [ref=e474] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - link "main" [ref=e476] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/tree/refs/heads/main
+                - generic [ref=e478]:
+                  - generic [ref=e479]:
+                    - generic "Aug 15, 2026, 7:28 PM GMT+3" [ref=e484]: Today at 7:28 PM
+                    - generic [ref=e485]:
+                      - img "Run duration" [ref=e486]
+                      - text: 1m 1s
+                  - group [ref=e489]:
+                    - img "Show options" [ref=e491] [cursor=pointer]
+              - generic [ref=e494]:
+                - generic [ref=e495]:
+                  - 'link "skipped: Run 136 of Deploy to Production." [ref=e496] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31893707771
+                    - img "skipped:" [ref=e498]
+                    - generic [ref=e500]: Deploy to Production
+                  - generic [ref=e501]:
+                    - text: "Deploy to Production #136:"
+                    - generic [ref=e502]:
+                      - text: completed by
+                      - link "YusufJojeh" [ref=e503] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - generic [ref=e506]:
+                  - generic [ref=e507]:
+                    - generic "Aug 15, 2026, 6:47 PM GMT+3" [ref=e512]: Today at 6:47 PM
+                    - generic [ref=e513]:
+                      - img "Run duration" [ref=e514]
+                      - text: 1s
+                  - group [ref=e517]:
+                    - img "Show options" [ref=e519] [cursor=pointer]
+              - generic [ref=e522]:
+                - generic [ref=e523]:
+                  - 'link "failed: Run 57 of CI. Final acceptance audit: real a11y scan, adversarial security tests, B…" [ref=e524] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31893664747
+                    - img "failed:" [ref=e526]
+                    - generic [ref=e528]: "Final acceptance audit: real a11y scan, adversarial security tests, B…"
+                  - generic [ref=e529]:
+                    - text: "CI #57:"
+                    - generic [ref=e530]:
+                      - text: Commit
+                      - link "1dea235" [ref=e531] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/1dea2351b898b2c13b288131f1a927daa4d56944
+                      - text: pushed by
+                      - link "YusufJojeh" [ref=e532] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - link "main" [ref=e534] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/tree/refs/heads/main
+                - generic [ref=e536]:
+                  - generic [ref=e537]:
+                    - generic "Aug 15, 2026, 6:46 PM GMT+3" [ref=e542]: Today at 6:46 PM
+                    - generic [ref=e543]:
+                      - img "Run duration" [ref=e544]
+                      - text: 55s
+                  - group [ref=e547]:
+                    - img "Show options" [ref=e549] [cursor=pointer]
+              - generic [ref=e552]:
+                - generic [ref=e553]:
+                  - 'link "skipped: Run 135 of Deploy to Production." [ref=e554] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31884192336
+                    - img "skipped:" [ref=e556]
+                    - generic [ref=e558]: Deploy to Production
+                  - generic [ref=e559]:
+                    - text: "Deploy to Production #135:"
+                    - generic [ref=e560]:
+                      - text: completed by
+                      - link "YusufJojeh" [ref=e561] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - generic [ref=e564]:
+                  - generic [ref=e565]:
+                    - generic "Aug 15, 2026, 3:16 PM GMT+3" [ref=e570]: Today at 3:16 PM
+                    - generic [ref=e571]:
+                      - img "Run duration" [ref=e572]
+                      - text: 1s
+                  - group [ref=e575]:
+                    - img "Show options" [ref=e577] [cursor=pointer]
+              - generic [ref=e580]:
+                - generic [ref=e581]:
+                  - 'link "failed: Run 56 of CI. Resolve stakeholder review: vendor context, MOQ, employee RBAC, FAQ, …" [ref=e582] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31884155340
+                    - img "failed:" [ref=e584]
+                    - generic [ref=e586]: "Resolve stakeholder review: vendor context, MOQ, employee RBAC, FAQ, …"
+                  - generic [ref=e587]:
+                    - text: "CI #56:"
+                    - generic [ref=e588]:
+                      - text: Commit
+                      - link "ef26fee" [ref=e589] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/ef26feed51210fded55b82bf95bd6c6ce73870a2
+                      - text: pushed by
+                      - link "YusufJojeh" [ref=e590] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - link "main" [ref=e592] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/tree/refs/heads/main
+                - generic [ref=e594]:
+                  - generic [ref=e595]:
+                    - generic "Aug 15, 2026, 3:15 PM GMT+3" [ref=e600]: Today at 3:15 PM
+                    - generic [ref=e601]:
+                      - img "Run duration" [ref=e602]
+                      - text: 52s
+                  - group [ref=e605]:
+                    - img "Show options" [ref=e607] [cursor=pointer]
+              - generic [ref=e610]:
+                - generic [ref=e611]:
+                  - 'link "completed successfully: Run 134 of Deploy to Production." [ref=e612] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31863195594
+                    - img "completed successfully:" [ref=e614]
+                    - generic [ref=e616]: Deploy to Production
+                  - generic [ref=e617]:
+                    - text: "Deploy to Production #134:"
+                    - generic [ref=e618]:
+                      - text: completed by
+                      - link "YusufJojeh" [ref=e619] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - generic [ref=e622]:
+                  - generic [ref=e623]:
+                    - generic "Aug 15, 2026, 6:58 AM GMT+3" [ref=e628]: Today at 6:58 AM
+                    - generic [ref=e629]:
+                      - img "Run duration" [ref=e630]
+                      - text: 2m 10s
+                  - group [ref=e633]:
+                    - img "Show options" [ref=e635] [cursor=pointer]
+              - generic [ref=e638]:
+                - generic [ref=e639]:
+                  - 'link "completed successfully: Run 55 of CI. Fix full-stack audit findings: data integrity, security, a11y, perfor…" [ref=e640] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31863146899
+                    - img "completed successfully:" [ref=e642]
+                    - generic [ref=e644]: "Fix full-stack audit findings: data integrity, security, a11y, perfor…"
+                  - generic [ref=e645]:
+                    - text: "CI #55:"
+                    - generic [ref=e646]:
+                      - text: Commit
+                      - link "cfcb695" [ref=e647] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/cfcb69569671837cb57ee49693c96f8b0e26a2d9
+                      - text: pushed by
+                      - link "YusufJojeh" [ref=e648] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - link "main" [ref=e650] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/tree/refs/heads/main
+                - generic [ref=e652]:
+                  - generic [ref=e653]:
+                    - generic "Aug 15, 2026, 6:56 AM GMT+3" [ref=e658]: Today at 6:56 AM
+                    - generic [ref=e659]:
+                      - img "Run duration" [ref=e660]
+                      - text: 1m 7s
+                  - group [ref=e663]:
+                    - img "Show options" [ref=e665] [cursor=pointer]
+              - generic [ref=e668]:
+                - generic [ref=e669]:
+                  - 'link "completed successfully: Run 133 of Deploy to Production." [ref=e670] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31855799577
+                    - img "completed successfully:" [ref=e672]
+                    - generic [ref=e674]: Deploy to Production
+                  - generic [ref=e675]:
+                    - text: "Deploy to Production #133:"
+                    - generic [ref=e676]:
+                      - text: completed by
+                      - link "YusufJojeh" [ref=e677] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - generic [ref=e680]:
+                  - generic [ref=e681]:
+                    - generic "Aug 15, 2026, 4:10 AM GMT+3" [ref=e686]: Today at 4:10 AM
+                    - generic [ref=e687]:
+                      - img "Run duration" [ref=e688]
+                      - text: 1m 49s
+                  - group [ref=e691]:
+                    - img "Show options" [ref=e693] [cursor=pointer]
+              - generic [ref=e696]:
+                - generic [ref=e697]:
+                  - 'link "completed successfully: Run 54 of CI. Fix missing cart product images; remove duplicate/redundant nav UI" [ref=e698] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31855744934
+                    - img "completed successfully:" [ref=e700]
+                    - generic [ref=e702]: Fix missing cart product images; remove duplicate/redundant nav UI
+                  - generic [ref=e703]:
+                    - text: "CI #54:"
+                    - generic [ref=e704]:
+                      - text: Commit
+                      - link "c713ad3" [ref=e705] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/c713ad36e7c70cb4099766f0e617702bc281506b
+                      - text: pushed by
+                      - link "YusufJojeh" [ref=e706] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - link "main" [ref=e708] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/tree/refs/heads/main
+                - generic [ref=e710]:
+                  - generic [ref=e711]:
+                    - generic "Aug 15, 2026, 4:09 AM GMT+3" [ref=e716]: Today at 4:09 AM
+                    - generic [ref=e717]:
+                      - img "Run duration" [ref=e718]
+                      - text: 1m 7s
+                  - group [ref=e721]:
+                    - img "Show options" [ref=e723] [cursor=pointer]
+              - generic [ref=e726]:
+                - generic [ref=e727]:
+                  - 'link "completed successfully: Run 132 of Deploy to Production." [ref=e728] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31854128688
+                    - img "completed successfully:" [ref=e730]
+                    - generic [ref=e732]: Deploy to Production
+                  - generic [ref=e733]:
+                    - text: "Deploy to Production #132:"
+                    - generic [ref=e734]:
+                      - text: completed by
+                      - link "YusufJojeh" [ref=e735] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - generic [ref=e738]:
+                  - generic [ref=e739]:
+                    - generic "Aug 15, 2026, 3:36 AM GMT+3" [ref=e744]: Today at 3:36 AM
+                    - generic [ref=e745]:
+                      - img "Run duration" [ref=e746]
+                      - text: 2m 3s
+                  - group [ref=e749]:
+                    - img "Show options" [ref=e751] [cursor=pointer]
+              - generic [ref=e754]:
+                - generic [ref=e755]:
+                  - 'link "completed successfully: Run 53 of CI. Document the SANCTUM_STATEFUL_DOMAINS/APP_URL production trap in .env…" [ref=e756] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31854060349
+                    - img "completed successfully:" [ref=e758]
+                    - generic [ref=e760]: Document the SANCTUM_STATEFUL_DOMAINS/APP_URL production trap in .env…
+                  - generic [ref=e761]:
+                    - text: "CI #53:"
+                    - generic [ref=e762]:
+                      - text: Commit
+                      - link "0079782" [ref=e763] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/0079782f10d2f4925f52280e055f3e0e1c30a19a
+                      - text: pushed by
+                      - link "YusufJojeh" [ref=e764] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - link "main" [ref=e766] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/tree/refs/heads/main
+                - generic [ref=e768]:
+                  - generic [ref=e769]:
+                    - generic "Aug 15, 2026, 3:35 AM GMT+3" [ref=e774]: Today at 3:35 AM
+                    - generic [ref=e775]:
+                      - img "Run duration" [ref=e776]
+                      - text: 1m 21s
+                  - group [ref=e779]:
+                    - img "Show options" [ref=e781] [cursor=pointer]
+              - generic [ref=e784]:
+                - generic [ref=e785]:
+                  - 'link "failed: Run 131 of Deploy to Production." [ref=e786] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31853448909
+                    - img "failed:" [ref=e788]
+                    - generic [ref=e790]: Deploy to Production
+                  - generic [ref=e791]:
+                    - text: "Deploy to Production #131:"
+                    - generic [ref=e792]:
+                      - text: completed by
+                      - link "YusufJojeh" [ref=e793] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - generic [ref=e796]:
+                  - generic [ref=e797]:
+                    - generic "Aug 15, 2026, 3:22 AM GMT+3" [ref=e802]: Today at 3:22 AM
+                    - generic [ref=e803]:
+                      - img "Run duration" [ref=e804]
+                      - text: 2m 7s
+                  - group [ref=e807]:
+                    - img "Show options" [ref=e809] [cursor=pointer]
+              - generic [ref=e812]:
+                - generic [ref=e813]:
+                  - 'link "completed successfully: Run 52 of CI. Trust the reverse proxy so session/CSRF cookies behave consistently" [ref=e814] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31853383327
+                    - img "completed successfully:" [ref=e816]
+                    - generic [ref=e818]: Trust the reverse proxy so session/CSRF cookies behave consistently
+                  - generic [ref=e819]:
+                    - text: "CI #52:"
+                    - generic [ref=e820]:
+                      - text: Commit
+                      - link "795c4db" [ref=e821] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/795c4db56a4a5e8497bef65e8f00704dc3891658
+                      - text: pushed by
+                      - link "YusufJojeh" [ref=e822] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - link "main" [ref=e824] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/tree/refs/heads/main
+                - generic [ref=e826]:
+                  - generic [ref=e827]:
+                    - generic "Aug 15, 2026, 3:21 AM GMT+3" [ref=e832]: Today at 3:21 AM
+                    - generic [ref=e833]:
+                      - img "Run duration" [ref=e834]
+                      - text: 1m 8s
+                  - group [ref=e837]:
+                    - img "Show options" [ref=e839] [cursor=pointer]
+              - generic [ref=e842]:
+                - generic [ref=e843]:
+                  - 'link "completed successfully: Run 130 of Deploy to Production." [ref=e844] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31851390875
+                    - img "completed successfully:" [ref=e846]
+                    - generic [ref=e848]: Deploy to Production
+                  - generic [ref=e849]:
+                    - text: "Deploy to Production #130:"
+                    - generic [ref=e850]:
+                      - text: completed by
+                      - link "YusufJojeh" [ref=e851] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - generic [ref=e854]:
+                  - generic [ref=e855]:
+                    - generic "Aug 15, 2026, 2:44 AM GMT+3" [ref=e860]: Aug 15, 2:44 AM GMT+3
+                    - generic [ref=e861]:
+                      - img "Run duration" [ref=e862]
+                      - text: 2m 7s
+                  - group [ref=e865]:
+                    - img "Show options" [ref=e867] [cursor=pointer]
+              - generic [ref=e870]:
+                - generic [ref=e871]:
+                  - 'link "completed successfully: Run 51 of CI. Add cinematic hero video to homepage; fix auth redirect and commissio…" [ref=e872] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31851327331
+                    - img "completed successfully:" [ref=e874]
+                    - generic [ref=e876]: Add cinematic hero video to homepage; fix auth redirect and commissio…
+                  - generic [ref=e877]:
+                    - text: "CI #51:"
+                    - generic [ref=e878]:
+                      - text: Commit
+                      - link "db0604d" [ref=e879] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/db0604dd498dca93911c041df010226a09b1831d
+                      - text: pushed by
+                      - link "YusufJojeh" [ref=e880] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - link "main" [ref=e882] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/tree/refs/heads/main
+                - generic [ref=e884]:
+                  - generic [ref=e885]:
+                    - generic "Aug 15, 2026, 2:43 AM GMT+3" [ref=e890]: Aug 15, 2:43 AM GMT+3
+                    - generic [ref=e891]:
+                      - img "Run duration" [ref=e892]
+                      - text: 1m 3s
+                  - group [ref=e895]:
+                    - img "Show options" [ref=e897] [cursor=pointer]
+              - generic [ref=e900]:
+                - generic [ref=e901]:
+                  - 'link "completed successfully: Run 129 of Deploy to Production." [ref=e902] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31839343537
+                    - img "completed successfully:" [ref=e904]
+                    - generic [ref=e906]: Deploy to Production
+                  - generic [ref=e907]:
+                    - text: "Deploy to Production #129:"
+                    - generic [ref=e908]:
+                      - text: completed by
+                      - link "YusufJojeh" [ref=e909] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - generic [ref=e912]:
+                  - generic [ref=e913]:
+                    - generic "Aug 14, 2026, 11:45 PM GMT+3" [ref=e918]: Aug 14, 11:45 PM GMT+3
+                    - generic [ref=e919]:
+                      - img "Run duration" [ref=e920]
+                      - text: 2m 2s
+                  - group [ref=e923]:
+                    - img "Show options" [ref=e925] [cursor=pointer]
+              - generic [ref=e928]:
+                - generic [ref=e929]:
+                  - 'link "completed successfully: Run 50 of CI. Fix Inertia page-lookup path for assertInertia() on case-sensitive fi…" [ref=e930] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31839250929
+                    - img "completed successfully:" [ref=e932]
+                    - generic [ref=e934]: Fix Inertia page-lookup path for assertInertia() on case-sensitive fi…
+                  - generic [ref=e935]:
+                    - text: "CI #50:"
+                    - generic [ref=e936]:
+                      - text: Commit
+                      - link "c34e968" [ref=e937] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/c34e968f543ae9fdf5751088a7a6576da15e2c4d
+                      - text: pushed by
+                      - link "YusufJojeh" [ref=e938] [cursor=pointer]:
+                        - /url: /YusufJojeh
+                - link "main" [ref=e940] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/tree/refs/heads/main
+                - generic [ref=e942]:
+                  - generic [ref=e943]:
+                    - generic "Aug 14, 2026, 11:44 PM GMT+3" [ref=e948]: Aug 14, 11:44 PM GMT+3
+                    - generic [ref=e949]:
+                      - img "Run duration" [ref=e950]
+                      - text: 1m 8s
+                  - group [ref=e953]:
+                    - img "Show options" [ref=e955] [cursor=pointer]
+          - navigation "Pagination" [ref=e959]:
+            - generic "Previous page" [ref=e960]: Previous
+            - emphasis [ref=e961] [cursor=pointer]: "1"
+            - link "Page 2" [ref=e962] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/actions?page=2
+              - text: "2"
+            - link "Page 3" [ref=e963] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/actions?page=3
+              - text: "3"
+            - link "Page 4" [ref=e964] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/actions?page=4
+              - text: "4"
+            - link "Page 5" [ref=e965] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/actions?page=5
+              - text: "5"
+            - generic [ref=e966]: …
+            - link "Page 8" [ref=e967] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/actions?page=8
+              - text: "8"
+            - link "Page 9" [ref=e968] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/actions?page=9
+              - text: "9"
+            - link "Next page" [ref=e969] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/actions?page=2
+              - text: Next

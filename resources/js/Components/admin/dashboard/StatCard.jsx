@@ -24,7 +24,7 @@ export function StatCard({ label, value, icon: Icon, status = 'ready', onRetry, 
                             {common.refresh ?? 'Retry'}
                         </button>
                     )}
-                    {status === 'ready' && <p className={`mt-2 text-2xl font-bold tabular-nums ${toneClass}`}>{value}</p>}
+                    {status === 'ready' && <p className={`mt-2 text-2xl font-bold tabular-nums ${toneClass}`}><bdi>{value}</bdi></p>}
                 </div>
                 <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground">
                     <Icon className="size-5" strokeWidth={1.5} />

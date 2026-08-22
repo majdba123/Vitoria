@@ -1,0 +1,184 @@
+- generic [ref=f2e3]:
+  - navigation "Admin navigation" [ref=f2e5]:
+    - generic [ref=f2e6]:
+      - list [ref=f2e8]:
+        - listitem [ref=f2e9]:
+          - link "Vetora Admin" [ref=f2e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/admin/dashboard
+            - generic [ref=f2e15]:
+              - generic [ref=f2e16]: Vetora
+              - generic [ref=f2e17]: Admin
+      - generic [ref=f2e18]:
+        - generic [ref=f2e19]:
+          - generic [ref=f2e20]: Overview
+          - list [ref=f2e22]:
+            - listitem [ref=f2e23]:
+              - link "Dashboard" [ref=f2e24] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/dashboard
+        - generic [ref=f2e31]:
+          - generic [ref=f2e32]: Management
+          - list [ref=f2e34]:
+            - listitem [ref=f2e35]:
+              - link "Vendors" [ref=f2e36] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors
+            - listitem [ref=f2e42]:
+              - link "Syndicates" [ref=f2e43] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/syndicates
+            - listitem [ref=f2e50]:
+              - link "Products" [ref=f2e51] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/products
+            - listitem [ref=f2e57]:
+              - link "Employees" [ref=f2e58] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/employees
+            - listitem [ref=f2e72]:
+              - link "Coupons" [ref=f2e73] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/coupons
+            - listitem [ref=f2e77]:
+              - link "Orders" [ref=f2e78] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/orders
+            - listitem [ref=f2e83]:
+              - link "Users" [ref=f2e84] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/users
+            - listitem [ref=f2e91]:
+              - link "Notifications" [ref=f2e92] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/notifications
+            - listitem [ref=f2e97]:
+              - link "Contact messages" [ref=f2e98] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/contact-messages
+            - listitem [ref=f2e103]:
+              - link "About us" [ref=f2e104] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/about-us
+            - listitem [ref=f2e108]:
+              - link "Pages" [ref=f2e109] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/pages
+            - listitem [ref=f2e114]:
+              - link "Banners" [ref=f2e115] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/banners
+        - generic [ref=f2e121]:
+          - generic [ref=f2e122]: Catalog
+          - list [ref=f2e124]:
+            - listitem [ref=f2e125]:
+              - link "Categories" [ref=f2e126] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/categories
+            - listitem [ref=f2e132]:
+              - link "Subcategories" [ref=f2e133] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/subcategories
+            - listitem [ref=f2e139]:
+              - link "Cities" [ref=f2e140] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/cities
+      - list [ref=f2e147]:
+        - listitem [ref=f2e148]:
+          - button "م مدير النظام Admin" [ref=f2e149]:
+            - generic [ref=f2e150]: م
+            - generic [ref=f2e152]:
+              - generic [ref=f2e153]: مدير النظام
+              - generic [ref=f2e154]: Admin
+  - main [ref=f2e158]:
+    - generic [ref=f2e160]:
+      - button "Toggle Sidebar" [ref=f2e161]
+      - generic [ref=f2e163]:
+        - paragraph [ref=f2e164]: Admin
+        - heading "Vendor 360" [level=1] [ref=f2e165]
+      - generic [ref=f2e166]:
+        - link "Home" [ref=f2e167] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/
+        - button "Choose language" [ref=f2e168]
+        - button "Notifications" [ref=f2e169]
+        - button "Toggle theme" [ref=f2e170]
+    - generic [ref=f2e171]:
+      - generic [ref=f2e172]:
+        - generic [ref=f2e173]:
+          - navigation [ref=f2e174]:
+            - link "Vendor 360" [ref=f2e176] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/admin/vendors
+          - heading "Logo تاجر المستلزمات الزراعية تاجر المستلزمات الزراعية Active agriculture دمشق" [level=1] [ref=f2e177]:
+            - generic [ref=f2e178]:
+              - img "Logo" [ref=f2e180]
+              - generic [ref=f2e181]:
+                - generic [ref=f2e182]: تاجر المستلزمات الزراعية
+                - generic [ref=f2e183]:
+                  - generic [ref=f2e184]: تاجر المستلزمات الزراعية
+                  - generic [ref=f2e185]: Active
+                  - generic [ref=f2e186]: agriculture
+                  - generic [ref=f2e187]: دمشق
+          - paragraph [ref=f2e188]: Period analytics use the order creation date. All-time ledger balance is shown separately.
+        - link "Edit" [ref=f2e190] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/admin/vendors/1/edit
+      - generic [ref=f2e192]:
+        - generic [ref=f2e193]: Period sales analytics
+        - combobox "Period sales analytics" [ref=f2e196]:
+          - option "Today"
+          - option "7 days"
+          - option "30 days" [selected]
+          - option "90 days"
+          - option "This year"
+          - option "Custom"
+          - option "All time"
+      - generic [ref=f2e197]:
+        - region "Vendor 360" [ref=f2e198]:
+          - tablist [ref=f2e199]:
+            - tab "Overview" [selected] [ref=f2e200]
+            - tab "Products" [ref=f2e201]
+            - tab "Sales & Orders" [ref=f2e202]
+            - tab "Finance / Ledger" [ref=f2e203]
+            - tab "Returns & Refunds" [ref=f2e204]
+            - tab "Staff" [ref=f2e205]
+            - tab "Documents" [ref=f2e206]
+            - tab "Activity" [ref=f2e207]
+        - tabpanel "Overview" [ref=f2e208]:
+          - generic [ref=f2e209]:
+            - generic [ref=f2e210]:
+              - paragraph [ref=f2e211]: Products
+              - paragraph [ref=f2e212]: "8"
+            - generic [ref=f2e213]:
+              - paragraph [ref=f2e214]: Active products
+              - paragraph [ref=f2e215]: "8"
+            - generic [ref=f2e216]:
+              - paragraph [ref=f2e217]: Pending products
+              - paragraph [ref=f2e218]: "0"
+            - generic [ref=f2e219]:
+              - paragraph [ref=f2e220]: Orders
+              - paragraph [ref=f2e221]: "0"
+            - generic [ref=f2e222]:
+              - paragraph [ref=f2e223]: Completed orders
+              - paragraph [ref=f2e224]: "0"
+            - generic [ref=f2e225]:
+              - paragraph [ref=f2e226]: Cancelled orders
+              - paragraph [ref=f2e227]: "0"
+            - generic [ref=f2e228]:
+              - paragraph [ref=f2e229]: Units sold
+              - paragraph [ref=f2e230]: "0"
+            - generic [ref=f2e231]:
+              - paragraph [ref=f2e232]: Completed sales
+              - paragraph [ref=f2e233]: 0 SYP
+            - generic [ref=f2e234]:
+              - paragraph [ref=f2e235]: Completed refunds
+              - paragraph [ref=f2e236]: 0 SYP
+            - generic [ref=f2e237]:
+              - paragraph [ref=f2e238]: Average completed order value
+              - paragraph [ref=f2e239]: 0 SYP
+            - generic [ref=f2e240]:
+              - paragraph [ref=f2e241]: Platform commission
+              - paragraph [ref=f2e242]: 0 SYP
+            - generic [ref=f2e243]:
+              - paragraph [ref=f2e244]: Net vendor earnings
+              - paragraph [ref=f2e245]: 0 SYP
+            - generic [ref=f2e246]:
+              - paragraph [ref=f2e247]: Settled
+              - paragraph [ref=f2e248]: 0 SYP
+            - generic [ref=f2e249]:
+              - paragraph [ref=f2e250]: Outstanding
+              - paragraph [ref=f2e251]: 0 SYP
+          - generic [ref=f2e252]:
+            - generic [ref=f2e253]:
+              - generic [ref=f2e254]: Completed sales trend
+              - generic [ref=f2e256]: No data in this scope.
+            - generic [ref=f2e258]:
+              - generic [ref=f2e259]: Top products
+              - generic [ref=f2e261]: No data in this scope.
+          - generic [ref=f2e263]:
+            - generic [ref=f2e264]: Category performance
+            - generic [ref=f2e266]: No data in this scope.
+          - generic [ref=f2e268]:
+            - generic [ref=f2e269]: Recent orders
+            - generic [ref=f2e271]: No data in this scope.

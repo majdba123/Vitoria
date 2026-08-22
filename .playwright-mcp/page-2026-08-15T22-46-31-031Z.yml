@@ -1,0 +1,286 @@
+- generic [ref=f8e2]:
+  - banner [ref=f8e230]:
+    - navigation "Menu" [ref=f8e231]:
+      - link [ref=f8e232] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/
+        - img "Vetora" [ref=f8e233]
+      - generic [ref=f8e234]:
+        - button "Categories" [ref=f8e236]
+        - link "Products" [ref=f8e244] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/products
+        - link "FAQ" [ref=f8e245] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/faq
+      - search [ref=f8e246]:
+        - searchbox "Search products" [ref=f8e247]
+      - generic [ref=f8e248]:
+        - generic [ref=f8e249]:
+          - button "Choose language" [ref=f8e250]
+          - button "Toggle light or dark theme" [ref=f8e251]
+        - button "Cart" [ref=f8e252]
+        - generic [ref=f8e256]:
+          - link "Sign In" [ref=f8e257] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/login
+          - link "Register" [ref=f8e258] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/register
+  - main [ref=f8e259]:
+    - generic [ref=f8e261]:
+      - generic "Agricultural specialist inspecting crops in the field" [ref=f8e262]
+      - generic [ref=f8e263]:
+        - generic [ref=f8e264]: Smart browsing for agriculture and veterinary products
+        - heading "Choose faster. Browse smarter." [level=1] [ref=f8e265]:
+          - text: Choose faster.
+          - generic [ref=f8e266]: Browse smarter.
+        - paragraph [ref=f8e267]: Start from the right product type, move into the right category and subcategory, and reach the products that matter without clutter.
+        - generic [ref=f8e268]:
+          - link "Explore products" [ref=f8e269] [cursor=pointer]:
+            - /url: "#products"
+          - link "Browse categories" [ref=f8e272] [cursor=pointer]:
+            - /url: "#categories"
+        - paragraph [ref=f8e275]: Built for growers, veterinary teams, suppliers, and purchasing staff.
+    - region [ref=f8e276]:
+      - generic [ref=f8e277]:
+        - paragraph [ref=f8e278]: Choose your trade
+        - heading "One marketplace, two specialist catalogues" [level=2] [ref=f8e279]
+        - paragraph [ref=f8e280]: Select the field you work in. Prices, categories, and available stock will follow that choice throughout the store.
+      - generic [ref=f8e281]:
+        - link "Agriculture Selected now Agricultural products and supplies with a clear, fast browsing flow. Enter agriculture" [ref=f8e282] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/product-type/select?preferred_product_type=agriculture&redirect_to=home
+          - generic [ref=f8e283]: "01"
+          - generic [ref=f8e288]:
+            - generic [ref=f8e289]:
+              - generic [ref=f8e290]: Agriculture
+              - generic [ref=f8e291]: Selected now
+            - generic [ref=f8e292]: Agricultural products and supplies with a clear, fast browsing flow.
+          - generic [ref=f8e293]: Enter agriculture
+        - link "Veterinary Veterinary products and supplies with a smoother, easier shopping experience. Enter veterinary" [active] [ref=f8e296] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/product-type/select?preferred_product_type=veterinary&redirect_to=home
+          - generic [ref=f8e297]: "02"
+          - generic [ref=f8e303]:
+            - generic [ref=f8e304]: Veterinary
+            - generic [ref=f8e306]: Veterinary products and supplies with a smoother, easier shopping experience.
+          - generic [ref=f8e307]: Enter veterinary
+    - generic [ref=f8e311]:
+      - generic [ref=f8e313]:
+        - paragraph [ref=f8e314]: Start here
+        - heading "Choose a category" [level=2] [ref=f8e315]
+        - paragraph [ref=f8e316]: Browse the right category first, then move naturally into its subcategories and products.
+      - generic [ref=f8e375]:
+        - article [ref=f8e376]:
+          - button "أدوات الحصاد أدوات الحصاد Agriculture Products in this category" [ref=f8e377]:
+            - img "أدوات الحصاد" [ref=f8e379]
+            - generic [ref=f8e380]:
+              - generic [ref=f8e381]:
+                - heading "أدوات الحصاد" [level=3] [ref=f8e382]
+                - generic [ref=f8e383]: Agriculture
+              - paragraph [ref=f8e384]: Products in this category
+        - article [ref=f8e385]:
+          - button "التربة والسماد العضوي التربة والسماد العضوي Agriculture 2 subcategories" [ref=f8e386]:
+            - img "التربة والسماد العضوي" [ref=f8e388]
+            - generic [ref=f8e389]:
+              - generic [ref=f8e390]:
+                - heading "التربة والسماد العضوي" [level=3] [ref=f8e391]
+                - generic [ref=f8e392]: Agriculture
+              - paragraph [ref=f8e393]: 2 subcategories
+          - generic [ref=f8e394]:
+            - button "Compost" [ref=f8e395]
+            - button "Soil Amendments" [ref=f8e396]
+        - article [ref=f8e397]:
+          - button "المبيدات الزراعية المبيدات الزراعية Agriculture 3 subcategories" [ref=f8e398]:
+            - img "المبيدات الزراعية" [ref=f8e400]
+            - generic [ref=f8e401]:
+              - generic [ref=f8e402]:
+                - heading "المبيدات الزراعية" [level=3] [ref=f8e403]
+                - generic [ref=f8e404]: Agriculture
+              - paragraph [ref=f8e405]: 3 subcategories
+          - generic [ref=f8e406]:
+            - button "Herbicides" [ref=f8e407]
+            - button "Insecticides" [ref=f8e408]
+            - button "Fungicides" [ref=f8e409]
+        - article [ref=f8e410]:
+          - button "المعدات الزراعية المعدات الزراعية Agriculture Products in this category" [ref=f8e411]:
+            - img "المعدات الزراعية" [ref=f8e413]
+            - generic [ref=f8e414]:
+              - generic [ref=f8e415]:
+                - heading "المعدات الزراعية" [level=3] [ref=f8e416]
+                - generic [ref=f8e417]: Agriculture
+              - paragraph [ref=f8e418]: Products in this category
+        - article [ref=f8e419]:
+          - button "البيوت البلاستيكية البيوت البلاستيكية Agriculture Products in this category" [ref=f8e420]:
+            - img "البيوت البلاستيكية" [ref=f8e422]
+            - generic [ref=f8e423]:
+              - generic [ref=f8e424]:
+                - heading "البيوت البلاستيكية" [level=3] [ref=f8e425]
+                - generic [ref=f8e426]: Agriculture
+              - paragraph [ref=f8e427]: Products in this category
+        - article [ref=f8e428]:
+          - button "أنظمة الري أنظمة الري Agriculture Products in this category" [ref=f8e429]:
+            - img "أنظمة الري" [ref=f8e431]
+            - generic [ref=f8e432]:
+              - generic [ref=f8e433]:
+                - heading "أنظمة الري" [level=3] [ref=f8e434]
+                - generic [ref=f8e435]: Agriculture
+              - paragraph [ref=f8e436]: Products in this category
+        - article [ref=f8e437]:
+          - button "الأسمدة الأسمدة Agriculture 3 subcategories" [ref=f8e438]:
+            - img "الأسمدة" [ref=f8e440]
+            - generic [ref=f8e441]:
+              - generic [ref=f8e442]:
+                - heading "الأسمدة" [level=3] [ref=f8e443]
+                - generic [ref=f8e444]: Agriculture
+              - paragraph [ref=f8e445]: 3 subcategories
+          - generic [ref=f8e446]:
+            - button "Organic Fertilizers" [ref=f8e447]
+            - button "Compound Fertilizers" [ref=f8e448]
+            - button "Foliar Fertilizers" [ref=f8e449]
+        - article [ref=f8e450]:
+          - button "البذور البذور Agriculture 3 subcategories" [ref=f8e451]:
+            - img "البذور" [ref=f8e453]
+            - generic [ref=f8e454]:
+              - generic [ref=f8e455]:
+                - heading "البذور" [level=3] [ref=f8e456]
+                - generic [ref=f8e457]: Agriculture
+              - paragraph [ref=f8e458]: 3 subcategories
+          - generic [ref=f8e459]:
+            - button "Vegetable Seeds" [ref=f8e460]
+            - button "Barley Seeds" [ref=f8e461]
+            - button "Wheat Seeds" [ref=f8e462]
+    - generic [ref=f8e463]:
+      - generic [ref=f8e466]:
+        - generic [ref=f8e467]:
+          - img "أدوات الحصاد" [ref=f8e469]
+          - generic [ref=f8e470]:
+            - paragraph [ref=f8e471]: Browsing category
+            - heading "أدوات الحصاد" [level=2] [ref=f8e472]
+            - paragraph [ref=f8e473]: Products in this category
+        - button "Change category" [ref=f8e474]
+      - generic [ref=f8e476]:
+        - generic [ref=f8e477]:
+          - generic [ref=f8e478]:
+            - paragraph [ref=f8e479]: New arrivals
+            - heading "Latest products" [level=2] [ref=f8e480]
+            - paragraph [ref=f8e481]: Fresh products matched to your selected category and subcategory.
+          - link "View All" [ref=f8e482] [cursor=pointer]:
+            - /url: /products?category_id=8&type=agriculture
+        - article [ref=f8e486]:
+          - generic [ref=f8e487]:
+            - link [ref=f8e488] [cursor=pointer]:
+              - /url: /products/10
+              - img "Manual Harvest Tools Set" [ref=f8e489]
+            - button "Manual Harvest Tools Set" [ref=f8e490]
+          - generic [ref=f8e493]:
+            - link [ref=f8e494] [cursor=pointer]:
+              - /url: /products/10
+              - heading "Manual Harvest Tools Set" [level=3] [ref=f8e495]
+            - generic [ref=f8e496]:
+              - generic [ref=f8e497]:
+                - generic [ref=f8e498]: 35 SYP
+                - generic [ref=f8e499]: In stock
+              - 'button "Add to cart: Manual Harvest Tools Set" [ref=f8e500]'
+      - generic [ref=f8e505]:
+        - generic [ref=f8e506]:
+          - generic [ref=f8e507]:
+            - paragraph [ref=f8e508]: Best sellers
+            - heading "Best-selling products" [level=2] [ref=f8e509]
+            - paragraph [ref=f8e510]: The products customers buy most often in this section.
+          - link "View All" [ref=f8e511] [cursor=pointer]:
+            - /url: /products?category_id=8&sort=best_selling&type=agriculture
+        - article [ref=f8e515]:
+          - generic [ref=f8e516]:
+            - link [ref=f8e517] [cursor=pointer]:
+              - /url: /products/10
+              - img "Manual Harvest Tools Set" [ref=f8e518]
+            - generic [ref=f8e519]: "#1"
+            - button "Manual Harvest Tools Set" [ref=f8e520]
+          - generic [ref=f8e523]:
+            - link [ref=f8e524] [cursor=pointer]:
+              - /url: /products/10
+              - heading "Manual Harvest Tools Set" [level=3] [ref=f8e525]
+            - generic [ref=f8e526]:
+              - generic [ref=f8e527]:
+                - generic [ref=f8e528]: 35 SYP
+                - generic [ref=f8e529]: In stock
+              - 'button "Add to cart: Manual Harvest Tools Set" [ref=f8e530]'
+      - generic [ref=f8e535]:
+        - generic [ref=f8e536]:
+          - generic [ref=f8e537]:
+            - paragraph [ref=f8e538]: Popular now
+            - heading "Most favorited products" [level=2] [ref=f8e539]
+            - paragraph [ref=f8e540]: Popular items customers keep coming back to.
+          - link "View All" [ref=f8e541] [cursor=pointer]:
+            - /url: /products?category_id=8&sort=most_favorited&type=agriculture
+        - article [ref=f8e545]:
+          - generic [ref=f8e546]:
+            - link [ref=f8e547] [cursor=pointer]:
+              - /url: /products/10
+              - img "Manual Harvest Tools Set" [ref=f8e548]
+            - button "Manual Harvest Tools Set" [ref=f8e549]
+          - generic [ref=f8e552]:
+            - link [ref=f8e553] [cursor=pointer]:
+              - /url: /products/10
+              - heading "Manual Harvest Tools Set" [level=3] [ref=f8e554]
+            - generic [ref=f8e555]:
+              - generic [ref=f8e556]:
+                - generic [ref=f8e557]: 35 SYP
+                - generic [ref=f8e558]: In stock
+              - 'button "Add to cart: Manual Harvest Tools Set" [ref=f8e559]'
+    - generic [ref=f8e325]:
+      - generic [ref=f8e326]:
+        - generic [ref=f8e327]: Contact us
+        - heading "Talk to the Vetora team" [level=2] [ref=f8e328]
+        - paragraph [ref=f8e329]: Send your question, request, or supplier inquiry and we will get back to you shortly.
+      - generic [ref=f8e330]:
+        - generic [ref=f8e331]:
+          - generic [ref=f8e332]: Your name
+          - textbox "Your name" [ref=f8e333]:
+            - /placeholder: Enter your name
+        - generic [ref=f8e334]:
+          - generic [ref=f8e335]: Email address *
+          - textbox "Email address *" [ref=f8e336]:
+            - /placeholder: you@example.com
+        - generic [ref=f8e337]:
+          - generic [ref=f8e338]: Message *
+          - textbox "Message *" [ref=f8e339]:
+            - /placeholder: Tell us what you need...
+        - button "Send message" [ref=f8e340]
+  - contentinfo [ref=f8e341]:
+    - generic [ref=f8e343]:
+      - generic [ref=f8e344]:
+        - generic [ref=f8e345]:
+          - link [ref=f8e346] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/
+            - img "Vetora" [ref=f8e347]
+          - paragraph [ref=f8e348]: Your trusted online marketplace.
+        - generic [ref=f8e349]:
+          - heading "Shop" [level=2] [ref=f8e350]
+          - list [ref=f8e351]:
+            - listitem [ref=f8e352]:
+              - link "Categories" [ref=f8e353] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/categories
+            - listitem [ref=f8e354]:
+              - link "All Products" [ref=f8e355] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/products
+            - listitem [ref=f8e356]:
+              - link "FAQ" [ref=f8e357] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/faq
+        - generic [ref=f8e358]:
+          - heading "Account" [level=2] [ref=f8e359]
+          - list [ref=f8e360]:
+            - listitem [ref=f8e361]:
+              - link "Sign In" [ref=f8e362] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+            - listitem [ref=f8e363]:
+              - link "Create Account" [ref=f8e364] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/register
+        - generic [ref=f8e365]:
+          - heading "Contact" [level=2] [ref=f8e366]
+          - list [ref=f8e367]:
+            - listitem [ref=f8e368]:
+              - link "Contact Us" [ref=f8e369] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000#contact
+      - generic [ref=f8e370]:
+        - paragraph [ref=f8e371]: © 2026 Vetora. All rights reserved.
+        - generic [ref=f8e372]:
+          - link "Privacy Policy" [ref=f8e373] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/privacy-policy
+          - link "Terms of Service" [ref=f8e374] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/terms-of-service

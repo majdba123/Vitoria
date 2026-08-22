@@ -197,7 +197,12 @@ it('requires ownership to open the printable invoice page', function () {
     $this->actingAs($context['customer'])
         ->get("/invoices/{$invoice->id}/print")
         ->assertOk()
-        ->assertSee($invoice->invoice_number);
+        ->assertSee($invoice->invoice_number)
+        ->assertSee('@page', false)
+        ->assertSee('size: A4', false)
+        ->assertSee('min-height: 0', false)
+        ->assertSee('break-inside: avoid', false)
+        ->assertSee('display: none !important', false);
 });
 
 // --- Vendor ledger ----------------------------------------------------

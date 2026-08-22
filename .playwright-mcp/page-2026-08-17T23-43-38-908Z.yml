@@ -1,0 +1,93 @@
+- generic [ref=f7e3]:
+  - navigation "Syndicate navigation" [ref=f7e5]:
+    - generic [ref=f7e6]:
+      - list [ref=f7e8]:
+        - listitem [ref=f7e9]:
+          - link "Vetora Syndicate hub" [ref=f7e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/syndicate/dashboard
+            - generic [ref=f7e17]:
+              - generic [ref=f7e18]: Vetora
+              - generic [ref=f7e19]: Syndicate hub
+      - generic [ref=f7e21]:
+        - generic [ref=f7e22]: Syndicate Workspace
+        - list [ref=f7e24]:
+          - listitem [ref=f7e25]:
+            - link "Overview" [ref=f7e26] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/dashboard
+          - listitem [ref=f7e33]:
+            - link "Categories" [ref=f7e34] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/categories
+          - listitem [ref=f7e40]:
+            - link "Vendors" [ref=f7e41] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/vendors
+          - listitem [ref=f7e47]:
+            - link "Products" [ref=f7e48] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/products
+          - listitem [ref=f7e54]:
+            - link "Podcasts" [ref=f7e55] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/podcasts
+          - listitem [ref=f7e60]:
+            - link "Orders" [ref=f7e61] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/orders
+          - listitem [ref=f7e66]:
+            - link "Sales" [ref=f7e67] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/sales
+          - listitem [ref=f7e72]:
+            - link "Reports" [ref=f7e73] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/reports
+          - listitem [ref=f7e77]:
+            - link "Notifications" [ref=f7e78] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/notifications
+      - generic [ref=f7e83]:
+        - list [ref=f7e84]:
+          - listitem [ref=f7e85]:
+            - button "Sign Out" [ref=f7e86]
+        - paragraph [ref=f7e91]: Syndicate workspace
+  - main [ref=f7e92]:
+    - generic [ref=f7e94]:
+      - button "Toggle Sidebar" [ref=f7e95]
+      - generic [ref=f7e97]:
+        - paragraph [ref=f7e98]: Syndicate hub
+        - heading "Overview" [level=1] [ref=f7e99]
+      - generic [ref=f7e100]:
+        - generic [ref=f7e101]: Agriculture
+        - link "Home" [ref=f7e103] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/
+        - button "Choose language" [ref=f7e104]
+        - button "Notifications" [ref=f7e105]
+        - button "Toggle light or dark theme" [ref=f7e106]
+    - generic [ref=f7e107]:
+      - generic [ref=f7e108]:
+        - generic [ref=f7e109]:
+          - heading "Loading data..." [level=1] [ref=f7e110]
+          - paragraph [ref=f7e111]: View only the records related to the current syndicate type with a compact, role-focused layout.
+        - generic [ref=f7e112]:
+          - generic [ref=f7e113]: Active
+          - link "Sales" [ref=f7e114] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/syndicate/sales
+          - link "Reports" [ref=f7e115] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/syndicate/reports
+      - heading "Overview" [level=2] [ref=f7e116]
+      - generic [ref=f7e117]:
+        - paragraph [ref=f7e121]: Vendors
+        - paragraph [ref=f7e131]: Products
+        - paragraph [ref=f7e141]: Total orders
+      - generic [ref=f7e147]:
+        - generic [ref=f7e151]:
+          - heading "Top performance" [level=3] [ref=f7e152]
+          - paragraph [ref=f7e153]: Best categories, products, and vendors by sales activity.
+        - generic [ref=f7e160]:
+          - generic [ref=f7e161]: Quick summary
+          - generic [ref=f7e163]:
+            - generic [ref=f7e164]:
+              - generic [ref=f7e165]: Categories
+              - generic [ref=f7e166]: "0"
+            - generic [ref=f7e167]:
+              - generic [ref=f7e168]: Vendors
+              - generic [ref=f7e169]: "0"
+            - generic [ref=f7e170]:
+              - generic [ref=f7e171]: Products
+              - generic [ref=f7e172]: "0"
+      - generic [ref=f7e175]:
+        - heading "Orders per Month (Last 12 Months)" [level=3] [ref=f7e176]
+        - paragraph [ref=f7e177]: Real order counts across your syndicate's categories.

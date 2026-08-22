@@ -1,0 +1,107 @@
+- generic [ref=f2e2]:
+  - banner [ref=f2e3]:
+    - navigation "القائمة" [ref=f2e4]:
+      - link "Vetora":
+        - /url: http://127.0.0.1:8000/
+        - img "Vetora"
+      - generic [ref=f2e5]:
+        - button "التصنيفات" [ref=f2e7]
+        - link "المنتجات" [ref=f2e15] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/products
+        - link "الأسئلة الشائعة" [ref=f2e16] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/faq
+      - search [ref=f2e17]:
+        - searchbox "ابحث عن المنتجات" [ref=f2e18]
+      - generic [ref=f2e19]:
+        - generic [ref=f2e20]:
+          - button "اختر اللغة" [ref=f2e21]
+          - button "تبديل الوضع الفاتح أو الداكن" [ref=f2e22]
+        - button "السلة" [ref=f2e23]
+        - generic [ref=f2e27]:
+          - link "تسجيل الدخول" [ref=f2e28] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/login
+          - link "إنشاء حساب" [ref=f2e29] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/register
+  - main [ref=f2e30]:
+    - generic [ref=f2e32]:
+      - generic [ref=f2e33]:
+        - paragraph [ref=f2e34]: الدخول إلى Vetora
+        - heading "مساحة عمل متقنة لكل عميل وبائع وشريك." [level=1] [ref=f2e35]
+        - paragraph [ref=f2e36]: سجّل الدخول للانتقال من الاستكشاف إلى التنفيذ عبر واجهة متجر أكثر سلاسة ولوحات تشغيل أوضح ولغة موحدة للمنتج.
+        - generic [ref=f2e37]:
+          - generic [ref=f2e38]:
+            - term [ref=f2e39]: العملاء
+            - definition [ref=f2e40]: تابع المفضلة والطلبات والتفضيلات المحفوظة من واجهة هادئة وواضحة.
+          - generic [ref=f2e41]:
+            - term [ref=f2e42]: البائعون
+            - definition [ref=f2e43]: أدر المنتجات والأسعار وتشغيل المتجر بوضوح أكبر.
+          - generic [ref=f2e44]:
+            - term [ref=f2e45]: النقابات
+            - definition [ref=f2e46]: راقب أداء الشبكة وصحة الفئات لحظياً.
+      - generic [ref=f2e47]:
+        - generic [ref=f2e48]:
+          - generic [ref=f2e49]: تسجيل دخول آمن
+          - heading "مرحباً بعودتك" [level=2] [ref=f2e50]
+          - paragraph [ref=f2e51]: سجّل الدخول إلى حسابك
+        - generic [ref=f2e53]:
+          - generic [ref=f2e54]:
+            - generic [ref=f2e55]:
+              - text: رقم الهاتف
+              - generic [ref=f2e56]: "*"
+            - textbox "رقم الهاتف *" [ref=f2e57]:
+              - /placeholder: 09XXXXXXXX
+          - generic [ref=f2e58]:
+            - generic [ref=f2e59]:
+              - text: كلمة المرور
+              - generic [ref=f2e60]: "*"
+            - generic [ref=f2e61]:
+              - textbox "كلمة المرور *" [ref=f2e62]:
+                - /placeholder: أدخل كلمة المرور
+              - button "Show password" [ref=f2e63]
+          - button "تسجيل الدخول" [ref=f2e67]
+        - generic [ref=f2e68]:
+          - paragraph [ref=f2e69]: ليس لديك حساب؟
+          - link "أنشئ حساباً" [ref=f2e70] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/register
+  - contentinfo [ref=f2e71]:
+    - generic [ref=f2e73]:
+      - generic [ref=f2e74]:
+        - generic [ref=f2e75]:
+          - link [ref=f2e76] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/
+            - img "Vetora" [ref=f2e77]
+          - paragraph [ref=f2e78]: Your trusted online marketplace.
+        - generic [ref=f2e79]:
+          - heading "تسوق" [level=2] [ref=f2e80]
+          - list [ref=f2e81]:
+            - listitem [ref=f2e82]:
+              - link "التصنيفات" [ref=f2e83] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/categories
+            - listitem [ref=f2e84]:
+              - link "جميع المنتجات" [ref=f2e85] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/products
+            - listitem [ref=f2e86]:
+              - link "الأسئلة الشائعة" [ref=f2e87] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/faq
+        - generic [ref=f2e88]:
+          - heading "حساب" [level=2] [ref=f2e89]
+          - list [ref=f2e90]:
+            - listitem [ref=f2e91]:
+              - link "تسجيل الدخول" [ref=f2e92] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+            - listitem [ref=f2e93]:
+              - link "إنشاء حساب" [ref=f2e94] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/register
+        - generic [ref=f2e95]:
+          - heading "تواصل" [level=2] [ref=f2e96]
+          - list [ref=f2e97]:
+            - listitem [ref=f2e98]:
+              - link "تواصل معنا" [ref=f2e99] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000#contact
+      - generic [ref=f2e100]:
+        - paragraph [ref=f2e101]: © 2026 Vetora. جميع الحقوق محفوظة.
+        - generic [ref=f2e102]:
+          - link "سياسة الخصوصية" [ref=f2e103] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/privacy-policy
+          - link "شروط الخدمة" [ref=f2e104] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/terms-of-service

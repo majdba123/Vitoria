@@ -1,0 +1,167 @@
+- generic [ref=f1e2]:
+  - generic [ref=f1e3]:
+    - link "Skip to content" [ref=f1e4] [cursor=pointer]:
+      - /url: "#start-of-content"
+    - banner [ref=f1e9]:
+      - heading "Navigation Menu" [level=2] [ref=f1e10]
+      - generic [ref=f1e11]:
+        - link "Homepage" [ref=f1e13] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f1e16]:
+          - navigation "Global" [ref=f1e17]:
+            - list [ref=f1e18]:
+              - listitem [ref=f1e19]:
+                - button "Platform" [ref=f1e21] [cursor=pointer]
+              - listitem [ref=f1e24]:
+                - button "Solutions" [ref=f1e26] [cursor=pointer]
+              - listitem [ref=f1e29]:
+                - button "Resources" [ref=f1e31] [cursor=pointer]
+              - listitem [ref=f1e34]:
+                - button "Open Source" [ref=f1e36] [cursor=pointer]
+              - listitem [ref=f1e39]:
+                - button "Enterprise" [ref=f1e41] [cursor=pointer]
+              - listitem [ref=f1e44]:
+                - link "Pricing" [ref=f1e45] [cursor=pointer]:
+                  - /url: https://github.com/pricing
+          - generic [ref=f1e46]:
+            - button "Search or jump to, type / to search" [ref=f1e48] [cursor=pointer]:
+              - generic [ref=f1e51]:
+                - generic [ref=f1e52]: Search
+                - generic [ref=f1e53]: /
+            - link "Sign in" [ref=f1e55] [cursor=pointer]:
+              - /url: /login?return_to=https%3A%2F%2Fgithub.com%2Fmajdba123%2FVitoria%2Factions%2Fruns%2F31913080444
+            - link "Sign up" [ref=f1e58] [cursor=pointer]:
+              - /url: /signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E%2Factions%2Fworkflow_runs%2Fshow&source=header-repo&source_repo=majdba123%2FVitoria
+            - button "Appearance settings" [ref=f1e61] [cursor=pointer]
+  - main [ref=f1e68]:
+    - generic [ref=f1e69]:
+      - generic [ref=f1e70]:
+        - generic [ref=f1e71]:
+          - generic [ref=f1e73]:
+            - link "majdba123" [ref=f1e77] [cursor=pointer]:
+              - /url: /majdba123
+            - generic [ref=f1e78]: /
+            - strong [ref=f1e79]:
+              - link "Vitoria" [ref=f1e80] [cursor=pointer]:
+                - /url: /majdba123/Vitoria
+            - generic [ref=f1e81]: Public
+          - generic [ref=f1e82]:
+            - list:
+              - listitem [ref=f1e83]:
+                - link "You must be signed in to change notification settings" [ref=f1e84] [cursor=pointer]:
+                  - /url: /login?return_to=%2Fmajdba123%2FVitoria
+                  - text: Notifications
+              - listitem [ref=f1e87]:
+                - link "Fork 0" [ref=f1e88] [cursor=pointer]:
+                  - /url: /login?return_to=%2Fmajdba123%2FVitoria
+                  - text: Fork
+                  - generic "0" [ref=f1e91]
+              - listitem [ref=f1e92]:
+                - link "You must be signed in to star a repository" [ref=f1e94] [cursor=pointer]:
+                  - /url: /login?return_to=%2Fmajdba123%2FVitoria
+                  - text: Star
+                  - generic "0 users starred this repository" [ref=f1e97]: "0"
+        - navigation "Repository" [ref=f1e98]:
+          - list [ref=f1e99]:
+            - listitem [ref=f1e100]:
+              - link "Code" [ref=f1e101] [cursor=pointer]:
+                - /url: /majdba123/Vitoria
+            - listitem [ref=f1e105]:
+              - link "Issues" [ref=f1e106] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/issues
+            - listitem [ref=f1e111]:
+              - link "Pull requests" [ref=f1e112] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/pulls
+            - listitem [ref=f1e116]:
+              - link "Actions" [ref=f1e117] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/actions
+            - listitem [ref=f1e121]:
+              - link "Projects" [ref=f1e122] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/projects
+            - listitem [ref=f1e126]:
+              - link "Security and quality" [ref=f1e127] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/security
+            - listitem [ref=f1e131]:
+              - link "Insights" [ref=f1e132] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/pulse
+      - generic [ref=f1e140]:
+        - generic [ref=f1e143]:
+          - link "CI" [ref=f1e146] [cursor=pointer]:
+            - /url: /majdba123/Vitoria/actions/workflows/ci.yml
+          - generic [ref=f1e150]:
+            - generic [ref=f1e151]:
+              - img "completed successfully:" [ref=f1e155]
+              - 'heading "Fix public storefront regressions #62" [level=1] [ref=f1e157]'
+            - link "Sign in to view logs" [ref=f1e161] [cursor=pointer]:
+              - /url: /login?return_to=https%3A%2F%2Fgithub.com%2Fmajdba123%2FVitoria%2Factions%2Fruns%2F31913080444
+        - generic [ref=f1e165]:
+          - region "Workflow run summary" [ref=f1e166]:
+            - generic [ref=f1e167]:
+              - generic [ref=f1e168]:
+                - generic [ref=f1e169]: Triggered via push August 15, 2026 22:481 minute ago
+                - generic [ref=f1e170]:
+                  - link [ref=f1e171] [cursor=pointer]:
+                    - /url: /YusufJojeh
+                    - img "@YusufJojeh" [ref=f1e172]
+                    - text: YusufJojeh
+                  - generic [ref=f1e173]:
+                    - generic [ref=f1e174]: pushed
+                    - link "8699e5e" [ref=f1e175] [cursor=pointer]:
+                      - /url: /majdba123/Vitoria/commit/8699e5e12b1082674474b8a3c8cfbeb334c945b4
+                  - link "main" [ref=f1e178] [cursor=pointer]:
+                    - /url: /majdba123/Vitoria/tree/refs/heads/main
+              - generic [ref=f1e179]:
+                - generic [ref=f1e180]: Status
+                - text: Success
+              - generic [ref=f1e181]:
+                - generic [ref=f1e182]: Total duration
+                - link "1m 12s" [ref=f1e183] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/actions/runs/31913080444/usage
+              - generic [ref=f1e184]:
+                - generic [ref=f1e185]: Artifacts
+                - text: –
+          - region "Workflow run graph" [ref=f1e186]:
+            - generic [ref=f1e188]:
+              - generic [ref=f1e190]:
+                - heading [level=2] [ref=f1e191]:
+                  - link "ci.yml" [ref=f1e192] [cursor=pointer]:
+                    - /url: /majdba123/Vitoria/actions/runs/31913080444/workflow
+                - generic [ref=f1e193]: "on: push"
+              - generic [ref=f1e195]:
+                - 'link "completed successfully: Lint & Test 1m 7s" [ref=f1e200] [cursor=pointer]':
+                  - /url: /majdba123/Vitoria/actions/runs/31913080444/job/95080950921
+                  - generic [ref=f1e202]:
+                    - img "completed successfully:" [ref=f1e204]
+                    - generic [ref=f1e206]: Lint & Test
+                    - generic [ref=f1e208]: 1m 7s
+                - generic [ref=f1e209]:
+                  - paragraph [ref=f1e210]: Oh hello! Nice to see you.
+                  - paragraph [ref=f1e211]:
+                    - text: Made with ❤️ by
+                    - link [ref=f1e212] [cursor=pointer]:
+                      - /url: https://actions.github.io/humans.txt
+                      - text: humans.txt
+              - generic [ref=f1e213]:
+                - button "Fit to window" [disabled] [ref=f1e214]
+                - generic [ref=f1e215]:
+                  - button "Zoom out" [disabled] [ref=f1e217]
+                  - button "Zoom in" [disabled] [ref=f1e219]
+          - region "Annotations" [ref=f1e220]:
+            - generic [ref=f1e221]:
+              - generic [ref=f1e223]:
+                - heading "Annotations" [level=2] [ref=f1e224]
+                - generic [ref=f1e225]: 1 warning
+              - table [ref=f1e226]:
+                - rowgroup [ref=f1e227]:
+                  - row [ref=f1e228]:
+                    - cell [ref=f1e229]:
+                      - generic [ref=f1e234]:
+                        - link [ref=f1e235] [cursor=pointer]:
+                          - /url: /majdba123/Vitoria/actions/runs/31913080444/job/95080950921#step:21:2
+                          - strong [ref=f1e236]: Lint & Test
+                        - generic [ref=f1e237]:
+                          - generic [ref=f1e239]:
+                            - text: "Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see:"
+                            - link "https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/" [ref=f1e240] [cursor=pointer]:
+                              - /url: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+                          - button "Show more" [ref=f1e241] [cursor=pointer]

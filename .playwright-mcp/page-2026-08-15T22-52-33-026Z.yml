@@ -1,0 +1,1046 @@
+- generic [active] [ref=f6e1]:
+  - generic [ref=f6e2]:
+    - generic [ref=f6e3]:
+      - link "Skip to content" [ref=f6e4] [cursor=pointer]:
+        - /url: "#start-of-content"
+      - banner [ref=f6e9]:
+        - heading "Navigation Menu" [level=2] [ref=f6e10]
+        - generic [ref=f6e11]:
+          - link "Homepage" [ref=f6e13] [cursor=pointer]:
+            - /url: /
+          - generic [ref=f6e16]:
+            - navigation "Global" [ref=f6e17]:
+              - list [ref=f6e18]:
+                - listitem [ref=f6e19]:
+                  - button "Platform" [ref=f6e21] [cursor=pointer]
+                - listitem [ref=f6e24]:
+                  - button "Solutions" [ref=f6e26] [cursor=pointer]
+                - listitem [ref=f6e29]:
+                  - button "Resources" [ref=f6e31] [cursor=pointer]
+                - listitem [ref=f6e34]:
+                  - button "Open Source" [ref=f6e36] [cursor=pointer]
+                - listitem [ref=f6e39]:
+                  - button "Enterprise" [ref=f6e41] [cursor=pointer]
+                - listitem [ref=f6e44]:
+                  - link "Pricing" [ref=f6e45] [cursor=pointer]:
+                    - /url: https://github.com/pricing
+            - generic [ref=f6e46]:
+              - button "Search or jump to, type / to search" [ref=f6e48] [cursor=pointer]:
+                - generic [ref=f6e51]:
+                  - generic [ref=f6e52]: Search
+                  - generic [ref=f6e53]: /
+              - link "Sign in" [ref=f6e55] [cursor=pointer]:
+                - /url: /login?return_to=https%3A%2F%2Fgithub.com%2Fmajdba123%2FVitoria
+              - link "Sign up" [ref=f6e58] [cursor=pointer]:
+                - /url: /signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E&source=header-repo&source_repo=majdba123%2FVitoria
+              - button "Appearance settings" [ref=f6e61] [cursor=pointer]
+    - main [ref=f6e68]:
+      - generic [ref=f6e69]:
+        - generic [ref=f6e70]:
+          - generic [ref=f6e72]:
+            - link "majdba123" [ref=f6e76] [cursor=pointer]:
+              - /url: /majdba123
+            - generic [ref=f6e77]: /
+            - strong [ref=f6e78]:
+              - link "Vitoria" [ref=f6e79] [cursor=pointer]:
+                - /url: /majdba123/Vitoria
+            - generic [ref=f6e80]: Public
+          - generic [ref=f6e81]:
+            - list:
+              - listitem [ref=f6e82]:
+                - link "You must be signed in to change notification settings" [ref=f6e83] [cursor=pointer]:
+                  - /url: /login?return_to=%2Fmajdba123%2FVitoria
+                  - text: Notifications
+              - listitem [ref=f6e86]:
+                - link "Fork 0" [ref=f6e87] [cursor=pointer]:
+                  - /url: /login?return_to=%2Fmajdba123%2FVitoria
+                  - text: Fork
+                  - generic "0" [ref=f6e90]
+              - listitem [ref=f6e91]:
+                - link "You must be signed in to star a repository" [ref=f6e93] [cursor=pointer]:
+                  - /url: /login?return_to=%2Fmajdba123%2FVitoria
+                  - text: Star
+                  - generic "0 users starred this repository" [ref=f6e96]: "0"
+        - navigation "Repository" [ref=f6e97]:
+          - list [ref=f6e98]:
+            - listitem [ref=f6e99]:
+              - link "Code" [ref=f6e100] [cursor=pointer]:
+                - /url: /majdba123/Vitoria
+            - listitem [ref=f6e104]:
+              - link "Issues" [ref=f6e105] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/issues
+            - listitem [ref=f6e110]:
+              - link "Pull requests" [ref=f6e111] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/pulls
+            - listitem [ref=f6e115]:
+              - link "Actions" [ref=f6e116] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/actions
+            - listitem [ref=f6e120]:
+              - link "Projects" [ref=f6e121] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/projects
+            - listitem [ref=f6e125]:
+              - link "Security and quality" [ref=f6e126] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/security
+            - listitem [ref=f6e130]:
+              - link "Insights" [ref=f6e131] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/pulse
+      - generic [ref=f6e148]:
+        - generic [ref=f6e151]:
+          - generic [ref=f6e152]:
+            - generic [ref=f6e153]:
+              - button "main branch" [ref=f6e155] [cursor=pointer]:
+                - generic [ref=f6e156]: main
+              - generic [ref=f6e160]:
+                - link [ref=f6e161] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/branches
+                  - generic [ref=f6e164]:
+                    - strong [ref=f6e165]: "3"
+                    - text: Branches
+                - link [ref=f6e166] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/tags
+                  - generic [ref=f6e169]:
+                    - strong [ref=f6e170]: "0"
+                    - text: Tags
+            - generic [ref=f6e171]:
+              - combobox "Go to file" [ref=f6e179]
+              - button "Code" [ref=f6e180] [cursor=pointer]
+          - generic [ref=f6e183]:
+            - generic [ref=f6e184]:
+              - heading "Folders and files" [level=2] [ref=f6e185]
+              - table "Folders and files" [ref=f6e186]:
+                - rowgroup:
+                  - row "Name Last commit message Last commit date":
+                    - columnheader "Name"
+                    - columnheader "Last commit message"
+                    - columnheader "Last commit date"
+                - rowgroup [ref=f6e187]:
+                  - row [ref=f6e188]:
+                    - cell "Latest commit yusufmohammdjojeh-cyber commits by yusufmohammdjojeh-cyber Fix public storefront regressions success Commit 8699e5e · Aug 16, 20265 minutes ago History 149 Commits" [ref=f6e189]:
+                      - generic [ref=f6e190]:
+                        - heading "Latest commit" [level=2] [ref=f6e191]
+                        - generic [ref=f6e192]:
+                          - generic [ref=f6e194]:
+                            - link [ref=f6e195] [cursor=pointer]:
+                              - /url: /yusufmohammdjojeh-cyber
+                              - img "yusufmohammdjojeh-cyber" [ref=f6e196]
+                            - link "commits by yusufmohammdjojeh-cyber" [ref=f6e197] [cursor=pointer]:
+                              - /url: /majdba123/Vitoria/commits?author=yusufmohammdjojeh-cyber
+                              - text: yusufmohammdjojeh-cyber
+                          - generic [ref=f6e198]:
+                            - link "Fix public storefront regressions" [ref=f6e201] [cursor=pointer]:
+                              - /url: /majdba123/Vitoria/commit/8699e5e12b1082674474b8a3c8cfbeb334c945b4
+                            - button "success" [ref=f6e202] [cursor=pointer]
+                        - generic [ref=f6e205]:
+                          - generic [ref=f6e207]:
+                            - link "Commit 8699e5e" [ref=f6e208] [cursor=pointer]:
+                              - /url: /majdba123/Vitoria/commit/8699e5e12b1082674474b8a3c8cfbeb334c945b4
+                              - text: 8699e5e
+                            - text: ·
+                            - generic "Aug 16, 2026, 1:47 AM GMT+3" [ref=f6e209]: Aug 16, 20265 minutes ago
+                          - generic [ref=f6e210]:
+                            - heading "History" [level=2] [ref=f6e211]
+                            - link "149 Commits" [ref=f6e212] [cursor=pointer]:
+                              - /url: /majdba123/Vitoria/commits/main/
+                  - row [ref=f6e215]:
+                    - cell [ref=f6e216]:
+                      - link ".claude, (Directory)" [ref=f6e223] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/.claude
+                        - text: .claude
+                    - cell [ref=f6e224]:
+                      - link "Redesign Admin/Vendor/Employee/Syndicate workspaces; final AI-slop au…" [ref=f6e227] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/ccd937b0967341eaa4cf30bb4ba55431637a7d81
+                    - cell "Aug 12, 20264 days ago" [ref=f6e228]
+                  - row [ref=f6e230]:
+                    - cell [ref=f6e231]:
+                      - link ".github/workflows, (Directory)" [ref=f6e238] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/.github/workflows
+                        - text: .github/workflows
+                    - cell [ref=f6e239]:
+                      - link "Fix pre-deploy DB backup failing on missing PROCESS privilege" [ref=f6e242] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/b2150d2b4b2affccc124d84c0b981e82879d40d0
+                    - cell "Aug 12, 20264 days ago" [ref=f6e243]
+                  - row [ref=f6e245]:
+                    - cell [ref=f6e246]:
+                      - link "app, (Directory)" [ref=f6e253] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/app
+                        - text: app
+                    - cell [ref=f6e254]:
+                      - link "Fix public storefront regressions" [ref=f6e257] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/8699e5e12b1082674474b8a3c8cfbeb334c945b4
+                    - cell "Aug 16, 20265 minutes ago" [ref=f6e258]
+                  - row [ref=f6e260]:
+                    - cell [ref=f6e261]:
+                      - link "bootstrap, (Directory)" [ref=f6e268] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/bootstrap
+                        - text: bootstrap
+                    - cell [ref=f6e269]:
+                      - link "Trust the reverse proxy so session/CSRF cookies behave consistently" [ref=f6e272] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/795c4db56a4a5e8497bef65e8f00704dc3891658
+                    - cell "Aug 15, 2026yesterday" [ref=f6e273]
+                  - row [ref=f6e275]:
+                    - cell [ref=f6e276]:
+                      - link "config, (Directory)" [ref=f6e283] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/config
+                        - text: config
+                    - cell [ref=f6e284]:
+                      - 'link "Fix full-stack audit findings: data integrity, security, a11y, perfor…" [ref=f6e287] [cursor=pointer]':
+                        - /url: /majdba123/Vitoria/commit/cfcb69569671837cb57ee49693c96f8b0e26a2d9
+                    - cell "Aug 15, 202619 hours ago" [ref=f6e288]
+                  - row [ref=f6e290]:
+                    - cell [ref=f6e291]:
+                      - link "database, (Directory)" [ref=f6e298] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/database
+                        - text: database
+                    - cell [ref=f6e299]:
+                      - 'link "Close vendor financial-integrity round: settlement race, backfill saf…" [ref=f6e302] [cursor=pointer]':
+                        - /url: /majdba123/Vitoria/commit/b6320e37f57f1819d32b19dc904d057825685c99
+                    - cell "Aug 15, 20265 hours ago" [ref=f6e303]
+                  - row [ref=f6e305]:
+                    - cell [ref=f6e306]:
+                      - link "docs, (Directory)" [ref=f6e313] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/docs
+                        - text: docs
+                    - cell [ref=f6e314]:
+                      - link "Add real trend charts to Employee and Syndicate dashboards" [ref=f6e317] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/a105bbaf32e76b701ceeacf1baa9cbe92275db9c
+                    - cell "Aug 15, 20262 hours ago" [ref=f6e318]
+                  - row [ref=f6e320]:
+                    - cell [ref=f6e321]:
+                      - link "lang, (Directory)" [ref=f6e328] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/lang
+                        - text: lang
+                    - cell [ref=f6e329]:
+                      - link "Add real trend charts to Employee and Syndicate dashboards" [ref=f6e332] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/a105bbaf32e76b701ceeacf1baa9cbe92275db9c
+                    - cell "Aug 15, 20262 hours ago" [ref=f6e333]
+                  - row [ref=f6e335]:
+                    - cell [ref=f6e336]:
+                      - link "postman, (Directory)" [ref=f6e343] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/postman
+                        - text: postman
+                    - cell [ref=f6e344]:
+                      - link "last modification" [ref=f6e347] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/4a43f094ab8a59eed435ca0d3bd522d011e4d3f6
+                    - cell "Jul 22, 20263 weeks ago" [ref=f6e348]
+                  - row [ref=f6e350]:
+                    - cell [ref=f6e351]:
+                      - link "public, (Directory)" [ref=f6e358] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/public
+                        - text: public
+                    - cell [ref=f6e359]:
+                      - 'link "Resolve stakeholder review: vendor context, MOQ, employee RBAC, FAQ, …" [ref=f6e362] [cursor=pointer]':
+                        - /url: /majdba123/Vitoria/commit/ef26feed51210fded55b82bf95bd6c6ce73870a2
+                    - cell "Aug 15, 202610 hours ago" [ref=f6e363]
+                  - row [ref=f6e365]:
+                    - cell [ref=f6e366]:
+                      - link "resources, (Directory)" [ref=f6e373] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/resources
+                        - text: resources
+                    - cell [ref=f6e374]:
+                      - link "Fix public storefront regressions" [ref=f6e377] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/8699e5e12b1082674474b8a3c8cfbeb334c945b4
+                    - cell "Aug 16, 20265 minutes ago" [ref=f6e378]
+                  - row [ref=f6e380]:
+                    - cell [ref=f6e381]:
+                      - link "routes, (Directory)" [ref=f6e388] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/routes
+                        - text: routes
+                    - cell [ref=f6e389]:
+                      - 'link "Resolve stakeholder review: vendor context, MOQ, employee RBAC, FAQ, …" [ref=f6e392] [cursor=pointer]':
+                        - /url: /majdba123/Vitoria/commit/ef26feed51210fded55b82bf95bd6c6ce73870a2
+                    - cell "Aug 15, 202610 hours ago" [ref=f6e393]
+                  - row [ref=f6e395]:
+                    - cell [ref=f6e396]:
+                      - link "scripts, (Directory)" [ref=f6e403] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/scripts
+                        - text: scripts
+                    - cell [ref=f6e404]:
+                      - link "1" [ref=f6e407] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/211346ef92a3604dd90be66e1d92c652b2ef82d4
+                    - cell "Apr 11, 20264 months ago" [ref=f6e408]
+                  - row [ref=f6e410]:
+                    - cell [ref=f6e411]:
+                      - link "storage, (Directory)" [ref=f6e418] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/storage
+                        - text: storage
+                    - cell [ref=f6e419]:
+                      - link "1" [ref=f6e422] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/211346ef92a3604dd90be66e1d92c652b2ef82d4
+                    - cell "Apr 11, 20264 months ago" [ref=f6e423]
+                  - row [ref=f6e425]:
+                    - cell [ref=f6e426]:
+                      - link "tests, (Directory)" [ref=f6e433] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/tests
+                        - text: tests
+                    - cell [ref=f6e434]:
+                      - link "Fix public storefront regressions" [ref=f6e437] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/8699e5e12b1082674474b8a3c8cfbeb334c945b4
+                    - cell "Aug 16, 20265 minutes ago" [ref=f6e438]
+                  - row [ref=f6e440]:
+                    - cell [ref=f6e441]:
+                      - link "tools/hero-video, (Directory)" [ref=f6e448] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/tree/main/tools/hero-video
+                        - text: tools/hero-video
+                    - cell [ref=f6e449]:
+                      - link "Add cinematic hero video to homepage; fix auth redirect and commissio…" [ref=f6e452] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/db0604dd498dca93911c041df010226a09b1831d
+                    - cell "Aug 15, 2026yesterday" [ref=f6e453]
+                  - row [ref=f6e455]:
+                    - cell [ref=f6e456]:
+                      - link ".editorconfig, (File)" [ref=f6e463] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/.editorconfig
+                        - text: .editorconfig
+                    - cell [ref=f6e464]:
+                      - link "1" [ref=f6e467] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/211346ef92a3604dd90be66e1d92c652b2ef82d4
+                    - cell "Apr 11, 20264 months ago" [ref=f6e468]
+                  - row [ref=f6e470]:
+                    - cell [ref=f6e471]:
+                      - link ".env.example, (File)" [ref=f6e478] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/.env.example
+                        - text: .env.example
+                    - cell [ref=f6e479]:
+                      - link "Document the SANCTUM_STATEFUL_DOMAINS/APP_URL production trap in .env…" [ref=f6e482] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/0079782f10d2f4925f52280e055f3e0e1c30a19a
+                    - cell "Aug 15, 2026yesterday" [ref=f6e483]
+                  - row [ref=f6e485]:
+                    - cell [ref=f6e486]:
+                      - link ".gitattributes, (File)" [ref=f6e493] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/.gitattributes
+                        - text: .gitattributes
+                    - cell [ref=f6e494]:
+                      - link "1" [ref=f6e497] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/211346ef92a3604dd90be66e1d92c652b2ef82d4
+                    - cell "Apr 11, 20264 months ago" [ref=f6e498]
+                  - row [ref=f6e500]:
+                    - cell [ref=f6e501]:
+                      - link ".gitignore, (File)" [ref=f6e508] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/.gitignore
+                        - text: .gitignore
+                    - cell [ref=f6e509]:
+                      - link "Migrate storefront and all dashboards to Inertia.js v3 + React 19" [ref=f6e512] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/cdc69e70f4017bf3514ac3bd9f53256c6c752032
+                    - cell "Aug 14, 2026yesterday" [ref=f6e513]
+                  - row [ref=f6e515]:
+                    - cell [ref=f6e516]:
+                      - link "AGENTS.md, (File)" [ref=f6e523] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/AGENTS.md
+                        - text: AGENTS.md
+                    - cell [ref=f6e524]:
+                      - 'link "Fix full-stack audit findings: data integrity, security, a11y, perfor…" [ref=f6e527] [cursor=pointer]':
+                        - /url: /majdba123/Vitoria/commit/cfcb69569671837cb57ee49693c96f8b0e26a2d9
+                    - cell "Aug 15, 202619 hours ago" [ref=f6e528]
+                  - row [ref=f6e530]:
+                    - cell [ref=f6e531]:
+                      - link "MSZ, (File)" [ref=f6e538] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/MSZ
+                        - text: MSZ
+                    - cell [ref=f6e539]:
+                      - link "1" [ref=f6e542] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/211346ef92a3604dd90be66e1d92c652b2ef82d4
+                    - cell "Apr 11, 20264 months ago" [ref=f6e543]
+                  - row [ref=f6e545]:
+                    - cell [ref=f6e546]:
+                      - link "README.md, (File)" [ref=f6e553] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/README.md
+                        - text: README.md
+                    - cell [ref=f6e554]:
+                      - link "1" [ref=f6e557] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/211346ef92a3604dd90be66e1d92c652b2ef82d4
+                    - cell "Apr 11, 20264 months ago" [ref=f6e558]
+                  - row [ref=f6e560]:
+                    - cell [ref=f6e561]:
+                      - link "REDIS_SETUP.md, (File)" [ref=f6e568] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/REDIS_SETUP.md
+                        - text: REDIS_SETUP.md
+                    - cell [ref=f6e569]:
+                      - link "1" [ref=f6e572] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/211346ef92a3604dd90be66e1d92c652b2ef82d4
+                    - cell "Apr 11, 20264 months ago" [ref=f6e573]
+                  - row [ref=f6e575]:
+                    - cell [ref=f6e576]:
+                      - link "SyriaZone.postman_collection.json, (File)" [ref=f6e583] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/SyriaZone.postman_collection.json
+                        - text: SyriaZone.postman_collection.json
+                    - cell [ref=f6e584]:
+                      - link "22" [ref=f6e587] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/ad1a5843cfcc9302ac261116059d89b483290917
+                    - cell "Jun 3, 20262 months ago" [ref=f6e588]
+                  - row [ref=f6e590]:
+                    - cell [ref=f6e591]:
+                      - link "artisan, (File)" [ref=f6e598] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/artisan
+                        - text: artisan
+                    - cell [ref=f6e599]:
+                      - link "1" [ref=f6e602] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/211346ef92a3604dd90be66e1d92c652b2ef82d4
+                    - cell "Apr 11, 20264 months ago" [ref=f6e603]
+                  - row [ref=f6e605]:
+                    - cell [ref=f6e606]:
+                      - link "boost.json, (File)" [ref=f6e613] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/boost.json
+                        - text: boost.json
+                    - cell [ref=f6e614]:
+                      - link "Migrate storefront and all dashboards to Inertia.js v3 + React 19" [ref=f6e617] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/cdc69e70f4017bf3514ac3bd9f53256c6c752032
+                    - cell "Aug 14, 2026yesterday" [ref=f6e618]
+                  - row [ref=f6e620]:
+                    - cell [ref=f6e621]:
+                      - link "components.json, (File)" [ref=f6e628] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/components.json
+                        - text: components.json
+                    - cell [ref=f6e629]:
+                      - link "Migrate storefront and all dashboards to Inertia.js v3 + React 19" [ref=f6e632] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/cdc69e70f4017bf3514ac3bd9f53256c6c752032
+                    - cell "Aug 14, 2026yesterday" [ref=f6e633]
+                  - row [ref=f6e635]:
+                    - cell [ref=f6e636]:
+                      - link "composer.json, (File)" [ref=f6e643] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/composer.json
+                        - text: composer.json
+                    - cell [ref=f6e644]:
+                      - 'link "Fix full-stack audit findings: data integrity, security, a11y, perfor…" [ref=f6e647] [cursor=pointer]':
+                        - /url: /majdba123/Vitoria/commit/cfcb69569671837cb57ee49693c96f8b0e26a2d9
+                    - cell "Aug 15, 202619 hours ago" [ref=f6e648]
+                  - row [ref=f6e650]:
+                    - cell [ref=f6e651]:
+                      - link "composer.lock, (File)" [ref=f6e658] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/composer.lock
+                        - text: composer.lock
+                    - cell [ref=f6e659]:
+                      - 'link "Fix full-stack audit findings: data integrity, security, a11y, perfor…" [ref=f6e662] [cursor=pointer]':
+                        - /url: /majdba123/Vitoria/commit/cfcb69569671837cb57ee49693c96f8b0e26a2d9
+                    - cell "Aug 15, 202619 hours ago" [ref=f6e663]
+                  - row [ref=f6e665]:
+                    - cell [ref=f6e666]:
+                      - link "coomand, (File)" [ref=f6e673] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/coomand
+                        - text: coomand
+                    - cell [ref=f6e674]:
+                      - link "1" [ref=f6e677] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/211346ef92a3604dd90be66e1d92c652b2ef82d4
+                    - cell "Apr 11, 20264 months ago" [ref=f6e678]
+                  - row [ref=f6e680]:
+                    - cell [ref=f6e681]:
+                      - link "final-product-model-report-ar.md, (File)" [ref=f6e688] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/final-product-model-report-ar.md
+                        - text: final-product-model-report-ar.md
+                    - cell [ref=f6e689]:
+                      - link "sd" [ref=f6e692] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/8e90e59bf0c8922c42b02286534105408262c3a3
+                    - cell "Jul 22, 2026last month" [ref=f6e693]
+                  - row [ref=f6e695]:
+                    - cell [ref=f6e696]:
+                      - link "jsconfig.json, (File)" [ref=f6e703] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/jsconfig.json
+                        - text: jsconfig.json
+                    - cell [ref=f6e704]:
+                      - link "Migrate storefront and all dashboards to Inertia.js v3 + React 19" [ref=f6e707] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/cdc69e70f4017bf3514ac3bd9f53256c6c752032
+                    - cell "Aug 14, 2026yesterday" [ref=f6e708]
+                  - row [ref=f6e710]:
+                    - cell [ref=f6e711]:
+                      - link "package-lock.json, (File)" [ref=f6e718] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/package-lock.json
+                        - text: package-lock.json
+                    - cell [ref=f6e719]:
+                      - link "Migrate storefront and all dashboards to Inertia.js v3 + React 19" [ref=f6e722] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/cdc69e70f4017bf3514ac3bd9f53256c6c752032
+                    - cell "Aug 14, 2026yesterday" [ref=f6e723]
+                  - row [ref=f6e725]:
+                    - cell [ref=f6e726]:
+                      - link "package.json, (File)" [ref=f6e733] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/package.json
+                        - text: package.json
+                    - cell [ref=f6e734]:
+                      - link "Migrate storefront and all dashboards to Inertia.js v3 + React 19" [ref=f6e737] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/cdc69e70f4017bf3514ac3bd9f53256c6c752032
+                    - cell "Aug 14, 2026yesterday" [ref=f6e738]
+                  - row [ref=f6e740]:
+                    - cell [ref=f6e741]:
+                      - link "parameter-match-table-ar.md, (File)" [ref=f6e748] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/parameter-match-table-ar.md
+                        - text: parameter-match-table-ar.md
+                    - cell [ref=f6e749]:
+                      - link "sd" [ref=f6e752] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/8e90e59bf0c8922c42b02286534105408262c3a3
+                    - cell "Jul 22, 2026last month" [ref=f6e753]
+                  - row [ref=f6e755]:
+                    - cell [ref=f6e756]:
+                      - link "phpunit.xml, (File)" [ref=f6e763] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/phpunit.xml
+                        - text: phpunit.xml
+                    - cell [ref=f6e764]:
+                      - link "bb" [ref=f6e767] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/c7d01f025524e08c03cdcbfe12d68c455c90fa64
+                    - cell "Jun 29, 20262 months ago" [ref=f6e768]
+                  - row [ref=f6e770]:
+                    - cell [ref=f6e771]:
+                      - link "product-model-separation-plan-ar.md, (File)" [ref=f6e778] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/product-model-separation-plan-ar.md
+                        - text: product-model-separation-plan-ar.md
+                    - cell [ref=f6e779]:
+                      - link "sd" [ref=f6e782] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/8e90e59bf0c8922c42b02286534105408262c3a3
+                    - cell "Jul 22, 2026last month" [ref=f6e783]
+                  - row [ref=f6e785]:
+                    - cell [ref=f6e786]:
+                      - link "product-parameters-ar.md, (File)" [ref=f6e793] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/product-parameters-ar.md
+                        - text: product-parameters-ar.md
+                    - cell [ref=f6e794]:
+                      - link "sd" [ref=f6e797] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/8e90e59bf0c8922c42b02286534105408262c3a3
+                    - cell "Jul 22, 2026last month" [ref=f6e798]
+                  - row [ref=f6e800]:
+                    - cell [ref=f6e801]:
+                      - link "strict-parameter-audit-ar.md, (File)" [ref=f6e808] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/strict-parameter-audit-ar.md
+                        - text: strict-parameter-audit-ar.md
+                    - cell [ref=f6e809]:
+                      - link "sd" [ref=f6e812] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/8e90e59bf0c8922c42b02286534105408262c3a3
+                    - cell "Jul 22, 2026last month" [ref=f6e813]
+                  - row [ref=f6e815]:
+                    - cell [ref=f6e816]:
+                      - link "supervisor-msz-reverb.conf, (File)" [ref=f6e823] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/supervisor-msz-reverb.conf
+                        - text: supervisor-msz-reverb.conf
+                    - cell [ref=f6e824]:
+                      - link "1" [ref=f6e827] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/211346ef92a3604dd90be66e1d92c652b2ef82d4
+                    - cell "Apr 11, 20264 months ago" [ref=f6e828]
+                  - row [ref=f6e830]:
+                    - cell [ref=f6e831]:
+                      - link "vetora-categories-1440.png, (File)" [ref=f6e838] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-categories-1440.png
+                        - text: vetora-categories-1440.png
+                    - cell [ref=f6e839]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e842] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e843]
+                  - row [ref=f6e845]:
+                    - cell [ref=f6e846]:
+                      - link "vetora-categories-375.png, (File)" [ref=f6e853] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-categories-375.png
+                        - text: vetora-categories-375.png
+                    - cell [ref=f6e854]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e857] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e858]
+                  - row [ref=f6e860]:
+                    - cell [ref=f6e861]:
+                      - link "vetora-categories-768.png, (File)" [ref=f6e868] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-categories-768.png
+                        - text: vetora-categories-768.png
+                    - cell [ref=f6e869]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e872] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e873]
+                  - row [ref=f6e875]:
+                    - cell [ref=f6e876]:
+                      - link "vetora-final-admin-product-rtl-dark-1440.png, (File)" [ref=f6e883] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-final-admin-product-rtl-dark-1440.png
+                        - text: vetora-final-admin-product-rtl-dark-1440.png
+                    - cell [ref=f6e884]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e887] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e888]
+                  - row [ref=f6e890]:
+                    - cell [ref=f6e891]:
+                      - link "vetora-final-home-ltr-dark-1440.png, (File)" [ref=f6e898] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-final-home-ltr-dark-1440.png
+                        - text: vetora-final-home-ltr-dark-1440.png
+                    - cell [ref=f6e899]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e902] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e903]
+                  - row [ref=f6e905]:
+                    - cell [ref=f6e906]:
+                      - link "vetora-final-home-rtl-light-375.png, (File)" [ref=f6e913] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-final-home-rtl-light-375.png
+                        - text: vetora-final-home-rtl-light-375.png
+                    - cell [ref=f6e914]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e917] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e918]
+                  - row [ref=f6e920]:
+                    - cell [ref=f6e921]:
+                      - link "vetora-final-login-rtl-light-768.png, (File)" [ref=f6e928] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-final-login-rtl-light-768.png
+                        - text: vetora-final-login-rtl-light-768.png
+                    - cell [ref=f6e929]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e932] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e933]
+                  - row [ref=f6e935]:
+                    - cell [ref=f6e936]:
+                      - link "vetora-final-products-ltr-light-1024.png, (File)" [ref=f6e943] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-final-products-ltr-light-1024.png
+                        - text: vetora-final-products-ltr-light-1024.png
+                    - cell [ref=f6e944]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e947] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e948]
+                  - row [ref=f6e950]:
+                    - cell [ref=f6e951]:
+                      - link "vetora-home-1440.png, (File)" [ref=f6e958] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-home-1440.png
+                        - text: vetora-home-1440.png
+                    - cell [ref=f6e959]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e962] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e963]
+                  - row [ref=f6e965]:
+                    - cell [ref=f6e966]:
+                      - link "vetora-home-375.png, (File)" [ref=f6e973] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-home-375.png
+                        - text: vetora-home-375.png
+                    - cell [ref=f6e974]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e977] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e978]
+                  - row [ref=f6e980]:
+                    - cell [ref=f6e981]:
+                      - link "vetora-home-768.png, (File)" [ref=f6e988] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-home-768.png
+                        - text: vetora-home-768.png
+                    - cell [ref=f6e989]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e992] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e993]
+                  - row [ref=f6e995]:
+                    - cell [ref=f6e996]:
+                      - link "vetora-home-selected-375.png, (File)" [ref=f6e1003] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-home-selected-375.png
+                        - text: vetora-home-selected-375.png
+                    - cell [ref=f6e1004]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e1007] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e1008]
+                  - row [ref=f6e1010]:
+                    - cell [ref=f6e1011]:
+                      - link "vetora-product-detail-1440.png, (File)" [ref=f6e1018] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-product-detail-1440.png
+                        - text: vetora-product-detail-1440.png
+                    - cell [ref=f6e1019]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e1022] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e1023]
+                  - row [ref=f6e1025]:
+                    - cell [ref=f6e1026]:
+                      - link "vetora-product-detail-375.png, (File)" [ref=f6e1033] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-product-detail-375.png
+                        - text: vetora-product-detail-375.png
+                    - cell [ref=f6e1034]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e1037] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e1038]
+                  - row [ref=f6e1040]:
+                    - cell [ref=f6e1041]:
+                      - link "vetora-product-detail-768.png, (File)" [ref=f6e1048] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-product-detail-768.png
+                        - text: vetora-product-detail-768.png
+                    - cell [ref=f6e1049]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e1052] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e1053]
+                  - row [ref=f6e1055]:
+                    - cell [ref=f6e1056]:
+                      - link "vetora-products-1440.png, (File)" [ref=f6e1063] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-products-1440.png
+                        - text: vetora-products-1440.png
+                    - cell [ref=f6e1064]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e1067] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e1068]
+                  - row [ref=f6e1070]:
+                    - cell [ref=f6e1071]:
+                      - link "vetora-products-375.png, (File)" [ref=f6e1078] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-products-375.png
+                        - text: vetora-products-375.png
+                    - cell [ref=f6e1079]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e1082] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e1083]
+                  - row [ref=f6e1085]:
+                    - cell [ref=f6e1086]:
+                      - link "vetora-products-768.png, (File)" [ref=f6e1093] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-products-768.png
+                        - text: vetora-products-768.png
+                    - cell [ref=f6e1094]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e1097] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e1098]
+                  - row [ref=f6e1100]:
+                    - cell [ref=f6e1101]:
+                      - link "vetora-vendors-route-1440.png, (File)" [ref=f6e1108] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-vendors-route-1440.png
+                        - text: vetora-vendors-route-1440.png
+                    - cell [ref=f6e1109]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e1112] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e1113]
+                  - row [ref=f6e1115]:
+                    - cell [ref=f6e1116]:
+                      - link "vetora-vendors-route-375.png, (File)" [ref=f6e1123] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-vendors-route-375.png
+                        - text: vetora-vendors-route-375.png
+                    - cell [ref=f6e1124]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e1127] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e1128]
+                  - row [ref=f6e1130]:
+                    - cell [ref=f6e1131]:
+                      - link "vetora-vendors-route-768.png, (File)" [ref=f6e1138] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-vendors-route-768.png
+                        - text: vetora-vendors-route-768.png
+                    - cell [ref=f6e1139]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e1142] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e1143]
+                  - row [ref=f6e1145]:
+                    - cell [ref=f6e1146]:
+                      - link "vetora-workspace-admin-products-1440.png, (File)" [ref=f6e1153] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-workspace-admin-products-1440.png
+                        - text: vetora-workspace-admin-products-1440.png
+                    - cell [ref=f6e1154]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e1157] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e1158]
+                  - row [ref=f6e1160]:
+                    - cell [ref=f6e1161]:
+                      - link "vetora-workspace-syndicate-overview-1440.png, (File)" [ref=f6e1168] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-workspace-syndicate-overview-1440.png
+                        - text: vetora-workspace-syndicate-overview-1440.png
+                    - cell [ref=f6e1169]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e1172] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e1173]
+                  - row [ref=f6e1175]:
+                    - cell [ref=f6e1176]:
+                      - link "vetora-workspace-syndicate-rtl-375.png, (File)" [ref=f6e1183] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-workspace-syndicate-rtl-375.png
+                        - text: vetora-workspace-syndicate-rtl-375.png
+                    - cell [ref=f6e1184]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e1187] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e1188]
+                  - row [ref=f6e1190]:
+                    - cell [ref=f6e1191]:
+                      - link "vetora-workspace-vendor-orders-1440.png, (File)" [ref=f6e1198] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vetora-workspace-vendor-orders-1440.png
+                        - text: vetora-workspace-vendor-orders-1440.png
+                    - cell [ref=f6e1199]:
+                      - link "Polish Vetora marketplace and workspaces" [ref=f6e1202] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/e6c30ecc04d31d8d8ac9be9ad1700b26106f5929
+                    - cell "Aug 11, 20264 days ago" [ref=f6e1203]
+                  - row [ref=f6e1205]:
+                    - cell [ref=f6e1206]:
+                      - link "vite.config.js, (File)" [ref=f6e1213] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/blob/main/vite.config.js
+                        - text: vite.config.js
+                    - cell [ref=f6e1214]:
+                      - link "Migrate storefront and all dashboards to Inertia.js v3 + React 19" [ref=f6e1217] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/cdc69e70f4017bf3514ac3bd9f53256c6c752032
+                    - cell "Aug 14, 2026yesterday" [ref=f6e1218]
+            - generic [ref=f6e1221]:
+              - generic [ref=f6e1222]:
+                - heading "Repository files navigation" [level=2] [ref=f6e1223]
+                - navigation "Repository files" [ref=f6e1224]:
+                  - list [ref=f6e1225]:
+                    - listitem [ref=f6e1226]:
+                      - link "README" [ref=f6e1227] [cursor=pointer]:
+                        - /url: "#"
+                - button "Outline" [ref=f6e1229] [cursor=pointer]
+              - article [ref=f6e1233]:
+                - paragraph [ref=f6e1234]:
+                  - link [ref=f6e1235] [cursor=pointer]:
+                    - /url: https://laravel.com
+                    - img "Laravel Logo" [ref=f6e1236]
+                - paragraph [ref=f6e1237]:
+                  - link [ref=f6e1238] [cursor=pointer]:
+                    - /url: https://github.com/laravel/framework/actions
+                    - img "Build Status" [ref=f6e1239]
+                  - link [ref=f6e1240] [cursor=pointer]:
+                    - /url: https://packagist.org/packages/laravel/framework
+                    - img "Total Downloads" [ref=f6e1241]
+                  - link [ref=f6e1242] [cursor=pointer]:
+                    - /url: https://packagist.org/packages/laravel/framework
+                    - img "Latest Stable Version" [ref=f6e1243]
+                  - link [ref=f6e1244] [cursor=pointer]:
+                    - /url: https://packagist.org/packages/laravel/framework
+                    - img "License" [ref=f6e1245]
+                - generic [ref=f6e1246]:
+                  - heading "About Laravel" [level=2] [ref=f6e1247]
+                  - 'link "Permalink: About Laravel" [ref=f6e1248] [cursor=pointer]':
+                    - /url: "#about-laravel"
+                - paragraph [ref=f6e1251]: "Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:"
+                - list [ref=f6e1252]:
+                  - listitem [ref=f6e1253]:
+                    - link "Simple, fast routing engine" [ref=f6e1254] [cursor=pointer]:
+                      - /url: https://laravel.com/docs/routing
+                    - text: .
+                  - listitem [ref=f6e1255]:
+                    - link "Powerful dependency injection container" [ref=f6e1256] [cursor=pointer]:
+                      - /url: https://laravel.com/docs/container
+                    - text: .
+                  - listitem [ref=f6e1257]:
+                    - text: Multiple back-ends for
+                    - link "session" [ref=f6e1258] [cursor=pointer]:
+                      - /url: https://laravel.com/docs/session
+                    - text: and
+                    - link "cache" [ref=f6e1259] [cursor=pointer]:
+                      - /url: https://laravel.com/docs/cache
+                    - text: storage.
+                  - listitem [ref=f6e1260]:
+                    - text: Expressive, intuitive
+                    - link "database ORM" [ref=f6e1261] [cursor=pointer]:
+                      - /url: https://laravel.com/docs/eloquent
+                    - text: .
+                  - listitem [ref=f6e1262]:
+                    - text: Database agnostic
+                    - link "schema migrations" [ref=f6e1263] [cursor=pointer]:
+                      - /url: https://laravel.com/docs/migrations
+                    - text: .
+                  - listitem [ref=f6e1264]:
+                    - link "Robust background job processing" [ref=f6e1265] [cursor=pointer]:
+                      - /url: https://laravel.com/docs/queues
+                    - text: .
+                  - listitem [ref=f6e1266]:
+                    - link "Real-time event broadcasting" [ref=f6e1267] [cursor=pointer]:
+                      - /url: https://laravel.com/docs/broadcasting
+                    - text: .
+                - paragraph [ref=f6e1268]: Laravel is accessible, powerful, and provides tools required for large, robust applications.
+                - generic [ref=f6e1269]:
+                  - heading "Learning Laravel" [level=2] [ref=f6e1270]
+                  - 'link "Permalink: Learning Laravel" [ref=f6e1271] [cursor=pointer]':
+                    - /url: "#learning-laravel"
+                - paragraph [ref=f6e1274]:
+                  - text: Laravel has the most extensive and thorough
+                  - link "documentation" [ref=f6e1275] [cursor=pointer]:
+                    - /url: https://laravel.com/docs
+                  - text: and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out
+                  - link "Laravel Learn" [ref=f6e1276] [cursor=pointer]:
+                    - /url: https://laravel.com/learn
+                  - text: ", where you will be guided through building a modern Laravel application."
+                - paragraph [ref=f6e1277]:
+                  - text: If you don't feel like reading,
+                  - link "Laracasts" [ref=f6e1278] [cursor=pointer]:
+                    - /url: https://laracasts.com
+                  - text: can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+                - generic [ref=f6e1279]:
+                  - heading "Laravel Sponsors" [level=2] [ref=f6e1280]
+                  - 'link "Permalink: Laravel Sponsors" [ref=f6e1281] [cursor=pointer]':
+                    - /url: "#laravel-sponsors"
+                - paragraph [ref=f6e1284]:
+                  - text: We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the
+                  - link "Laravel Partners program" [ref=f6e1285] [cursor=pointer]:
+                    - /url: https://partners.laravel.com
+                  - text: .
+                - generic [ref=f6e1286]:
+                  - heading "Premium Partners" [level=3] [ref=f6e1287]
+                  - 'link "Permalink: Premium Partners" [ref=f6e1288] [cursor=pointer]':
+                    - /url: "#premium-partners"
+                - list [ref=f6e1291]:
+                  - listitem [ref=f6e1292]:
+                    - strong [ref=f6e1293]:
+                      - link "Vehikl" [ref=f6e1294] [cursor=pointer]:
+                        - /url: https://vehikl.com
+                  - listitem [ref=f6e1295]:
+                    - strong [ref=f6e1296]:
+                      - link "Tighten Co." [ref=f6e1297] [cursor=pointer]:
+                        - /url: https://tighten.co
+                  - listitem [ref=f6e1298]:
+                    - strong [ref=f6e1299]:
+                      - link "Kirschbaum Development Group" [ref=f6e1300] [cursor=pointer]:
+                        - /url: https://kirschbaumdevelopment.com
+                  - listitem [ref=f6e1301]:
+                    - strong [ref=f6e1302]:
+                      - link "64 Robots" [ref=f6e1303] [cursor=pointer]:
+                        - /url: https://64robots.com
+                  - listitem [ref=f6e1304]:
+                    - strong [ref=f6e1305]:
+                      - link "Curotec" [ref=f6e1306] [cursor=pointer]:
+                        - /url: https://www.curotec.com/services/technologies/laravel
+                  - listitem [ref=f6e1307]:
+                    - strong [ref=f6e1308]:
+                      - link "DevSquad" [ref=f6e1309] [cursor=pointer]:
+                        - /url: https://devsquad.com/hire-laravel-developers
+                  - listitem [ref=f6e1310]:
+                    - strong [ref=f6e1311]:
+                      - link "Redberry" [ref=f6e1312] [cursor=pointer]:
+                        - /url: https://redberry.international/laravel-development
+                  - listitem [ref=f6e1313]:
+                    - strong [ref=f6e1314]:
+                      - link "Active Logic" [ref=f6e1315] [cursor=pointer]:
+                        - /url: https://activelogic.com
+                - generic [ref=f6e1316]:
+                  - heading "Contributing" [level=2] [ref=f6e1317]
+                  - 'link "Permalink: Contributing" [ref=f6e1318] [cursor=pointer]':
+                    - /url: "#contributing"
+                - paragraph [ref=f6e1321]:
+                  - text: Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the
+                  - link "Laravel documentation" [ref=f6e1322] [cursor=pointer]:
+                    - /url: https://laravel.com/docs/contributions
+                  - text: .
+                - generic [ref=f6e1323]:
+                  - heading "Code of Conduct" [level=2] [ref=f6e1324]
+                  - 'link "Permalink: Code of Conduct" [ref=f6e1325] [cursor=pointer]':
+                    - /url: "#code-of-conduct"
+                - paragraph [ref=f6e1328]:
+                  - text: In order to ensure that the Laravel community is welcoming to all, please review and abide by the
+                  - link "Code of Conduct" [ref=f6e1329] [cursor=pointer]:
+                    - /url: https://laravel.com/docs/contributions#code-of-conduct
+                  - text: .
+                - generic [ref=f6e1330]:
+                  - heading "Security Vulnerabilities" [level=2] [ref=f6e1331]
+                  - 'link "Permalink: Security Vulnerabilities" [ref=f6e1332] [cursor=pointer]':
+                    - /url: "#security-vulnerabilities"
+                - paragraph [ref=f6e1335]:
+                  - text: If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via
+                  - link "taylor@laravel.com" [ref=f6e1336] [cursor=pointer]:
+                    - /url: mailto:taylor@laravel.com
+                  - text: . All security vulnerabilities will be promptly addressed.
+                - generic [ref=f6e1337]:
+                  - heading "License" [level=2] [ref=f6e1338]
+                  - 'link "Permalink: License" [ref=f6e1339] [cursor=pointer]':
+                    - /url: "#license"
+                - paragraph [ref=f6e1342]:
+                  - text: The Laravel framework is open-sourced software licensed under the
+                  - link "MIT license" [ref=f6e1343] [cursor=pointer]:
+                    - /url: https://opensource.org/licenses/MIT
+                  - text: .
+        - generic [ref=f6e1346]:
+          - generic [ref=f6e1347]:
+            - heading "About" [level=2] [ref=f6e1348]
+            - generic [ref=f6e1349]: No description, website, or topics provided.
+            - heading "Resources" [level=3] [ref=f6e1350]
+            - link "Readme" [ref=f6e1352] [cursor=pointer]:
+              - /url: "#readme-ov-file"
+            - link "Activity" [ref=f6e1356] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/activity
+            - heading "Stars" [level=3] [ref=f6e1359]
+            - generic [ref=f6e1361]:
+              - strong [ref=f6e1364]: "0"
+              - text: stars
+            - heading "Watchers" [level=3] [ref=f6e1365]
+            - generic [ref=f6e1367]:
+              - strong [ref=f6e1370]: "0"
+              - text: watching
+            - heading "Forks" [level=3] [ref=f6e1371]
+            - link [ref=f6e1373] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/forks
+              - strong [ref=f6e1377]: "0"
+              - text: forks
+            - link "Report repository" [ref=f6e1379] [cursor=pointer]:
+              - /url: /contact/report-content?content_url=https%3A%2F%2Fgithub.com%2Fmajdba123%2FVitoria&report=majdba123+%28user%29
+          - generic [ref=f6e1380]:
+            - heading [level=2] [ref=f6e1381]:
+              - link "Releases" [ref=f6e1383] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/releases
+            - generic [ref=f6e1384]: No releases published
+          - generic [ref=f6e1385]:
+            - heading "Contributors (3)" [level=2] [ref=f6e1386]:
+              - generic [ref=f6e1387]:
+                - link "Contributors" [ref=f6e1388] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/graphs/contributors
+                - generic [ref=f6e1389]: "3"
+                - generic [ref=f6e1390]: (3)
+            - list [ref=f6e1391]:
+              - listitem [ref=f6e1392]:
+                - link [ref=f6e1393] [cursor=pointer]:
+                  - /url: /majdba123
+                  - img "@majdba123" [ref=f6e1394]
+                - generic "majdba123 Majd Bayer" [ref=f6e1395]:
+                  - link [ref=f6e1396] [cursor=pointer]:
+                    - /url: /majdba123
+                    - strong [ref=f6e1397]: majdba123
+                    - text: Majd Bayer
+              - listitem [ref=f6e1398]:
+                - link [ref=f6e1399] [cursor=pointer]:
+                  - /url: /yusufmohammdjojeh-cyber
+                  - img "@yusufmohammdjojeh-cyber" [ref=f6e1400]
+                - generic "yusufmohammdjojeh-cyber" [ref=f6e1401]:
+                  - link [ref=f6e1402] [cursor=pointer]:
+                    - /url: /yusufmohammdjojeh-cyber
+                    - strong [ref=f6e1403]: yusufmohammdjojeh-cyber
+              - listitem [ref=f6e1404]:
+                - link [ref=f6e1405] [cursor=pointer]:
+                  - /url: /claude
+                  - img "@claude" [ref=f6e1406]
+                - generic "claude Claude" [ref=f6e1407]:
+                  - link [ref=f6e1408] [cursor=pointer]:
+                    - /url: /claude
+                    - strong [ref=f6e1409]: claude
+                    - text: Claude
+          - generic [ref=f6e1410]:
+            - heading "Languages" [level=2] [ref=f6e1411]
+            - generic [ref=f6e1413]:
+              - 'progressbar "PHP: 56.5%" [ref=f6e1414]'
+              - 'progressbar "JavaScript: 33.3%" [ref=f6e1415]'
+              - 'progressbar "Blade: 7.7%" [ref=f6e1416]'
+              - 'progressbar "CSS: 2.4%" [ref=f6e1417]'
+              - 'progressbar "Other: 0.1%" [ref=f6e1418]'
+            - list [ref=f6e1419]:
+              - listitem [ref=f6e1420]:
+                - link "PHP 56.5%" [ref=f6e1421] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/search?l=php
+                  - generic [ref=f6e1423]: PHP
+                  - generic [ref=f6e1424]: 56.5%
+              - listitem [ref=f6e1425]:
+                - link "JavaScript 33.3%" [ref=f6e1426] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/search?l=javascript
+                  - generic [ref=f6e1428]: JavaScript
+                  - generic [ref=f6e1429]: 33.3%
+              - listitem [ref=f6e1430]:
+                - link "Blade 7.7%" [ref=f6e1431] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/search?l=blade
+                  - generic [ref=f6e1433]: Blade
+                  - generic [ref=f6e1434]: 7.7%
+              - listitem [ref=f6e1435]:
+                - link "CSS 2.4%" [ref=f6e1436] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/search?l=css
+                  - generic [ref=f6e1438]: CSS
+                  - generic [ref=f6e1439]: 2.4%
+              - listitem [ref=f6e1440]:
+                - link "Other 0.1%" [ref=f6e1441] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/search?l=Other
+                  - generic [ref=f6e1443]: Other
+                  - generic [ref=f6e1444]: 0.1%
+    - contentinfo [ref=f6e1446]:
+      - heading "Footer" [level=2] [ref=f6e1447]
+      - generic [ref=f6e1448]:
+        - generic [ref=f6e1449]:
+          - link "GitHub Homepage" [ref=f6e1450] [cursor=pointer]:
+            - /url: https://github.com
+          - generic [ref=f6e1453]: © 2026 GitHub, Inc.
+        - navigation "Footer" [ref=f6e1454]:
+          - heading "Footer navigation" [level=3] [ref=f6e1455]
+          - list "Footer navigation" [ref=f6e1456]:
+            - listitem [ref=f6e1457]:
+              - link "Terms" [ref=f6e1458] [cursor=pointer]:
+                - /url: https://docs.github.com/site-policy/github-terms/github-terms-of-service
+            - listitem [ref=f6e1459]:
+              - link "Privacy" [ref=f6e1460] [cursor=pointer]:
+                - /url: https://docs.github.com/site-policy/privacy-policies/github-privacy-statement
+            - listitem [ref=f6e1461]:
+              - link "Security" [ref=f6e1462] [cursor=pointer]:
+                - /url: https://github.com/security
+            - listitem [ref=f6e1463]:
+              - link "Status" [ref=f6e1464] [cursor=pointer]:
+                - /url: https://www.githubstatus.com/
+            - listitem [ref=f6e1465]:
+              - link "Community" [ref=f6e1466] [cursor=pointer]:
+                - /url: https://github.community/
+            - listitem [ref=f6e1467]:
+              - link "Docs" [ref=f6e1468] [cursor=pointer]:
+                - /url: https://docs.github.com/
+            - listitem [ref=f6e1469]:
+              - link "Contact" [ref=f6e1470] [cursor=pointer]:
+                - /url: https://support.github.com?tags=dotcom-footer
+            - listitem [ref=f6e1471]:
+              - button "Manage cookies" [ref=f6e1473] [cursor=pointer]
+            - listitem [ref=f6e1474]:
+              - button "Do not share my personal information" [ref=f6e1476] [cursor=pointer]
+  - alert [ref=f6e1479]

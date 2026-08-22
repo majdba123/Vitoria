@@ -1,0 +1,118 @@
+- generic [ref=f1e2]:
+  - banner [ref=f1e3]:
+    - navigation "القائمة" [ref=f1e4]:
+      - link [ref=f1e5] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/
+        - img "Vetora" [ref=f1e6]
+      - generic [ref=f1e7]:
+        - button "التصنيفات" [ref=f1e9]
+        - link "المنتجات" [ref=f1e17] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/products
+        - link "الأسئلة الشائعة" [ref=f1e18] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/faq
+      - search [ref=f1e19]:
+        - searchbox "ابحث عن المنتجات" [ref=f1e20]
+      - generic [ref=f1e21]:
+        - generic [ref=f1e22]:
+          - button "اختر اللغة" [ref=f1e23]
+          - button "تبديل الوضع الفاتح أو الداكن" [ref=f1e24]
+        - button "السلة" [ref=f1e25]
+        - generic [ref=f1e29]:
+          - link "تسجيل الدخول" [ref=f1e30] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/login
+          - link "إنشاء حساب" [ref=f1e31] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/register
+  - main [ref=f1e32]:
+    - generic [ref=f1e33]:
+      - navigation [ref=f1e36]:
+        - link "الرئيسية" [ref=f1e37] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/
+        - generic [ref=f1e40]: المنتجات
+      - generic [ref=f1e41]:
+        - generic [ref=f1e43]:
+          - paragraph [ref=f1e44]: Vetora Marketplace
+          - heading "المنتجات" [level=1] [ref=f1e45]
+        - generic [ref=f1e46]:
+          - generic [ref=f1e47]:
+            - generic [ref=f1e48]:
+              - generic [ref=f1e49]: ابحث عن المنتجات
+              - searchbox "ابحث عن المنتجات" [ref=f1e50]
+            - generic [ref=f1e51]:
+              - generic [ref=f1e52]: كل الأنواع
+              - combobox "كل الأنواع" [ref=f1e53] [cursor=pointer]:
+                - option "كل الأنواع"
+                - option "زراعي"
+                - option "بيطري" [selected]
+            - generic [ref=f1e54]:
+              - generic [ref=f1e55]: كل التصنيفات
+              - combobox "كل التصنيفات" [ref=f1e56] [cursor=pointer]:
+                - option "كل التصنيفات" [selected]
+            - generic [ref=f1e57]:
+              - generic [ref=f1e58]: كل التصنيفات الفرعية
+              - combobox "كل التصنيفات الفرعية" [ref=f1e59] [cursor=pointer]:
+                - option "كل التصنيفات الفرعية" [selected]
+            - generic [ref=f1e60]:
+              - generic [ref=f1e61]: الترتيب الافتراضي
+              - combobox "الترتيب الافتراضي" [ref=f1e62] [cursor=pointer]:
+                - option "الترتيب الافتراضي" [selected]
+                - option "الأحدث"
+                - option "الأكثر مبيعًا"
+                - option "الأكثر تفضيلًا"
+                - option "الأعلى تقييمًا"
+            - generic [ref=f1e63]:
+              - generic [ref=f1e64]: كل الخصومات
+              - combobox "كل الخصومات" [ref=f1e65] [cursor=pointer]:
+                - option "كل الخصومات" [selected]
+                - option "عليه خصم"
+                - option "بدون خصم"
+            - generic [ref=f1e66]:
+              - generic [ref=f1e67]: كل حالات المخزون
+              - combobox "كل حالات المخزون" [ref=f1e68] [cursor=pointer]:
+                - option "كل حالات المخزون" [selected]
+                - option "متوفر"
+                - option "غير متوفر"
+            - button "تطبيق" [ref=f1e69]
+            - button "مسح" [ref=f1e70]
+          - generic [ref=f1e71]: بيطري
+  - contentinfo [ref=f1e78]:
+    - generic [ref=f1e80]:
+      - generic [ref=f1e81]:
+        - generic [ref=f1e82]:
+          - link [ref=f1e83] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/
+            - img "Vetora" [ref=f1e84]
+          - paragraph [ref=f1e85]: Your trusted online marketplace.
+        - generic [ref=f1e86]:
+          - heading "تسوق" [level=2] [ref=f1e87]
+          - list [ref=f1e88]:
+            - listitem [ref=f1e89]:
+              - link "التصنيفات" [ref=f1e90] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/categories
+            - listitem [ref=f1e91]:
+              - link "جميع المنتجات" [ref=f1e92] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/products
+            - listitem [ref=f1e93]:
+              - link "الأسئلة الشائعة" [ref=f1e94] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/faq
+        - generic [ref=f1e95]:
+          - heading "حساب" [level=2] [ref=f1e96]
+          - list [ref=f1e97]:
+            - listitem [ref=f1e98]:
+              - link "تسجيل الدخول" [ref=f1e99] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+            - listitem [ref=f1e100]:
+              - link "إنشاء حساب" [ref=f1e101] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/register
+        - generic [ref=f1e102]:
+          - heading "تواصل" [level=2] [ref=f1e103]
+          - list [ref=f1e104]:
+            - listitem [ref=f1e105]:
+              - link "تواصل معنا" [ref=f1e106] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000#contact
+      - generic [ref=f1e107]:
+        - paragraph [ref=f1e108]: © 2026 Vetora. جميع الحقوق محفوظة.
+        - generic [ref=f1e109]:
+          - link "سياسة الخصوصية" [ref=f1e110] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/privacy-policy
+          - link "شروط الخدمة" [ref=f1e111] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/terms-of-service

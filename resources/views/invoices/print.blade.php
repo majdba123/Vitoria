@@ -39,7 +39,47 @@
             background: #297497; color: #fff; border: none; border-radius: 8px;
             padding: 0.6rem 1.5rem; font-size: 0.9rem; cursor: pointer;
         }
-        @media print { .print-bar { display: none; } body { padding: 0; } }
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+        @media print {
+            html, body {
+                width: auto;
+                height: auto;
+                min-height: 0;
+            }
+            body {
+                max-width: none;
+                margin: 0;
+                padding: 0;
+                overflow: visible;
+            }
+            .invoice-header {
+                padding-bottom: 0.75rem;
+                margin-bottom: 0.9rem;
+                break-inside: avoid;
+            }
+            .parties {
+                margin-bottom: 0.9rem;
+                break-inside: avoid;
+            }
+            table {
+                margin-bottom: 0.9rem;
+            }
+            th, td {
+                padding: 0.4rem 0.55rem;
+            }
+            thead {
+                display: table-header-group;
+            }
+            tr, .totals {
+                break-inside: avoid;
+            }
+            .print-bar {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>

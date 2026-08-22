@@ -1,0 +1,546 @@
+- generic [active] [ref=f3e1]:
+  - generic [ref=f3e3]:
+    - navigation "Admin navigation" [ref=f3e5]:
+      - generic [ref=f3e6]:
+        - list [ref=f3e8]:
+          - listitem [ref=f3e9]:
+            - link "Vetora Admin" [ref=f3e10] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/admin/dashboard
+              - generic [ref=f3e15]:
+                - generic [ref=f3e16]: Vetora
+                - generic [ref=f3e17]: Admin
+        - generic [ref=f3e18]:
+          - generic [ref=f3e19]:
+            - generic [ref=f3e20]: Overview
+            - list [ref=f3e22]:
+              - listitem [ref=f3e23]:
+                - link "Dashboard" [ref=f3e24] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/dashboard
+          - generic [ref=f3e31]:
+            - generic [ref=f3e32]: Management
+            - list [ref=f3e34]:
+              - listitem [ref=f3e35]:
+                - link "Vendors" [ref=f3e36] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/vendors
+              - listitem [ref=f3e42]:
+                - link "Syndicates" [ref=f3e43] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/syndicates
+              - listitem [ref=f3e50]:
+                - link "Products" [ref=f3e51] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/products
+              - listitem [ref=f3e57]:
+                - link "Employees" [ref=f3e58] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/employees
+              - listitem [ref=f3e72]:
+                - link "Coupons" [ref=f3e73] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/coupons
+              - listitem [ref=f3e77]:
+                - link "Orders" [ref=f3e78] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/orders
+              - listitem [ref=f3e83]:
+                - link "Users" [ref=f3e84] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/users
+              - listitem [ref=f3e91]:
+                - link "Notifications" [ref=f3e92] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/notifications
+              - listitem [ref=f3e97]:
+                - link "Contact messages" [ref=f3e98] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/contact-messages
+              - listitem [ref=f3e103]:
+                - link "About us" [ref=f3e104] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/about-us
+              - listitem [ref=f3e108]:
+                - link "Pages" [ref=f3e109] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/pages
+              - listitem [ref=f3e114]:
+                - link "Banners" [ref=f3e115] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/banners
+          - generic [ref=f3e121]:
+            - generic [ref=f3e122]: Catalog
+            - list [ref=f3e124]:
+              - listitem [ref=f3e125]:
+                - link "Categories" [ref=f3e126] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/categories
+              - listitem [ref=f3e132]:
+                - link "Subcategories" [ref=f3e133] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/subcategories
+              - listitem [ref=f3e139]:
+                - link "Cities" [ref=f3e140] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/cities
+        - list [ref=f3e147]:
+          - listitem [ref=f3e148]:
+            - button "م مدير النظام Admin" [ref=f3e149]:
+              - generic [ref=f3e150]: م
+              - generic [ref=f3e152]:
+                - generic [ref=f3e153]: مدير النظام
+                - generic [ref=f3e154]: Admin
+    - main [ref=f3e158]:
+      - generic [ref=f3e160]:
+        - button "Toggle Sidebar" [ref=f3e161]
+        - generic [ref=f3e163]:
+          - paragraph [ref=f3e164]: Admin
+          - heading "Dashboard" [level=1] [ref=f3e165]
+        - generic [ref=f3e166]:
+          - link "Home" [ref=f3e167] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/
+          - button "Choose language" [ref=f3e168]
+          - button "Notifications" [ref=f3e169]:
+            - generic [ref=f3e170]: "1"
+          - button "Toggle theme" [ref=f3e171]
+      - generic [ref=f3e172]:
+        - generic [ref=f3e173]:
+          - generic [ref=f3e174]:
+            - paragraph [ref=f3e175]: Admin
+            - heading "Control center" [level=2] [ref=f3e176]
+            - paragraph [ref=f3e177]: Track platform health, review growth signals, and jump into the most important admin actions.
+          - generic [ref=f3e178]:
+            - link "Add Vendor" [ref=f3e179] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/admin/vendors/create
+            - link "Add user" [ref=f3e180] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/admin/users/create
+        - generic [ref=f3e181]:
+          - generic [ref=f3e182]:
+            - heading "Platform snapshot" [level=3] [ref=f3e183]
+            - paragraph [ref=f3e184]: Live totals across users, vendors, syndicates, and products.
+          - generic [ref=f3e185]:
+            - generic [ref=f3e188]:
+              - paragraph [ref=f3e189]: Total vendors
+              - paragraph [ref=f3e425]: "2"
+            - generic [ref=f3e198]:
+              - paragraph [ref=f3e199]: Total products
+              - paragraph [ref=f3e426]: "16"
+            - generic [ref=f3e208]:
+              - paragraph [ref=f3e209]: Total users
+              - paragraph [ref=f3e427]: "5"
+          - generic [ref=f3e217]:
+            - generic [ref=f3e218]:
+              - generic [ref=f3e219]: Total syndicates
+              - generic [ref=f3e220]: "2"
+            - generic [ref=f3e221]:
+              - generic [ref=f3e222]: Active vendors
+              - generic [ref=f3e223]: "2"
+            - generic [ref=f3e224]:
+              - generic [ref=f3e225]: Inactive vendors
+              - generic [ref=f3e226]: "0"
+            - generic [ref=f3e227]:
+              - generic [ref=f3e228]: Active products
+              - generic [ref=f3e229]: "16"
+        - generic [ref=f3e230]:
+          - generic [ref=f3e231]:
+            - heading "Business insights" [level=3] [ref=f3e232]
+            - paragraph [ref=f3e233]: Distribution, momentum, and gaps that deserve attention.
+          - generic [ref=f3e234]:
+            - generic [ref=f3e235]:
+              - generic [ref=f3e237]:
+                - heading "Vendors by type" [level=3] [ref=f3e238]
+                - paragraph [ref=f3e239]: Agriculture, veterinary, or mixed business coverage.
+              - generic [ref=f3e428]:
+                - link [ref=f3e429] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/vendors?business_type=agriculture
+                  - paragraph [ref=f3e430]: Agriculture
+                  - paragraph [ref=f3e431]: "1"
+                - link [ref=f3e432] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/vendors?business_type=veterinary
+                  - paragraph [ref=f3e433]: Veterinary
+                  - paragraph [ref=f3e434]: "1"
+                - link [ref=f3e435] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/vendors?business_type=both
+                  - paragraph [ref=f3e436]: Agriculture and Veterinary
+                  - paragraph [ref=f3e437]: "0"
+            - generic [ref=f3e246]:
+              - generic [ref=f3e248]:
+                - heading "Categories by type" [level=3] [ref=f3e249]
+                - paragraph [ref=f3e250]: Catalog distribution by business line.
+              - generic [ref=f3e438]:
+                - link [ref=f3e439] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/categories?type=agriculture
+                  - paragraph [ref=f3e440]: Agriculture
+                  - paragraph [ref=f3e441]: "8"
+                - link [ref=f3e442] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/categories?type=veterinary
+                  - paragraph [ref=f3e443]: Veterinary
+                  - paragraph [ref=f3e444]: "8"
+            - generic [ref=f3e257]:
+              - generic [ref=f3e259]:
+                - heading "Syndicates by type" [level=3] [ref=f3e260]
+                - paragraph [ref=f3e261]: Agent coverage by business line.
+              - generic [ref=f3e445]:
+                - link [ref=f3e446] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/syndicates?type=agriculture
+                  - paragraph [ref=f3e447]: Agriculture
+                  - paragraph [ref=f3e448]: "1"
+                - link [ref=f3e449] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/syndicates?type=veterinary
+                  - paragraph [ref=f3e450]: Veterinary
+                  - paragraph [ref=f3e451]: "1"
+            - generic [ref=f3e268]:
+              - generic [ref=f3e270]:
+                - heading "Recent syndicate agents" [level=3] [ref=f3e271]
+                - paragraph [ref=f3e272]: Newest agriculture and veterinary agent accounts.
+              - generic [ref=f3e452]:
+                - link "النقابة البيطرية veterinary.syndicate@vetora.test · Veterinary Active" [ref=f3e453] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/syndicates/2
+                  - generic [ref=f3e454]:
+                    - paragraph [ref=f3e455]: النقابة البيطرية
+                    - paragraph [ref=f3e456]: veterinary.syndicate@vetora.test · Veterinary
+                  - generic [ref=f3e457]: Active
+                - link "النقابة الزراعية agriculture.syndicate@vetora.test · Agriculture Active" [ref=f3e461] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/syndicates/1
+                  - generic [ref=f3e462]:
+                    - paragraph [ref=f3e463]: النقابة الزراعية
+                    - paragraph [ref=f3e464]: agriculture.syndicate@vetora.test · Agriculture
+                  - generic [ref=f3e465]: Active
+            - generic [ref=f3e279]:
+              - generic [ref=f3e281]:
+                - heading "Products by type" [level=3] [ref=f3e282]
+                - paragraph [ref=f3e283]: Product volume split by catalog type.
+              - generic [ref=f3e469]:
+                - link [ref=f3e470] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/products?category_type=agriculture
+                  - paragraph [ref=f3e471]: Agriculture
+                  - paragraph [ref=f3e472]: "8"
+                - link [ref=f3e473] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/products?category_type=veterinary
+                  - paragraph [ref=f3e474]: Veterinary
+                  - paragraph [ref=f3e475]: "8"
+            - generic [ref=f3e290]:
+              - generic [ref=f3e292]:
+                - heading "Monthly product growth" [level=3] [ref=f3e293]
+                - paragraph [ref=f3e294]: New products created during the last 12 months.
+              - generic [ref=f3e295]:
+                - group "Chart period" [ref=f3e476]:
+                  - button "3mo" [ref=f3e477]
+                  - button "6mo" [ref=f3e478]
+                  - button "12mo" [pressed] [ref=f3e479]
+                - application [ref=f3e483]:
+                  - generic [ref=f3e487]: "08"
+          - generic [ref=f3e298]:
+            - generic [ref=f3e299]:
+              - generic [ref=f3e301]:
+                - heading "Top vendors" [level=3] [ref=f3e302]
+                - paragraph [ref=f3e303]: Ranked by published product count.
+              - generic [ref=f3e491]:
+                - link "تاجر المستلزمات الزراعية Agriculture 8 products" [ref=f3e492] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/vendors/1
+                  - generic [ref=f3e493]:
+                    - paragraph [ref=f3e494]: تاجر المستلزمات الزراعية
+                    - paragraph [ref=f3e495]: Agriculture
+                  - generic [ref=f3e496]: 8 products
+                - link "تاجر المستلزمات البيطرية Veterinary 8 products" [ref=f3e500] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/vendors/2
+                  - generic [ref=f3e501]:
+                    - paragraph [ref=f3e502]: تاجر المستلزمات البيطرية
+                    - paragraph [ref=f3e503]: Veterinary
+                  - generic [ref=f3e504]: 8 products
+            - generic [ref=f3e310]:
+              - generic [ref=f3e312]:
+                - heading "Most selected categories" [level=3] [ref=f3e313]
+                - paragraph [ref=f3e314]: Categories most frequently assigned to vendors.
+              - generic [ref=f3e508]:
+                - link "أدوات الحصاد Agriculture 1 vendors" [ref=f3e509] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/vendors?category_id=8
+                  - generic [ref=f3e510]:
+                    - paragraph [ref=f3e511]: أدوات الحصاد
+                    - paragraph [ref=f3e512]: Agriculture
+                  - generic [ref=f3e513]: 1 vendors
+                - link "أدوات رعاية الحيوانات Veterinary 1 vendors" [ref=f3e517] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/vendors?category_id=13
+                  - generic [ref=f3e518]:
+                    - paragraph [ref=f3e519]: أدوات رعاية الحيوانات
+                    - paragraph [ref=f3e520]: Veterinary
+                  - generic [ref=f3e521]: 1 vendors
+                - link "أنظمة الري Agriculture 1 vendors" [ref=f3e525] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/vendors?category_id=3
+                  - generic [ref=f3e526]:
+                    - paragraph [ref=f3e527]: أنظمة الري
+                    - paragraph [ref=f3e528]: Agriculture
+                  - generic [ref=f3e529]: 1 vendors
+                - link "الأدوية البيطرية Veterinary 1 vendors" [ref=f3e533] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/vendors?category_id=9
+                  - generic [ref=f3e534]:
+                    - paragraph [ref=f3e535]: الأدوية البيطرية
+                    - paragraph [ref=f3e536]: Veterinary
+                  - generic [ref=f3e537]: 1 vendors
+                - link "الأسمدة Agriculture 1 vendors" [ref=f3e541] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/admin/vendors?category_id=2
+                  - generic [ref=f3e542]:
+                    - paragraph [ref=f3e543]: الأسمدة
+                    - paragraph [ref=f3e544]: Agriculture
+                  - generic [ref=f3e545]: 1 vendors
+            - generic [ref=f3e321]:
+              - generic [ref=f3e323]:
+                - heading "Categories without products" [level=3] [ref=f3e324]
+                - paragraph [ref=f3e325]: Catalog gaps that need product coverage.
+              - generic [ref=f3e326]: No coverage gaps right now.
+            - generic [ref=f3e332]:
+              - generic [ref=f3e334]:
+                - heading "Categories without vendors" [level=3] [ref=f3e335]
+                - paragraph [ref=f3e336]: Business lines without assigned vendors.
+              - generic [ref=f3e337]: No coverage gaps right now.
+        - generic [ref=f3e343]:
+          - generic [ref=f3e344]:
+            - generic [ref=f3e345]:
+              - generic [ref=f3e346]:
+                - heading "Vendors by category" [level=3] [ref=f3e347]
+                - paragraph [ref=f3e348]: Vendor distribution across linked categories.
+              - link "View vendors" [ref=f3e349] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors
+            - generic [ref=f3e551]:
+              - link "أدوات الحصاد 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e552] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=8
+                - generic [ref=f3e553]:
+                  - generic [ref=f3e554]:
+                    - paragraph [ref=f3e555]: أدوات الحصاد
+                    - paragraph [ref=f3e556]: 1 vendors total
+                  - generic [ref=f3e557]:
+                    - generic [ref=f3e558]: 1 Active
+                    - generic [ref=f3e559]: 0 Pending
+                    - generic [ref=f3e560]: 0 Inactive
+              - link "أدوات رعاية الحيوانات 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e563] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=13
+                - generic [ref=f3e564]:
+                  - generic [ref=f3e565]:
+                    - paragraph [ref=f3e566]: أدوات رعاية الحيوانات
+                    - paragraph [ref=f3e567]: 1 vendors total
+                  - generic [ref=f3e568]:
+                    - generic [ref=f3e569]: 1 Active
+                    - generic [ref=f3e570]: 0 Pending
+                    - generic [ref=f3e571]: 0 Inactive
+              - link "أنظمة الري 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e574] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=3
+                - generic [ref=f3e575]:
+                  - generic [ref=f3e576]:
+                    - paragraph [ref=f3e577]: أنظمة الري
+                    - paragraph [ref=f3e578]: 1 vendors total
+                  - generic [ref=f3e579]:
+                    - generic [ref=f3e580]: 1 Active
+                    - generic [ref=f3e581]: 0 Pending
+                    - generic [ref=f3e582]: 0 Inactive
+              - link "الأدوية البيطرية 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e585] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=9
+                - generic [ref=f3e586]:
+                  - generic [ref=f3e587]:
+                    - paragraph [ref=f3e588]: الأدوية البيطرية
+                    - paragraph [ref=f3e589]: 1 vendors total
+                  - generic [ref=f3e590]:
+                    - generic [ref=f3e591]: 1 Active
+                    - generic [ref=f3e592]: 0 Pending
+                    - generic [ref=f3e593]: 0 Inactive
+              - link "الأسمدة 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e596] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=2
+                - generic [ref=f3e597]:
+                  - generic [ref=f3e598]:
+                    - paragraph [ref=f3e599]: الأسمدة
+                    - paragraph [ref=f3e600]: 1 vendors total
+                  - generic [ref=f3e601]:
+                    - generic [ref=f3e602]: 1 Active
+                    - generic [ref=f3e603]: 0 Pending
+                    - generic [ref=f3e604]: 0 Inactive
+              - link "البذور 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e607] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=1
+                - generic [ref=f3e608]:
+                  - generic [ref=f3e609]:
+                    - paragraph [ref=f3e610]: البذور
+                    - paragraph [ref=f3e611]: 1 vendors total
+                  - generic [ref=f3e612]:
+                    - generic [ref=f3e613]: 1 Active
+                    - generic [ref=f3e614]: 0 Pending
+                    - generic [ref=f3e615]: 0 Inactive
+              - link "البيوت البلاستيكية 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e618] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=4
+                - generic [ref=f3e619]:
+                  - generic [ref=f3e620]:
+                    - paragraph [ref=f3e621]: البيوت البلاستيكية
+                    - paragraph [ref=f3e622]: 1 vendors total
+                  - generic [ref=f3e623]:
+                    - generic [ref=f3e624]: 1 Active
+                    - generic [ref=f3e625]: 0 Pending
+                    - generic [ref=f3e626]: 0 Inactive
+              - link "التربة والسماد العضوي 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e629] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=7
+                - generic [ref=f3e630]:
+                  - generic [ref=f3e631]:
+                    - paragraph [ref=f3e632]: التربة والسماد العضوي
+                    - paragraph [ref=f3e633]: 1 vendors total
+                  - generic [ref=f3e634]:
+                    - generic [ref=f3e635]: 1 Active
+                    - generic [ref=f3e636]: 0 Pending
+                    - generic [ref=f3e637]: 0 Inactive
+              - link "اللقاحات 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e640] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=10
+                - generic [ref=f3e641]:
+                  - generic [ref=f3e642]:
+                    - paragraph [ref=f3e643]: اللقاحات
+                    - paragraph [ref=f3e644]: 1 vendors total
+                  - generic [ref=f3e645]:
+                    - generic [ref=f3e646]: 1 Active
+                    - generic [ref=f3e647]: 0 Pending
+                    - generic [ref=f3e648]: 0 Inactive
+              - link "المبيدات الزراعية 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e651] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=6
+                - generic [ref=f3e652]:
+                  - generic [ref=f3e653]:
+                    - paragraph [ref=f3e654]: المبيدات الزراعية
+                    - paragraph [ref=f3e655]: 1 vendors total
+                  - generic [ref=f3e656]:
+                    - generic [ref=f3e657]: 1 Active
+                    - generic [ref=f3e658]: 0 Pending
+                    - generic [ref=f3e659]: 0 Inactive
+              - link "المطهرات البيطرية 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e662] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=15
+                - generic [ref=f3e663]:
+                  - generic [ref=f3e664]:
+                    - paragraph [ref=f3e665]: المطهرات البيطرية
+                    - paragraph [ref=f3e666]: 1 vendors total
+                  - generic [ref=f3e667]:
+                    - generic [ref=f3e668]: 1 Active
+                    - generic [ref=f3e669]: 0 Pending
+                    - generic [ref=f3e670]: 0 Inactive
+              - link "المعدات الزراعية 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e673] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=5
+                - generic [ref=f3e674]:
+                  - generic [ref=f3e675]:
+                    - paragraph [ref=f3e676]: المعدات الزراعية
+                    - paragraph [ref=f3e677]: 1 vendors total
+                  - generic [ref=f3e678]:
+                    - generic [ref=f3e679]: 1 Active
+                    - generic [ref=f3e680]: 0 Pending
+                    - generic [ref=f3e681]: 0 Inactive
+              - link "خدمات بيطرية 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e684] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=16
+                - generic [ref=f3e685]:
+                  - generic [ref=f3e686]:
+                    - paragraph [ref=f3e687]: خدمات بيطرية
+                    - paragraph [ref=f3e688]: 1 vendors total
+                  - generic [ref=f3e689]:
+                    - generic [ref=f3e690]: 1 Active
+                    - generic [ref=f3e691]: 0 Pending
+                    - generic [ref=f3e692]: 0 Inactive
+              - link "مستلزمات المواشي 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e695] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=14
+                - generic [ref=f3e696]:
+                  - generic [ref=f3e697]:
+                    - paragraph [ref=f3e698]: مستلزمات المواشي
+                    - paragraph [ref=f3e699]: 1 vendors total
+                  - generic [ref=f3e700]:
+                    - generic [ref=f3e701]: 1 Active
+                    - generic [ref=f3e702]: 0 Pending
+                    - generic [ref=f3e703]: 0 Inactive
+              - link "معدات العيادات البيطرية 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e706] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=11
+                - generic [ref=f3e707]:
+                  - generic [ref=f3e708]:
+                    - paragraph [ref=f3e709]: معدات العيادات البيطرية
+                    - paragraph [ref=f3e710]: 1 vendors total
+                  - generic [ref=f3e711]:
+                    - generic [ref=f3e712]: 1 Active
+                    - generic [ref=f3e713]: 0 Pending
+                    - generic [ref=f3e714]: 0 Inactive
+              - link "مكملات الأعلاف 1 vendors total 1 Active 0 Pending 0 Inactive" [ref=f3e717] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors?category_id=12
+                - generic [ref=f3e718]:
+                  - generic [ref=f3e719]:
+                    - paragraph [ref=f3e720]: مكملات الأعلاف
+                    - paragraph [ref=f3e721]: 1 vendors total
+                  - generic [ref=f3e722]:
+                    - generic [ref=f3e723]: 1 Active
+                    - generic [ref=f3e724]: 0 Pending
+                    - generic [ref=f3e725]: 0 Inactive
+          - generic [ref=f3e356]:
+            - generic [ref=f3e357]:
+              - generic [ref=f3e358]:
+                - heading "Recent products" [level=3] [ref=f3e359]
+                - paragraph [ref=f3e360]: Latest products added to the platform.
+              - link "Show all" [ref=f3e361] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/products
+            - generic [ref=f3e728]:
+              - link "Home Veterinary Care Service Package خدمات بيطرية Active" [ref=f3e729] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/products/16
+                - generic [ref=f3e730]:
+                  - paragraph [ref=f3e731]: Home Veterinary Care Service Package
+                  - paragraph [ref=f3e732]: خدمات بيطرية
+                - generic [ref=f3e733]: Active
+              - link "Broad-Spectrum Veterinary Disinfectant المطهرات البيطرية Active" [ref=f3e737] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/products/15
+                - generic [ref=f3e738]:
+                  - paragraph [ref=f3e739]: Broad-Spectrum Veterinary Disinfectant
+                  - paragraph [ref=f3e740]: المطهرات البيطرية
+                - generic [ref=f3e741]: Active
+              - link "Complete Stable Supplies Kit مستلزمات المواشي Active" [ref=f3e745] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/products/14
+                - generic [ref=f3e746]:
+                  - paragraph [ref=f3e747]: Complete Stable Supplies Kit
+                  - paragraph [ref=f3e748]: مستلزمات المواشي
+                - generic [ref=f3e749]: Active
+              - link "Animal Care Grooming Shears أدوات رعاية الحيوانات Active" [ref=f3e753] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/products/13
+                - generic [ref=f3e754]:
+                  - paragraph [ref=f3e755]: Animal Care Grooming Shears
+                  - paragraph [ref=f3e756]: أدوات رعاية الحيوانات
+                - generic [ref=f3e757]: Active
+              - link "Mineral Feed Supplement مكملات الأعلاف Active" [ref=f3e761] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/products/12
+                - generic [ref=f3e762]:
+                  - paragraph [ref=f3e763]: Mineral Feed Supplement
+                  - paragraph [ref=f3e764]: مكملات الأعلاف
+                - generic [ref=f3e765]: Active
+              - link "Portable Veterinary Diagnostic Device معدات العيادات البيطرية Active" [ref=f3e769] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/products/11
+                - generic [ref=f3e770]:
+                  - paragraph [ref=f3e771]: Portable Veterinary Diagnostic Device
+                  - paragraph [ref=f3e772]: معدات العيادات البيطرية
+                - generic [ref=f3e773]: Active
+              - link "Manual Harvest Tools Set أدوات الحصاد Active" [ref=f3e777] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/products/10
+                - generic [ref=f3e778]:
+                  - paragraph [ref=f3e779]: Manual Harvest Tools Set
+                  - paragraph [ref=f3e780]: أدوات الحصاد
+                - generic [ref=f3e781]: Active
+              - link "Natural Soil Amendment التربة والسماد العضوي Active" [ref=f3e785] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/products/9
+                - generic [ref=f3e786]:
+                  - paragraph [ref=f3e787]: Natural Soil Amendment
+                  - paragraph [ref=f3e788]: التربة والسماد العضوي
+                - generic [ref=f3e789]: Active
+        - generic [ref=f3e368]:
+          - generic [ref=f3e369]:
+            - heading "Recent activity" [level=3] [ref=f3e370]
+            - paragraph [ref=f3e371]: Latest products and registrations that may need follow-up.
+          - generic [ref=f3e372]:
+            - generic [ref=f3e374]:
+              - heading "Recent vendors" [level=3] [ref=f3e375]
+              - paragraph [ref=f3e376]: Latest vendor accounts added to the platform.
+            - generic [ref=f3e793]:
+              - link "تاجر المستلزمات البيطرية تاجر المستلزمات البيطرية · Veterinary Active" [ref=f3e794] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors/2
+                - generic [ref=f3e795]:
+                  - paragraph [ref=f3e796]: تاجر المستلزمات البيطرية
+                  - paragraph [ref=f3e797]: تاجر المستلزمات البيطرية · Veterinary
+                - generic [ref=f3e798]: Active
+              - link "تاجر المستلزمات الزراعية تاجر المستلزمات الزراعية · Agriculture Active" [ref=f3e802] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors/1
+                - generic [ref=f3e803]:
+                  - paragraph [ref=f3e804]: تاجر المستلزمات الزراعية
+                  - paragraph [ref=f3e805]: تاجر المستلزمات الزراعية · Agriculture
+                - generic [ref=f3e806]: Active
+        - generic [ref=f3e383]:
+          - generic [ref=f3e384]:
+            - heading "Quick actions" [level=3] [ref=f3e385]
+            - paragraph [ref=f3e386]: Shortcuts to the most frequent admin workflows.
+          - generic [ref=f3e387]:
+            - link [ref=f3e388] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/admin/vendors
+              - generic [ref=f3e395]:
+                - paragraph [ref=f3e396]: Manage vendors
+                - paragraph [ref=f3e397]: Review, update, and activate vendor accounts.
+            - link [ref=f3e400] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/admin/users
+              - generic [ref=f3e408]:
+                - paragraph [ref=f3e409]: Manage users
+                - paragraph [ref=f3e410]: Browse and maintain platform user accounts.
+            - link [ref=f3e413] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/admin/products
+              - generic [ref=f3e420]:
+                - paragraph [ref=f3e421]: Manage products
+                - paragraph [ref=f3e422]: Review product records and publishing status.
+  - generic [ref=f3e810]: "08"

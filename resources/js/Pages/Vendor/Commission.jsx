@@ -12,6 +12,13 @@ function formatMoney(amount) {
     return `${new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }).format(Number(amount || 0))} SYP`;
 }
 
+const SUMMARY_METRICS = [
+    { key: 'projected_order_total', labelKey: 'completed_orders_total', icon: DollarSign },
+    { key: 'commission_total', labelKey: 'commission_total_label', icon: Wallet },
+    { key: 'paid_amount', labelKey: 'paid_to_you', icon: HandCoins, tone: 'success' },
+    { key: 'remaining_amount', labelKey: 'remaining_label', icon: TrendingDown, tone: 'danger' },
+];
+
 export default function VendorCommission() {
     const { vendor } = useI18n();
     const [status, setStatus] = useState('loading');
@@ -58,10 +65,16 @@ export default function VendorCommission() {
             />
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <StatCard label={vendor.completed_orders_total} value={formatMoney(financials.projected_order_total)} icon={DollarSign} status={status} />
-                <StatCard label={vendor.commission_total_label} value={formatMoney(financials.commission_total)} icon={Wallet} status={status} />
-                <StatCard label={vendor.paid_to_you} value={formatMoney(financials.paid_amount)} icon={HandCoins} status={status} tone="success" />
-                <StatCard label={vendor.remaining_label} value={formatMoney(financials.remaining_amount)} icon={TrendingDown} status={status} tone="danger" />
+                {SUMMARY_METRICS.map(({ key, labelKey, icon, tone }) => (
+                    <StatCard
+                        key={key}
+                        label={vendor[labelKey]}
+                        value={formatMoney(financials[key])}
+                        icon={icon}
+                        status={status}
+                        tone={tone}
+                    />
+                ))}
             </div>
 
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">

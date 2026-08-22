@@ -1,0 +1,176 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - link "Skip to content" [ref=e4] [cursor=pointer]:
+      - /url: "#start-of-content"
+    - banner [ref=e9]:
+      - heading "Navigation Menu" [level=2] [ref=e10]
+      - generic [ref=e11]:
+        - link "Homepage" [ref=e13] [cursor=pointer]:
+          - /url: /
+        - generic [ref=e16]:
+          - navigation "Global" [ref=e17]:
+            - list [ref=e18]:
+              - listitem [ref=e19]:
+                - button "Platform" [ref=e21] [cursor=pointer]
+              - listitem [ref=e24]:
+                - button "Solutions" [ref=e26] [cursor=pointer]
+              - listitem [ref=e29]:
+                - button "Resources" [ref=e31] [cursor=pointer]
+              - listitem [ref=e34]:
+                - button "Open Source" [ref=e36] [cursor=pointer]
+              - listitem [ref=e39]:
+                - button "Enterprise" [ref=e41] [cursor=pointer]
+              - listitem [ref=e44]:
+                - link "Pricing" [ref=e45] [cursor=pointer]:
+                  - /url: https://github.com/pricing
+          - generic [ref=e46]:
+            - button "Search or jump to, type / to search" [ref=e48] [cursor=pointer]:
+              - generic [ref=e51]:
+                - generic [ref=e52]: Search
+                - generic [ref=e53]: /
+            - link "Sign in" [ref=e55] [cursor=pointer]:
+              - /url: /login?return_to=https%3A%2F%2Fgithub.com%2Fmajdba123%2FVitoria%2Factions
+            - link "Sign up" [ref=e58] [cursor=pointer]:
+              - /url: /signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E%2Factions%2Findex&source=header-repo&source_repo=majdba123%2FVitoria
+            - button "Appearance settings" [ref=e61] [cursor=pointer]
+  - main [ref=e68]:
+    - generic [ref=e69]:
+      - generic [ref=e70]:
+        - generic [ref=e72]:
+          - link "majdba123" [ref=e76] [cursor=pointer]:
+            - /url: /majdba123
+          - generic [ref=e77]: /
+          - strong [ref=e78]:
+            - link "Vitoria" [ref=e79] [cursor=pointer]:
+              - /url: /majdba123/Vitoria
+          - generic [ref=e80]: Public
+        - generic [ref=e81]:
+          - list:
+            - listitem [ref=e82]:
+              - link "You must be signed in to change notification settings" [ref=e83] [cursor=pointer]:
+                - /url: /login?return_to=%2Fmajdba123%2FVitoria
+                - text: Notifications
+            - listitem [ref=e86]:
+              - link "Fork 0" [ref=e87] [cursor=pointer]:
+                - /url: /login?return_to=%2Fmajdba123%2FVitoria
+                - text: Fork
+                - generic "0" [ref=e90]
+            - listitem [ref=e91]:
+              - link "You must be signed in to star a repository" [ref=e93] [cursor=pointer]:
+                - /url: /login?return_to=%2Fmajdba123%2FVitoria
+                - text: Star
+                - generic "0 users starred this repository" [ref=e96]: "0"
+      - navigation "Repository" [ref=e97]:
+        - list [ref=e98]:
+          - listitem [ref=e99]:
+            - link "Code" [ref=e100] [cursor=pointer]:
+              - /url: /majdba123/Vitoria
+          - listitem [ref=e104]:
+            - link "Issues" [ref=e105] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/issues
+          - listitem [ref=e110]:
+            - link "Pull requests" [ref=e111] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/pulls
+          - listitem [ref=e115]:
+            - link "Actions" [ref=e116] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/actions
+          - listitem [ref=e120]:
+            - link "Projects" [ref=e121] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/projects
+          - listitem [ref=e125]:
+            - link "Security and quality" [ref=e126] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/security
+          - listitem [ref=e130]:
+            - link "Insights" [ref=e131] [cursor=pointer]:
+              - /url: /majdba123/Vitoria/pulse
+    - generic [ref=e974]:
+      - generic [ref=e977]:
+        - link "CI" [ref=e980] [cursor=pointer]:
+          - /url: /majdba123/Vitoria/actions/workflows/ci.yml
+        - generic [ref=e984]:
+          - generic [ref=e985]:
+            - img "currently running:" [ref=e990]
+            - 'heading "Fix public storefront regressions #62" [level=1] [ref=e994]'
+          - link "Sign in to view logs" [ref=e998] [cursor=pointer]:
+            - /url: /login?return_to=https%3A%2F%2Fgithub.com%2Fmajdba123%2FVitoria%2Factions%2Fruns%2F31913080444
+      - generic [ref=e999]:
+        - navigation "Workflow run" [ref=e1065]:
+          - list [ref=e1066]:
+            - listitem [ref=e1067]:
+              - link "Summary" [ref=e1068] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/actions/runs/31913080444
+            - generic [ref=e1071]:
+              - heading "All jobs" [level=4] [ref=e1072]
+              - button "Filter by job status" [ref=e1073] [cursor=pointer]
+            - listitem [ref=e1076]
+            - listitem [ref=e1077]:
+              - list [ref=e1078]:
+                - listitem [ref=e1079]:
+                  - link "Lint & Test" [ref=e1080] [cursor=pointer]:
+                    - /url: /majdba123/Vitoria/actions/runs/31913080444/job/95080950921
+                    - generic:
+                      - generic:
+                        - img "Currently running"
+            - listitem [ref=e1083]
+            - listitem [ref=e1084]:
+              - heading "Run details" [level=3] [ref=e1086]
+              - list "Run details" [ref=e1087]:
+                - listitem [ref=e1088]:
+                  - link "Usage" [ref=e1089] [cursor=pointer]:
+                    - /url: /majdba123/Vitoria/actions/runs/31913080444/usage
+                - listitem [ref=e1092]:
+                  - link "Workflow file" [ref=e1093] [cursor=pointer]:
+                    - /url: /majdba123/Vitoria/actions/runs/31913080444/workflow
+        - generic [ref=e1002]:
+          - region "Workflow run summary" [ref=e1003]:
+            - generic [ref=e1004]:
+              - generic [ref=e1005]:
+                - generic [ref=e1006]: Triggered via push August 15, 2026 22:481 minute ago
+                - generic [ref=e1007]:
+                  - link [ref=e1008] [cursor=pointer]:
+                    - /url: /YusufJojeh
+                    - img "@YusufJojeh" [ref=e1009]
+                    - text: YusufJojeh
+                  - generic [ref=e1010]:
+                    - generic [ref=e1011]: pushed
+                    - link "8699e5e" [ref=e1012] [cursor=pointer]:
+                      - /url: /majdba123/Vitoria/commit/8699e5e12b1082674474b8a3c8cfbeb334c945b4
+                  - link "main" [ref=e1015] [cursor=pointer]:
+                    - /url: /majdba123/Vitoria/tree/refs/heads/main
+              - generic [ref=e1016]:
+                - generic [ref=e1017]: Status
+                - text: In progress
+              - generic [ref=e1018]:
+                - generic [ref=e1019]: Total duration
+                - link "–" [ref=e1020] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/actions/runs/31913080444/usage
+              - generic [ref=e1021]:
+                - generic [ref=e1022]: Artifacts
+                - text: –
+          - region "Workflow run graph" [ref=e1023]:
+            - generic [ref=e1025]:
+              - generic [ref=e1027]:
+                - heading [level=2] [ref=e1028]:
+                  - link "ci.yml" [ref=e1029] [cursor=pointer]:
+                    - /url: /majdba123/Vitoria/actions/runs/31913080444/workflow
+                - generic [ref=e1030]: "on: push"
+              - generic [ref=e1032]:
+                - 'link "currently running: Lint & Test 1m 26s" [ref=e1096] [cursor=pointer]':
+                  - /url: /majdba123/Vitoria/actions/runs/31913080444/job/95080950921
+                  - generic [ref=e1039]:
+                    - img "currently running:" [ref=e1042]
+                    - generic [ref=e1046]: Lint & Test
+                    - generic "Aug 16, 2026, 1:48 AM GMT+3" [ref=e1049]: 1m 26s
+                - generic [ref=e1050]:
+                  - paragraph [ref=e1051]: Oh hello! Nice to see you.
+                  - paragraph [ref=e1052]:
+                    - text: Made with ❤️ by
+                    - link [ref=e1053] [cursor=pointer]:
+                      - /url: https://actions.github.io/humans.txt
+                      - text: humans.txt
+              - generic [ref=e1054]:
+                - button "Fit to window" [disabled] [ref=e1055]
+                - generic [ref=e1056]:
+                  - button "Zoom out" [disabled] [ref=e1058]
+                  - button "Zoom in" [disabled] [ref=e1060]
+          - region "Annotations"

@@ -1,0 +1,172 @@
+path	category	domain	lines	hash_before	reviewer	review_status	reviewed_ranges	finding_ids	test_ids	hash_after	final_status	notes
+app/Services/Vendor/VendorMapService.php	BACKEND	vendor-map	114	-	session	REVIEWED	1-114		VendorMapFeatureTest	-	OK	CP0
+app/Services/Vendor/VendorAnalyticsService.php	BACKEND	vendor-analytics	283	-	session	REVIEWED	1-283		VendorAnalyticsTest	-	OK	CP0
+app/Http/Requests/VendorMapRequest.php	BACKEND	vendor-map	47	-	session	REVIEWED	1-47		VendorMapFeatureTest	-	OK	CP0/SHARD1
+app/Http/Requests/VendorAnalyticsRequest.php	BACKEND	vendor-analytics	72	-	session	REVIEWED	1-72		VendorAnalyticsTest	-	OK	CP0/SHARD1
+app/Http/Controllers/Api/Admin/VendorAnalyticsController.php	BACKEND	vendor-analytics	57	-	session	REVIEWED	1-57		VendorAnalyticsTest	-	OK	CP0
+app/Http/Controllers/Api/Syndicate/VendorAnalyticsController.php	BACKEND	vendor-analytics	51	-	session	REVIEWED	1-51		VendorAnalyticsTest	-	OK	CP0
+app/Services/Syndicate/SyndicateDashboardService.php	BACKEND	syndicate	482	-	session	REVIEWED	1-482		VendorMapFeatureTest,VendorAnalyticsTest	-	OK	CP0
+app/Http/Controllers/Api/Admin/VendorController.php	BACKEND	admin-vendor	diff-only	-	session	PENDING	-		-	-	NEEDS_FULL_READ	diff only in CP0, promote in Shard 3
+app/Http/Controllers/Api/Syndicate/DashboardController.php	BACKEND	syndicate	diff-only	-	session	PENDING	-		-	-	NEEDS_FULL_READ	diff only in CP0, promote in Shard 4
+app/Http/Controllers/Api/Vendor/VendorProfileController.php	BACKEND	vendor	diff-only	-	session	PENDING	-		-	-	NEEDS_FULL_READ	diff only in CP0, promote in Shard 5
+app/Services/Admin/VendorService.php	BACKEND	admin-vendor	diff-only	-	session	PENDING	-		-	-	NEEDS_FULL_READ	diff only in CP0, promote in Shard 3
+app/Services/Commerce/VendorLedgerService.php	BACKEND	commerce	diff-only	-	session	PENDING	-		-	-	NEEDS_FULL_READ	diff only in CP0, promote in Shard 2
+app/Services/Auth/AuthService.php	BACKEND	auth	grep-only	-	session	PENDING	-		-	-	NEEDS_FULL_READ	grep-confirmed coord persistence only, promote in Shard 2
+resources/js/Components/maps/leaflet.js	FRONTEND	vendor-map	48	-	session	REVIEWED	1-48		VendorMapFeatureTest	-	OK	CP0
+resources/js/Components/maps/VendorMap.jsx	FRONTEND	vendor-map	164	-	session	REVIEWED	1-164		VendorMapFeatureTest	-	OK	CP0
+resources/js/Components/maps/LocationPicker.jsx	FRONTEND	vendor-map	165	-	session	REVIEWED	1-165		VendorMapFeatureTest	-	OK	SHARD1(continued)
+bootstrap/app.php	CONFIG	routing/middleware	138	-	session	REVIEWED	1-138		AdversarialSecurityAuditTest,ApiSecurityAndRateLimitTest	-	OK	SHARD1
+bootstrap/providers.php	CONFIG	providers	7	-	session	REVIEWED	1-7		-	-	OK	SHARD1
+bootstrap/cache/.gitignore	GENERATED	cache	1	-	session	EXCLUDED_WITH_REASON	-		-	-	OK	cache dir marker, not source
+app/Http/Middleware/EnsureUserIsAdmin.php	BACKEND	auth-middleware	29	-	session	REVIEWED	1-29		AdversarialSecurityAuditTest	-	OK	SHARD1
+app/Http/Middleware/EnsureUserIsEmployee.php	BACKEND	auth-middleware	32	-	session	REVIEWED	1-32		-	-	OK	SHARD1
+app/Http/Middleware/EnsureUserIsSyndicate.php	BACKEND	auth-middleware	47	-	session	REVIEWED	1-47		VendorMapFeatureTest	-	OK	SHARD1
+app/Http/Middleware/EnsureUserIsVendor.php	BACKEND	auth-middleware	51	-	session	REVIEWED	1-51		-	-	OK	SHARD1
+app/Http/Middleware/ApplyUserTimezone.php	BACKEND	middleware	30	-	session	REVIEWED	1-30		-	-	OK	SHARD1
+app/Http/Middleware/AssignRequestId.php	BACKEND	middleware	29	-	session	REVIEWED	1-29		-	-	OK	SHARD1
+app/Http/Middleware/CacheResponse.php	BACKEND	middleware	26	-	session	REVIEWED	1-26		-	-	OK	SHARD1
+app/Http/Middleware/EnsureProductTypeSelected.php	BACKEND	middleware	59	-	session	REVIEWED	1-59		ProductTypeAndHomepageRepairTest	-	OK	SHARD1
+app/Http/Middleware/SetLocale.php	BACKEND	middleware	82	-	session	REVIEWED	1-82		-	-	OK	SHARD1
+app/Http/Middleware/HandleInertiaRequests.php	BACKEND	middleware	92	-	session	REVIEWED	1-92		-	-	OK	CP0/SHARD1
+app/Policies/InvoicePolicy.php	BACKEND	policy	25	-	session	REVIEWED	1-25		-	NEEDS_TRACE(InvoiceController)	OK	SHARD1
+app/Policies/OrderPolicy.php	BACKEND	policy	76	-	session	REVIEWED	1-76		-	NEEDS_TRACE(OrderController x3)	OK	SHARD1
+app/Policies/OrderReturnPolicy.php	BACKEND	policy	75	-	session	REVIEWED	1-75		-	NEEDS_TRACE(OrderReturnController)	OK	SHARD1
+app/Policies/ProductDocumentPolicy.php	BACKEND	policy	39	-	session	REVIEWED	1-39		-	NEEDS_TRACE(ProductDocumentController)	OK	SHARD1
+app/Policies/ProductPolicy.php	BACKEND	policy	70	-	session	REVIEWED	1-70		-	NEEDS_TRACE(ProductController)	OK	SHARD1
+app/Policies/ProductReviewPolicy.php	BACKEND	policy	26	-	session	REVIEWED	1-26		-	NEEDS_TRACE(ProductReviewController)	OK	SHARD1
+app/Policies/RefundPolicy.php	BACKEND	policy	39	-	session	REVIEWED	1-39		-	NEEDS_TRACE(RefundController)	OK	SHARD1
+app/Policies/ShipmentPolicy.php	BACKEND	policy	42	-	session	REVIEWED	1-42		-	NEEDS_TRACE(ShipmentController)	OK	SHARD1
+app/Policies/UserAddressPolicy.php	BACKEND	policy	32	-	session	REVIEWED	1-32		-	NEEDS_TRACE(UserAddressController)	OK	SHARD1
+app/Policies/VendorDocumentPolicy.php	BACKEND	policy	40	-	session	REVIEWED	1-40		-	NEEDS_TRACE(VendorDocumentController)	OK	SHARD1
+app/Http/Requests/Admin/Concerns/NormalizesDateTimeInputs.php	BACKEND	requests	45	-	session	REVIEWED	1-45		-	-	OK	SHARD1
+app/Http/Requests/Admin/ReplyContactMessageRequest.php	BACKEND	requests	35	-	session	REVIEWED	1-35		-	-	OK	SHARD1
+app/Http/Requests/Admin/SendNotificationRequest.php	BACKEND	requests	47	-	session	REVIEWED	1-47		-	-	OK	SHARD1
+app/Http/Requests/Admin/StoreCategoryRequest.php	BACKEND	requests	50	-	session	REVIEWED	1-50		-	-	OK	SHARD1
+app/Http/Requests/Admin/StoreCityRequest.php	BACKEND	requests	42	-	session	REVIEWED	1-42		-	-	OK	SHARD1
+app/Http/Requests/Admin/StoreCouponRequest.php	BACKEND	requests	46	-	session	REVIEWED	1-46		-	-	OK	SHARD1
+app/Http/Requests/Admin/StoreProductRequest.php	BACKEND	requests	64	-	session	REVIEWED	1-64		-	-	OK	SHARD1
+app/Http/Requests/Admin/StoreSubcategoryRequest.php	BACKEND	requests	46	-	session	REVIEWED	1-46		-	-	OK	SHARD1
+app/Http/Requests/Admin/StoreSyndicateRequest.php	BACKEND	requests	44	-	session	REVIEWED	1-44		-	-	OK	SHARD1
+app/Http/Requests/Admin/StoreUserRequest.php	BACKEND	requests	60	-	session	REVIEWED	1-60		-	-	OK	SHARD1
+app/Http/Requests/Admin/StoreVendorRequest.php	BACKEND	requests	79	-	session	REVIEWED	1-79		-	-	OK	SHARD1(full,was diff-only)
+app/Http/Requests/Admin/UpdateCategoryRequest.php	BACKEND	requests	48	-	session	REVIEWED	1-48		-	-	OK	SHARD1
+app/Http/Requests/Admin/UpdateCityRequest.php	BACKEND	requests	44	-	session	REVIEWED	1-44		-	-	OK	SHARD1
+app/Http/Requests/Admin/UpdateCouponRequest.php	BACKEND	requests	46	-	session	REVIEWED	1-46		-	-	OK	SHARD1
+app/Http/Requests/Admin/UpdateFooterSettingRequest.php	BACKEND	requests	31	-	session	REVIEWED	1-31		-	-	OK	SHARD1
+app/Http/Requests/Admin/UpdateProductRequest.php	BACKEND	requests	59	-	session	REVIEWED	1-59		-	-	OK	SHARD1
+app/Http/Requests/Admin/UpdateSubcategoryRequest.php	BACKEND	requests	49	-	session	REVIEWED	1-49		-	-	OK	SHARD1
+app/Http/Requests/Admin/UpdateSyndicateRequest.php	BACKEND	requests	47	-	session	REVIEWED	1-47		-	-	OK	SHARD1
+app/Http/Requests/Admin/UpdateUserRequest.php	BACKEND	requests	46	-	session	REVIEWED	1-46	F-SHARD1-01		-	OK	SHARD1
+app/Http/Requests/Admin/UpdateVendorCommissionPaidRequest.php	BACKEND	requests	41	-	session	REVIEWED	1-41		-	-	OK	SHARD1
+app/Http/Requests/Admin/UpdateVendorRequest.php	BACKEND	requests	73	-	session	REVIEWED	1-73		-	-	OK	SHARD1(full,was diff-only)
+app/Http/Requests/Auth/LoginRequest.php	BACKEND	requests	42	-	session	REVIEWED	1-42		-	-	OK	SHARD1
+app/Http/Requests/Auth/RegisterRequest.php	BACKEND	requests	115	-	session	REVIEWED	1-115		-	-	OK	SHARD1(full,was diff-only)
+app/Http/Requests/Concerns/InteractsWithProductDetails.php	BACKEND	requests	262	-	session	REVIEWED	1-262		-	-	OK	SHARD1
+app/Http/Requests/Employee/UpdateProductRequest.php	BACKEND	requests	29	-	session	REVIEWED	1-29		-	NEEDS_TRACE(EmployeeProductController)	OK	SHARD1
+app/Http/Requests/StoreContactMessageRequest.php	BACKEND	requests	39	-	session	REVIEWED	1-39		-	-	OK	SHARD1
+app/Http/Requests/StoreOrderRequest.php	BACKEND	requests	47	-	session	REVIEWED	1-47		-	-	OK	SHARD1
+app/Http/Requests/StoreProductReviewRequest.php	BACKEND	requests	37	-	session	REVIEWED	1-37		-	-	OK	SHARD1
+app/Http/Requests/StoreProductTypePreferenceRequest.php	BACKEND	requests	42	-	session	REVIEWED	1-42		-	-	OK	SHARD1
+app/Http/Requests/StoreStartupPreferenceRequest.php	BACKEND	requests	34	-	session	REVIEWED	1-34		-	-	OK	SHARD1
+app/Http/Requests/StoreUserAddressRequest.php	BACKEND	requests	42	-	session	REVIEWED	1-42		-	-	OK	SHARD1
+app/Http/Requests/UpdateProfileRequest.php	BACKEND	requests	49	-	session	REVIEWED	1-49		-	-	OK	SHARD1
+app/Http/Requests/Vendor/StoreProductRequest.php	BACKEND	requests	63	-	session	REVIEWED	1-63		-	-	OK	SHARD1
+app/Http/Requests/Vendor/UpdateProductRequest.php	BACKEND	requests	59	-	session	REVIEWED	1-59		-	NEEDS_TRACE(VendorProductController ownership)	OK	SHARD1
+app/Http/Requests/Vendor/UpdateProfileRequest.php	BACKEND	requests	51	-	session	REVIEWED	1-51		-	NEEDS_TRACE(VendorProfileController current_password check)	OK	CP0/SHARD1
+routes/api.php	ROUTES	routing	163	-	session	REVIEWED	1-163		AdversarialSecurityAuditTest,ApiSecurityAndRateLimitTest	-	OK	SHARD1
+routes/api_admin.php	ROUTES	routing	144	-	session	REVIEWED	1-144		-	-	OK	CP0/SHARD1
+routes/api_employee.php	ROUTES	routing	17	-	session	REVIEWED	1-17		EmployeeProductModerationTest	-	OK	SHARD1
+routes/api_syndicate.php	ROUTES	routing	19	-	session	REVIEWED	1-19		VendorMapFeatureTest,SyndicateSystemTest	-	OK	CP0/SHARD1
+routes/api_vendor.php	ROUTES	routing	77	-	session	REVIEWED	1-77		-	-	OK	SHARD1
+routes/channels.php	ROUTES	routing	7	-	session	REVIEWED	1-7		-	-	OK	SHARD1
+routes/console.php	ROUTES	routing	15	-	session	REVIEWED	1-15		-	-	OK	SHARD1
+routes/web.php	ROUTES	routing	408	-	session	REVIEWED	1-408		-	-	OK	SHARD1
+app/Models/User.php	BACKEND	auth	299	-	session	REVIEWED	1-299		-	-	OK	SHARD2
+app/Models/Vendor.php	BACKEND	vendor	124	-	session	REVIEWED	1-124		VendorMapFeatureTest	-	OK	SHARD2
+app/Models/VendorMember.php	BACKEND	vendor-rbac	64	-	session	REVIEWED	1-64		-	-	OK	SHARD2
+app/Models/Syndicate.php	BACKEND	syndicate	77	-	session	REVIEWED	1-77		SyndicateSystemTest	-	OK	SHARD2
+app/Models/Order.php	BACKEND	commerce	274	-	session	REVIEWED	1-274		CheckoutAndOrderLifecycleTest	-	OK	SHARD2
+app/Models/OrderItem.php	BACKEND	commerce	61	-	session	REVIEWED	1-61		-	-	OK	SHARD2
+app/Models/Product.php	BACKEND	catalog	265	-	session	REVIEWED	1-265		-	-	OK	SHARD2
+app/Models/OrderReturn.php	BACKEND	commerce	139	-	session	REVIEWED	1-139		-	-	OK	SHARD2
+app/Models/ReturnItem.php	BACKEND	commerce	52	-	session	REVIEWED	1-52		-	-	OK	SHARD2
+app/Models/Refund.php	BACKEND	commerce	103	-	session	REVIEWED	1-103		-	-	OK	SHARD2
+app/Models/Payment.php	BACKEND	commerce	93	-	session	REVIEWED	1-93		-	-	OK	SHARD2
+app/Models/Invoice.php	BACKEND	commerce	65	-	session	REVIEWED	1-65		-	-	OK	SHARD2
+app/Models/Shipment.php	BACKEND	commerce	105	-	session	REVIEWED	1-105		-	-	OK	SHARD2
+app/Models/ShipmentEvent.php	BACKEND	commerce	31	-	session	REVIEWED	1-31		-	-	OK	SHARD2
+app/Models/VendorLedgerEntry.php	BACKEND	commerce	81	-	session	REVIEWED	1-81		VendorAnalyticsTest	-	OK	SHARD2
+app/Models/VendorSettlement.php	BACKEND	commerce	58	-	session	REVIEWED	1-58		-	-	OK	SHARD2
+app/Models/Coupon.php	BACKEND	commerce	97	-	session	REVIEWED	1-97		-	-	OK	SHARD2
+app/Models/CouponRedemption.php	BACKEND	commerce	48	-	session	REVIEWED	1-48		-	-	OK	SHARD2
+app/Models/Cart.php	BACKEND	commerce	55	-	session	REVIEWED	1-55		-	-	OK	SHARD2
+app/Models/CartItem.php	BACKEND	commerce	47	-	session	REVIEWED	1-47		-	-	OK	SHARD2
+app/Models/Category.php	BACKEND	catalog	117	-	session	REVIEWED	1-117		-	-	OK	SHARD2
+app/Models/Subcategory.php	BACKEND	catalog	33	-	session	REVIEWED	1-33		-	-	OK	SHARD2
+app/Models/City.php	BACKEND	geo	28	-	session	REVIEWED	1-28		-	-	OK	SHARD2
+app/Models/ProductPhoto.php	BACKEND	catalog	58	-	session	REVIEWED	1-58		-	-	OK	SHARD2
+app/Models/ProductReview.php	BACKEND	catalog	42	-	session	REVIEWED	1-42		-	-	OK	SHARD2
+app/Models/ProductDocument.php	BACKEND	compliance	124	-	session	REVIEWED	1-124		-	-	OK	SHARD2
+app/Models/VendorDocument.php	BACKEND	compliance	112	-	session	REVIEWED	1-112		-	-	OK	SHARD2
+app/Models/AdminNotification.php	BACKEND	notifications	55	-	session	REVIEWED	1-55		-	-	OK	SHARD2
+app/Models/AgriculturalProductDetail.php	BACKEND	catalog	225	-	session	REVIEWED	1-225		-	-	OK	SHARD2
+app/Models/VeterinaryProductDetail.php	BACKEND	catalog	116	-	session	REVIEWED	1-116		-	-	OK	SHARD2
+app/Models/SharedProductDetail.php	BACKEND	catalog	121	-	session	REVIEWED	1-121	F-SHARD2-01	-	-	OK	SHARD2
+app/Models/AuditLog.php	BACKEND	audit	46	-	session	REVIEWED	1-46		-	-	OK	SHARD2
+app/Models/Banner.php	BACKEND	cms	38	-	session	REVIEWED	1-38		-	-	OK	SHARD2
+app/Models/Brand.php	BACKEND	catalog	44	-	session	REVIEWED	1-44		-	-	OK	SHARD2
+app/Models/Manufacturer.php	BACKEND	catalog	34	-	session	REVIEWED	1-34		-	-	OK	SHARD2
+app/Models/ContactMessage.php	BACKEND	cms	41	-	session	REVIEWED	1-41		-	-	OK	SHARD2
+app/Models/FooterSetting.php	BACKEND	cms	36	-	session	REVIEWED	1-36		-	-	OK	SHARD2
+app/Models/NotificationPreference.php	BACKEND	notifications	86	-	session	REVIEWED	1-86		-	-	OK	SHARD2
+app/Models/OrderStatusHistory.php	BACKEND	commerce	36	-	session	REVIEWED	1-36		-	-	OK	SHARD2
+app/Models/Page.php	BACKEND	cms	33	-	session	REVIEWED	1-33		-	-	OK	SHARD2
+app/Models/Permission.php	BACKEND	vendor-rbac	19	-	session	REVIEWED	1-19		-	-	OK	SHARD2
+app/Models/Role.php	BACKEND	vendor-rbac	69	-	session	REVIEWED	1-69		-	-	OK	SHARD2
+app/Models/ShippingMethod.php	BACKEND	shipping	51	-	session	REVIEWED	1-51		-	-	OK	SHARD2
+app/Models/ShippingRate.php	BACKEND	shipping	55	-	session	REVIEWED	1-55		-	-	OK	SHARD2
+app/Models/ShippingZone.php	BACKEND	shipping	40	-	session	REVIEWED	1-40		-	-	OK	SHARD2
+app/Models/ShippingZoneGovernorate.php	BACKEND	shipping	22	-	session	REVIEWED	1-22		-	-	OK	SHARD2
+app/Models/UserAddress.php	BACKEND	commerce	112	-	session	REVIEWED	1-112		-	-	OK	SHARD2
+app/Services/Auth/AuthService.php	BACKEND	auth	156	-	session	REVIEWED	1-156		-	-	OK	SHARD2(promoted from grep-only)
+app/Services/Commerce/VendorLedgerService.php	BACKEND	commerce	258	-	session	REVIEWED	1-258		VendorAnalyticsTest	-	OK	SHARD2(promoted from diff-only)
+app/Services/Commerce/RefundService.php	BACKEND	commerce	244	-	session	REVIEWED	1-244		-	-	OK	SHARD2
+app/Services/Commerce/CartException.php	BACKEND	commerce	12	-	session	REVIEWED	1-12		-	-	OK	SHARD2
+app/Services/Commerce/CartService.php	BACKEND	commerce	402	-	session	REVIEWED	1-402		-	-	OK	SHARD2
+app/Services/Commerce/CheckoutService.php	BACKEND	commerce	309	-	session	REVIEWED	1-309		CheckoutAndOrderLifecycleTest	-	OK	SHARD2
+app/Services/ProductService.php	BACKEND	catalog	669	-	session	REVIEWED	1-669	F-SHARD2-01(cross-ref)	-	-	OK	SHARD2
+app/Services/Commerce/CouponService.php	BACKEND	commerce	167	-	session	REVIEWED	1-167		CheckoutAndOrderLifecycleTest	-	OK	SHARD2
+app/Services/Commerce/InvoiceService.php	BACKEND	commerce	44	-	session	REVIEWED	1-44		-	-	OK	SHARD2
+app/Services/Commerce/OrderCancellationService.php	BACKEND	commerce	148	-	session	REVIEWED	1-148		CheckoutAndOrderLifecycleTest	-	OK	SHARD2
+app/Services/Commerce/OrderStatusService.php	BACKEND	commerce	158	-	session	REVIEWED	1-158		CheckoutAndOrderLifecycleTest	-	OK	SHARD2
+app/Services/Commerce/PaymentService.php	BACKEND	commerce	116	-	session	REVIEWED	1-116		CheckoutAndOrderLifecycleTest	-	OK	SHARD2
+app/Services/Commerce/ReturnService.php	BACKEND	commerce	331	-	session	REVIEWED	1-331	F-SHARD2-02	-	-	OK	SHARD2
+app/Services/Commerce/ShippingService.php	BACKEND	commerce	220	-	session	REVIEWED	1-220		-	-	OK	SHARD2
+app/Services/Admin/SyndicateService.php	BACKEND	admin	167	-	session	REVIEWED	1-167		SyndicateSystemTest	-	OK	SHARD2
+app/Services/Admin/UserService.php	BACKEND	admin	48	-	session	REVIEWED	1-48	F-SHARD1-01(evidence)	-	-	OK	SHARD2
+app/Services/Admin/VendorService.php	BACKEND	admin-vendor	180	-	session	REVIEWED	1-180		-	-	OK	SHARD2(promoted from CP0 diff-only)
+app/Services/ApplicationCacheService.php	BACKEND	infra	115	-	session	REVIEWED	1-115		-	-	OK	SHARD2
+app/Services/AuditLogService.php	BACKEND	audit	95	-	session	REVIEWED	1-95		-	-	OK	SHARD2
+app/Services/ImageOptimizationService.php	BACKEND	infra	53	-	session	REVIEWED	1-53		-	-	OK	SHARD2
+app/Services/Import/AbstractCsvImporter.php	BACKEND	import	213	-	session	REVIEWED	1-213		-	-	OK	SHARD2
+app/Services/Import/CsvFile.php	BACKEND	import	93	-	session	REVIEWED	1-93		-	-	OK	SHARD2
+app/Services/Import/CsvImportException.php	BACKEND	import	9	-	session	REVIEWED	1-9		-	-	OK	SHARD2
+app/Services/Import/Importers/CategoryImporter.php	BACKEND	import	48	-	session	REVIEWED	1-48		-	-	OK	SHARD2
+app/Services/Import/Importers/CityImporter.php	BACKEND	import	40	-	session	REVIEWED	1-40		-	-	OK	SHARD2
+app/Services/Import/Importers/SubcategoryImporter.php	BACKEND	import	50	-	session	REVIEWED	1-50		-	-	OK	SHARD2
+app/Services/Import/Importers/ProductImporter.php	BACKEND	import	125	-	session	REVIEWED	1-125		-	-	OK	SHARD2
+app/Services/NotificationPreferenceException.php	BACKEND	notifications	11	-	session	REVIEWED	1-11		-	-	OK	SHARD2
+app/Services/NotificationPreferenceService.php	BACKEND	notifications	112	-	session	REVIEWED	1-112		-	-	OK	SHARD2
+app/Services/NotificationService.php	BACKEND	notifications	450	-	session	REVIEWED	1-450		-	-	OK	SHARD2
+app/Services/Product/ProductComparisonException.php	BACKEND	catalog	11	-	session	REVIEWED	1-11		-	-	OK	SHARD2
+app/Services/Product/ProductComparisonService.php	BACKEND	catalog	147	-	session	REVIEWED	1-147		-	-	OK	SHARD2
+app/Services/Product/ProductDocumentException.php	BACKEND	compliance	11	-	session	REVIEWED	1-11		-	-	OK	SHARD2
+app/Services/Product/ProductDocumentService.php	BACKEND	compliance	137	-	session	REVIEWED	1-137		-	-	OK	SHARD2
+app/Services/ReportService.php	BACKEND	admin	160	-	session	REVIEWED	1-160		-	-	OK	SHARD2
+app/Services/SelectedProductTypeService.php	BACKEND	catalog	64	-	session	REVIEWED	1-64		ProductTypeAndHomepageRepairTest	-	OK	SHARD2
+app/Services/Vendor/VendorDocumentService.php	BACKEND	compliance	175	-	session	REVIEWED	1-175		-	-	OK	SHARD2
+app/Services/Vendor/VendorStaffException.php	BACKEND	vendor-rbac	11	-	session	REVIEWED	1-11		-	-	OK	SHARD2
+app/Services/Vendor/VendorStaffService.php	BACKEND	vendor-rbac	129	-	session	REVIEWED	1-129		-	-	OK	SHARD2
+app/Http/Controllers/Api/Admin/UserController.php	BACKEND	admin	196	-	session	REVIEWED	1-196	F-SHARD1-01(confirmed+fixed)	AdminUserManagementTest	-	OK	SHARD3
+app/Http/Requests/Admin/UpdateUserRequest.php	BACKEND	requests	57	-	session	REVIEWED	1-57	F-SHARD1-01(fixed)	AdminUserManagementTest	-	OK	SHARD1->REVIEW_AGAIN->REVIEWED(fix applied)
+tests/Feature/AdminUserManagementTest.php	TEST	admin	69	-	session	REVIEWED	1-69	F-SHARD1-01	AdminUserManagementTest	-	OK	regression test added

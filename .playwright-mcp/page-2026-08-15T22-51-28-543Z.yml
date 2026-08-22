@@ -1,0 +1,176 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e3]:
+    - link "Skip to content" [ref=f3e4] [cursor=pointer]:
+      - /url: "#start-of-content"
+    - banner [ref=f3e9]:
+      - heading "Navigation Menu" [level=2] [ref=f3e10]
+      - generic [ref=f3e11]:
+        - link "Homepage" [ref=f3e13] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f3e16]:
+          - navigation "Global" [ref=f3e17]:
+            - list [ref=f3e18]:
+              - listitem [ref=f3e19]:
+                - button "Platform" [ref=f3e21] [cursor=pointer]
+              - listitem [ref=f3e24]:
+                - button "Solutions" [ref=f3e26] [cursor=pointer]
+              - listitem [ref=f3e29]:
+                - button "Resources" [ref=f3e31] [cursor=pointer]
+              - listitem [ref=f3e34]:
+                - button "Open Source" [ref=f3e36] [cursor=pointer]
+              - listitem [ref=f3e39]:
+                - button "Enterprise" [ref=f3e41] [cursor=pointer]
+              - listitem [ref=f3e44]:
+                - link "Pricing" [ref=f3e45] [cursor=pointer]:
+                  - /url: https://github.com/pricing
+          - generic [ref=f3e46]:
+            - button "Search or jump to, type / to search" [ref=f3e48] [cursor=pointer]:
+              - generic [ref=f3e51]:
+                - generic [ref=f3e52]: Search
+                - generic [ref=f3e53]: /
+            - link "Sign in" [ref=f3e55] [cursor=pointer]:
+              - /url: /login?return_to=https%3A%2F%2Fgithub.com%2Fmajdba123%2FVitoria%2Factions%2Fruns%2F31913132070
+            - link "Sign up" [ref=f3e58] [cursor=pointer]:
+              - /url: /signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E%2Factions%2Fworkflow_runs%2Fshow&source=header-repo&source_repo=majdba123%2FVitoria
+            - button "Appearance settings" [ref=f3e61] [cursor=pointer]
+  - main [ref=f3e68]:
+    - generic [ref=f3e69]:
+      - generic [ref=f3e70]:
+        - generic [ref=f3e71]:
+          - generic [ref=f3e73]:
+            - link "majdba123" [ref=f3e77] [cursor=pointer]:
+              - /url: /majdba123
+            - generic [ref=f3e78]: /
+            - strong [ref=f3e79]:
+              - link "Vitoria" [ref=f3e80] [cursor=pointer]:
+                - /url: /majdba123/Vitoria
+            - generic [ref=f3e81]: Public
+          - generic [ref=f3e82]:
+            - list:
+              - listitem [ref=f3e83]:
+                - link "You must be signed in to change notification settings" [ref=f3e84] [cursor=pointer]:
+                  - /url: /login?return_to=%2Fmajdba123%2FVitoria
+                  - text: Notifications
+              - listitem [ref=f3e87]:
+                - link "Fork 0" [ref=f3e88] [cursor=pointer]:
+                  - /url: /login?return_to=%2Fmajdba123%2FVitoria
+                  - text: Fork
+                  - generic "0" [ref=f3e91]
+              - listitem [ref=f3e92]:
+                - link "You must be signed in to star a repository" [ref=f3e94] [cursor=pointer]:
+                  - /url: /login?return_to=%2Fmajdba123%2FVitoria
+                  - text: Star
+                  - generic "0 users starred this repository" [ref=f3e97]: "0"
+        - navigation "Repository" [ref=f3e98]:
+          - list [ref=f3e99]:
+            - listitem [ref=f3e100]:
+              - link "Code" [ref=f3e101] [cursor=pointer]:
+                - /url: /majdba123/Vitoria
+            - listitem [ref=f3e105]:
+              - link "Issues" [ref=f3e106] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/issues
+            - listitem [ref=f3e111]:
+              - link "Pull requests" [ref=f3e112] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/pulls
+            - listitem [ref=f3e116]:
+              - link "Actions" [ref=f3e117] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/actions
+            - listitem [ref=f3e121]:
+              - link "Projects" [ref=f3e122] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/projects
+            - listitem [ref=f3e126]:
+              - link "Security and quality" [ref=f3e127] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/security
+            - listitem [ref=f3e131]:
+              - link "Insights" [ref=f3e132] [cursor=pointer]:
+                - /url: /majdba123/Vitoria/pulse
+      - generic [ref=f3e140]:
+        - generic [ref=f3e143]:
+          - link "Deploy to Production" [ref=f3e146] [cursor=pointer]:
+            - /url: /majdba123/Vitoria/actions/workflows/deploy.yml
+          - generic [ref=f3e150]:
+            - generic [ref=f3e151]:
+              - img "currently running:" [ref=f3e156]
+              - 'heading "Deploy to Production #141" [level=1] [ref=f3e160]'
+            - link "Sign in to view logs" [ref=f3e164] [cursor=pointer]:
+              - /url: /login?return_to=https%3A%2F%2Fgithub.com%2Fmajdba123%2FVitoria%2Factions%2Fruns%2F31913132070
+        - generic [ref=f3e165]:
+          - navigation "Workflow run" [ref=f3e171]:
+            - list [ref=f3e172]:
+              - listitem [ref=f3e173]:
+                - link "Summary" [ref=f3e278] [cursor=pointer]:
+                  - /url: /majdba123/Vitoria/actions/runs/31913132070
+              - generic [ref=f3e177]:
+                - heading "All jobs" [level=4] [ref=f3e178]
+                - button "Filter by job status" [ref=f3e179] [cursor=pointer]
+              - listitem [ref=f3e182]
+              - listitem [ref=f3e260]:
+                - list [ref=f3e261]:
+                  - listitem [ref=f3e281]:
+                    - link "Deploy to Server" [ref=f3e282] [cursor=pointer]:
+                      - /url: /majdba123/Vitoria/actions/runs/31913132070/job/95081071115
+                      - generic:
+                        - generic:
+                          - img "Currently running"
+              - listitem [ref=f3e183]
+              - listitem [ref=f3e184]:
+                - heading "Run details" [level=3] [ref=f3e186]
+                - list "Run details" [ref=f3e187]:
+                  - listitem [ref=f3e188]:
+                    - link "Usage" [ref=f3e285] [cursor=pointer]:
+                      - /url: /majdba123/Vitoria/actions/runs/31913132070/usage
+                  - listitem [ref=f3e192]:
+                    - link "Workflow file" [ref=f3e288] [cursor=pointer]:
+                      - /url: /majdba123/Vitoria/actions/runs/31913132070/workflow
+          - generic [ref=f3e197]:
+            - region "Workflow run summary" [ref=f3e198]:
+              - generic [ref=f3e199]:
+                - generic [ref=f3e200]:
+                  - generic [ref=f3e201]: Triggered via workflow run August 15, 2026 22:492 minutes ago
+                  - generic [ref=f3e202]:
+                    - link [ref=f3e203] [cursor=pointer]:
+                      - /url: /YusufJojeh
+                      - img "@YusufJojeh" [ref=f3e204]
+                      - text: YusufJojeh
+                    - generic [ref=f3e205]:
+                      - generic [ref=f3e206]: completed
+                      - text: ⁠
+                      - link "8699e5e" [ref=f3e207] [cursor=pointer]:
+                        - /url: /majdba123/Vitoria/commit/8699e5e12b1082674474b8a3c8cfbeb334c945b4
+                - generic [ref=f3e210]:
+                  - generic [ref=f3e211]: Status
+                  - text: In progress
+                - generic [ref=f3e212]:
+                  - generic [ref=f3e213]: Total duration
+                  - link "–" [ref=f3e214] [cursor=pointer]:
+                    - /url: /majdba123/Vitoria/actions/runs/31913132070/usage
+                - generic [ref=f3e215]:
+                  - generic [ref=f3e216]: Artifacts
+                  - text: –
+            - region "Workflow run graph" [ref=f3e217]:
+              - generic [ref=f3e219]:
+                - generic [ref=f3e221]:
+                  - heading [level=2] [ref=f3e222]:
+                    - link "deploy.yml" [ref=f3e223] [cursor=pointer]:
+                      - /url: /majdba123/Vitoria/actions/runs/31913132070/workflow
+                  - generic [ref=f3e224]: "on: workflow_run"
+                - generic [ref=f3e226]:
+                  - 'link "currently running: Deploy to Server 2m 1s" [ref=f3e291] [cursor=pointer]':
+                    - /url: /majdba123/Vitoria/actions/runs/31913132070/job/95081071115
+                    - generic [ref=f3e233]:
+                      - img "currently running:" [ref=f3e236]
+                      - generic [ref=f3e240]: Deploy to Server
+                      - generic "Aug 16, 2026, 1:49 AM GMT+3" [ref=f3e243]: 2m 1s
+                  - generic [ref=f3e244]:
+                    - paragraph [ref=f3e245]: Oh hello! Nice to see you.
+                    - paragraph [ref=f3e246]:
+                      - text: Made with ❤️ by
+                      - link [ref=f3e247] [cursor=pointer]:
+                        - /url: https://actions.github.io/humans.txt
+                        - text: humans.txt
+                - generic [ref=f3e248]:
+                  - button "Fit to window" [disabled] [ref=f3e249]
+                  - generic [ref=f3e250]:
+                    - button "Zoom out" [disabled] [ref=f3e252]
+                    - button "Zoom in" [disabled] [ref=f3e254]
+            - region "Annotations"

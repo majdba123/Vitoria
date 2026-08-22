@@ -1,0 +1,109 @@
+- generic [ref=f5e2]:
+  - banner [ref=f5e3]:
+    - navigation "Menu" [ref=f5e4]:
+      - link [ref=f5e5] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/
+        - img "Vetora" [ref=f5e6]
+      - generic [ref=f5e7]:
+        - button "Categories" [ref=f5e9]
+        - link "Products" [ref=f5e17] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/products
+        - link "FAQ" [ref=f5e18] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/faq
+      - search [ref=f5e19]:
+        - searchbox "Search products" [ref=f5e20]
+      - generic [ref=f5e21]:
+        - generic [ref=f5e22]:
+          - button "Choose language" [ref=f5e23]
+          - button "Toggle light or dark theme" [ref=f5e24]
+        - button "Cart" [ref=f5e25]
+        - generic [ref=f5e29]:
+          - link "Sign In" [ref=f5e30] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/login
+          - link "Register" [ref=f5e31] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/register
+  - main [ref=f5e32]:
+    - generic [ref=f5e34]:
+      - generic [ref=f5e35]:
+        - paragraph [ref=f5e36]: Vetora access
+        - heading "A refined workspace for every buyer, seller, and partner." [level=1] [ref=f5e37]
+        - paragraph [ref=f5e38]: Sign in to move from discovery into action with a smoother storefront, cleaner dashboards, and a single product language across the platform.
+        - generic [ref=f5e39]:
+          - generic [ref=f5e40]:
+            - term [ref=f5e41]: Customers
+            - definition [ref=f5e42]: Track favourites, orders, and saved preferences from one calm interface.
+          - generic [ref=f5e43]:
+            - term [ref=f5e44]: Vendors
+            - definition [ref=f5e45]: Manage listings, pricing, and store operations with clarity.
+          - generic [ref=f5e46]:
+            - term [ref=f5e47]: Syndicates
+            - definition [ref=f5e48]: Monitor network performance and category health in real time.
+      - generic [ref=f5e49]:
+        - generic [ref=f5e50]:
+          - generic [ref=f5e51]: Secure sign in
+          - heading "Welcome back" [level=2] [ref=f5e52]
+          - paragraph [ref=f5e53]: Sign in to your account
+        - generic [ref=f5e55]:
+          - generic [ref=f5e56]:
+            - generic [ref=f5e57]:
+              - text: Phone Number
+              - generic [ref=f5e58]: "*"
+            - textbox "Phone Number *" [ref=f5e59]:
+              - /placeholder: 09XXXXXXXX
+              - text: "0935027218"
+          - generic [ref=f5e60]:
+            - generic [ref=f5e61]:
+              - text: Password
+              - generic [ref=f5e62]: "*"
+            - generic [ref=f5e63]:
+              - textbox "Password *" [ref=f5e64]:
+                - /placeholder: Enter your password
+                - text: password
+              - button "Show password" [ref=f5e65]
+          - button "Sign In" [ref=f5e69]
+        - generic [ref=f5e70]:
+          - paragraph [ref=f5e71]: Don't have an account?
+          - link "Create one" [ref=f5e72] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/register
+  - contentinfo [ref=f5e73]:
+    - generic [ref=f5e75]:
+      - generic [ref=f5e76]:
+        - generic [ref=f5e77]:
+          - link [ref=f5e78] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/
+            - img "Vetora" [ref=f5e79]
+          - paragraph [ref=f5e80]: Your trusted online marketplace.
+        - generic [ref=f5e81]:
+          - heading "Shop" [level=2] [ref=f5e82]
+          - list [ref=f5e83]:
+            - listitem [ref=f5e84]:
+              - link "Categories" [ref=f5e85] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/categories
+            - listitem [ref=f5e86]:
+              - link "All Products" [ref=f5e87] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/products
+            - listitem [ref=f5e88]:
+              - link "FAQ" [ref=f5e89] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/faq
+        - generic [ref=f5e90]:
+          - heading "Account" [level=2] [ref=f5e91]
+          - list [ref=f5e92]:
+            - listitem [ref=f5e93]:
+              - link "Sign In" [ref=f5e94] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+            - listitem [ref=f5e95]:
+              - link "Create Account" [ref=f5e96] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/register
+        - generic [ref=f5e97]:
+          - heading "Contact" [level=2] [ref=f5e98]
+          - list [ref=f5e99]:
+            - listitem [ref=f5e100]:
+              - link "Contact Us" [ref=f5e101] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000#contact
+      - generic [ref=f5e102]:
+        - paragraph [ref=f5e103]: © 2026 Vetora. All rights reserved.
+        - generic [ref=f5e104]:
+          - link "Privacy Policy" [ref=f5e105] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/privacy-policy
+          - link "Terms of Service" [ref=f5e106] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/terms-of-service
