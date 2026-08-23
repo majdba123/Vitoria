@@ -1,7 +1,8 @@
 import { RefreshCw } from 'lucide-react';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Skeleton } from '@/Components/ui/skeleton';
-import { useI18n } from '@/hooks/use-i18n';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { formatNumber } from '@/lib/date-time';
 
 /**
  * .stat-tile equivalent: label + big number + icon, with the same
@@ -9,6 +10,8 @@ import { useI18n } from '@/hooks/use-i18n';
  */
 export function StatCard({ label, value, icon: Icon, status = 'ready', onRetry, tone }) {
     const { common } = useI18n();
+    const locale = useLocale();
+    const displayValue = typeof value === 'number' ? formatNumber(value, locale) : value;
 
     const toneClass = tone === 'danger' ? 'text-[var(--color-danger-strong)]' : tone === 'success' ? 'text-[var(--color-success-strong)]' : 'text-foreground';
 
@@ -24,7 +27,7 @@ export function StatCard({ label, value, icon: Icon, status = 'ready', onRetry, 
                             {common.refresh ?? 'Retry'}
                         </button>
                     )}
-                    {status === 'ready' && <p className={`mt-2 text-2xl font-bold tabular-nums ${toneClass}`}><bdi>{value}</bdi></p>}
+                    {status === 'ready' && <p className={`mt-2 text-2xl font-bold tabular-nums ${toneClass}`}><bdi>{displayValue}</bdi></p>}
                 </div>
                 <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground">
                     <Icon className="size-5" strokeWidth={1.5} />

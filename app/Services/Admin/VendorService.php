@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\Models\User;
 use App\Models\Vendor;
+use App\Models\VendorLedgerEntry;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +12,13 @@ use Illuminate\Support\Facades\Storage;
 
 class VendorService
 {
+    public function hasProtectedHistory(Vendor $vendor): bool
+    {
+        return $vendor->orders()->exists()
+            || $vendor->user->orders()->exists()
+            || VendorLedgerEntry::query()->where('vendor_id', $vendor->id)->exists();
+    }
+
     /**
      * Create a vendor along with its user account.
      *
@@ -144,10 +152,10 @@ class VendorService
     public function delete(Vendor $vendor): void
     {
         DB::transaction(function () use ($vendor) {
-            $vendorId = $vendor->id;
-            $vendor->user->tokens()->delete();
+            $user = $vendor->user;
+            $user->tokens()->delete();
             $vendor->delete();
-            $vendor->user->delete();
+            $user->delete();
 
             $this->flushVendorCache();
             $this->flushProductCache();

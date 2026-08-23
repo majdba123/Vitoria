@@ -8,7 +8,7 @@ import { Skeleton } from '@/Components/ui/skeleton';
 import { useI18n } from '@/hooks/use-i18n';
 import { VendorMap } from './VendorMap';
 
-const EMPTY_PAYLOAD = { vendors: [], unmapped: [], counts: { total: 0, mapped: 0, unmapped: 0 }, cities: [] };
+const EMPTY_PAYLOAD = { vendors: [], unmapped: [], counts: { total: 0, mapped: 0, unmapped: 0 }, cities: [], regions: [] };
 
 /**
  * The Map half of the Table/Map switch, shared by the Admin Vendors page and the
@@ -53,11 +53,18 @@ export function VendorMapPanel({ endpoint, filters = {}, cityId: controlledCityI
             unavailable: common.map_unavailable,
             products: common.map_products,
             edit: common.edit ?? 'Edit',
+            vendors: common.vendors ?? 'Vendors',
+            active: common.active ?? 'Active',
+            mapped: common.map_count_mapped ?? 'Mapped',
+            unmapped: common.map_count_unmapped ?? 'Unmapped',
+            agriculture: common.type_agriculture ?? 'Agriculture',
+            veterinary: common.type_veterinary ?? 'Veterinary',
+            both: common.both ?? 'Both',
         }),
         [common],
     );
 
-    const { vendors, unmapped, counts, cities } = payload;
+    const { vendors, unmapped, counts, cities, regions } = payload;
 
     if (status === 'error') {
         return (
@@ -114,7 +121,7 @@ export function VendorMapPanel({ endpoint, filters = {}, cityId: controlledCityI
                     <Skeleton className="h-[26rem] w-full" />
                 ) : (
                     <>
-                        <VendorMap vendors={vendors} labels={mapLabels} />
+                        <VendorMap regions={regions} labels={mapLabels} />
                         <ul className="sr-only">
                             {vendors.map((vendor) => (
                                 <li key={vendor.id}>{vendor.store_name}: {vendor.city_name}</li>

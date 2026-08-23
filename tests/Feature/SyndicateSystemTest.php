@@ -186,6 +186,23 @@ test('syndicate agents cannot access admin syndicate edit api', function () {
     ]);
 });
 
+test('syndicate role can use its allowed workspace but is blocked from admin only routes', function () {
+    $user = syndicateUser(Category::TYPE_AGRICULTURE);
+    $this->actingAs($user);
+
+    $this->get('/syndicate/dashboard')->assertOk();
+    $this->get('/syndicate/vendors')->assertOk();
+    $this->getJson('/api/syndicate/vendors')->assertOk();
+    $this->getJson('/api/syndicate/vendors/map')->assertOk();
+
+    $this->get('/admin/categories')->assertRedirect(route('login'));
+    $this->get('/admin/vendors')->assertRedirect(route('login'));
+    $this->getJson('/api/admin/categories')->assertForbidden();
+    $vendor = Vendor::factory()->create();
+    $this->deleteJson('/api/admin/vendors/'.$vendor->id)->assertForbidden();
+    $this->assertDatabaseHas('vendors', ['id' => $vendor->id]);
+});
+
 test('syndicate creation validates required type status and password confirmation', function () {
     syndicateAdmin();
 

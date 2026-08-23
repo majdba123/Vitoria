@@ -18,10 +18,12 @@ import {
 } from '@/Components/ui/select';
 import { Card, CardContent } from '@/Components/ui/card';
 import { useAdminList } from '@/hooks/use-admin-list';
-import { useI18n } from '@/hooks/use-i18n';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { formatDate, formatNumber } from '@/lib/date-time';
 
 export default function SyndicatesIndex() {
     const { admin, common } = useI18n();
+    const locale = useLocale();
     const [page, setPage] = useState(1);
     const [type, setType] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
@@ -86,14 +88,14 @@ export default function SyndicatesIndex() {
             label: admin.th_data,
             render: (row) => (
                 <div className="grid min-w-40 grid-cols-2 gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
-                    <span>{Number(row.categories_count || 0)} {admin.categories_count_suffix}</span>
-                    <span>{Number(row.vendors_count || 0)} {admin.vendors_count_suffix}</span>
-                    <span>{Number(row.products_count || 0)} {admin.products_count_suffix_short}</span>
-                    <span>{Number(row.orders_count || 0)} {admin.orders_count_suffix}</span>
+                    <span><bdi>{formatNumber(row.categories_count, locale)}</bdi> {admin.categories_count_suffix}</span>
+                    <span><bdi>{formatNumber(row.vendors_count, locale)}</bdi> {admin.vendors_count_suffix}</span>
+                    <span><bdi>{formatNumber(row.products_count, locale)}</bdi> {admin.products_count_suffix_short}</span>
+                    <span><bdi>{formatNumber(row.orders_count, locale)}</bdi> {admin.orders_count_suffix}</span>
                 </div>
             ),
         },
-        { key: 'created_at', label: admin.th_created_at, render: (row) => (row.created_at ? new Date(row.created_at).toLocaleDateString() : '—') },
+        { key: 'created_at', label: admin.th_created_at, render: (row) => formatDate(row.created_at, locale) || '—' },
         {
             key: 'actions',
             label: admin.th_actions,

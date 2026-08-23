@@ -188,6 +188,12 @@ class VendorController extends Controller
      */
     public function destroy(Vendor $vendor): JsonResponse
     {
+        if ($this->vendorService->hasProtectedHistory($vendor)) {
+            return response()->json([
+                'message' => __('This vendor cannot be deleted while financial or order history is attached. Deactivate it instead.'),
+            ], 422);
+        }
+
         $this->vendorService->delete($vendor);
 
         return response()->json([

@@ -176,11 +176,11 @@ function BannerStrip() {
             <div className="flex gap-3 overflow-x-auto pb-1" style={{ scrollSnapType: 'x mandatory' }}>
                 {banners.map((banner) => {
                     const title = locale === 'ar' ? (banner.title_ar || banner.title_en) : (banner.title_en || banner.title_ar);
-                    const image = <img src={`/storage/${banner.image_path}`} alt={title || ''} className="h-40 w-full rounded-lg object-cover sm:h-52" loading="lazy" />;
+                    const image = <img src={`/storage/${banner.image_path}`} alt={title || ''} className="aspect-[16/7] h-auto w-full rounded-lg bg-muted object-contain" loading="lazy" />;
                     return banner.link_url ? (
-                        <a key={banner.id} href={banner.link_url} className="block shrink-0" style={{ scrollSnapAlign: 'start', width: 'min(90vw, 32rem)' }}>{image}</a>
+                        <a key={banner.id} href={banner.link_url} className="block w-[88vw] shrink-0 sm:w-[32rem]" style={{ scrollSnapAlign: 'start' }}>{image}</a>
                     ) : (
-                        <div key={banner.id} className="shrink-0" style={{ scrollSnapAlign: 'start', width: 'min(90vw, 32rem)' }}>{image}</div>
+                        <div key={banner.id} className="w-[88vw] shrink-0 sm:w-[32rem]" style={{ scrollSnapAlign: 'start' }}>{image}</div>
                     );
                 })}
             </div>
@@ -604,10 +604,7 @@ export default function Home({ selectedType }) {
                     </section>
 
                     <section className="storefront-section border-t border-border/60 bg-muted/20">
-                        <div className="page-shell py-0 text-center">
-                            <span className="eyebrow justify-center">{home.partners_kicker}</span>
-                            <h2 className="section-title mt-3">{home.partners_title}</h2>
-                            <p className="section-copy mx-auto mt-3 max-w-2xl">{home.partners_subtitle}</p>
+                        <div className="page-shell py-0" aria-label={home.partners_title}>
                             <PartnerLogoMarquee locale={locale} reducedMotion={reducedMotion} />
                         </div>
                     </section>

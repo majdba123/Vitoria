@@ -4,6 +4,7 @@ namespace App\Services\Vendor;
 
 use App\Models\City;
 use App\Models\Vendor;
+use App\Support\SyriaGovernorates;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -19,7 +20,7 @@ class VendorMapService
      *
      * @param  Closure(): Builder  $scope
      * @param  array{city_id?: int|null, business_type?: string|null, status?: string|null}  $filters
-     * @return array{vendors: list<array<string, mixed>>, unmapped: list<array<string, mixed>>, counts: array<string, int>, cities: list<array{id: int, name: string}>}
+     * @return array{vendors: list<array<string, mixed>>, unmapped: list<array<string, mixed>>, counts: array<string, int>, cities: list<array{id: int, name: string}>, regions: list<array<string, mixed>>}
      */
     public function payload(Closure $scope, array $filters, bool $withAdminActions): array
     {
@@ -42,7 +43,36 @@ class VendorMapService
                 'unmapped' => $unmapped->count(),
             ],
             'cities' => $this->cities($scope()),
+            'regions' => $this->regions($vendors),
         ];
+    }
+
+    /**
+     * @param  \Illuminate\Support\Collection<int, Vendor>  $vendors
+     * @return list<array<string, mixed>>
+     */
+    protected function regions(\Illuminate\Support\Collection $vendors): array
+    {
+        $grouped = $vendors->groupBy(fn (Vendor $vendor): ?string => SyriaGovernorates::keyForCity($vendor->city?->name));
+
+        return collect(SyriaGovernorates::ALL)->map(function (array $region) use ($grouped): array {
+            $regionVendors = $grouped->get($region['key'], collect());
+
+            return [
+                'key' => $region['key'],
+                'name_en' => $region['name_en'],
+                'name_ar' => $region['name_ar'],
+                'vendor_count' => $regionVendors->count(),
+                'active_count' => $regionVendors->where('is_active', true)->count(),
+                'mapped_count' => $regionVendors->filter(fn (Vendor $vendor): bool => $vendor->latitude !== null && $vendor->longitude !== null)->count(),
+                'unmapped_count' => $regionVendors->filter(fn (Vendor $vendor): bool => $vendor->latitude === null || $vendor->longitude === null)->count(),
+                'business_types' => [
+                    Vendor::BUSINESS_TYPE_AGRICULTURE => $regionVendors->where('business_type', Vendor::BUSINESS_TYPE_AGRICULTURE)->count(),
+                    Vendor::BUSINESS_TYPE_VETERINARY => $regionVendors->where('business_type', Vendor::BUSINESS_TYPE_VETERINARY)->count(),
+                    Vendor::BUSINESS_TYPE_BOTH => $regionVendors->where('business_type', Vendor::BUSINESS_TYPE_BOTH)->count(),
+                ],
+            ];
+        })->all();
     }
 
     /**

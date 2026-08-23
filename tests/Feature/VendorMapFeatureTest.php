@@ -116,6 +116,18 @@ test('the admin map returns real mapped vendors, unmapped vendors, counts and ci
         ->assertJsonPath('data.vendors.0.id', $mapped->id)
         ->assertJsonPath('data.unmapped.0.id', $unassigned->id);
 
+    $homs = collect($response->json('data.regions'))->firstWhere('key', 'homs');
+    expect($homs)
+        ->toMatchArray([
+            'name_en' => 'Homs',
+            'name_ar' => 'حمص',
+            'vendor_count' => 1,
+            'active_count' => 1,
+            'mapped_count' => 1,
+            'unmapped_count' => 0,
+        ])
+        ->and($homs)->not->toHaveKeys(['email', 'phone_number', 'national_id', 'latitude', 'longitude']);
+
     $payload = $response->json('data');
 
     expect($payload['vendors'])->toHaveCount(1)

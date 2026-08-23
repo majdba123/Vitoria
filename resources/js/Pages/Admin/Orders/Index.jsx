@@ -14,11 +14,14 @@ import {
 } from '@/Components/ui/select';
 import { Card, CardContent } from '@/Components/ui/card';
 import { useAdminList } from '@/hooks/use-admin-list';
+import { useLocale } from '@/hooks/use-i18n';
+import { formatCurrency, formatDate, formatNumber } from '@/lib/date-time';
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'preparing', 'shipped', 'out_for_delivery', 'completed', 'cancelled'];
 const STATUS_TONE = { pending: 'warning', confirmed: 'success', preparing: 'success', shipped: 'brand', out_for_delivery: 'brand', completed: 'brand', cancelled: 'danger' };
 
 export default function OrdersIndex() {
+    const locale = useLocale();
     const initialParams = new URLSearchParams(window.location.search);
     const [page, setPage] = useState(1);
     const [product, setProduct] = useState('');
@@ -52,7 +55,7 @@ export default function OrdersIndex() {
             render: (row) => (
                 <div>
                     <p className="font-semibold text-foreground">{row.order_number || `Order #${row.id}`}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{row.created_at ? new Date(row.created_at).toLocaleDateString() : '—'}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground" dir="auto">{formatDate(row.created_at, locale) || '—'}</p>
                 </div>
             ),
         },
@@ -66,8 +69,8 @@ export default function OrdersIndex() {
                 </div>
             ),
         },
-        { key: 'items', label: 'Items', align: 'end', render: (row) => row.items_count ?? (row.items || []).length },
-        { key: 'total', label: 'Total', align: 'end', render: (row) => <span className="font-semibold text-foreground">{Number.parseFloat(row.total_amount || 0).toLocaleString()} SYP</span> },
+        { key: 'items', label: 'Items', align: 'end', render: (row) => formatNumber(row.items_count ?? (row.items || []).length, locale) },
+        { key: 'total', label: 'Total', align: 'end', render: (row) => <span className="font-semibold text-foreground" dir="auto">{formatCurrency(row.total_amount, locale)}</span> },
         {
             key: 'status',
             label: 'Status',

@@ -36,6 +36,7 @@ export default function VendorsIndex() {
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [flash, setFlash] = useState(null);
+    const [deleteError, setDeleteError] = useState(null);
 
     const { status: loadStatus, rows, meta, errorMessage, reload } = useAdminList('/api/admin/vendors', {
         page,
@@ -72,12 +73,17 @@ export default function VendorsIndex() {
 
     const confirmDelete = () => {
         if (!deleteTarget) return;
+        setDeleteError(null);
         setIsDeleting(true);
-        window.axios.delete(`/api/admin/vendors/${deleteTarget.id}`, { silent: true }).then(() => {
+        window.axios.delete(`/api/admin/vendors/${deleteTarget.id}`, { silent: true }).then((response) => {
             setIsDeleting(false);
             setDeleteTarget(null);
+            showFlash(response.data?.message ?? admin.vendor_deleted_successfully ?? 'Vendor deleted successfully.');
             reload();
-        }).catch(() => setIsDeleting(false));
+        }).catch((error) => {
+            setIsDeleting(false);
+            setDeleteError(error.response?.data?.message ?? common.error ?? 'Unable to delete vendor.');
+        });
     };
 
     const columns = [
@@ -132,7 +138,7 @@ export default function VendorsIndex() {
                     <Button asChild variant="outline" size="sm">
                         <Link href={route('admin.vendors.edit', row.id)}>{common.edit ?? 'Edit'}</Link>
                     </Button>
-                    <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => setDeleteTarget(row)}>
+                    <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => { setDeleteError(null); setDeleteTarget(row); }}>
                         {common.delete ?? 'Delete'}
                     </Button>
                 </div>
@@ -202,12 +208,13 @@ export default function VendorsIndex() {
 
             <DeleteConfirmDialog
                 open={!!deleteTarget}
-                onOpenChange={(open) => !open && setDeleteTarget(null)}
+                onOpenChange={(open) => { if (!open) { setDeleteTarget(null); setDeleteError(null); } }}
                 title={admin.delete_vendor_title}
                 description={admin.delete_vendor_warning}
                 isDeleting={isDeleting}
                 onConfirm={confirmDelete}
             />
+            {deleteError && <p role="alert" className="rounded-md border border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-danger-strong)]">{deleteError}</p>}
         </AdminLayout>
     );
 }

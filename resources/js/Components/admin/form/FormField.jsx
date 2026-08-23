@@ -29,6 +29,7 @@ function FieldShell({ id, label, required, error, hint, descriptionId, children 
 
 export function TextField({ id, label, required, error, hint, className, type, ...props }) {
     const locale = useLocale();
+    const isDateControl = ['date', 'time', 'datetime-local'].includes(type);
     const dateHint = type === 'date' ? (locale === 'ar' ? 'يوم / شهر / سنة' : 'Day / Month / Year') : undefined;
     const effectiveHint = hint ?? dateHint;
     const descriptionId = (error || effectiveHint) ? `${id}-description` : undefined;
@@ -99,7 +100,7 @@ export function TextField({ id, label, required, error, hint, className, type, .
 
     return (
         <FieldShell id={id} label={label} required={required} error={error} hint={effectiveHint} descriptionId={descriptionId}>
-            <Input id={id} name={id} type={type} lang={type === 'date' ? locale : undefined} dir={type === 'date' ? (locale === 'ar' ? 'rtl' : 'ltr') : undefined} aria-invalid={!!error} aria-describedby={descriptionId} className={cn(error && 'border-[var(--color-danger-500)]', className)} {...props} />
+            <Input id={id} name={id} type={type} lang={isDateControl ? locale : undefined} dir={isDateControl ? 'ltr' : props.dir} aria-invalid={!!error} aria-describedby={descriptionId} className={cn(isDateControl && 'text-left [unicode-bidi:plaintext]', error && 'border-[var(--color-danger-500)]', className)} {...props} />
         </FieldShell>
     );
 }

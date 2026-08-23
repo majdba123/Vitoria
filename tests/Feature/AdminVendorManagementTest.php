@@ -418,3 +418,53 @@ test('admin cannot delete a user who still has review history', function () {
     $this->assertDatabaseHas('users', ['id' => $user->id]);
     $this->assertDatabaseHas('product_reviews', ['id' => $review->id]);
 });
+
+test('admin can update a vendor with multipart category ids', function () {
+    actingAsAdmin();
+    $city = City::query()->create(['name' => 'Hama']);
+    $category = Category::query()->create([
+        'name' => 'Multipart Agriculture',
+        'type' => Category::TYPE_AGRICULTURE,
+    ]);
+    $vendor = Vendor::factory()->create([
+        'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
+        'city_id' => $city->id,
+    ]);
+
+    $this->post('/api/admin/vendors/'.$vendor->id, [
+        '_method' => 'put',
+        'store_name' => 'Updated multipart store',
+        'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
+        'city_id' => $city->id,
+        'category_ids' => [$category->id],
+    ])->assertOk()->assertJsonPath('data.store_name', 'Updated multipart store');
+
+    expect($vendor->fresh()->categories()->pluck('categories.id')->all())->toBe([$category->id]);
+});
+
+test('admin can delete a vendor and its linked user when no protected history exists', function () {
+    actingAsAdmin();
+    $vendor = Vendor::factory()->create();
+    $userId = $vendor->user_id;
+
+    $this->deleteJson('/api/admin/vendors/'.$vendor->id)
+        ->assertOk()
+        ->assertJsonPath('message', __('Vendor deleted successfully.'));
+
+    $this->assertDatabaseMissing('vendors', ['id' => $vendor->id]);
+    $this->assertDatabaseMissing('users', ['id' => $userId]);
+});
+
+test('vendor deletion preserves protected financial history and returns a useful error', function () {
+    actingAsAdmin();
+    $vendor = Vendor::factory()->create();
+    $order = Order::factory()->for($vendor)->create();
+
+    $this->deleteJson('/api/admin/vendors/'.$vendor->id)
+        ->assertUnprocessable()
+        ->assertJsonPath('message', __('This vendor cannot be deleted while financial or order history is attached. Deactivate it instead.'));
+
+    $this->assertDatabaseHas('vendors', ['id' => $vendor->id]);
+    $this->assertDatabaseHas('users', ['id' => $vendor->user_id]);
+    $this->assertDatabaseHas('orders', ['id' => $order->id]);
+});

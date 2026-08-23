@@ -17,6 +17,7 @@ import {
 } from '@/Components/ui/dialog';
 import { useAdminList } from '@/hooks/use-admin-list';
 import { useAdminForm } from '@/hooks/use-admin-form';
+import { useI18n } from '@/hooks/use-i18n';
 
 const emptyForm = { title_en: '', title_ar: '', link_url: '', sort_order: '0', is_active: true, starts_at: '', ends_at: '', image: null };
 
@@ -30,6 +31,7 @@ function toDateInput(value) {
 }
 
 export default function BannersIndex() {
+    const { admin, common } = useI18n();
     const { status, rows, errorMessage, reload } = useAdminList('/api/admin/banners');
     const { submit, errors, generalError, isSubmitting } = useAdminForm();
     const [modalOpen, setModalOpen] = useState(false);
@@ -131,34 +133,34 @@ export default function BannersIndex() {
     ];
 
     return (
-        <AdminLayout title="Banners">
+        <AdminLayout title={admin.banners}>
             <PageHeader
-                title="Banners"
-                copy="Manage homepage banners and their visibility window."
+                title={admin.banners}
+                copy={admin.banners_copy}
                 actions={
                     <Button size="sm" onClick={openCreate}>
                         <Plus className="size-4" />
-                        Add Banner
+                        {admin.add_banner}
                     </Button>
                 }
             />
 
             {flash && <p className="rounded-md border border-[var(--color-success-200)] bg-[var(--color-success-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-success-strong)]">{flash}</p>}
 
-            <DataTable columns={columns} rows={rows} status={status} errorMessage={errorMessage} onRetry={reload} emptyTitle="No banners found." />
+            <DataTable columns={columns} rows={rows} status={status} errorMessage={errorMessage} onRetry={reload} emptyTitle={admin.no_banners_found} />
 
             <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-                <DialogContent>
+                <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle>{editingId ? 'Edit Banner' : 'Create Banner'}</DialogTitle>
+                        <DialogTitle>{editingId ? admin.edit_banner : admin.create_banner}</DialogTitle>
                     </DialogHeader>
 
                     {generalError && <p className="rounded-md border border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-danger-strong)]">{generalError}</p>}
 
-                    <form onSubmit={handleSubmit} id="banner-form" className="space-y-4">
+                    <form onSubmit={handleSubmit} id="banner-form" className="min-w-0 space-y-4">
                         <FileField
                             id="image"
-                            label={editingId ? 'Image' : 'Image (required)'}
+                            label={editingId ? admin.banner_image : admin.banner_image_required}
                             preview={preview}
                             onChange={(e) => {
                                 const file = e.target.files?.[0] ?? null;
@@ -168,26 +170,26 @@ export default function BannersIndex() {
                             error={errors.image}
                         />
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <TextField id="title_en" label="Title (EN)" value={form.title_en} onChange={(e) => set('title_en')(e.target.value)} error={errors.title_en} />
-                            <TextField id="title_ar" label="Title (AR)" dir="rtl" value={form.title_ar} onChange={(e) => set('title_ar')(e.target.value)} error={errors.title_ar} />
+                            <TextField id="title_en" label={admin.banner_title_en} dir="ltr" value={form.title_en} onChange={(e) => set('title_en')(e.target.value)} error={errors.title_en} />
+                            <TextField id="title_ar" label={admin.banner_title_ar} dir="rtl" value={form.title_ar} onChange={(e) => set('title_ar')(e.target.value)} error={errors.title_ar} />
                         </div>
-                        <TextField id="link_url" label="Link URL" type="url" placeholder="https://..." value={form.link_url} onChange={(e) => set('link_url')(e.target.value)} error={errors.link_url} />
+                        <TextField id="link_url" label={admin.banner_link_url} type="url" dir="ltr" placeholder="https://..." value={form.link_url} onChange={(e) => set('link_url')(e.target.value)} error={errors.link_url} />
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <TextField id="sort_order" label="Sort order" type="number" min="0" value={form.sort_order} onChange={(e) => set('sort_order')(e.target.value)} error={errors.sort_order} />
+                            <TextField id="sort_order" label={admin.banner_sort_order} type="number" min="0" value={form.sort_order} onChange={(e) => set('sort_order')(e.target.value)} error={errors.sort_order} />
                             <div className="flex items-end gap-3">
-                                <label className="text-sm font-medium">Active</label>
+                                <label className="text-sm font-medium">{admin.banner_active}</label>
                                 <Switch checked={form.is_active} onCheckedChange={set('is_active')} />
                             </div>
-                            <TextField id="starts_at" label="Starts at" type="datetime-local" step="60" value={form.starts_at} onChange={(e) => set('starts_at')(e.target.value)} error={errors.starts_at} />
-                            <TextField id="ends_at" label="Ends at" type="datetime-local" step="60" value={form.ends_at} onChange={(e) => set('ends_at')(e.target.value)} error={errors.ends_at} />
+                            <TextField id="starts_at" label={admin.banner_starts_at} type="datetime-local" step="60" value={form.starts_at} onChange={(e) => set('starts_at')(e.target.value)} error={errors.starts_at} />
+                            <TextField id="ends_at" label={admin.banner_ends_at} type="datetime-local" step="60" value={form.ends_at} onChange={(e) => set('ends_at')(e.target.value)} error={errors.ends_at} />
                         </div>
                     </form>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>Cancel</Button>
+                        <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>{common.cancel ?? 'Cancel'}</Button>
                         <Button type="submit" form="banner-form" disabled={isSubmitting}>
                             {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-                            Save Banner
+                            {admin.save_banner}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -196,8 +198,8 @@ export default function BannersIndex() {
             <DeleteConfirmDialog
                 open={!!deleteTarget}
                 onOpenChange={(open) => !open && setDeleteTarget(null)}
-                title="Delete banner"
-                description="This will permanently delete this banner."
+                title={admin.delete_banner}
+                description={admin.delete_banner_warning}
                 isDeleting={isDeleting}
                 onConfirm={confirmDelete}
             />

@@ -28,6 +28,45 @@ test('homepage renders successfully for the mobile navigation to mount on', func
         ->assertInertia(fn (Assert $page) => $page->component('Home'));
 });
 
+test('multipart admin forms preserve array field semantics', function () {
+    $source = file_get_contents(resource_path('js/hooks/use-admin-form.js'));
+
+    expect($source)
+        ->toContain('Array.isArray(value)')
+        ->toContain('formData.append(`${key}[]`, item)');
+});
+
+test('vendor map is a local focusable svg rather than a third party tile map', function () {
+    $source = file_get_contents(resource_path('js/Components/maps/VendorMap.jsx'));
+
+    expect($source)
+        ->toContain('<svg viewBox=')
+        ->toContain('tabIndex="0"')
+        ->not->toContain('TILE_URL')
+        ->not->toContain('loadLeaflet');
+});
+
+test('locale formatters use one explicit western-digit locale for Arabic screens', function () {
+    $source = file_get_contents(resource_path('js/lib/date-time.js'));
+
+    expect($source)
+        ->toContain('ar-SY-u-nu-latn')
+        ->toContain('Intl.DateTimeFormat')
+        ->toContain('Intl.NumberFormat');
+});
+
+test('homepage partner presentation is logos only and banners preserve their image ratio', function () {
+    $source = file_get_contents(resource_path('js/Pages/Home.jsx'));
+    $partners = substr($source, strpos($source, '<section className="storefront-section border-t'));
+
+    expect($partners)
+        ->toContain('<PartnerLogoMarquee')
+        ->not->toContain('home.partners_kicker')
+        ->not->toContain('home.partners_subtitle')
+        ->and($source)->toContain('aspect-[16/7]')
+        ->and($source)->toContain('object-contain');
+});
+
 test('public storefront keeps localized footer copy and semantic category fallbacks', function () {
     app()->setLocale('ar');
     $arabicTagline = __('home.tagline');

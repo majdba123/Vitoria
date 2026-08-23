@@ -30,6 +30,10 @@ export function useAdminForm() {
             const formData = new FormData();
             Object.entries(payload).forEach(([key, value]) => {
                 if (value === null || value === undefined) return;
+                if (Array.isArray(value)) {
+                    value.forEach((item) => formData.append(`${key}[]`, item));
+                    return;
+                }
                 formData.append(key, value);
             });
             body = formData;
