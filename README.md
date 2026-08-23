@@ -1,59 +1,134 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Vitoria
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[English](README.md) | [العربية](README_AR.md)
 
-## About Laravel
+> Multi-role agriculture and veterinary commerce platform for product discovery, vendor operations, ordering, syndicate oversight, logistics, analytics, and customer workflows.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Vitoria is a full-stack business platform built around agriculture and veterinary commerce workflows. It connects customers with vendors while also providing operational surfaces for administrators, employees, and syndicate-oriented roles.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+The application goes beyond a simple online store. Its backend exposes dedicated APIs for public browsing, authenticated customer operations, vendor workflows, employee workflows, syndicate dashboards, and administrative management.
 
-## Learning Laravel
+## Core Capabilities
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- Product catalog and product comparison
+- Agriculture and veterinary product discovery
+- Vendor profiles and vendor operations
+- Shopping cart and coupon workflows
+- Checkout and order management
+- Order cancellation and return requests
+- Invoice access
+- Saved favourites and product reviews
+- User addresses and shipping-method workflows
+- Notifications and notification preferences
+- Contact and customer-service flows
+- Syndicate dashboards, vendor maps, reports, and analytics
+- Vendor product, order, and return analytics
+- AI-oriented product endpoints for agriculture and veterinary products
+- Real-time communication support through Laravel Reverb / Echo
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Roles & Operational Surfaces
 
-## Laravel Sponsors
+The repository contains separate route groups for different areas of the system, including:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- Public / customer-facing APIs
+- Authenticated user workflows
+- Vendor APIs
+- Syndicate APIs
+- Employee APIs
+- Administrative APIs
 
-### Premium Partners
+This separation reflects a multi-role operational platform rather than a single storefront.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Architecture
 
-## Contributing
+```text
+React 19 + Inertia.js Frontend
+            │
+            ▼
+      Laravel 12
+ REST APIs + Web Routes
+            │
+   ┌────────┼─────────┐
+   │        │         │
+Customers Vendors Syndicates/Admin
+   │        │         │
+   └────────┼─────────┘
+            ▼
+ Eloquent / Database Layer
+            │
+      Redis / Reverb
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Technology Stack
 
-## Code of Conduct
+| Area | Technologies |
+| --- | --- |
+| Backend | PHP 8.2+, Laravel 12 |
+| Authentication | Laravel Sanctum |
+| Frontend | React 19, Inertia.js |
+| UI / Build | Tailwind CSS 4, Vite 7 |
+| Real-time | Laravel Reverb, Laravel Echo, Pusher JS |
+| Cache / Data Infrastructure | Redis via Predis |
+| Maps | Leaflet |
+| Tables / Dashboards | TanStack Table, Recharts |
+| Validation | Zod |
+| Testing | Pest / Laravel testing stack |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## API Structure
 
-## Security Vulnerabilities
+The application separates API responsibilities across multiple route files:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```text
+routes/
+├── api.php             # public and authenticated customer workflows
+├── api_admin.php       # administration APIs
+├── api_vendor.php      # vendor operations
+├── api_syndicate.php   # syndicate dashboards and analytics
+├── api_employee.php    # employee workflows
+└── web.php             # web / Inertia application routes
+```
 
-## License
+Examples of currently represented API capabilities include product browsing and comparison, cart management, checkout, orders, returns, invoices, vendor browsing, syndicate analytics, favourites, reviews, notifications, and AI product discovery.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Real-time & Performance
+
+The repository includes Laravel Reverb and Laravel Echo for real-time application capabilities. Redis support is available through Predis, and the application defines throttling and response-caching behavior for selected API areas.
+
+See [Redis Setup](REDIS_SETUP.md) for the repository's Redis-specific notes.
+
+## Development
+
+The project provides Composer scripts for local setup, development, and testing.
+
+Typical setup starts with:
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+npm install
+```
+
+Database, Redis, mail, broadcasting, and other environment-specific services should be configured through `.env` before running the application.
+
+Development tooling can then be started using the repository's Composer / npm scripts.
+
+> Runtime success is not implied by this documentation. Dependencies, migrations, tests, and builds should be validated in the target environment before deployment.
+
+## Repository Notes
+
+This README documents capabilities that are directly represented in the current repository. It intentionally avoids claims about production scale, customer counts, transaction volume, uptime, or external certifications that are not proven by the source code.
+
+## API Testing
+
+A Postman collection is included in the repository for API exploration and testing:
+
+`SyriaZone.postman_collection.json`
+
+The historical collection filename is preserved to avoid breaking existing developer workflows.
+
+---
+
+Vitoria combines commerce, operational management, vendor tooling, and sector-specific agriculture/veterinary workflows in one multi-role platform.
