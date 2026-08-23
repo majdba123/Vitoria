@@ -41,6 +41,7 @@ test('vendor map is a local focusable svg rather than a third party tile map', f
 
     expect($source)
         ->toContain('<svg viewBox=')
+        ->toContain('/images/syria-governorates-map.jpg')
         ->toContain('tabIndex="0"')
         ->not->toContain('TILE_URL')
         ->not->toContain('loadLeaflet');

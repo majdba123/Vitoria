@@ -2,20 +2,20 @@ import { useMemo, useRef, useState } from 'react';
 import { useLocale } from '@/hooks/use-i18n';
 
 const REGION_SHAPES = {
-    aleppo: '165,82 292,48 350,76 340,170 280,205 170,178 125,120',
-    idlib: '105,128 165,82 170,178 126,220 72,190',
-    latakia: '58,188 105,128 126,220 102,278 54,270 35,230',
-    tartus: '54,270 102,278 128,345 82,390 42,356',
-    hama: '126,220 170,178 280,205 304,275 214,306 128,345 102,278',
-    homs: '128,345 214,306 304,275 380,332 348,410 240,447 82,390',
-    al_hasakah: '350,76 510,24 668,58 620,152 535,170 430,130',
-    raqqa: '340,170 350,76 430,130 535,170 520,248 405,266 304,275 280,205',
-    deir_ez_zor: '405,266 520,248 620,152 690,184 646,330 520,390 380,332 304,275',
-    rif_dimashq: '240,447 348,410 380,332 520,390 440,478 334,508 260,492',
-    damascus: '304,421 326,410 340,432 320,448 298,440',
-    quneitra: '210,448 240,447 260,492 226,510 194,482',
-    daraa: '226,510 260,492 334,508 318,548 242,552',
-    as_suwayda: '334,508 440,478 430,536 378,558 318,548',
+    aleppo: '92,62 154,43 207,40 237,67 232,127 204,179 122,177 91,145 76,101',
+    idlib: '54,86 91,62 91,145 73,180 54,174 42,143',
+    latakia: '31,130 54,86 54,174 48,211 29,238 17,203 20,165',
+    tartus: '17,203 48,211 64,269 40,314 11,285 4,249',
+    hama: '73,180 122,177 204,179 238,207 203,235 132,240 64,269 48,211',
+    homs: '64,269 132,240 203,235 291,263 311,321 251,377 164,414 40,314',
+    al_hasakah: '298,28 400,1 512,0 451,77 433,163 367,162 318,112',
+    raqqa: '232,127 237,67 298,28 318,112 367,162 433,163 406,206 317,207 238,207 204,179',
+    deir_ez_zor: '317,207 406,206 451,77 512,51 512,225 452,288 357,333 311,321 291,263',
+    rif_dimashq: '164,414 251,377 311,321 357,333 369,399 293,432 218,449',
+    damascus: '239,365 254,357 264,369 250,382 236,376',
+    quneitra: '95,382 164,414 150,445 112,437 91,412',
+    daraa: '112,437 150,445 218,449 190,468 128,468',
+    as_suwayda: '218,449 293,432 277,468 190,468',
 };
 
 export function VendorMap({ regions = [], labels, className = 'min-h-[26rem]' }) {
@@ -36,8 +36,15 @@ export function VendorMap({ regions = [], labels, className = 'min-h-[26rem]' })
     };
 
     return (
-        <div ref={containerRef} className={`relative isolate overflow-hidden rounded-xl border border-border bg-muted/25 p-3 sm:p-6 ${className}`}>
-            <svg viewBox="0 0 720 580" role="img" aria-label={labels.region} className="mx-auto block h-auto max-h-[34rem] w-full max-w-3xl">
+        <div ref={containerRef} className={`relative isolate overflow-hidden rounded-xl border border-border bg-black p-2 sm:p-4 ${className}`}>
+            <div className="relative mx-auto aspect-[512/468] w-full max-w-3xl">
+                <img
+                    src="/images/syria-governorates-map.jpg"
+                    alt=""
+                    className="absolute inset-0 size-full object-contain"
+                    draggable="false"
+                />
+            <svg viewBox="0 0 512 468" role="img" aria-label={labels.region} className="absolute inset-0 size-full">
                 <title>{labels.region}</title>
                 {Object.entries(REGION_SHAPES).map(([key, points]) => {
                     const region = regionsByKey.get(key);
@@ -51,8 +58,9 @@ export function VendorMap({ regions = [], labels, className = 'min-h-[26rem]' })
                             aria-label={`${locale === 'ar' ? region?.name_ar : region?.name_en}: ${region?.vendor_count ?? 0}`}
                             className="cursor-pointer stroke-background transition-[fill,filter] duration-150 focus:outline-none focus-visible:stroke-primary"
                             style={{
-                                fill: isActive ? 'var(--color-primary)' : region?.vendor_count ? 'color-mix(in srgb, var(--color-primary) 72%, var(--color-card))' : 'color-mix(in srgb, var(--color-primary) 28%, var(--color-card))',
-                                strokeWidth: isActive ? 5 : 3,
+                                fill: isActive ? 'rgb(255 255 255 / .2)' : 'transparent',
+                                stroke: isActive ? 'rgb(255 255 255 / .75)' : 'transparent',
+                                strokeWidth: isActive ? 2 : 0,
                                 filter: isActive ? 'drop-shadow(0 8px 12px rgb(0 0 0 / .18))' : undefined,
                             }}
                             onMouseEnter={(event) => { setActiveKey(key); moveTooltip(event); }}
@@ -64,6 +72,7 @@ export function VendorMap({ regions = [], labels, className = 'min-h-[26rem]' })
                     );
                 })}
             </svg>
+            </div>
 
             {active && (
                 <div
