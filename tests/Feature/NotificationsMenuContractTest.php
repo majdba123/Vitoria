@@ -58,3 +58,33 @@ it('marks one notification and then all visible notifications as read', function
     $this->postJson('/api/notifications/mark-all-read')->assertOk();
     expect($this->getJson('/api/notifications')->json('unread_count'))->toBe(0);
 });
+
+it('keeps private notifications visible only to their recipients', function () {
+    $recipient = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $notification = AdminNotification::query()->create([
+        'title' => 'Private notification',
+        'body' => 'Only the recipient should see this.',
+        'type' => AdminNotification::TYPE_PRIVATE,
+    ]);
+    $notification->recipients()->attach($recipient->id);
+
+    Sanctum::actingAs($otherUser);
+
+    $this->getJson('/api/notifications')->assertOk()
+        ->assertJsonPath('data', [])
+        ->assertJsonPath('unread_count', 0);
+
+    $this->patchJson('/api/notifications/'.$notification->id.'/read')
+        ->assertNotFound();
+
+    $this->postJson('/api/notifications/mark-all-read')
+        ->assertOk()
+        ->assertJsonPath('data.marked', 0);
+
+    Sanctum::actingAs($recipient);
+
+    $this->getJson('/api/notifications')->assertOk()
+        ->assertJsonPath('data.0.id', $notification->id)
+        ->assertJsonPath('unread_count', 1);
+});

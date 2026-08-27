@@ -11,22 +11,19 @@ use Illuminate\Http\JsonResponse;
 class NotificationController extends Controller
 {
     /**
-     * Send a public or private notification and broadcast via WebSocket.
+     * Send a notification to selected users and broadcast via private channels.
      */
     public function send(SendNotificationRequest $request): JsonResponse
     {
+        $recipientUserIds = $request->validated('user_ids');
         $notification = AdminNotification::query()->create([
             'title' => $request->validated('title'),
             'body' => $request->validated('body'),
-            'type' => $request->validated('type'),
+            'type' => AdminNotification::TYPE_PRIVATE,
             'sent_by' => $request->user()->id,
         ]);
 
-        $recipientUserIds = [];
-        if ($notification->type === AdminNotification::TYPE_PRIVATE) {
-            $recipientUserIds = $request->validated('user_ids', []);
-            $notification->recipients()->sync($recipientUserIds);
-        }
+        $notification->recipients()->sync($recipientUserIds);
 
         AdminNotificationSent::dispatch(
             $notification->id,

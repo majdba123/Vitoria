@@ -4,7 +4,6 @@ namespace App\Http\Requests\Admin;
 
 use App\Models\AdminNotification;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class SendNotificationRequest extends FormRequest
 {
@@ -26,8 +25,8 @@ class SendNotificationRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string', 'max:10000'],
-            'type' => ['required', 'string', Rule::in([AdminNotification::TYPE_PUBLIC, AdminNotification::TYPE_PRIVATE])],
-            'user_ids' => ['required_if:type,private', 'array', 'min:1'],
+            'type' => ['required', 'string', 'in:'.AdminNotification::TYPE_PRIVATE],
+            'user_ids' => ['required', 'array', 'min:1'],
             'user_ids.*' => ['integer', 'exists:users,id'],
         ];
     }
@@ -40,7 +39,8 @@ class SendNotificationRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'user_ids.required_if' => 'Please select at least one recipient for private notifications.',
+            'type.in' => 'Admin notifications must be sent to selected users.',
+            'user_ids.required' => 'Please select at least one notification recipient.',
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\AdminNotification;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -36,7 +37,7 @@ class AdminNotificationSent implements ShouldBroadcast, ShouldRescue
      */
     public function broadcastOn(): array
     {
-        if ($this->type === 'public') {
+        if ($this->type === AdminNotification::TYPE_PUBLIC) {
             return [new Channel('notifications.public')];
         }
 

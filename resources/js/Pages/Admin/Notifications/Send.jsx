@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { PageHeader } from '@/Components/admin/PageHeader';
-import { TextField, TextareaField, SelectField } from '@/Components/admin/form/FormField';
+import { TextField, TextareaField } from '@/Components/admin/form/FormField';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import { useAdminForm } from '@/hooks/use-admin-form';
@@ -11,21 +11,21 @@ import { useI18n } from '@/hooks/use-i18n';
 export default function NotificationsSend() {
     const { admin } = useI18n();
     const { submit, errors, generalError, isSubmitting } = useAdminForm();
-    const [form, setForm] = useState({ title: '', body: '', type: 'public' });
+    const [form, setForm] = useState({ title: '', body: '' });
     const [users, setUsers] = useState([]);
     const [usersStatus, setUsersStatus] = useState('idle');
     const [selectedUserIds, setSelectedUserIds] = useState([]);
     const [successMessage, setSuccessMessage] = useState(null);
 
     useEffect(() => {
-        if (form.type === 'private' && usersStatus === 'idle') {
+        if (usersStatus === 'idle') {
             setUsersStatus('loading');
             window.axios.get('/api/admin/users', { params: { per_page: 500 }, silent: true }).then((res) => {
                 setUsers(res.data?.data ?? []);
                 setUsersStatus('ready');
             }).catch(() => setUsersStatus('error'));
         }
-    }, [form.type, usersStatus]);
+    }, [usersStatus]);
 
     const set = (key) => (value) => setForm((f) => ({ ...f, [key]: value }));
 
@@ -34,8 +34,7 @@ export default function NotificationsSend() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         setSuccessMessage(null);
-        const payload = { title: form.title.trim(), body: form.body.trim(), type: form.type };
-        if (form.type === 'private') payload.user_ids = selectedUserIds;
+        const payload = { title: form.title.trim(), body: form.body.trim(), type: 'private', user_ids: selectedUserIds };
 
         try {
             await submit('post', '/api/admin/notifications/send', payload);
@@ -63,38 +62,27 @@ export default function NotificationsSend() {
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <TextField id="title" label={admin.notification_title} required maxLength={255} placeholder={admin.notification_title_placeholder} value={form.title} onChange={(e) => set('title')(e.target.value)} error={errors.title} />
                         <TextareaField id="body" label={admin.notification_message} required maxLength={10000} rows={4} placeholder={admin.notification_message_placeholder} value={form.body} onChange={(e) => set('body')(e.target.value)} error={errors.body} />
-                        <SelectField
-                            id="type"
-                            label={admin.notification_type}
-                            required
-                            value={form.type}
-                            onValueChange={set('type')}
-                            options={[{ value: 'public', label: admin.notification_public }, { value: 'private', label: admin.notification_private }]}
-                            error={errors.type}
-                        />
-
-                        {form.type === 'private' && (
-                            <div>
-                                <label className="mb-1.5 block text-sm font-medium">{admin.notification_recipients} *</label>
-                                <p className="mb-2 text-xs text-muted-foreground">{admin.notification_recipients_copy}</p>
-                                <select
-                                    multiple
-                                    size={8}
-                                    className="w-full rounded-md border border-input bg-transparent p-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                                    value={selectedUserIds.map(String)}
-                                    onChange={(e) => setSelectedUserIds(Array.from(e.target.selectedOptions).map((o) => parseInt(o.value, 10)))}
-                                >
-                                    {usersStatus === 'loading' && <option value="">{admin.loading}</option>}
-                                    {usersStatus === 'error' && <option value="">{admin.users_load_failed}</option>}
-                                    {usersStatus === 'ready' && users.length === 0 && <option value="">{admin.no_users_found}</option>}
-                                    {usersStatus === 'ready' && users.map((u) => (
-                                        <option key={u.id} value={u.id}>{u.name} ({u.phone_number || u.email || '—'})</option>
-                                    ))}
-                                </select>
-                                <p className="mt-1 text-xs text-muted-foreground">{admin.multiselect_hint}</p>
-                                {errors.user_ids && <p className="mt-1.5 text-xs font-medium text-[var(--color-danger-strong)]">{errors.user_ids}</p>}
-                            </div>
-                        )}
+                        <div>
+                            <label className="mb-1.5 block text-sm font-medium">{admin.notification_recipients} *</label>
+                            <p className="mb-2 text-xs text-muted-foreground">{admin.notification_recipients_copy}</p>
+                            <select
+                                multiple
+                                required
+                                size={8}
+                                className="w-full rounded-md border border-input bg-transparent p-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                                value={selectedUserIds.map(String)}
+                                onChange={(e) => setSelectedUserIds(Array.from(e.target.selectedOptions).map((o) => parseInt(o.value, 10)))}
+                            >
+                                {usersStatus === 'loading' && <option value="">{admin.loading}</option>}
+                                {usersStatus === 'error' && <option value="">{admin.users_load_failed}</option>}
+                                {usersStatus === 'ready' && users.length === 0 && <option value="">{admin.no_users_found}</option>}
+                                {usersStatus === 'ready' && users.map((u) => (
+                                    <option key={u.id} value={u.id}>{u.name} ({u.phone_number || u.email || '—'})</option>
+                                ))}
+                            </select>
+                            <p className="mt-1 text-xs text-muted-foreground">{admin.multiselect_hint}</p>
+                            {errors.user_ids && <p className="mt-1.5 text-xs font-medium text-[var(--color-danger-strong)]">{errors.user_ids}</p>}
+                        </div>
 
                         <div className="flex justify-end gap-2 border-t border-border pt-5">
                             <Button type="submit" disabled={isSubmitting}>
