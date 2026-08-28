@@ -1,5 +1,23 @@
 # Vetora — Test Coverage
 
+## Test database safety guard
+
+`tests/TestCase.php` asserts, in `setUp()` before any test body runs, that
+`app()->environment('testing')` is true and that the default DB connection is
+sqlite with `database === ':memory:'`. This exists because `phpunit.xml` sets
+`APP_ENV`/`DB_CONNECTION`/`DB_DATABASE` via `<php><env>`, but if
+`bootstrap/cache/config.php` was generated (`php artisan config:cache`) before
+those env values were active, Laravel loads the cached config verbatim and
+`env()` calls resolve to whatever was baked in at cache time — silently
+pointing the suite at a real, populated database. The guard throws a
+`RuntimeException` immediately instead of letting `RefreshDatabase` migrate or
+seed against the wrong connection. Do not rely on remembering to run
+`php artisan optimize:clear`/`config:clear` — the guard enforces it. The
+`composer test` script and CI (`.github/workflows/ci.yml`) both run
+`php artisan config:clear` before the test run as a first line of defense;
+the `TestCase` guard is the backstop that fails loudly if that is ever
+skipped or bypassed locally.
+
 Last run: 2026-08-12 · `php artisan test`
 
 ```

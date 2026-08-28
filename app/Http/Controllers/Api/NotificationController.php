@@ -16,12 +16,11 @@ class NotificationController extends Controller
     ) {}
 
     /**
-     * List notifications for the authenticated user (public + private to them).
-     * Paginated; unread_count is global for badge.
-     *
-     * Public notifications have no per-recipient row, so a category the
-     * user has opted out of (spec §33) is excluded here rather than at
-     * creation time — see NotificationPreferenceService::disabledCategoriesFor().
+     * List notifications for the authenticated user. Visibility is
+     * determined solely by an explicit row in admin_notification_recipients
+     * for the authenticated user — a notification's `type` never grants
+     * visibility on its own. Paginated; unread_count is scoped to the
+     * same recipient set.
      */
     public function index(Request $request): JsonResponse
     {
@@ -30,20 +29,18 @@ class NotificationController extends Controller
         $disabledCategories = $this->preferenceService->disabledCategoriesFor($user);
 
         $visibility = function ($q) use ($disabledCategories, $userId) {
-            $q->where(function ($inner) use ($disabledCategories) {
-                $inner->where('admin_notifications.type', AdminNotification::TYPE_PUBLIC);
-                if ($disabledCategories !== []) {
-                    $inner->where(function ($cat) use ($disabledCategories) {
-                        $cat->whereNull('admin_notifications.category')
-                            ->orWhereNotIn('admin_notifications.category', $disabledCategories);
-                    });
-                }
-            })->orWhereExists(function ($sub) use ($userId) {
+            $q->whereExists(function ($sub) use ($userId) {
                 $sub->select(DB::raw(1))
                     ->from('admin_notification_recipients')
                     ->whereColumn('admin_notification_recipients.admin_notification_id', 'admin_notifications.id')
                     ->where('admin_notification_recipients.user_id', $userId);
             });
+            if ($disabledCategories !== []) {
+                $q->where(function ($cat) use ($disabledCategories) {
+                    $cat->whereNull('admin_notifications.category')
+                        ->orWhereNotIn('admin_notifications.category', $disabledCategories);
+                });
+            }
         };
 
         $baseQuery = AdminNotification::query()
@@ -125,15 +122,11 @@ class NotificationController extends Controller
         $disabledCategories = $this->preferenceService->disabledCategoriesFor($user);
 
         $notificationIds = AdminNotification::query()
-            ->where(function ($q) use ($disabledCategories, $user) {
-                $q->where(function ($inner) use ($disabledCategories) {
-                    $inner->where('type', AdminNotification::TYPE_PUBLIC);
-                    if ($disabledCategories !== []) {
-                        $inner->where(function ($cat) use ($disabledCategories) {
-                            $cat->whereNull('category')->orWhereNotIn('category', $disabledCategories);
-                        });
-                    }
-                })->orWhereHas('recipients', fn ($r) => $r->where('users.id', $user->id));
+            ->whereHas('recipients', fn ($r) => $r->where('users.id', $user->id))
+            ->when($disabledCategories !== [], function ($q) use ($disabledCategories) {
+                $q->where(function ($cat) use ($disabledCategories) {
+                    $cat->whereNull('category')->orWhereNotIn('category', $disabledCategories);
+                });
             })
             ->pluck('id');
 
@@ -149,12 +142,12 @@ class NotificationController extends Controller
         ]);
     }
 
+    /**
+     * Visibility is determined solely by an explicit recipient row — a
+     * notification's `type` never grants visibility on its own.
+     */
     private function userCanSeeNotification($user, AdminNotification $notification): bool
     {
-        if ($notification->type === AdminNotification::TYPE_PUBLIC) {
-            return true;
-        }
-
         return $notification->recipients()->where('users.id', $user->id)->exists();
     }
 }

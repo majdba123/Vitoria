@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { Sprout, Stethoscope, ArrowRight, Layers, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ArrowRight, Layers } from 'lucide-react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { ProductCard } from '@/Components/public/ProductCard';
 import { DataState } from '@/Components/public/DataState';
@@ -11,8 +11,8 @@ import { useInView } from '@/hooks/use-in-view';
 import { categoryImageUrl } from '@/lib/category-image';
 
 const TYPE_META = {
-    agriculture: { icon: Sprout, labelKey: 'type_agriculture_label', descKey: 'type_agriculture_description', buttonKey: 'type_agriculture_button' },
-    veterinary: { icon: Stethoscope, labelKey: 'type_veterinary_label', descKey: 'type_veterinary_description', buttonKey: 'type_veterinary_button' },
+    agriculture: { labelKey: 'type_agriculture_label' },
+    veterinary: { labelKey: 'type_veterinary_label' },
 };
 
 const PARTNER_LOGOS = [
@@ -49,36 +49,22 @@ function PartnerLogoMarquee({ locale, reducedMotion }) {
     );
 }
 
-// The agriculture/veterinary picker: a large decorative watermark of the type's own
-// icon plus a scroll-triggered, staggered entrance. Each card needs its own
+// The agriculture/veterinary picker: a full-bleed background card (photo or brand-toned
+// fallback) with a scroll-triggered, staggered entrance. Each card needs its own
 // intersection state, so this is a real component rather than inline map body.
 function TypeCard({ value, meta, index, isSelected, home }) {
     const reducedMotion = useReducedMotion();
     const [ref, inView] = useInView({ skip: reducedMotion });
-    const Icon = meta.icon;
 
     return (
         <Link
             ref={ref}
             href={route('product-type.select', { preferred_product_type: value, redirect_to: 'home' })}
-            className={`home-type-card group ${isSelected ? 'is-selected' : ''} ${reducedMotion ? '' : 'reveal-up'} ${inView ? 'is-in-view' : ''}`}
+            className={`home-type-card home-type-card--${value} ${isSelected ? 'is-selected' : ''} ${reducedMotion ? '' : 'reveal-up'} ${inView ? 'is-in-view' : ''}`}
             style={reducedMotion ? undefined : { '--reveal-delay': `${index * 140}ms` }}
             aria-current={isSelected ? 'true' : undefined}
         >
-            <Icon className="home-type-watermark" aria-hidden="true" />
-            <span className="home-type-number" aria-hidden="true">0{index + 1}</span>
-            <span className="icon-chip h-12 w-12 shrink-0 text-lg"><Icon className="size-6" /></span>
-            <span className="min-w-0 flex-1">
-                <span className="flex items-center gap-2">
-                    <span className="text-xl font-bold text-foreground">{home[meta.labelKey]}</span>
-                    {isSelected && <span className="badge badge-brand">{home.type_selected_now}</span>}
-                </span>
-                <span className="mt-1 block text-sm leading-6 text-muted-foreground">{home[meta.descKey]}</span>
-            </span>
-            <span className="home-type-action">
-                {home[meta.buttonKey]}
-                <ArrowRight className="h-4 w-4 shrink-0 rtl:-scale-x-100" />
-            </span>
+            <span className="home-type-card-title">{home[meta.labelKey]}</span>
         </Link>
     );
 }
@@ -209,65 +195,6 @@ function ProductGrid({ status, rows, emptyMessage, rank = false, onRetry }) {
                 ))}
             </div>
         </DataState>
-    );
-}
-
-function ContactForm() {
-    const { home } = useI18n();
-    const [form, setForm] = useState({ name: '', email: '', message: '' });
-    const [errors, setErrors] = useState({});
-    const [status, setStatus] = useState('idle');
-
-    const submit = (e) => {
-        e.preventDefault();
-        setErrors({});
-        setStatus('sending');
-        window.axios.post('/api/contact', { name: form.name.trim() || null, email: form.email.trim(), message: form.message.trim() }, { silent: true }).then(() => {
-            setStatus('success');
-            setForm((f) => ({ ...f, message: '' }));
-        }).catch((err) => {
-            setStatus('error');
-            if (err.response?.status === 422 && err.response?.data?.errors) {
-                const fieldErrors = {};
-                Object.entries(err.response.data.errors).forEach(([field, messages]) => { fieldErrors[field] = messages[0]; });
-                setErrors(fieldErrors);
-            }
-        });
-    };
-
-    return (
-        <form onSubmit={submit} className="space-y-4 px-6 py-6 sm:px-8 sm:py-7">
-            <div>
-                <label htmlFor="contact-name" className="form-label">{home.contact_name_label}</label>
-                <input type="text" id="contact-name" maxLength={255} placeholder={home.contact_name_placeholder} className="form-input" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
-                {errors.name && <p className="form-error">{errors.name}</p>}
-            </div>
-            <div>
-                <label htmlFor="contact-email" className="form-label">{home.contact_email_label} <span className="text-[var(--color-danger-strong)]">*</span></label>
-                <input type="email" id="contact-email" required maxLength={255} placeholder={home.contact_email_placeholder} className="form-input" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} />
-                {errors.email && <p className="form-error">{errors.email}</p>}
-            </div>
-            <div>
-                <label htmlFor="contact-message" className="form-label">{home.contact_message_label} <span className="text-[var(--color-danger-strong)]">*</span></label>
-                <textarea id="contact-message" required rows={4} maxLength={5000} placeholder={home.contact_message_placeholder} className="form-textarea" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} />
-                {errors.message && <p className="form-error">{errors.message}</p>}
-            </div>
-            {status === 'success' && (
-                <div className="alert-shell border-[var(--color-success-200)] bg-[var(--color-success-soft)] text-[var(--color-success-strong)]">
-                    <CheckCircle2 className="h-5 w-5 shrink-0" />
-                    <span>{home.contact_success}</span>
-                </div>
-            )}
-            {status === 'error' && !Object.keys(errors).length && (
-                <div className="alert-shell border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] text-[var(--color-danger-strong)]">
-                    <AlertTriangle className="h-5 w-5 shrink-0" />
-                    <span>{home.contact_error_default}</span>
-                </div>
-            )}
-            <button type="submit" disabled={status === 'sending'} className="btn-primary w-full justify-center">
-                {status === 'sending' ? home.contact_sending : home.contact_send}
-            </button>
-        </form>
     );
 }
 
@@ -574,7 +501,6 @@ export default function Home({ selectedType }) {
                                         <div>
                                             <p className="commerce-kicker">{home.badge_bestsellers}</p>
                                             <h2 className="commerce-title">{home.bestselling_title}</h2>
-                                            <p className="commerce-copy">{home.bestselling_subtitle}</p>
                                         </div>
                                         <Link href={productsHref('best_selling')} className="btn-secondary btn-sm hidden sm:inline-flex">
                                             {common.view_all}
@@ -591,7 +517,6 @@ export default function Home({ selectedType }) {
                                         <div>
                                             <p className="commerce-kicker">{home.badge_popular}</p>
                                             <h2 className="commerce-title">{home.most_favorited_title}</h2>
-                                            <p className="commerce-copy">{home.most_favorited_subtitle}</p>
                                         </div>
                                         <Link href={productsHref('most_favorited')} className="btn-secondary btn-sm hidden sm:inline-flex">
                                             {common.view_all}
@@ -603,21 +528,6 @@ export default function Home({ selectedType }) {
                             </section>
                         </div>
                     )}
-
-                    <section id="contact" className="storefront-section scroll-mt-24">
-                        <div className="page-shell py-0">
-                            <div className="contact-panel surface-card overflow-hidden">
-                                <div>
-                                    <div className="contact-panel-intro">
-                                        <span className="eyebrow">{home.contact}</span>
-                                        <h2 className="mt-4 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{home.contact_title}</h2>
-                                        <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground">{home.contact_subtitle}</p>
-                                    </div>
-                                    <ContactForm />
-                                </div>
-                            </div>
-                        </div>
-                    </section>
 
                     <section className="storefront-section border-t border-border/60 bg-muted/20">
                         <div className="page-shell py-0" aria-label={home.partners_title}>

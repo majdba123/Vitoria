@@ -77,7 +77,7 @@ it('never disables a critical category even from a directly-written row', functi
     expect(app(NotificationPreferenceService::class)->isEnabled($user->id, NotificationPreference::CATEGORY_ORDER_UPDATES))->toBeTrue();
 });
 
-it('hides a marketing notification from a user who disabled it, but not from one who did not', function () {
+it('hides a marketing notification from a user who disabled it, and only reaches recipients who did not', function () {
     $vendor = Vendor::factory()->create(['is_active' => true, 'status' => Vendor::STATUS_ACTIVE]);
     $product = Product::factory()->for($vendor)->create();
 
@@ -91,6 +91,13 @@ it('hides a marketing notification from a user who disabled it, but not from one
     ])->assertOk();
 
     app(NotificationService::class)->notifyProductDiscountAdded($product);
+
+    // Visibility is recipient-scoped: notifyProductDiscountAdded() creates a
+    // broadcast notification with no recipient rows, so it explicitly syncs
+    // both users as recipients here to exercise the opt-out filter on top
+    // of that recipient scoping — see NotificationController::index().
+    $notification = AdminNotification::query()->latest('id')->firstOrFail();
+    $notification->recipients()->sync([$optedOut->id, $optedIn->id]);
 
     Sanctum::actingAs($optedOut);
     expect($this->getJson('/api/notifications')->json('unread_count'))->toBe(0);

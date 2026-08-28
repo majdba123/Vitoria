@@ -2,25 +2,10 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Models\Vendor;
-use App\Rules\CategoriesMatchBusinessType;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class RegisterRequest extends FormRequest
 {
-    /**
-     * Prepare incoming registration data for validation.
-     */
-    protected function prepareForValidation(): void
-    {
-        if (! $this->has('category_ids') && $this->filled('category_id')) {
-            $this->merge([
-                'category_ids' => [$this->input('category_id')],
-            ]);
-        }
-    }
-
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -37,7 +22,11 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'account_type' => ['nullable', 'string', 'in:user,vendor'],
+            // Public self-registration always creates a customer account.
+            // Vendor accounts are created only through the admin-managed
+            // flow (App\Http\Controllers\Api\Admin\VendorController), so no
+            // account_type/role field is accepted here — accepting one would
+            // let a forged request choose its own role.
             'name' => ['required', 'string', 'max:255'],
             'phone_number' => ['required', 'string', 'max:20', 'regex:/^\+?[0-9]{8,15}$/', 'unique:users,phone_number'],
             'national_id' => ['required', 'string', 'max:50', 'unique:users,national_id'],
@@ -50,25 +39,8 @@ class RegisterRequest extends FormRequest
             'longitude' => ['nullable', 'numeric', 'between:-180,180', 'required_with:latitude'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
-            'store_name' => ['required_if:account_type,vendor', 'string', 'max:255'],
-            'business_type' => ['required_if:account_type,vendor', Rule::in([
-                Vendor::BUSINESS_TYPE_AGRICULTURE,
-                Vendor::BUSINESS_TYPE_VETERINARY,
-                Vendor::BUSINESS_TYPE_BOTH,
-            ])],
-            'category_ids' => [
-                'required_if:account_type,vendor',
-                'array',
-                'min:1',
-                new CategoriesMatchBusinessType(
-                    $this->input('business_type'),
-                    array_map('intval', (array) $this->input('category_ids', [])),
-                ),
-            ],
-            'category_ids.*' => ['integer', 'exists:categories,id'],
             'description' => ['nullable', 'string', 'max:1000'],
             'address' => ['nullable', 'string', 'max:255'],
-            'commercial_register_file' => ['required_if:account_type,vendor', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png', 'max:5120'],
         ];
     }
 
@@ -98,17 +70,6 @@ class RegisterRequest extends FormRequest
             'password.required' => 'Password is required.',
             'password.min' => 'Password must be at least 6 characters.',
             'password.confirmed' => 'Password confirmation does not match.',
-            'account_type.in' => 'Please select a valid account type.',
-            'store_name.required_if' => 'Store name is required for merchant accounts.',
-            'business_type.required_if' => 'Please select a merchant business type.',
-            'business_type.in' => 'Please select a valid merchant business type.',
-            'category_ids.required_if' => 'Please select at least one merchant category.',
-            'category_ids.array' => 'Please select valid merchant categories.',
-            'category_ids.min' => 'Please select at least one merchant category.',
-            'category_ids.*.exists' => 'One of the selected merchant categories is invalid.',
-            'commercial_register_file.required_if' => 'Commercial registration document is required for merchant accounts.',
-            'commercial_register_file.mimes' => 'Commercial registration document must be a PDF, DOC, DOCX, JPG, JPEG, or PNG file.',
-            'commercial_register_file.max' => 'Commercial registration document may not be greater than 5 MB.',
         ];
     }
 }

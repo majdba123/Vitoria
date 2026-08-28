@@ -4,15 +4,21 @@ use App\Models\AdminNotification;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
-function publicNotification(array $attributes = []): AdminNotification
+// Visibility is recipient-scoped (NotificationController::index()) — a
+// notification's `type` never grants visibility on its own, so tests that
+// only exercise pagination/read mechanics must explicitly sync a recipient.
+function visibleNotificationFor(User $user, array $attributes = []): AdminNotification
 {
-    return AdminNotification::query()->create(array_merge([
+    $notification = AdminNotification::query()->create(array_merge([
         'title' => 'Notification title',
         'body' => 'Notification body',
-        'type' => AdminNotification::TYPE_PUBLIC,
+        'type' => AdminNotification::TYPE_PRIVATE,
         'action_type' => null,
         'action_id' => null,
     ], $attributes));
+    $notification->recipients()->attach($user->id);
+
+    return $notification;
 }
 
 it('returns the empty notifications pagination contract', function () {
@@ -27,9 +33,9 @@ it('returns the empty notifications pagination contract', function () {
 
 it('paginates read and unread notifications with optional product and order actions', function () {
     $user = User::factory()->create();
-    $plain = publicNotification();
-    publicNotification(['action_type' => AdminNotification::ACTION_PRODUCT, 'action_id' => 15]);
-    publicNotification(['action_type' => AdminNotification::ACTION_ORDER, 'action_id' => 27]);
+    $plain = visibleNotificationFor($user);
+    visibleNotificationFor($user, ['action_type' => AdminNotification::ACTION_PRODUCT, 'action_id' => 15]);
+    visibleNotificationFor($user, ['action_type' => AdminNotification::ACTION_ORDER, 'action_id' => 27]);
     $user->notificationReads()->attach($plain->id, ['read_at' => now()]);
     Sanctum::actingAs($user);
 
@@ -48,8 +54,8 @@ it('paginates read and unread notifications with optional product and order acti
 
 it('marks one notification and then all visible notifications as read', function () {
     $user = User::factory()->create();
-    $first = publicNotification();
-    publicNotification();
+    $first = visibleNotificationFor($user);
+    visibleNotificationFor($user);
     Sanctum::actingAs($user);
 
     $this->patchJson('/api/notifications/'.$first->id.'/read')->assertOk();

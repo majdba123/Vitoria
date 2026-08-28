@@ -330,40 +330,18 @@ test('vendor staff without profile.manage cannot manage the store location', fun
 |--------------------------------------------------------------------------
 */
 
-test('merchant registration stores a valid coordinate pair on the vendor', function () {
-    $city = mapCity('Tartus');
-    $category = Category::query()->create(['name' => 'Registration Feed', 'type' => Category::TYPE_AGRICULTURE]);
-
-    $this->postJson('/api/auth/register', [
-        'account_type' => 'vendor',
-        'name' => 'Pinned Merchant',
-        'phone_number' => '0995000101',
-        'national_id' => '4445000101',
-        'age' => 34,
-        'membership_number' => 'MAP-0001',
-        'city_id' => $city->id,
-        'email' => 'pinned-merchant@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
-        'store_name' => 'Pinned Store',
-        'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
-        'category_ids' => [$category->id],
-        'latitude' => 34.8959,
-        'longitude' => 35.8867,
-        'commercial_register_file' => \Illuminate\Http\UploadedFile::fake()->create('register.pdf', 40, 'application/pdf'),
-    ])->assertCreated();
-
-    expect(Vendor::query()->where('store_name', 'Pinned Store')->firstOrFail())
-        ->latitude->toEqual(34.8959)
-        ->longitude->toEqual(35.8867);
-});
-
+// Public self-registration no longer creates Vendor accounts (see
+// MerchantRegistrationTest) — a former "merchant registration stores a
+// valid coordinate pair on the vendor" test lived here and is gone with
+// that path; coordinate storage on the created User is still covered by
+// MerchantRegistrationTest's "registration does not require map
+// coordinates". Half-pair/out-of-range coordinate validation below still
+// applies to every /api/auth/register call regardless of account type.
 test('merchant registration rejects half pairs and out-of-range coordinates', function () {
     $city = mapCity('Daraa');
     $category = Category::query()->create(['name' => 'Rejection Feed', 'type' => Category::TYPE_AGRICULTURE]);
 
     $base = [
-        'account_type' => 'vendor',
         'name' => 'Rejected Merchant',
         'phone_number' => '0995000202',
         'national_id' => '4445000202',
@@ -373,10 +351,6 @@ test('merchant registration rejects half pairs and out-of-range coordinates', fu
         'email' => 'rejected-merchant@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-        'store_name' => 'Rejected Store',
-        'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
-        'category_ids' => [$category->id],
-        'commercial_register_file' => \Illuminate\Http\UploadedFile::fake()->create('register.pdf', 40, 'application/pdf'),
     ];
 
     $this->postJson('/api/auth/register', [...$base, 'latitude' => 32.6189])
@@ -395,7 +369,7 @@ test('merchant registration rejects half pairs and out-of-range coordinates', fu
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['longitude']);
 
-    $this->assertDatabaseMissing('vendors', ['store_name' => 'Rejected Store']);
+    $this->assertDatabaseMissing('users', ['phone_number' => '0995000202']);
 });
 
 /*

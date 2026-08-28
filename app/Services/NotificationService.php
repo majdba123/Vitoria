@@ -22,29 +22,25 @@ class NotificationService
     ) {}
 
     /**
-     * Send a public notification (e.g. new product approved). Message in Arabic.
-     * Clicking the notification takes the user to the product page.
+     * Send a broadcast notification (e.g. new product approved) to every
+     * user who has not opted out of marketing notifications. Message in
+     * Arabic. Clicking the notification takes the user to the product page.
      *
-     * Public (broadcast-to-everyone) notifications have no per-recipient row
-     * to skip at creation time, so the `marketing` opt-out (spec §33) is
-     * enforced at read time instead — see NotificationController::index()
-     * and NotificationPreferenceService::disabledCategoriesFor().
+     * Notification visibility is determined solely by an explicit row in
+     * admin_notification_recipients (see NotificationController::index()),
+     * so a broadcast must sync the full recipient list at creation time —
+     * `type` alone no longer grants visibility to anyone.
      */
     public function notifyNewProductApproved(Product $product): void
     {
         $body = 'منتج جديد متوفر الآن: '.$product->name;
 
-        $notification = AdminNotification::query()->create([
-            'title' => 'منتج جديد',
-            'body' => $body,
-            'type' => AdminNotification::TYPE_PUBLIC,
-            'category' => NotificationPreference::CATEGORY_MARKETING,
-            'action_type' => AdminNotification::ACTION_PRODUCT,
-            'action_id' => $product->id,
-            'sent_by' => null,
-        ]);
-
-        $this->broadcastNotification($notification, []);
+        $this->broadcastToAllUsers(
+            title: 'منتج جديد',
+            body: $body,
+            actionType: AdminNotification::ACTION_PRODUCT,
+            actionId: $product->id,
+        );
     }
 
     /**
@@ -396,17 +392,12 @@ class NotificationService
         $pct = $product->discount_percentage ? (int) round((float) $product->discount_percentage) : 0;
         $body = "خصم جديد على المنتج: {$product->name}".($pct > 0 ? " ({$pct}%)" : '');
 
-        $notification = AdminNotification::query()->create([
-            'title' => 'خصم على منتج',
-            'body' => $body,
-            'type' => AdminNotification::TYPE_PUBLIC,
-            'category' => NotificationPreference::CATEGORY_MARKETING,
-            'action_type' => AdminNotification::ACTION_PRODUCT,
-            'action_id' => $product->id,
-            'sent_by' => null,
-        ]);
-
-        $this->broadcastNotification($notification, []);
+        $this->broadcastToAllUsers(
+            title: 'خصم على منتج',
+            body: $body,
+            actionType: AdminNotification::ACTION_PRODUCT,
+            actionId: $product->id,
+        );
     }
 
     /**
@@ -417,17 +408,43 @@ class NotificationService
         $pct = $product->discount_percentage ? (int) round((float) $product->discount_percentage) : 0;
         $body = "تم تحديث الخصم على المنتج: {$product->name}".($pct > 0 ? " ({$pct}%)" : '');
 
+        $this->broadcastToAllUsers(
+            title: 'تحديث خصم منتج',
+            body: $body,
+            actionType: AdminNotification::ACTION_PRODUCT,
+            actionId: $product->id,
+        );
+    }
+
+    /**
+     * Create a marketing-category notification and sync every user who has
+     * not opted out of marketing as an explicit recipient, then broadcast
+     * it. Shared by the three product-marketing notices above so the
+     * recipient-sync logic lives in one place.
+     */
+    private function broadcastToAllUsers(string $title, string $body, string $actionType, int $actionId): void
+    {
+        $recipientIds = $this->preferenceService->filterEnabled(
+            User::query()->pluck('id')->all(),
+            NotificationPreference::CATEGORY_MARKETING,
+        );
+
+        if ($recipientIds === []) {
+            return;
+        }
+
         $notification = AdminNotification::query()->create([
-            'title' => 'تحديث خصم منتج',
+            'title' => $title,
             'body' => $body,
             'type' => AdminNotification::TYPE_PUBLIC,
             'category' => NotificationPreference::CATEGORY_MARKETING,
-            'action_type' => AdminNotification::ACTION_PRODUCT,
-            'action_id' => $product->id,
+            'action_type' => $actionType,
+            'action_id' => $actionId,
             'sent_by' => null,
         ]);
+        $notification->recipients()->sync($recipientIds);
 
-        $this->broadcastNotification($notification, []);
+        $this->broadcastNotification($notification, $recipientIds);
     }
 
     /**

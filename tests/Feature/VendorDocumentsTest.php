@@ -207,33 +207,7 @@ it('expires overdue verified documents when the admin queue is loaded', function
     expect($document->refresh()->status)->toBe(VendorDocument::STATUS_EXPIRED);
 });
 
-it('creates a commercial_registration document automatically at vendor self-registration', function () {
-    Storage::fake('local');
-    $city = \App\Models\City::query()->create(['name' => 'Damascus']);
-    $category = \App\Models\Category::query()->create(['name' => 'Agricultural Products']);
-
-    $this->post('/api/auth/register', [
-        'account_type' => 'vendor',
-        'name' => 'New Merchant',
-        'phone_number' => '0991000099',
-        'national_id' => '1234509999',
-        'age' => 30,
-        'membership_number' => 'MEM-999099',
-        'city_id' => $city->id,
-        'email' => 'newmerchant@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
-        'store_name' => 'New Merchant Store',
-        'business_type' => Vendor::BUSINESS_TYPE_BOTH,
-        'category_ids' => [$category->id],
-        'commercial_register_file' => UploadedFile::fake()->create('cr.pdf', 100, 'application/pdf'),
-    ])->assertCreated();
-
-    $vendor = Vendor::query()->where('store_name', 'New Merchant Store')->firstOrFail();
-
-    expect(VendorDocument::query()
-        ->where('vendor_id', $vendor->id)
-        ->where('type', VendorDocument::TYPE_COMMERCIAL_REGISTRATION)
-        ->where('status', VendorDocument::STATUS_PENDING_REVIEW)
-        ->exists())->toBeTrue();
-});
+// Public self-registration no longer creates Vendor accounts at all (see
+// MerchantRegistrationTest) — vendor accounts, and therefore their
+// commercial_registration documents, are now created only through the
+// admin-managed flow. Nothing left here to exercise via /api/auth/register.

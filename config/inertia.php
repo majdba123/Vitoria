@@ -21,7 +21,10 @@ return [
 
     'ssr' => [
 
-        'enabled' => (bool) env('INERTIA_SSR_ENABLED', true),
+        // SSR requires a supervised renderer in production. Keep it opt-in so
+        // a missing or unhealthy Node process cannot add retry/fallback latency
+        // to every initial Inertia request.
+        'enabled' => (bool) env('INERTIA_SSR_ENABLED', false),
 
         'runtime' => env('INERTIA_SSR_RUNTIME', 'node'),
 

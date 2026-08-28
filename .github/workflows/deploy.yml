@@ -81,6 +81,13 @@ jobs:
               exit 1
             fi
 
+            php artisan tinker --execute='echo "PRE_DEPLOY_SSR_ENABLED=".(config("inertia.ssr.enabled") ? "true" : "false").PHP_EOL;'
+            if curl -fsS --max-time 3 http://127.0.0.1:13714/health > /dev/null; then
+              echo "PRE_DEPLOY_SSR_HEALTH=healthy"
+            else
+              echo "PRE_DEPLOY_SSR_HEALTH=unreachable"
+            fi
+
             php artisan down --retry=60
             cleanup() {
               php artisan up || true
@@ -107,6 +114,15 @@ jobs:
             git fetch origin
             git reset --hard "$DEPLOY_SHA"
 
+            # This release intentionally disables SSR until a supervised
+            # renderer is installed and its route-resolution failure is fixed.
+            if grep -q '^INERTIA_SSR_ENABLED=' .env; then
+              sed -i 's/^INERTIA_SSR_ENABLED=.*/INERTIA_SSR_ENABLED=false/' .env
+            else
+              printf '\nINERTIA_SSR_ENABLED=false\n' >> .env
+            fi
+            php artisan config:clear
+
             # Install/update Composer dependencies
             composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
@@ -125,6 +141,7 @@ jobs:
             php artisan route:cache
             php artisan view:cache
             php artisan event:cache
+            php artisan tinker --execute='echo "POST_DEPLOY_SSR_ENABLED=".(config("inertia.ssr.enabled") ? "true" : "false").PHP_EOL;'
 
             # Fix permissions
             chown -R www-data:www-data .
