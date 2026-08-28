@@ -110,6 +110,18 @@ class User extends Authenticatable
     }
 
     /**
+     * Determine if the user may act as a buyer (add to cart, checkout,
+     * create orders). Only the normal customer type may purchase - Admin,
+     * Vendor, Syndicate and Employee accounts are privileged roles and must
+     * not act as buyers, even though they remain fully authenticated users
+     * for their own (order-management, vendor, admin, ...) permissions.
+     */
+    public function canPurchase(): bool
+    {
+        return $this->type === self::TYPE_USER;
+    }
+
+    /**
      * Where an already-authenticated user should land instead of /login or
      * /register. Lives here (not as a routes/web.php closure-scoped helper)
      * so it still resolves once routes are cached in production - cached

@@ -68,9 +68,7 @@ export default function CategoriesIndex() {
             <div className="page-shell">
                 <div className="commerce-section-header">
                     <div>
-                        <p className="commerce-kicker">Vetora Marketplace</p>
-                        <h1 className="commerce-title mt-1">{categoriesI18n.page_heading}</h1>
-                        <p className="commerce-copy">{categoriesI18n.page_subtitle}</p>
+                        <h1 className="commerce-title">{categoriesI18n.page_heading}</h1>
                     </div>
                     <div className="flex flex-wrap gap-2" aria-label={nav.all_types}>
                         {[

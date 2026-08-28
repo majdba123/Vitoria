@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import { ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Loader2 } from 'lucide-react';
 import { TextField } from '@/Components/admin/form/FormField';
 import { Button } from '@/Components/ui/button';
 import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
@@ -61,9 +61,8 @@ export default function Login() {
             <main className="grid min-h-svh bg-background lg:grid-cols-2">
                 <section className="flex min-h-svh flex-col gap-8 p-5 sm:p-8 lg:p-10">
                     <header className="flex items-center justify-between gap-4">
-                        <Link href={route('home')} className="inline-flex min-h-11 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                            <img src="/images/vetora-logo-transparent.png" alt="" className="size-9 object-contain" />
-                            <span className="font-display text-lg font-bold text-foreground">Vetora</span>
+                        <Link href={route('home')} aria-label="Vetora" className="inline-flex min-h-11 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                            <img src="/images/vetora-logo-transparent.png" alt="Vetora" className="h-9 w-auto object-contain" />
                         </Link>
                         <div className="flex items-center gap-1">
                             <LanguageSwitcher />
@@ -72,20 +71,16 @@ export default function Login() {
                     </header>
 
                     <div className="flex flex-1 items-center justify-center py-8">
-                        <div className="w-full max-w-sm">
-                            <div className="mb-8">
-                                <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-primary rtl:normal-case rtl:tracking-normal">
-                                    <ShieldCheck className="size-4" />
-                                    {authPage.secure_sign_in}
-                                </span>
-                                <h1 className="mt-4 font-display text-3xl font-bold leading-tight text-foreground sm:text-4xl">{authPage.welcome_back}</h1>
+                        <div className="w-full max-w-md">
+                            <div className="mb-10">
+                                <h1 className="font-display text-4xl font-bold leading-tight text-foreground sm:text-5xl">{authPage.welcome_back}</h1>
                                 <p className="mt-3 max-w-[55ch] text-sm leading-6 text-muted-foreground">{authPage.sign_in_to_account}</p>
                             </div>
 
                             {generalError && <p className="mb-4 rounded-md border border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-danger-strong)]">{generalError}</p>}
                             {successMessage && <p className="mb-4 rounded-md border border-[var(--color-success-200)] bg-[var(--color-success-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-success-strong)]">{successMessage}</p>}
 
-                            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+                            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                                 <TextField
                                     id="phone_number"
                                     label={authPage.phone_number}
@@ -96,6 +91,7 @@ export default function Login() {
                                     value={phoneNumber}
                                     onChange={(e) => setPhoneNumber(e.target.value)}
                                     error={errors.phone_number}
+                                    className="h-11 text-base"
                                 />
                                 <TextField
                                     id="password"
@@ -107,8 +103,9 @@ export default function Login() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     error={errors.password}
+                                    className="h-11 text-base"
                                 />
-                                <Button type="submit" disabled={isSubmitting} className="min-h-11 w-full">
+                                <Button type="submit" size="lg" disabled={isSubmitting} className="w-full">
                                     {isSubmitting && <Loader2 className="size-4 animate-spin" />}
                                     {isSubmitting ? authPage.signing_in : nav.sign_in}
                                 </Button>

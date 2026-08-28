@@ -49,12 +49,12 @@ Route::middleware('web')->prefix('products')->as('products.')->group(function ()
 */
 Route::middleware('web')->prefix('cart')->as('cart.')->group(function () {
     Route::get('/', [\App\Http\Controllers\Api\CartController::class, 'show'])->name('show');
-    Route::post('/items', [\App\Http\Controllers\Api\CartController::class, 'store'])->middleware('throttle:api.write')->name('items.store');
-    Route::patch('/items', [\App\Http\Controllers\Api\CartController::class, 'update'])->middleware('throttle:api.write')->name('items.update');
-    Route::delete('/items/{productId}', [\App\Http\Controllers\Api\CartController::class, 'destroy'])->middleware('throttle:api.write')->name('items.destroy');
-    Route::delete('/', [\App\Http\Controllers\Api\CartController::class, 'clear'])->middleware('throttle:api.write')->name('clear');
-    Route::post('/coupon', [\App\Http\Controllers\Api\CartController::class, 'applyCoupon'])->middleware('throttle:api.write')->name('coupon.apply');
-    Route::delete('/coupon', [\App\Http\Controllers\Api\CartController::class, 'removeCoupon'])->middleware('throttle:api.write')->name('coupon.remove');
+    Route::post('/items', [\App\Http\Controllers\Api\CartController::class, 'store'])->middleware(['throttle:api.write', 'can.purchase'])->name('items.store');
+    Route::patch('/items', [\App\Http\Controllers\Api\CartController::class, 'update'])->middleware(['throttle:api.write', 'can.purchase'])->name('items.update');
+    Route::delete('/items/{productId}', [\App\Http\Controllers\Api\CartController::class, 'destroy'])->middleware(['throttle:api.write', 'can.purchase'])->name('items.destroy');
+    Route::delete('/', [\App\Http\Controllers\Api\CartController::class, 'clear'])->middleware(['throttle:api.write', 'can.purchase'])->name('clear');
+    Route::post('/coupon', [\App\Http\Controllers\Api\CartController::class, 'applyCoupon'])->middleware(['throttle:api.write', 'can.purchase'])->name('coupon.apply');
+    Route::delete('/coupon', [\App\Http\Controllers\Api\CartController::class, 'removeCoupon'])->middleware(['throttle:api.write', 'can.purchase'])->name('coupon.remove');
 });
 
 /*
@@ -127,7 +127,7 @@ Route::middleware(['auth:sanctum', 'throttle:api.authenticated'])->group(functio
     Route::patch('/orders/{orderId}/cancel', [\App\Http\Controllers\Api\OrderController::class, 'cancel'])->middleware('throttle:api.write')->name('orders.cancel');
     Route::post('/orders/{orderId}/returns', [\App\Http\Controllers\Api\OrderReturnController::class, 'store'])->middleware('throttle:orders.write')->name('orders.returns.store');
     // DEPRECATED: client-supplied items[]. Use POST /api/checkout instead.
-    Route::post('/orders/checkout', [\App\Http\Controllers\Api\OrderController::class, 'store'])->middleware('throttle:orders.write')->name('orders.checkout');
+    Route::post('/orders/checkout', [\App\Http\Controllers\Api\OrderController::class, 'store'])->middleware(['throttle:orders.write', 'can.purchase'])->name('orders.checkout');
 
     Route::prefix('returns')->as('returns.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\OrderReturnController::class, 'index'])->name('index');
@@ -148,8 +148,8 @@ Route::middleware(['auth:sanctum', 'throttle:api.authenticated'])->group(functio
         Route::patch('/{address}/default', [\App\Http\Controllers\Api\UserAddressController::class, 'setDefault'])->middleware('throttle:api.write')->name('default');
     });
 
-    Route::get('/checkout/summary', [\App\Http\Controllers\Api\CheckoutController::class, 'summary'])->name('checkout.summary');
-    Route::post('/checkout', [\App\Http\Controllers\Api\CheckoutController::class, 'store'])->middleware('throttle:orders.write')->name('checkout.store');
+    Route::get('/checkout/summary', [\App\Http\Controllers\Api\CheckoutController::class, 'summary'])->middleware('can.purchase')->name('checkout.summary');
+    Route::post('/checkout', [\App\Http\Controllers\Api\CheckoutController::class, 'store'])->middleware(['throttle:orders.write', 'can.purchase'])->name('checkout.store');
 
     Route::get('/notification-preferences', [\App\Http\Controllers\Api\NotificationPreferenceController::class, 'index'])->name('notification-preferences.index');
     Route::patch('/notification-preferences', [\App\Http\Controllers\Api\NotificationPreferenceController::class, 'update'])->middleware('throttle:api.write')->name('notification-preferences.update');

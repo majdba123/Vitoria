@@ -83,6 +83,7 @@ class HandleInertiaRequests extends Middleware
                 'category' => trans('category'),
                 'cart' => trans('cart'),
                 'checkout' => trans('checkout'),
+                'purchase' => trans('purchase'),
                 'orders' => trans('orders'),
                 'footer' => trans('footer'),
                 'home' => trans('home'),

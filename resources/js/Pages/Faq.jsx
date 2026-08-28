@@ -32,9 +32,7 @@ export default function Faq() {
 
                 <div className="page-shell storefront-section" aria-labelledby="faq-heading">
                     <div className="mx-auto max-w-3xl text-center">
-                        <p className="commerce-kicker">{home.faq_kicker}</p>
-                        <h1 id="faq-heading" className="commerce-title mt-2">{home.faq_title}</h1>
-                        <p className="commerce-copy mt-2">{home.faq_subtitle}</p>
+                        <h1 id="faq-heading" className="commerce-title">{home.faq_title}</h1>
                     </div>
 
                     {items.length > 0 ? (

@@ -337,9 +337,7 @@ export default function Home({ selectedType }) {
 
             <section id="home-type-selector" className="page-shell py-0 home-type-selector" aria-labelledby="home-type-heading">
                 <div className="home-type-intro">
-                    <p className="commerce-kicker">{home.type_selector_kicker}</p>
                     <h2 id="home-type-heading" className="commerce-title">{home.type_selector_title}</h2>
-                    <p className="commerce-copy">{home.type_selector_copy}</p>
                 </div>
                 <div className="home-type-grid">
                     {Object.entries(TYPE_META).map(([value, meta], index) => (
@@ -354,9 +352,7 @@ export default function Home({ selectedType }) {
                         <div className="page-shell py-0">
                             <div className="commerce-section-header">
                                 <div className="min-w-0">
-                                    <p className="commerce-kicker">{home.badge_start_here}</p>
                                     <h2 className="commerce-title">{home.choose_category_title}</h2>
-                                    <p className="commerce-copy">{home.choose_category_subtitle}</p>
                                 </div>
                             </div>
 
@@ -427,8 +423,7 @@ export default function Home({ selectedType }) {
                                                 </div>
                                             )}
                                             <div className="min-w-0">
-                                                <p className="commerce-kicker">{home.browsing_prefix}</p>
-                                                <h2 className="mt-2 text-xl font-bold text-foreground sm:text-2xl">{activeCategory?.name ?? '—'}</h2>
+                                                <h2 className="text-xl font-bold text-foreground sm:text-2xl">{activeCategory?.name ?? '—'}</h2>
                                                 <p className="mt-1 text-sm text-muted-foreground">{subcategories.length ? (home.category_has_subcategories ?? '').replace(':count', String(subcategories.length)) : home.category_direct_products}</p>
                                             </div>
                                         </div>
@@ -476,9 +471,7 @@ export default function Home({ selectedType }) {
                                 <div className="page-shell py-0">
                                     <div className="commerce-section-header">
                                         <div>
-                                            <p className="commerce-kicker">{home.badge_new_arrivals}</p>
                                             <h2 className="commerce-title">{home.latest_products_title}</h2>
-                                            <p className="commerce-copy">{home.latest_products_subtitle}</p>
                                         </div>
                                         <Link href={productsHref(null)} className="btn-secondary btn-sm hidden sm:inline-flex">
                                             {common.view_all}
@@ -499,7 +492,6 @@ export default function Home({ selectedType }) {
                                 <div className="page-shell py-0">
                                     <div className="commerce-section-header border-t-2 border-foreground pt-7">
                                         <div>
-                                            <p className="commerce-kicker">{home.badge_bestsellers}</p>
                                             <h2 className="commerce-title">{home.bestselling_title}</h2>
                                         </div>
                                         <Link href={productsHref('best_selling')} className="btn-secondary btn-sm hidden sm:inline-flex">
@@ -515,7 +507,6 @@ export default function Home({ selectedType }) {
                                 <div className="page-shell py-0">
                                     <div className="commerce-section-header">
                                         <div>
-                                            <p className="commerce-kicker">{home.badge_popular}</p>
                                             <h2 className="commerce-title">{home.most_favorited_title}</h2>
                                         </div>
                                         <Link href={productsHref('most_favorited')} className="btn-secondary btn-sm hidden sm:inline-flex">

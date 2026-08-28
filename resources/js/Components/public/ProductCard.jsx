@@ -2,7 +2,8 @@ import { Link } from '@inertiajs/react';
 import { Star, Heart, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/hooks/use-cart';
 import { useFavourites } from '@/hooks/use-favourites';
-import { useI18n } from '@/hooks/use-i18n';
+import { useAuthUser, useI18n } from '@/hooks/use-i18n';
+import { canPurchase } from '@/lib/purchase';
 
 function StarRating({ rating }) {
     const resolved = Math.min(5, Math.max(0, Math.round(parseFloat(rating) || 0)));
@@ -16,9 +17,11 @@ function StarRating({ rating }) {
 }
 
 export function ProductCard({ product, href, context = '', rank = null }) {
-    const { products, nav } = useI18n();
+    const { products, nav, purchase } = useI18n();
     const { addToCart } = useCart();
     const { ids: favIds, toggle: toggleFav } = useFavourites();
+    const user = useAuthUser();
+    const buyerAllowed = canPurchase(user);
 
     const photo = product.first_photo_url || product.fallback_photo_url || '/images/product-placeholder.svg';
     const inStock = Number(product.quantity || 0) > 0;
@@ -79,10 +82,19 @@ export function ProductCard({ product, href, context = '', rank = null }) {
                     </div>
                     <button
                         type="button"
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToCart(product.id); }}
-                        disabled={!inStock}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (!buyerAllowed) {
+                                window.AppToast?.show(purchase.customer_only || '', 'warning');
+                                return;
+                            }
+                            addToCart(product.id);
+                        }}
+                        disabled={!inStock || !buyerAllowed}
                         className="product-card-cta"
                         aria-label={`${products.add_to_cart_btn ?? ''}: ${product.name}`}
+                        title={!buyerAllowed ? purchase.customer_only : undefined}
                     >
                         <ShoppingBag className="h-4 w-4" />
                     </button>

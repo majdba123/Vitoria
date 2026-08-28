@@ -5,6 +5,7 @@ import PublicLayout from '@/Layouts/PublicLayout';
 import { useCart } from '@/hooks/use-cart';
 import { useFavourites } from '@/hooks/use-favourites';
 import { useAuthUser, useI18n, useLocale } from '@/hooks/use-i18n';
+import { canPurchase } from '@/lib/purchase';
 
 function StarRow({ rating, size = 'h-5 w-5' }) {
     const resolved = Math.min(5, Math.max(0, Math.round(rating)));
@@ -126,10 +127,11 @@ function ReviewForm({ productId, onSubmitted }) {
  * would run before that provider exists in the tree.
  */
 function ProductDetail({ product, productId }) {
-    const { nav, products, common, productSpecs } = useI18n();
+    const { nav, products, common, productSpecs, purchase } = useI18n();
     const locale = useLocale();
     const user = useAuthUser();
     const { addToCart } = useCart();
+    const buyerAllowed = canPurchase(user);
     const { ids: favIds, toggle: toggleFav } = useFavourites();
 
     const [activePhoto, setActivePhoto] = useState(() => {
@@ -212,8 +214,7 @@ function ProductDetail({ product, productId }) {
                         <div className="border-t border-border pt-5">
                             <div className="mb-4 flex items-center justify-between gap-3">
                                 <div>
-                                    <p className="commerce-kicker">{products.media_badge}</p>
-                                    <h2 className="mt-2 text-lg font-bold text-foreground">{products.gallery_title}</h2>
+                                    <h2 className="text-lg font-bold text-foreground">{products.gallery_title}</h2>
                                 </div>
                                 <span className="text-xs font-semibold text-muted-foreground">{photos.length} {photos.length === 1 ? products.photo_single : products.photos}</span>
                             </div>
@@ -238,8 +239,7 @@ function ProductDetail({ product, productId }) {
                         <div className="border-b border-border pb-7">
                             <div className="flex flex-wrap items-start justify-between gap-4">
                                 <div className="min-w-0 flex-1">
-                                    <p className="commerce-kicker">{products.overview_badge}</p>
-                                    <h1 className="mt-3 text-3xl font-bold leading-tight tracking-tight text-foreground sm:text-4xl">{product.name}</h1>
+                                    <h1 className="text-3xl font-bold leading-tight tracking-tight text-foreground sm:text-4xl">{product.name}</h1>
                                 </div>
                                 <button
                                     type="button"
@@ -360,7 +360,19 @@ function ProductDetail({ product, productId }) {
                                         </button>
                                     </div>
                                 )}
-                                <button type="button" onClick={() => addToCart(product.id, minOrderQuantity > 1 ? orderQuantity : 1)} disabled={!inStock} className="btn-primary flex-1 py-3.5">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        if (!buyerAllowed) {
+                                            window.AppToast?.show(purchase.customer_only || '', 'warning');
+                                            return;
+                                        }
+                                        addToCart(product.id, minOrderQuantity > 1 ? orderQuantity : 1);
+                                    }}
+                                    disabled={!inStock || !buyerAllowed}
+                                    className="btn-primary flex-1 py-3.5"
+                                    title={!buyerAllowed ? purchase.customer_only : undefined}
+                                >
                                     <span className="flex items-center justify-center gap-2">
                                         {inStock ? <ShoppingBag className="h-5 w-5" /> : <Ban className="h-5 w-5" />}
                                         {inStock ? products.add_to_cart_btn : products.out_of_stock_button}
@@ -370,8 +382,7 @@ function ProductDetail({ product, productId }) {
                         </div>
 
                         <div className="border-b border-border py-7">
-                            <p className="commerce-kicker">{products.description_badge}</p>
-                            <h2 className="mt-2 text-lg font-bold text-foreground">{products.description_title}</h2>
+                            <h2 className="text-lg font-bold text-foreground">{products.description_title}</h2>
                             <p className="mt-4 whitespace-pre-wrap text-sm leading-8 text-muted-foreground">{product.description || products.no_description}</p>
                         </div>
                     </div>
@@ -379,8 +390,7 @@ function ProductDetail({ product, productId }) {
 
                 {specRows.length > 0 && (
                     <div className="mt-10 border-t border-border py-9">
-                        <p className="commerce-kicker">{productSpecs.heading}</p>
-                        <h2 className="mt-2 text-lg font-bold text-foreground">{productSpecs.heading}</h2>
+                        <h2 className="text-lg font-bold text-foreground">{productSpecs.heading}</h2>
                         <dl className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
                             {specRows.map((row) => (
                                 <div key={row.key} className="border-s-2 border-border ps-3">
@@ -396,8 +406,7 @@ function ProductDetail({ product, productId }) {
                     <div className="border-t border-border py-9">
                         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
                             <div>
-                                <p className="commerce-kicker">{products.reviews}</p>
-                                <h2 className="mt-2 text-xl font-bold text-foreground">
+                                <h2 className="text-xl font-bold text-foreground">
                                     {products.reviews} <span className="text-sm font-normal text-muted-foreground">{reviewsMeta.total ? `(${reviewsMeta.total} ${reviewsMeta.total === 1 ? products.review_single : products.review_plural})` : ''}</span>
                                 </h2>
                             </div>

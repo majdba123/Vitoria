@@ -9,12 +9,14 @@ import { CategoryMegaMenu } from '@/Components/public/CategoryMegaMenu';
 import { MobileDrawer } from '@/Components/public/MobileDrawer';
 import { useCart } from '@/hooks/use-cart';
 import { useAuthUser, useI18n } from '@/hooks/use-i18n';
+import { canPurchase } from '@/lib/purchase';
 
 export function PublicHeader() {
     const { nav } = useI18n();
     const user = useAuthUser();
     const { url } = usePage();
     const { itemsCount, openCart } = useCart();
+    const showCart = canPurchase(user);
     const [search, setSearch] = useState('');
     const [categories, setCategories] = useState([]);
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -71,20 +73,22 @@ export function PublicHeader() {
                             <ThemeToggle label={nav.toggle_theme_aria} />
                         </div>
 
-                        <button
-                            type="button"
-                            onClick={openCart}
-                            className="nav-action-btn relative flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-transparent text-muted-foreground"
-                            aria-label={nav.cart}
-                            title={nav.cart}
-                        >
-                            <ShoppingBag className="h-5 w-5" />
-                            {itemsCount > 0 && (
-                                <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold leading-none text-primary-foreground shadow rtl:-left-0.5 rtl:right-auto">
-                                    {itemsCount > 99 ? '99+' : itemsCount}
-                                </span>
-                            )}
-                        </button>
+                        {showCart && (
+                            <button
+                                type="button"
+                                onClick={openCart}
+                                className="nav-action-btn relative flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-transparent text-muted-foreground"
+                                aria-label={nav.cart}
+                                title={nav.cart}
+                            >
+                                <ShoppingBag className="h-5 w-5" />
+                                {itemsCount > 0 && (
+                                    <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold leading-none text-primary-foreground shadow rtl:-left-0.5 rtl:right-auto">
+                                        {itemsCount > 99 ? '99+' : itemsCount}
+                                    </span>
+                                )}
+                            </button>
+                        )}
 
                         {user && <div className="hidden md:block"><NotificationsMenu /></div>}
 

@@ -1778,6 +1778,7 @@
         aspect-ratio: 4 / 3;
         color: var(--color-text-inverse);
         background-color: var(--color-brand-800);
+        background-image: url('/images/home-type-cards/agriculture.webp');
         background-size: cover;
         background-position: center;
         transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms ease;
@@ -1791,6 +1792,7 @@
 
     .home-type-card--veterinary {
         background-color: var(--color-brand-900);
+        background-image: url('/images/home-type-cards/veterinary.webp');
     }
 
     .home-type-card::before {

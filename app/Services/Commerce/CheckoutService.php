@@ -74,6 +74,14 @@ class CheckoutService
      */
     private function attemptPlace(Cart $cart, User $user, ?UserAddress $address, string $paymentMethod, ?string $shippingMethod = null): Collection
     {
+        if (! $user->canPurchase()) {
+            // Defence in depth. Every route that reaches here is already
+            // gated by the `can.purchase` middleware; this makes the
+            // canonical order-creation boundary safe even if called from
+            // somewhere that isn't.
+            throw new CartException(__('purchase.customer_only'));
+        }
+
         if (! in_array($paymentMethod, $this->availablePaymentMethods(), true)) {
             throw new CartException(__('cart.payment_method_unavailable'));
         }

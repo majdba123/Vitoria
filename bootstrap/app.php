@@ -68,6 +68,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'vendor' => \App\Http\Middleware\EnsureUserIsVendor::class,
             'syndicate' => EnsureUserIsSyndicate::class,
             'employee' => EnsureUserIsEmployee::class,
+            'can.purchase' => \App\Http\Middleware\EnsureCanPurchase::class,
             'cache.response' => \App\Http\Middleware\CacheResponse::class,
             'timezone' => \App\Http\Middleware\ApplyUserTimezone::class,
         ]);

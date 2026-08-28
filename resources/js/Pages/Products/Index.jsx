@@ -157,8 +157,7 @@ export default function ProductsIndex() {
                 <div className="page-shell">
                     <div className="page-header mb-5">
                         <div className="min-w-0">
-                            <p className="commerce-kicker">Vetora Marketplace</p>
-                            <h1 className="commerce-title mt-1">{nav.products}</h1>
+                            <h1 className="commerce-title">{nav.products}</h1>
                             {meta && <p className="mt-1 text-sm text-muted-foreground">{(nav.results_count ?? '').replace(':count', String(meta.total))}</p>}
                         </div>
                     </div>
