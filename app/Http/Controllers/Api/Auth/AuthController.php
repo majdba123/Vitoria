@@ -34,6 +34,13 @@ class AuthController extends Controller
         }
         $this->persistLocale($request, $result['user']->locale);
 
+        // Registration is also an authentication boundary. Preserve the
+        // visitor's server cart exactly as login does, so choosing to create
+        // an account during checkout never discards shopping intent.
+        if ($request->hasSession()) {
+            app(CartService::class)->mergeGuestCartIntoUser($request, $result['user']);
+        }
+
         return response()->json([
             'message' => __('User registered successfully.'),
             'data' => [

@@ -70,33 +70,37 @@ class OrderCancellationService
             ]));
         }
 
-        // Moves the status (conditionally, with its own conflict guard) and
-        // writes the history row.
-        $order = $this->orderStatusService->transition(
-            $order,
-            Order::STATUS_CANCELLED,
-            $actor,
-            $actorType,
-            $reason,
-            $notes,
-        );
+        $order = DB::transaction(function () use ($actor, $actorType, $notes, $order, $reason): Order {
+            // Status, audit metadata, stock, and an unsettled payment describe
+            // one cancellation. Never commit only a subset of that state.
+            $cancelledOrder = $this->orderStatusService->transition(
+                $order,
+                Order::STATUS_CANCELLED,
+                $actor,
+                $actorType,
+                $reason,
+                $notes,
+            );
 
-        $order->update([
-            'cancelled_at' => now(),
-            'cancelled_by_user_id' => $actor->id,
-            'cancellation_reason' => $reason,
-            'cancellation_notes' => $notes,
-        ]);
+            $cancelledOrder->update([
+                'cancelled_at' => now(),
+                'cancelled_by_user_id' => $actor->id,
+                'cancellation_reason' => $reason,
+                'cancellation_notes' => $notes,
+            ]);
 
-        $this->restoreStockOnce($order);
+            $this->restoreStockOnce($cancelledOrder);
 
-        $order->loadMissing('payment');
+            $cancelledOrder->loadMissing('payment');
 
-        if ($order->payment) {
-            // A settled payment is untouched here — undoing money already
-            // collected is a refund, not a cancellation (spec §11).
-            $this->paymentService->cancelIfUnsettled($order->payment);
-        }
+            if ($cancelledOrder->payment) {
+                // A settled payment is untouched here — undoing money already
+                // collected is a refund, not a cancellation (spec §11).
+                $this->paymentService->cancelIfUnsettled($cancelledOrder->payment);
+            }
+
+            return $cancelledOrder;
+        });
 
         return $order->refresh();
     }
@@ -109,16 +113,16 @@ class OrderCancellationService
      */
     public function restoreStockOnce(Order $order): bool
     {
-        $claimed = Order::query()
-            ->whereKey($order->id)
-            ->whereNull('stock_restored_at')
-            ->update(['stock_restored_at' => now()]);
+        $restored = DB::transaction(function () use ($order): bool {
+            $claimed = Order::query()
+                ->whereKey($order->id)
+                ->whereNull('stock_restored_at')
+                ->update(['stock_restored_at' => now()]);
 
-        if ($claimed === 0) {
-            return false;
-        }
+            if ($claimed === 0) {
+                return false;
+            }
 
-        DB::transaction(function () use ($order): void {
             $order->loadMissing('items');
 
             foreach ($order->items as $item) {
@@ -135,7 +139,13 @@ class OrderCancellationService
                         'updated_at' => now(),
                     ]);
             }
+
+            return true;
         });
+
+        if (! $restored) {
+            return false;
+        }
 
         try {
             Cache::tags(['products'])->flush();

@@ -5,8 +5,10 @@ namespace App\Http\Middleware;
 use App\Http\Resources\Auth\UserResource;
 use App\Models\FooterSetting;
 use App\Services\ApplicationCacheService;
+use Closure;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Symfony\Component\HttpFoundation\Response;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -18,6 +20,23 @@ class HandleInertiaRequests extends Middleware
      * @var string
      */
     protected $rootView = 'app';
+
+    /**
+     * Preserve representation dimensions set by route middleware. Inertia's
+     * base middleware sets its own Vary header after downstream middleware
+     * returns, so localized public API responses would otherwise lose their
+     * shared-cache isolation.
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        $response = parent::handle($request, $next);
+
+        if (str_contains((string) $response->headers->get('Cache-Control'), 'public')) {
+            $response->setVary(['X-Inertia', 'Accept', 'Accept-Language', 'Cookie']);
+        }
+
+        return $response;
+    }
 
     /**
      * Determines the current asset version.

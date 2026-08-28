@@ -17,7 +17,9 @@ class CacheResponse
 
         if ($request->isMethod('GET') && $response->isSuccessful()) {
             $response->headers->set('Cache-Control', "public, max-age={$seconds}, s-maxage={$seconds}");
-            $response->headers->set('Vary', 'Accept');
+            // Public payloads are localized from the request header or locale
+            // cookies. Shared proxies must keep those representations apart.
+            $response->setVary(['Accept', 'Accept-Language', 'Cookie']);
         }
 
         return $response;

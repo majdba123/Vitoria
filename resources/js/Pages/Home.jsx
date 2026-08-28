@@ -138,7 +138,7 @@ function HeroMedia({ alt }) {
                 alt={alt}
                 width={1280}
                 height={720}
-                fetchpriority="high"
+                fetchPriority="high"
                 className="storefront-hero-video"
             />
         );
@@ -290,10 +290,15 @@ export default function Home({ selectedType }) {
 
     useEffect(() => {
         if (!selectedType) return;
-        window.axios.get('/api/categories', { params: { per_page: 100, type: selectedType }, silent: true }).then((res) => {
+        const controller = new AbortController();
+        window.axios.get('/api/categories', { params: { per_page: 100, type: selectedType }, signal: controller.signal, silent: true }).then((res) => {
             setCategories(res.data?.data ?? []);
             setCategoriesStatus('ready');
-        }).catch(() => setCategoriesStatus('error'));
+        }).catch((error) => {
+            if (!controller.signal.aborted && error?.code !== 'ERR_CANCELED') setCategoriesStatus('error');
+        });
+
+        return () => controller.abort();
     }, [selectedType]);
 
     const activeCategory = useMemo(() => categories.find((c) => String(c.id) === String(categoryId)) ?? null, [categories, categoryId]);
@@ -306,20 +311,31 @@ export default function Home({ selectedType }) {
         window.history.replaceState({}, '', url.pathname + url.search);
     }, [selectedType, categoryId, subcategoryId]);
 
-    const loadProducts = () => {
+    const loadProducts = (signal) => {
         if (!categoryId) return;
         const params2 = { category_id: categoryId, subcategory_id: subcategoryId || undefined, category_type: selectedType, per_page: 24 };
         setLatest({ status: 'loading', rows: [] });
-        window.axios.get('/api/products', { params: params2, silent: true }).then((res) => setLatest({ status: 'ready', rows: res.data?.data ?? [] })).catch(() => setLatest({ status: 'error', rows: [] }));
+        window.axios.get('/api/products', { params: params2, signal, silent: true }).then((res) => setLatest({ status: 'ready', rows: res.data?.data ?? [] })).catch((error) => {
+            if (!signal?.aborted && error?.code !== 'ERR_CANCELED') setLatest({ status: 'error', rows: [] });
+        });
 
         setBestSelling({ status: 'loading', rows: [] });
-        window.axios.get('/api/products', { params: { ...params2, per_page: 5, sort: 'best_selling' }, silent: true }).then((res) => setBestSelling({ status: 'ready', rows: res.data?.data ?? [] })).catch(() => setBestSelling({ status: 'error', rows: [] }));
+        window.axios.get('/api/products', { params: { ...params2, per_page: 5, sort: 'best_selling' }, signal, silent: true }).then((res) => setBestSelling({ status: 'ready', rows: res.data?.data ?? [] })).catch((error) => {
+            if (!signal?.aborted && error?.code !== 'ERR_CANCELED') setBestSelling({ status: 'error', rows: [] });
+        });
 
         setMostFavorited({ status: 'loading', rows: [] });
-        window.axios.get('/api/products', { params: { ...params2, per_page: 5, sort: 'most_favorited' }, silent: true }).then((res) => setMostFavorited({ status: 'ready', rows: res.data?.data ?? [] })).catch(() => setMostFavorited({ status: 'error', rows: [] }));
+        window.axios.get('/api/products', { params: { ...params2, per_page: 5, sort: 'most_favorited' }, signal, silent: true }).then((res) => setMostFavorited({ status: 'ready', rows: res.data?.data ?? [] })).catch((error) => {
+            if (!signal?.aborted && error?.code !== 'ERR_CANCELED') setMostFavorited({ status: 'error', rows: [] });
+        });
     };
 
-    useEffect(loadProducts, [categoryId, subcategoryId, selectedType]);
+    useEffect(() => {
+        const controller = new AbortController();
+        loadProducts(controller.signal);
+
+        return () => controller.abort();
+    }, [categoryId, subcategoryId, selectedType]);
 
     const selectCategory = (id, subId = null) => {
         setCategoryId(id ? String(id) : null);
@@ -542,7 +558,7 @@ export default function Home({ selectedType }) {
                                             <ArrowRight className="h-4 w-4 rtl:-scale-x-100" />
                                         </Link>
                                     </div>
-                                    <ProductGrid status={latest.status} rows={latest.rows} emptyMessage={subcategoryId ? home.no_products_in_subcategory : home.no_products_in_category} onRetry={loadProducts} />
+                                    <ProductGrid status={latest.status} rows={latest.rows} emptyMessage={subcategoryId ? home.no_products_in_subcategory : home.no_products_in_category} onRetry={() => loadProducts()} />
                                     <div className="mt-8 text-center sm:hidden">
                                         <Link href={productsHref(null)} className="btn-secondary btn-sm">
                                             {home.view_all_products_arrow}
@@ -565,7 +581,7 @@ export default function Home({ selectedType }) {
                                             <ArrowRight className="h-4 w-4 rtl:-scale-x-100" />
                                         </Link>
                                     </div>
-                                    <ProductGrid status={bestSelling.status} rows={bestSelling.rows} rank onRetry={loadProducts} />
+                                    <ProductGrid status={bestSelling.status} rows={bestSelling.rows} rank onRetry={() => loadProducts()} />
                                 </div>
                             </section>
 
@@ -582,7 +598,7 @@ export default function Home({ selectedType }) {
                                             <ArrowRight className="h-4 w-4 rtl:-scale-x-100" />
                                         </Link>
                                     </div>
-                                    <ProductGrid status={mostFavorited.status} rows={mostFavorited.rows} onRetry={loadProducts} />
+                                    <ProductGrid status={mostFavorited.status} rows={mostFavorited.rows} onRetry={() => loadProducts()} />
                                 </div>
                             </section>
                         </div>

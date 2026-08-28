@@ -125,6 +125,19 @@ class OrderStatusService
                 'reason' => $reason,
                 'notes' => $notes,
             ]);
+
+            if ($to === Order::STATUS_COMPLETED) {
+                // Completion, COD settlement, and vendor ledger recognition
+                // are one financial state change. A failure in any part must
+                // roll the order back to its prior fulfilment status.
+                $order->loadMissing('payment');
+
+                if ($order->payment) {
+                    $this->paymentService->markPaid($order->payment);
+                }
+
+                $this->vendorLedgerService->recordSale($order);
+            }
         });
 
         $order->refresh();
@@ -133,23 +146,6 @@ class OrderStatusService
         // order's own fulfilment status (spec §14). Best-effort by design —
         // see ShippingService::syncFromOrderStatus.
         $this->shippingService->syncFromOrderStatus($order, $to, $actor, $actorType);
-
-        if ($to === Order::STATUS_COMPLETED) {
-            // COD settles when the courier hands over the goods and collects
-            // cash — i.e. exactly when fulfilment reaches its terminal state.
-            // This is the only place a payment is marked paid, so every path
-            // that completes an order (vendor, employee, admin) settles it.
-            $order->loadMissing('payment');
-
-            if ($order->payment) {
-                $this->paymentService->markPaid($order->payment);
-            }
-
-            // Likewise the only place a sale lands on the vendor ledger
-            // (spec §20) — the commission rate is captured now, not
-            // recomputed later if the category's rate changes.
-            $this->vendorLedgerService->recordSale($order);
-        }
 
         $this->notificationService->notifyOrderStatusUpdated($order, $to);
 

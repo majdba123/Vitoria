@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
@@ -9,35 +9,47 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/Components/ui/button';
 import { TextField } from '@/Components/admin/form/FormField';
 import { Wallet, DollarSign, HandCoins, TrendingDown } from 'lucide-react';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
 
-function formatMoney(amount) {
-    return `${new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }).format(Number(amount || 0))} SYP`;
+function formatMoney(amount, locale) {
+    return `${new Intl.NumberFormat(locale === 'ar' ? 'ar-SY' : 'en-US', { maximumFractionDigits: 2 }).format(Number(amount || 0))} SYP`;
 }
 
 export default function VendorsCommission({ vendorId }) {
+    const { admin, vendor: vendorCopy } = useI18n();
+    const locale = useLocale();
     const [status, setStatus] = useState('loading');
     const [data, setData] = useState(null);
     const [paidAmount, setPaidAmount] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [message, setMessage] = useState(null);
 
-    const load = () => {
+    const load = useCallback((signal) => {
         setStatus('loading');
-        window.axios.get(`/api/admin/vendors/${vendorId}/commission-stats`, { silent: true }).then((res) => {
+        window.axios.get(`/api/admin/vendors/${vendorId}/commission-stats`, { silent: true, signal }).then((res) => {
             const payload = res.data?.data ?? {};
             setData(payload);
             setPaidAmount(String(payload.financials?.paid_amount ?? 0));
             setStatus('ready');
-        }).catch(() => setStatus('error'));
-    };
+        }).catch((error) => {
+            if (error.name !== 'CanceledError') {
+                setStatus('error');
+            }
+        });
+    }, [vendorId]);
 
-    useEffect(load, [vendorId]);
+    useEffect(() => {
+        const controller = new AbortController();
+        load(controller.signal);
+
+        return () => controller.abort();
+    }, [load]);
 
     const savePaid = (event) => {
         event.preventDefault();
         const amount = Number(paidAmount);
         if (Number.isNaN(amount) || amount < 0) {
-            setMessage({ tone: 'danger', text: 'Paid amount must be zero or greater.' });
+            setMessage({ tone: 'danger', text: admin.commission_paid_non_negative });
             return;
         }
 
@@ -47,17 +59,20 @@ export default function VendorsCommission({ vendorId }) {
         // will reject against, not a different, unrelated figure.
         const alreadySettled = Number(data?.financials?.paid_amount ?? 0);
         const trueOutstandingCap = alreadySettled + Number(data?.financials?.remaining_amount ?? 0);
-        if (amount > trueOutstandingCap && !window.confirm(`This paid amount (${formatMoney(amount)}) exceeds the total outstanding to this vendor (${formatMoney(trueOutstandingCap)}) and will be rejected by the ledger. Continue anyway?`)) {
+        const capWarning = admin.commission_paid_exceeds_outstanding
+            .replace(':amount', formatMoney(amount, locale))
+            .replace(':outstanding', formatMoney(trueOutstandingCap, locale));
+        if (amount > trueOutstandingCap && !window.confirm(capWarning)) {
             return;
         }
 
         setIsSaving(true);
         window.axios.post(`/api/admin/vendors/${vendorId}/commission-paid`, { paid_amount: amount }, { silent: true }).then((res) => {
-            setMessage({ tone: 'success', text: res.data?.message ?? 'Paid amount updated.' });
+            setMessage({ tone: 'success', text: res.data?.message ?? admin.commission_paid_updated });
             setIsSaving(false);
             load();
         }).catch((error) => {
-            setMessage({ tone: 'danger', text: error.response?.data?.message ?? 'Failed to update paid amount.' });
+            setMessage({ tone: 'danger', text: error.response?.data?.message ?? admin.commission_paid_update_failed });
             setIsSaving(false);
         });
     };
@@ -72,14 +87,14 @@ export default function VendorsCommission({ vendorId }) {
     const trendMax = Math.max(...trend.map((p) => Number(p.count || 0)), 1);
 
     return (
-        <AdminLayout title="Vendor commission dashboard">
+        <AdminLayout title={vendorCopy.commission_title}>
             <PageHeader
-                breadcrumb={[{ label: 'Vendors', href: route('admin.vendors.index') }]}
-                title={vendor.store_name ? `${vendor.store_name} — Commission dashboard` : `Vendor #${vendorId}`}
-                copy="Commission is calculated by category commission for completed orders only."
+                breadcrumb={[{ label: admin.vendors, href: route('admin.vendors.index') }]}
+                title={vendor.store_name ? `${vendor.store_name} — ${vendorCopy.commission_dashboard_suffix}` : `${admin.vendor_label} #${vendorId}`}
+                copy={vendorCopy.commission_dashboard_copy}
                 actions={
                     <Button asChild variant="outline" size="sm">
-                        <Link href={route('admin.vendors.index')}>Back to vendors</Link>
+                        <Link href={route('admin.vendors.index')}>{admin.commission_back_to_vendors}</Link>
                     </Button>
                 }
             />
@@ -91,22 +106,22 @@ export default function VendorsCommission({ vendorId }) {
             )}
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <StatCard label="Order total (confirmed + completed)" value={formatMoney(financials.projected_order_total)} icon={DollarSign} status={status} />
-                <StatCard label="Commission total" value={formatMoney(financials.commission_total)} icon={Wallet} status={status} />
-                <StatCard label="Paid to vendor" value={formatMoney(financials.paid_amount)} icon={HandCoins} status={status} tone="success" />
-                <StatCard label="Remaining" value={formatMoney(financials.remaining_amount)} icon={TrendingDown} status={status} tone="danger" />
+                <StatCard label={vendorCopy.completed_orders_total} value={formatMoney(financials.projected_order_total, locale)} icon={DollarSign} status={status} />
+                <StatCard label={vendorCopy.commission_total_label} value={formatMoney(financials.commission_total, locale)} icon={Wallet} status={status} />
+                <StatCard label={admin.commission_paid_to_vendor} value={formatMoney(financials.paid_amount, locale)} icon={HandCoins} status={status} tone="success" />
+                <StatCard label={vendorCopy.remaining_label} value={formatMoney(financials.remaining_amount, locale)} icon={TrendingDown} status={status} tone="danger" />
             </div>
 
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
                 <Card className="border-border/80 shadow-none">
                     <CardHeader className="border-b border-border/80">
-                        <CardTitle className="text-base font-bold">Order status statistics</CardTitle>
+                        <CardTitle className="text-base font-bold">{vendorCopy.order_status_statistics}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4 p-5">
                         {[
-                            { key: 'pending', label: 'Pending', color: 'var(--color-warning-500)' },
-                            { key: 'completed', label: 'Completed', color: 'var(--color-success-500)' },
-                            { key: 'cancelled', label: 'Cancelled', color: 'var(--color-danger-500)' },
+                            { key: 'pending', label: vendorCopy.status_pending, color: 'var(--color-warning-500)' },
+                            { key: 'completed', label: vendorCopy.status_completed, color: 'var(--color-success-500)' },
+                            { key: 'cancelled', label: vendorCopy.status_cancelled, color: 'var(--color-danger-500)' },
                         ].map((row) => {
                             const value = Number(statusCounts[row.key] || 0);
                             const pct = total > 0 ? Math.round((value / total) * 100) : 0;
@@ -127,15 +142,15 @@ export default function VendorsCommission({ vendorId }) {
 
                 <Card className="border-border/80 shadow-none">
                     <CardHeader className="border-b border-border/80">
-                        <CardTitle className="text-base font-bold">Update paid amount</CardTitle>
+                        <CardTitle className="text-base font-bold">{admin.commission_update_paid_amount}</CardTitle>
                     </CardHeader>
                     <CardContent className="p-5">
-                        <p className="mb-3 text-xs text-muted-foreground">Set total paid to vendor. Remaining amount updates automatically.</p>
+                        <p className="mb-3 text-xs text-muted-foreground">{admin.commission_update_paid_hint}</p>
                         <form onSubmit={savePaid} className="space-y-3">
-                            <TextField id="paid_amount" label="Paid amount" type="number" min="0" step="0.01" value={paidAmount} onChange={(e) => setPaidAmount(e.target.value)} />
+                            <TextField id="paid_amount" label={vendorCopy.paid_amount_label} type="number" min="0" step="0.01" value={paidAmount} onChange={(e) => setPaidAmount(e.target.value)} />
                             <Button type="submit" size="sm" disabled={isSaving}>
                                 {isSaving && <Loader2 className="size-4 animate-spin" />}
-                                Save paid amount
+                                {admin.commission_save_paid_amount}
                             </Button>
                         </form>
                     </CardContent>
@@ -144,30 +159,30 @@ export default function VendorsCommission({ vendorId }) {
 
             <Card className="border-border/80 shadow-none">
                 <CardHeader className="border-b border-border/80">
-                    <CardTitle className="text-base font-bold">Commission by category</CardTitle>
+                    <CardTitle className="text-base font-bold">{vendorCopy.commission_by_category}</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Category</TableHead>
-                                <TableHead>Commission %</TableHead>
-                                <TableHead>Sales total</TableHead>
-                                <TableHead>Commission amount</TableHead>
+                                <TableHead>{vendorCopy.th_category}</TableHead>
+                                <TableHead>{vendorCopy.th_commission_percent}</TableHead>
+                                <TableHead>{vendorCopy.th_sales_total}</TableHead>
+                                <TableHead>{vendorCopy.th_commission_amount}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {categoryBreakdown.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="py-6 text-center text-sm text-muted-foreground">No completed orders found.</TableCell>
+                                    <TableCell colSpan={4} className="py-6 text-center text-sm text-muted-foreground">{vendorCopy.js_no_completed_orders_found}</TableCell>
                                 </TableRow>
                             ) : (
                                 categoryBreakdown.map((row, index) => (
                                     <TableRow key={index}>
-                                        <TableCell className="font-semibold">{row.category_name ?? 'Unknown'}</TableCell>
+                                        <TableCell className="font-semibold">{row.category_name ?? vendorCopy.js_unknown_category}</TableCell>
                                         <TableCell>{Number(row.commission_rate || 0).toFixed(2)}%</TableCell>
-                                        <TableCell className="font-semibold">{formatMoney(row.sales_total)}</TableCell>
-                                        <TableCell className="font-semibold text-primary">{formatMoney(row.commission_amount)}</TableCell>
+                                        <TableCell className="font-semibold">{formatMoney(row.sales_total, locale)}</TableCell>
+                                        <TableCell className="font-semibold text-primary">{formatMoney(row.commission_amount, locale)}</TableCell>
                                     </TableRow>
                                 ))
                             )}
@@ -178,11 +193,11 @@ export default function VendorsCommission({ vendorId }) {
 
             <Card className="border-border/80 shadow-none">
                 <CardHeader className="border-b border-border/80">
-                    <CardTitle className="text-base font-bold">Orders in the last 7 days</CardTitle>
+                    <CardTitle className="text-base font-bold">{vendorCopy.last_7_days_completed_orders}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-7 gap-2 p-5">
                     {trend.length === 0 ? (
-                        <p className="col-span-7 text-sm text-muted-foreground">No trend data available.</p>
+                        <p className="col-span-7 text-sm text-muted-foreground">{vendorCopy.js_no_trend_data}</p>
                     ) : (
                         trend.map((point, index) => {
                             const value = Number(point.count || 0);

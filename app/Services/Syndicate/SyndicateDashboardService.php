@@ -72,13 +72,14 @@ class SyndicateDashboardService
             ->withCount(['products' => fn ($query) => $query->whereHas('category', fn ($category) => $category->where('type', $type))])
             ->addSelect([
                 'completed_orders_count' => Order::query()->selectRaw('COUNT(DISTINCT orders.id)')->whereColumn('orders.vendor_id', 'vendors.id')
-                    ->where('orders.status', Order::STATUS_COMPLETED)->whereHas('items.product.category', fn ($category) => $category->where('type', $type)),
+                    ->where('orders.status', Order::STATUS_COMPLETED)->whereHas('items', fn ($items) => $items->forDomain($type)),
                 'domain_sales' => DB::table('order_items')->join('orders', 'orders.id', '=', 'order_items.order_id')
-                    ->join('products', 'products.id', '=', 'order_items.product_id')->join('categories', 'categories.id', '=', 'products.category_id')
+                    ->leftJoin('products', 'products.id', '=', 'order_items.product_id')->leftJoin('categories', 'categories.id', '=', 'products.category_id')
+                    ->leftJoin('categories as snapshot_categories', 'snapshot_categories.id', '=', 'order_items.category_id_snapshot')
                     ->selectRaw('COALESCE(SUM(order_items.line_total), 0)')->whereColumn('orders.vendor_id', 'vendors.id')
-                    ->where('orders.status', Order::STATUS_COMPLETED)->where('categories.type', $type),
+                    ->where('orders.status', Order::STATUS_COMPLETED)->whereRaw('COALESCE(order_items.category_type, snapshot_categories.type, categories.type) = ?', [$type]),
                 'last_activity_at' => Order::query()->select('created_at')->whereColumn('orders.vendor_id', 'vendors.id')
-                    ->whereHas('items.product.category', fn ($category) => $category->where('type', $type))->latest('created_at')->limit(1),
+                    ->whereHas('items', fn ($items) => $items->forDomain($type))->latest('created_at')->limit(1),
             ])
             ->latest()
             ->paginate($perPage);
@@ -98,7 +99,8 @@ class SyndicateDashboardService
             ->with([
                 'user:id,name,email',
                 'vendor:id,store_name',
-                'items:id,order_id,product_id,product_name,quantity,line_total,unit_price',
+                'items' => fn ($items) => $items->forDomain($syndicate->type)
+                    ->select('id', 'order_id', 'product_id', 'category_type', 'product_name', 'quantity', 'line_total', 'unit_price'),
                 'items.product:id,category_id,vendor_id',
                 'items.product.category:id,name,type,commission',
             ])
@@ -158,7 +160,7 @@ class SyndicateDashboardService
     public function orderQuery(string $type): Builder
     {
         return Order::query()
-            ->whereHas('items.product.category', fn (Builder $query) => $query->where('type', $type));
+            ->whereHas('items', fn (Builder $items) => $items->forDomain($type));
     }
 
     /**
@@ -296,9 +298,10 @@ class SyndicateDashboardService
     {
         return DB::table('order_items')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
-            ->join('products', 'products.id', '=', 'order_items.product_id')
-            ->join('categories', 'categories.id', '=', 'products.category_id')
-            ->where('categories.type', $type);
+            ->leftJoin('products', 'products.id', '=', 'order_items.product_id')
+            ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
+            ->leftJoin('categories as snapshot_categories', 'snapshot_categories.id', '=', 'order_items.category_id_snapshot')
+            ->whereRaw('COALESCE(order_items.category_type, snapshot_categories.type, categories.type) = ?', [$type]);
     }
 
     /**
@@ -371,9 +374,10 @@ class SyndicateDashboardService
         return $this->monthAggregateQuery(
             DB::table('orders')
                 ->join('order_items', 'order_items.order_id', '=', 'orders.id')
-                ->join('products', 'products.id', '=', 'order_items.product_id')
-                ->join('categories', 'categories.id', '=', 'products.category_id')
-                ->where('categories.type', $type),
+                ->leftJoin('products', 'products.id', '=', 'order_items.product_id')
+                ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
+                ->leftJoin('categories as snapshot_categories', 'snapshot_categories.id', '=', 'order_items.category_id_snapshot')
+                ->whereRaw('COALESCE(order_items.category_type, snapshot_categories.type, categories.type) = ?', [$type]),
             'orders.created_at',
         )
             ->selectRaw('count(distinct orders.id) as total')
@@ -424,7 +428,7 @@ class SyndicateDashboardService
     protected function merchantsByOrderCount(string $type): Collection
     {
         return $this->lineTotalQuery($type)
-            ->join('vendors', 'vendors.id', '=', 'products.vendor_id')
+            ->join('vendors', 'vendors.id', '=', 'orders.vendor_id')
             ->selectRaw('vendors.id, vendors.store_name, count(distinct orders.id) as orders_count')
             ->groupBy('vendors.id', 'vendors.store_name')
             ->orderByDesc('orders_count')
@@ -450,9 +454,9 @@ class SyndicateDashboardService
     protected function topSellingCategories(string $type): Collection
     {
         return $this->lineTotalQuery($type)
-            ->selectRaw('categories.id, categories.name, count(distinct orders.id) as orders_count, sum(order_items.line_total) as sales_total')
+            ->selectRaw('COALESCE(snapshot_categories.id, categories.id) id, COALESCE(snapshot_categories.name, categories.name) name, count(distinct orders.id) as orders_count, sum(order_items.line_total) as sales_total')
             ->where('orders.status', Order::STATUS_COMPLETED)
-            ->groupBy('categories.id', 'categories.name')
+            ->groupByRaw('COALESCE(snapshot_categories.id, categories.id), COALESCE(snapshot_categories.name, categories.name)')
             ->orderByDesc('sales_total')
             ->limit(5)
             ->get();
@@ -472,7 +476,7 @@ class SyndicateDashboardService
     protected function topMerchantsBySales(string $type): Collection
     {
         return $this->lineTotalQuery($type)
-            ->join('vendors', 'vendors.id', '=', 'products.vendor_id')
+            ->join('vendors', 'vendors.id', '=', 'orders.vendor_id')
             ->selectRaw('vendors.id, vendors.store_name, sum(order_items.line_total) as sales_total, count(distinct orders.id) as orders_count')
             ->where('orders.status', Order::STATUS_COMPLETED)
             ->groupBy('vendors.id', 'vendors.store_name')

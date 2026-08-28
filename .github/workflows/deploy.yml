@@ -1,6 +1,10 @@
 # CI/CD Pipeline for MSZ bayer
 name: Deploy to Production
 
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
 on:
   workflow_run:
     workflows:
@@ -55,8 +59,46 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           envs: DEPLOY_SHA
           script: |
-            set -e
+            set -Eeuo pipefail
             cd /var/www/MSZ
+
+            if [ ! -f .env ]; then
+              echo "ERROR: /var/www/MSZ/.env is missing"
+              exit 1
+            fi
+
+            if ! command -v mysqldump >/dev/null 2>&1; then
+              echo "ERROR: mysqldump is required for a recoverable deployment"
+              exit 1
+            fi
+
+            set -a
+            source .env
+            set +a
+
+            if [ -z "${DB_DATABASE:-}" ] || [ -z "${DB_USERNAME:-}" ]; then
+              echo "ERROR: database backup credentials are incomplete"
+              exit 1
+            fi
+
+            php artisan down --retry=60
+            cleanup() {
+              php artisan up || true
+            }
+            trap cleanup EXIT
+
+            mkdir -p storage/backups
+            backup_path="storage/backups/pre-deploy-$(date +%Y%m%d%H%M%S)-${DEPLOY_SHA}.sql.gz"
+            MYSQL_PWD="${DB_PASSWORD:-}" mysqldump \
+              --single-transaction \
+              --quick \
+              --no-tablespaces \
+              -h"${DB_HOST:-127.0.0.1}" \
+              -P"${DB_PORT:-3306}" \
+              -u"$DB_USERNAME" \
+              "$DB_DATABASE" | gzip > "$backup_path"
+
+            test -s "$backup_path"
 
             # Fix git ownership issue
             git config --global --add safe.directory /var/www/MSZ
@@ -71,17 +113,6 @@ jobs:
             # Install NPM dependencies and build
             npm ci
             npm run build
-
-            # Back up the database before migrating (best effort; does not block deploy on failure)
-            mkdir -p storage/backups
-            set -a; source .env; set +a
-            if [ -n "$DB_DATABASE" ] && command -v mysqldump >/dev/null 2>&1; then
-              mysqldump --no-tablespaces -h"${DB_HOST:-127.0.0.1}" -P"${DB_PORT:-3306}" -u"$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" \
-                | gzip > "storage/backups/pre-deploy-$(date +%Y%m%d%H%M%S).sql.gz" \
-                || echo "WARNING: database backup failed, continuing deploy"
-            else
-              echo "WARNING: mysqldump unavailable or DB_DATABASE unset, skipping pre-deploy backup"
-            fi
 
             # Run migrations
             php artisan migrate --force
@@ -105,6 +136,8 @@ jobs:
             systemctl reload nginx
             supervisorctl restart msz-reverb
 
+            php artisan up
+
             # Verify the app actually came back up before declaring success (APP_URL comes from the server's own .env)
             if [ -n "${APP_URL:-}" ]; then
               curl -fsS "${APP_URL%/}/up" > /dev/null
@@ -112,4 +145,5 @@ jobs:
               echo "WARNING: APP_URL not found in .env, skipping post-deploy health check"
             fi
 
+            trap - EXIT
             echo "Deployment completed successfully!"

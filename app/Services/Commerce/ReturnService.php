@@ -112,48 +112,53 @@ class ReturnService
             []
         );
 
-        $orderItems = OrderItem::query()
-            ->whereIn('id', array_keys($requestedByItem))
-            ->where('order_id', $order->id)
-            ->get()
-            ->keyBy('id');
+        $return = DB::transaction(function () use ($notes, $order, $reason, $requestedByItem, $user) {
+            // Stable row order avoids deadlocks when two requests contain the
+            // same items in a different order. The locks make the remaining-
+            // quantity check and return creation one serialized decision.
+            $orderItems = OrderItem::query()
+                ->whereIn('id', array_keys($requestedByItem))
+                ->where('order_id', $order->id)
+                ->orderBy('id')
+                ->lockForUpdate()
+                ->get()
+                ->keyBy('id');
 
-        $lines = [];
-        $refundableAmount = 0.0;
+            $lines = [];
+            $refundableAmount = 0.0;
 
-        foreach ($requestedByItem as $orderItemId => $quantity) {
-            if ($quantity < 1) {
-                throw new CartException(__('returns.quantity_invalid'));
+            foreach ($requestedByItem as $orderItemId => $quantity) {
+                if ($quantity < 1) {
+                    throw new CartException(__('returns.quantity_invalid'));
+                }
+
+                /** @var OrderItem|null $orderItem */
+                $orderItem = $orderItems->get($orderItemId);
+
+                if (! $orderItem) {
+                    throw new CartException(__('returns.item_invalid'));
+                }
+
+                $remaining = (int) $orderItem->quantity - $this->alreadyReturnedQuantity($orderItem->id);
+
+                if ($quantity > $remaining) {
+                    throw new CartException(__('returns.quantity_exceeds', [
+                        'product' => $orderItem->product_name,
+                    ]));
+                }
+
+                $lineTotal = round((float) $orderItem->unit_price * $quantity, 2);
+                $refundableAmount = round($refundableAmount + $lineTotal, 2);
+
+                $lines[] = [
+                    'order_item_id' => $orderItem->id,
+                    'product_id' => $orderItem->product_id,
+                    'quantity' => $quantity,
+                    'unit_price' => $orderItem->unit_price,
+                    'line_total' => $lineTotal,
+                ];
             }
 
-            /** @var OrderItem|null $orderItem */
-            $orderItem = $orderItems->get($orderItemId);
-
-            if (! $orderItem) {
-                throw new CartException(__('returns.item_invalid'));
-            }
-
-            $remaining = (int) $orderItem->quantity - $this->alreadyReturnedQuantity($orderItem->id);
-
-            if ($quantity > $remaining) {
-                throw new CartException(__('returns.quantity_exceeds', [
-                    'product' => $orderItem->product_name,
-                ]));
-            }
-
-            $lineTotal = round((float) $orderItem->unit_price * $quantity, 2);
-            $refundableAmount = round($refundableAmount + $lineTotal, 2);
-
-            $lines[] = [
-                'order_item_id' => $orderItem->id,
-                'product_id' => $orderItem->product_id,
-                'quantity' => $quantity,
-                'unit_price' => $orderItem->unit_price,
-                'line_total' => $lineTotal,
-            ];
-        }
-
-        $return = DB::transaction(function () use ($lines, $notes, $order, $reason, $refundableAmount, $user) {
             $orderReturn = OrderReturn::create([
                 'return_number' => $this->generateReturnNumber(),
                 'order_id' => $order->id,
@@ -246,13 +251,13 @@ class ReturnService
             if ($applied === 0) {
                 throw new CartException(__('returns.transition_conflict'));
             }
+
+            if ($to === OrderReturn::STATUS_RECEIVED) {
+                $this->restoreStockOnce($return);
+            }
         });
 
         $return->refresh();
-
-        if ($to === OrderReturn::STATUS_RECEIVED) {
-            $this->restoreStockOnce($return);
-        }
 
         $this->notificationService->notifyReturnStatusUpdated($return->fresh(['order', 'user', 'vendor']), $to);
 
@@ -267,16 +272,16 @@ class ReturnService
      */
     public function restoreStockOnce(OrderReturn $return): bool
     {
-        $claimed = OrderReturn::query()
-            ->whereKey($return->id)
-            ->whereNull('stock_restored_at')
-            ->update(['stock_restored_at' => now()]);
+        $restored = DB::transaction(function () use ($return): bool {
+            $claimed = OrderReturn::query()
+                ->whereKey($return->id)
+                ->whereNull('stock_restored_at')
+                ->update(['stock_restored_at' => now()]);
 
-        if ($claimed === 0) {
-            return false;
-        }
+            if ($claimed === 0) {
+                return false;
+            }
 
-        DB::transaction(function () use ($return): void {
             $return->loadMissing('items');
 
             foreach ($return->items as $item) {
@@ -291,7 +296,13 @@ class ReturnService
                         'updated_at' => now(),
                     ]);
             }
+
+            return true;
         });
+
+        if (! $restored) {
+            return false;
+        }
 
         try {
             Cache::tags(['products'])->flush();

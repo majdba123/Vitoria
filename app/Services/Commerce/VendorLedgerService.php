@@ -49,7 +49,7 @@ class VendorLedgerService
 
         foreach ($order->items as $item) {
             /** @var OrderItem $item */
-            $rate = (float) ($item->product?->category?->commission ?? 0);
+            $rate = (float) ($item->commission_rate_snapshot ?? $item->product?->category?->commission ?? 0);
             $commissionTotal += ((float) $item->line_total * $rate) / 100;
         }
 

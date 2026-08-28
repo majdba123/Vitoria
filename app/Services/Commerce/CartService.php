@@ -302,7 +302,7 @@ class CartService
      */
     public function summarize(Cart $cart): array
     {
-        $cart->loadMissing('items.product.vendor', 'items.product.photos');
+        $cart->loadMissing('items.product.vendor', 'items.product.category', 'items.product.photos');
 
         $lines = [];
         $subtotal = 0.0;
@@ -328,6 +328,9 @@ class CartService
                 'photo_url' => $photo ? asset('storage/'.$photo->path) : null,
                 'vendor_id' => $product->vendor_id,
                 'vendor_name' => $product->vendor?->store_name,
+                'category_id' => $product->category_id,
+                'category_type' => $product->category?->type,
+                'commission_rate' => $product->category?->commission,
                 'original_unit_price' => round((float) $product->price, 2),
                 'unit_price' => $unitPrice,
                 'has_discount' => $product->hasActiveDiscount(),

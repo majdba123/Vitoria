@@ -16,12 +16,17 @@ export default function VendorsShow({ vendorId, vendor }) {
 
     useEffect(() => {
         if (!vendor) return;
+        const controller = new AbortController();
         setProductsStatus('loading');
-        window.axios.get('/api/products', { params: { vendor_id: vendorId, page }, silent: true }).then((res) => {
+        window.axios.get('/api/products', { params: { vendor_id: vendorId, page }, signal: controller.signal, silent: true }).then((res) => {
             setProducts(res.data?.data ?? []);
             setMeta(res.data?.meta ?? null);
             setProductsStatus('ready');
-        }).catch(() => setProductsStatus('error'));
+        }).catch((error) => {
+            if (!controller.signal.aborted && error?.code !== 'ERR_CANCELED') setProductsStatus('error');
+        });
+
+        return () => controller.abort();
     }, [vendorId, page, vendor]);
 
     if (!vendor) {
@@ -34,8 +39,31 @@ export default function VendorsShow({ vendorId, vendor }) {
         );
     }
 
+    const vendorUrl = route('vendors.show', vendorId);
+    const storeJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Store',
+        name: vendor.store_name,
+        url: vendorUrl,
+        description: vendor.description || undefined,
+        image: vendor.logo_url || undefined,
+        address: vendor.address || vendor.city?.name ? {
+            '@type': 'PostalAddress',
+            streetAddress: vendor.address || undefined,
+            addressLocality: vendor.city?.name || undefined,
+        } : undefined,
+    };
+    const breadcrumbJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            { '@type': 'ListItem', position: 1, name: nav.home, item: route('home') },
+            { '@type': 'ListItem', position: 2, name: vendor.store_name, item: vendorUrl },
+        ],
+    };
+
     return (
-        <PublicLayout title={vendor.store_name} description={vendor.description || undefined} image={vendor.logo_url || undefined}>
+        <PublicLayout title={vendor.store_name} description={vendor.description || undefined} image={vendor.logo_url || undefined} jsonLd={[storeJsonLd, breadcrumbJsonLd]}>
             <div className="bg-transparent">
                 <div className="catalog-page-band">
                     <div className="page-shell py-3">

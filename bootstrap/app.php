@@ -62,7 +62,6 @@ return Application::configure(basePath: dirname(__DIR__))
         // to users as random logouts, lost cart state, or stale CSRF tokens.
         $middleware->trustProxies(at: '*');
         $middleware->statefulApi();
-        $middleware->validateCsrfTokens(except: ['api/*']);
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
             'product.type.selected' => EnsureProductTypeSelected::class,

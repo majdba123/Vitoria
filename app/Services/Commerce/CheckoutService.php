@@ -90,26 +90,31 @@ class CheckoutService
             throw new CartException(__('cart.address_invalid'));
         }
 
-        // Drop withdrawn products and clamp over-large lines before pricing, so
-        // the customer is never charged for something the cart cannot supply.
-        $this->cartService->reconcile($cart);
+        $orders = DB::transaction(function () use ($address, $cart, $paymentMethod, $shippingMethod, $user) {
+            // Serialize checkout for this cart. Without this lock, two requests
+            // could both price the same pre-clear cart and create duplicate
+            // orders when enough stock existed for both.
+            $lockedCart = Cart::query()->whereKey($cart->id)->lockForUpdate()->firstOrFail();
 
-        $summary = $this->cartService->summarize($cart);
+            // Reconcile and price only after the cart lock is held, so every
+            // value used below belongs to this transaction's authoritative
+            // snapshot rather than a stale pre-transaction summary.
+            $this->cartService->reconcile($lockedCart);
+            $summary = $this->cartService->summarize($lockedCart);
 
-        if ($summary['items'] === []) {
-            throw new CartException(__('cart.empty'));
-        }
+            if ($summary['items'] === []) {
+                throw new CartException(__('cart.empty'));
+            }
 
-        $subtotal = (float) $summary['subtotal'];
-        $coupon = $cart->coupon_code
-            ? $this->couponService->resolveUsable($cart->coupon_code, $user, $subtotal)
-            : null;
+            $subtotal = (float) $summary['subtotal'];
+            $coupon = $lockedCart->coupon_code
+                ? $this->couponService->resolveUsable($lockedCart->coupon_code, $user, $subtotal)
+                : null;
 
-        if ($cart->coupon_code && ! $coupon) {
-            throw new CartException(__('cart.coupon_invalid'));
-        }
+            if ($lockedCart->coupon_code && ! $coupon) {
+                throw new CartException(__('cart.coupon_invalid'));
+            }
 
-        $orders = DB::transaction(function () use ($address, $cart, $coupon, $paymentMethod, $shippingMethod, $subtotal, $summary, $user) {
             $lines = collect($summary['items']);
             $byVendor = $lines->groupBy('vendor_id');
 
@@ -164,6 +169,9 @@ class CheckoutService
 
                     $order->items()->create([
                         'product_id' => $line['product_id'],
+                        'category_id_snapshot' => $line['category_id'],
+                        'category_type' => $line['category_type'],
+                        'commission_rate_snapshot' => $line['commission_rate'],
                         'product_name' => $line['name'],
                         'original_unit_price' => $line['original_unit_price'],
                         'has_discount' => $line['has_discount'],
@@ -197,7 +205,7 @@ class CheckoutService
                 $this->couponService->claim($coupon, $user, $created[0], $totalDiscount);
             }
 
-            $this->cartService->clear($cart);
+            $this->cartService->clear($lockedCart);
 
             return collect($created);
         });

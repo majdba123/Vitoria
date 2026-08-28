@@ -27,6 +27,9 @@ function analyticsCompletedOrder(Vendor $vendor, array $lines): Order
 
     foreach ($lines as $line) {
         OrderItem::factory()->for($order)->for($line['product'])->create([
+            'category_id_snapshot' => $line['product']->category_id,
+            'category_type' => $line['product']->category->type,
+            'commission_rate_snapshot' => $line['product']->category->commission,
             'product_name' => $line['product']->name,
             'quantity' => $line['quantity'],
             'unit_price' => $line['unit_price'],
@@ -123,6 +126,29 @@ test('syndicates see only their category domain for a both vendor', function (st
     'agriculture isolation' => [Category::TYPE_AGRICULTURE, 'agProduct', 2, 200],
     'veterinary isolation' => [Category::TYPE_VETERINARY, 'vetProduct', 3, 600],
 ]);
+
+test('moving a product later does not reclassify historical syndicate sales', function () {
+    $data = analyticsFixture();
+    $data['agProduct']->update(['category_id' => $data['veterinary']->id]);
+
+    $agricultureSyndicate = Syndicate::factory()->create(['type' => Category::TYPE_AGRICULTURE]);
+    Sanctum::actingAs($agricultureSyndicate->user);
+    $agricultureOverview = $this->getJson("/api/syndicate/vendors/{$data['both']->id}/analytics/overview?range=all")
+        ->assertOk()
+        ->assertJsonPath('data.kpis.units_sold', 2)
+        ->assertJsonPath('data.kpis.gross_sales', 200);
+    expect(collect($agricultureOverview->json('data.category_performance'))->pluck('id'))
+        ->toEqual(collect([$data['agriculture']->id]));
+
+    $veterinarySyndicate = Syndicate::factory()->veterinary()->create();
+    Sanctum::actingAs($veterinarySyndicate->user);
+    $veterinaryOverview = $this->getJson("/api/syndicate/vendors/{$data['both']->id}/analytics/overview?range=all")
+        ->assertOk()
+        ->assertJsonPath('data.kpis.units_sold', 3)
+        ->assertJsonPath('data.kpis.gross_sales', 600);
+    expect(collect($veterinaryOverview->json('data.category_performance'))->pluck('id'))
+        ->toEqual(collect([$data['veterinary']->id]));
+});
 
 test('a mixed domain order never leaks its other domain totals or fabricates finance attribution', function () {
     $data = analyticsFixture();

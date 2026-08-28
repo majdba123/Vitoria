@@ -240,6 +240,31 @@ it('merges a guest cart into the account cart at login, clamped to stock', funct
         ->and(Cart::query()->whereNotNull('session_token')->count())->toBe(0);
 });
 
+it('preserves a guest cart when the shopper creates an account during checkout', function () {
+    $product = cartProduct(quantity: 10);
+
+    $this->postJson('/api/cart/items', ['product_id' => $product->id, 'quantity' => 2])->assertOk();
+
+    $this->postJson('/api/auth/register', [
+        'account_type' => 'user',
+        'name' => 'Checkout Registration',
+        'phone_number' => '0999222333',
+        'national_id' => '9990000233',
+        'age' => 30,
+        'membership_number' => 'MEM-CHECKOUT-233',
+        'city_id' => \App\Models\City::query()->create(['name' => 'Checkout City'])->id,
+        'email' => 'checkout-registration@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+    ])->assertCreated();
+
+    $user = User::query()->where('phone_number', '0999222333')->firstOrFail();
+    $userCart = Cart::query()->where('user_id', $user->id)->firstOrFail();
+
+    expect($userCart->items()->where('product_id', $product->id)->value('quantity'))->toBe(2)
+        ->and(Cart::query()->whereNotNull('session_token')->count())->toBe(0);
+});
+
 it('keeps one cart per user and one per guest session', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
