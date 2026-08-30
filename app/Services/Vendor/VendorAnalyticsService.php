@@ -134,7 +134,7 @@ class VendorAnalyticsService
      * @param  array{key: string, from: CarbonImmutable|null, to: CarbonImmutable|null}  $period
      * @return array<string, mixed>
      */
-    public function report(Vendor $vendor, array $period, string $domain): array
+    public function report(Vendor $vendor, array $period, ?string $domain = null): array
     {
         $overview = $this->overview($vendor, $period, $domain);
         $products = collect($this->products($vendor, $period, [], 100, $domain)->items());
@@ -145,7 +145,9 @@ class VendorAnalyticsService
 
             return $product;
         });
-        $overview['vendor']['owner'] = array_intersect_key($overview['vendor']['owner'] ?? [], array_flip(['id', 'name']));
+        $overview['finance'] = $domain
+            ? $overview['finance']
+            : $this->periodFinance($vendor, $period);
         $orders = collect($this->orders($vendor, $period, [], 50, $domain)->items())->map(fn (array $order): array => [
             'id' => $order['id'],
             'order_number' => $order['order_number'],
@@ -204,11 +206,11 @@ class VendorAnalyticsService
 
     private function identity(Vendor $vendor, ?string $domain): array
     {
-        $vendor->loadMissing(['user:id,name,email,phone_number', 'city:id,name', 'categories:id,name,type']);
+        $vendor->loadMissing(['city:id,name', 'categories:id,name,type']);
 
         return [
             'id' => $vendor->id, 'store_name' => $vendor->store_name, 'logo_url' => $vendor->logo ? asset('storage/'.$vendor->logo) : null,
-            'owner' => $vendor->user?->only(['id', 'name', 'email', 'phone_number']), 'business_type' => $vendor->business_type,
+            'business_type' => $vendor->business_type,
             'city' => $vendor->city?->only(['id', 'name']), 'registration_source' => $vendor->registration_source, 'status' => $vendor->status,
             'is_active' => (bool) $vendor->is_active, 'joined_at' => $vendor->created_at,
             'categories' => $vendor->categories->when($domain, fn (Collection $categories) => $categories->where('type', $domain))->values()->map->only(['id', 'name', 'type']),
@@ -308,7 +310,7 @@ class VendorAnalyticsService
     }
 
     /** @param array{key: string, from: CarbonImmutable|null, to: CarbonImmutable|null} $period */
-    private function refundsByProduct(Vendor $vendor, array $period, string $domain): Collection
+    private function refundsByProduct(Vendor $vendor, array $period, ?string $domain): Collection
     {
         $query = DB::table('return_items')
             ->join('order_returns', 'order_returns.id', '=', 'return_items.order_return_id')
@@ -317,7 +319,7 @@ class VendorAnalyticsService
             ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
             ->leftJoin('categories as snapshot_categories', 'snapshot_categories.id', '=', 'order_items.category_id_snapshot')
             ->where('order_returns.vendor_id', $vendor->id)
-            ->whereRaw('COALESCE(order_items.category_type, snapshot_categories.type, categories.type) = ?', [$domain]);
+            ->when($domain, fn (QueryBuilder $builder) => $builder->whereRaw('COALESCE(order_items.category_type, snapshot_categories.type, categories.type) = ?', [$domain]));
 
         $this->period($query, $period, 'order_returns.created_at');
 
@@ -325,7 +327,7 @@ class VendorAnalyticsService
             ->groupBy('return_items.product_id')->pluck('total', 'return_items.product_id');
     }
 
-    private function reportCategoryPerformance(Vendor $vendor, Collection $sales, string $domain): Collection
+    private function reportCategoryPerformance(Vendor $vendor, Collection $sales, ?string $domain): Collection
     {
         $productCounts = $this->productQuery($vendor, $domain)
             ->join('categories', 'categories.id', '=', 'products.category_id')
@@ -379,6 +381,33 @@ class VendorAnalyticsService
         $refunds = (float) ($totals[VendorLedgerEntry::TYPE_REFUND] ?? 0);
 
         return ['net_earnings' => round($gross - $commission - $refunds, 2), 'commission' => round($commission, 2), 'refunds' => round($refunds, 2), 'attribution_complete' => true, 'mixed_domain_orders' => 0];
+    }
+
+    /** @param array{key: string, from: CarbonImmutable|null, to: CarbonImmutable|null} $period */
+    private function periodFinance(Vendor $vendor, array $period): array
+    {
+        $orderIds = $this->period(
+            $this->orderQuery($vendor)->where('status', Order::STATUS_COMPLETED),
+            $period,
+            'orders.created_at',
+        )->pluck('id');
+        $totals = VendorLedgerEntry::query()
+            ->where('vendor_id', $vendor->id)
+            ->whereIn('order_id', $orderIds)
+            ->selectRaw('type, direction, SUM(amount) total')
+            ->groupBy('type', 'direction')
+            ->get();
+        $amount = fn (string $type, string $direction): float => (float) ($totals->first(fn ($row) => $row->type === $type && $row->direction === $direction)?->total ?? 0);
+        $gross = $amount(VendorLedgerEntry::TYPE_SALE, VendorLedgerEntry::DIRECTION_CREDIT);
+        $commission = $amount(VendorLedgerEntry::TYPE_COMMISSION, VendorLedgerEntry::DIRECTION_DEBIT);
+        $refunds = $amount(VendorLedgerEntry::TYPE_REFUND, VendorLedgerEntry::DIRECTION_DEBIT);
+
+        return [
+            'net_earnings' => round($gross - $commission - $refunds, 2),
+            'commission' => round($commission, 2),
+            'refunds' => round($refunds, 2),
+            'attribution_complete' => true,
+        ];
     }
 
     private function mixedDomainOrders(Vendor $vendor, array $period, string $domain): int

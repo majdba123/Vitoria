@@ -105,7 +105,7 @@ export default function VendorDashboard() {
                             { href: route('vendor.products.create'), label: vendor.create_product, icon: Plus },
                             { href: route('vendor.products.index'), label: vendor.products, icon: Package },
                             { href: route('vendor.orders.index'), label: vendor.orders, icon: ReceiptText },
-                            { href: route('vendor.commission'), label: vendor.commission, icon: BarChart3 },
+                            { href: route('vendor.sales'), label: vendor.sales, icon: BarChart3 },
                         ].map((action) => (
                             <QuickAction key={action.label} {...action} />
                         ))}

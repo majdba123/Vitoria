@@ -10,6 +10,7 @@ use App\Models\Vendor;
 use App\Models\VendorLedgerEntry;
 use App\Models\VendorSettlement;
 use App\Services\AuditLogService;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
@@ -153,7 +154,7 @@ class VendorLedgerService
      *
      * @throws CartException
      */
-    public function recordSettlement(Vendor $vendor, User $actor, float $amount, string $method, ?string $reference = null, ?string $notes = null): VendorSettlement
+    public function recordSettlement(Vendor $vendor, User $actor, float $amount, string $method, ?string $reference = null, ?string $notes = null, ?CarbonImmutable $settledAt = null, ?string $idempotencyKey = null): VendorSettlement
     {
         $amount = round($amount, 2);
 
@@ -165,8 +166,20 @@ class VendorLedgerService
             throw new CartException(__('vendor_ledger.settlement_method_invalid'));
         }
 
-        return DB::transaction(function () use ($actor, $amount, $method, $notes, $reference, $vendor) {
+        return DB::transaction(function () use ($actor, $amount, $idempotencyKey, $method, $notes, $reference, $settledAt, $vendor) {
             $lockedVendor = Vendor::query()->whereKey($vendor->id)->lockForUpdate()->firstOrFail();
+
+            if ($idempotencyKey) {
+                $existingEntry = VendorLedgerEntry::query()
+                    ->where('vendor_id', $lockedVendor->id)
+                    ->where('type', VendorLedgerEntry::TYPE_SETTLEMENT)
+                    ->where('idempotency_key', "settlement:{$idempotencyKey}")
+                    ->first();
+
+                if ($existingEntry) {
+                    return VendorSettlement::query()->where('ledger_entry_id', $existingEntry->id)->firstOrFail();
+                }
+            }
 
             $outstanding = $this->summary($lockedVendor)['outstanding'];
 
@@ -177,6 +190,7 @@ class VendorLedgerService
             $entry = VendorLedgerEntry::create([
                 'vendor_id' => $lockedVendor->id,
                 'order_id' => null,
+                'idempotency_key' => $idempotencyKey ? "settlement:{$idempotencyKey}" : null,
                 'type' => VendorLedgerEntry::TYPE_SETTLEMENT,
                 'direction' => VendorLedgerEntry::DIRECTION_DEBIT,
                 'amount' => $amount,
@@ -192,7 +206,7 @@ class VendorLedgerService
                 'reference' => $reference,
                 'notes' => $notes,
                 'settled_by_user_id' => $actor->id,
-                'settled_at' => now(),
+                'settled_at' => $settledAt ?? now(),
             ]);
 
             // `vendors.paid_amount` is kept as a denormalized read-cache of the

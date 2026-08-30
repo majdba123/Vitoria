@@ -430,6 +430,20 @@ test('an agriculture syndicate map shows only vendors inside its canonical scope
         ->and($damascus)->not->toHaveKeys(['agriculture_count', 'veterinary_count']);
 });
 
+test('the map recognizes Arabic city names used by the production seeders', function () {
+    $city = mapCity('دمشق');
+    mapVendor('Arabic Damascus Store', [
+        'city_id' => $city->id,
+        'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE,
+    ]);
+    Sanctum::actingAs(mapSyndicateUser(Category::TYPE_AGRICULTURE));
+
+    $payload = $this->getJson('/api/syndicate/vendors/map')->assertOk()->json('data');
+    $damascus = collect($payload['regions'])->firstWhere('key', 'damascus');
+
+    expect($damascus['vendor_count'])->toBe(1);
+});
+
 test('a veterinary syndicate map shows only vendors inside its canonical scope', function () {
     mapSyndicateFixture();
     Sanctum::actingAs(mapSyndicateUser(Category::TYPE_VETERINARY));

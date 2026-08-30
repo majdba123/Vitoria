@@ -26,6 +26,7 @@ return [
     'settlement_amount_invalid' => 'يجب أن يكون مبلغ التسوية أكبر من صفر.',
     'settlement_method_invalid' => 'يرجى اختيار طريقة تسوية صحيحة.',
     'settlement_exceeds_outstanding' => 'مبلغ التسوية يتجاوز الرصيد المستحق لهذا التاجر.',
+    'settlement_date_future' => 'لا يمكن أن يكون تاريخ الدفعة في المستقبل.',
     'settlement_recorded' => 'تم تسجيل التسوية.',
     'adjustment_recorded' => 'تم تسجيل التسوية اليدوية.',
     'paid_amount_not_greater_than_settled' => 'هذا التاجر لديه بالفعل :settled مسجلة كمسددة. أدخل مبلغاً إجمالياً أكبر لتسجيل دفعة إضافية.',

@@ -161,10 +161,6 @@ Route::prefix('vendor')->as('vendor.')->middleware(['auth', 'vendor'])->group(fu
         return Inertia::render('Vendor/Products/Index');
     })->name('products.index');
 
-    Route::get('/discounts', function () {
-        return Inertia::render('Vendor/Products/Index', ['discountOnly' => true]);
-    })->name('discounts.index');
-
     Route::get('/orders', function () {
         return Inertia::render('Vendor/Orders/Index');
     })->name('orders.index');
@@ -173,9 +169,9 @@ Route::prefix('vendor')->as('vendor.')->middleware(['auth', 'vendor'])->group(fu
         return Inertia::render('Vendor/Orders/Show', ['orderId' => $id]);
     })->name('orders.show');
 
-    Route::get('/commission', function () {
+    Route::get('/sales', function () {
         return Inertia::render('Vendor/Commission');
-    })->name('commission');
+    })->name('sales');
 
     Route::get('/notifications', function () {
         return Inertia::render('Vendor/Notifications/Index');

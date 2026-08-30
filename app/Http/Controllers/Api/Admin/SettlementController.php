@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreVendorSettlementRequest;
 use App\Models\Vendor;
 use App\Models\VendorSettlement;
 use App\Services\Commerce\CartException;
 use App\Services\Commerce\VendorLedgerService;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class SettlementController extends Controller
 {
@@ -36,14 +37,9 @@ class SettlementController extends Controller
         ]);
     }
 
-    public function store(Request $request, Vendor $vendor): JsonResponse
+    public function store(StoreVendorSettlementRequest $request, Vendor $vendor): JsonResponse
     {
-        $validated = $request->validate([
-            'amount' => ['required', 'numeric', 'min:0.01'],
-            'method' => ['required', 'string', Rule::in(VendorSettlement::METHODS)],
-            'reference' => ['nullable', 'string', 'max:255'],
-            'notes' => ['nullable', 'string', 'max:500'],
-        ]);
+        $validated = $request->validated();
 
         try {
             $settlement = $this->vendorLedgerService->recordSettlement(
@@ -53,6 +49,8 @@ class SettlementController extends Controller
                 $validated['method'],
                 $validated['reference'] ?? null,
                 $validated['notes'] ?? null,
+                isset($validated['payment_date']) ? CarbonImmutable::parse($validated['payment_date'])->startOfDay() : CarbonImmutable::now(),
+                $validated['idempotency_key'] ?? (string) Str::uuid(),
             );
         } catch (CartException $exception) {
             return response()->json(['message' => $exception->getMessage()], 422);
@@ -60,7 +58,12 @@ class SettlementController extends Controller
 
         return response()->json([
             'message' => __('vendor_ledger.settlement_recorded'),
-            'data' => ['id' => $settlement->id, 'amount' => $settlement->amount, 'method' => $settlement->method],
+            'data' => [
+                'id' => $settlement->id,
+                'amount' => $settlement->amount,
+                'method' => $settlement->method,
+                'settled_at' => $settlement->settled_at,
+            ],
         ], 201);
     }
 }

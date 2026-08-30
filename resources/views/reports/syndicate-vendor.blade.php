@@ -53,14 +53,14 @@
 @endphp
 
 <h1>{{ $labels['title'] }}</h1>
-<div class="muted dynamic" dir="auto">{{ $data['vendor']['store_name'] }} — {{ $isArabic ? 'النقابة '.$translatedValue($data['scope']['domain']) : $syndicate->name }}</div>
+<div class="muted dynamic" dir="auto">{{ $data['vendor']['store_name'] }} — {{ $syndicate ? ($isArabic ? 'النقابة '.$translatedValue($data['scope']['domain']) : $syndicate->name) : ($isArabic ? 'نطاق الإدارة' : 'Admin scope') }}</div>
 
 <h2>{{ $labels['identity'] }}</h2>
 <table class="meta">
-    <tr><td><strong>{{ $labels['store'] }}:</strong> <span class="dynamic" dir="auto">{{ $data['vendor']['store_name'] }}</span></td><td><strong>{{ $labels['owner'] }}:</strong> <span class="dynamic" dir="auto">{{ $data['vendor']['owner']['name'] ?? '—' }}</span></td></tr>
+    <tr><td><strong>{{ $labels['store'] }}:</strong> <span class="dynamic" dir="auto">{{ $data['vendor']['store_name'] }}</span></td><td><strong>{{ $labels['city'] }}:</strong> <span class="dynamic" dir="auto">{{ $data['vendor']['city']['name'] ?? '—' }}</span></td></tr>
     <tr><td><strong>{{ $labels['type'] }}:</strong> {{ $translatedValue($data['vendor']['business_type']) }}</td><td><strong>{{ $labels['city'] }}:</strong> <span class="dynamic" dir="auto">{{ $data['vendor']['city']['name'] ?? '—' }}</span></td></tr>
     <tr><td><strong>{{ $labels['status'] }}:</strong> {{ $translatedValue($data['vendor']['status']) }}</td><td><strong>{{ $labels['joined'] }}:</strong> {{ $date($data['vendor']['joined_at']) }}</td></tr>
-    <tr><td><strong>{{ $labels['domain'] }}:</strong> {{ $translatedValue($data['scope']['domain']) }}</td><td><strong>{{ $labels['categories'] }}:</strong> <span class="dynamic" dir="auto">{{ collect($data['vendor']['categories'])->pluck('name')->join(', ') ?: '—' }}</span></td></tr>
+    <tr><td><strong>{{ $labels['domain'] }}:</strong> {{ $data['scope']['domain'] ? $translatedValue($data['scope']['domain']) : ($isArabic ? 'كامل نشاط التاجر' : 'All vendor activity') }}</td><td><strong>{{ $labels['categories'] }}:</strong> <span class="dynamic" dir="auto">{{ collect($data['vendor']['categories'])->pluck('name')->join(', ') ?: '—' }}</span></td></tr>
 </table>
 
 <h2>{{ $labels['period'] }}</h2>

@@ -10,9 +10,11 @@ import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import { DashboardVendorMap } from '@/Components/maps/DashboardVendorMap';
-import { BarChart3, FileChartColumn, Package, ShoppingBag, Store } from 'lucide-react';
+import { BarChart3, Eye, FileChartColumn, FileText, Package, ShoppingBag, Store } from 'lucide-react';
 import { useI18n } from '@/hooks/use-i18n';
 import { GrowthChart } from '@/Components/admin/dashboard/GrowthChart';
+import { Input } from '@/Components/ui/input';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
 
 const TABLE_SECTIONS = ['categories', 'vendors', 'products', 'orders'];
 const TYPE_LABEL_KEY = { agriculture: 'type_agriculture', veterinary: 'type_veterinary' };
@@ -65,6 +67,26 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
 
     const [reportsStatus, setReportsStatus] = useState('loading');
     const [reports, setReports] = useState(null);
+    const [reportTarget, setReportTarget] = useState(null);
+    const [generalReportOpen, setGeneralReportOpen] = useState(false);
+    const [reportForm, setReportForm] = useState({ date_from: new Date(Date.now() - 29 * 86_400_000).toISOString().slice(0, 10), date_to: new Date().toISOString().slice(0, 10), locale: 'ar' });
+
+    const generateVendorReport = async () => {
+        if (!reportTarget) return;
+        const response = await window.axios.get(`/api/syndicate/vendors/${reportTarget.id}/report.pdf`, { params: { range: 'custom', ...reportForm }, responseType: 'blob' });
+        const url = URL.createObjectURL(response.data);
+        window.open(url, '_blank', 'noopener,noreferrer');
+        window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+        setReportTarget(null);
+    };
+
+    const generateGeneralReport = async () => {
+        const response = await window.axios.get('/api/syndicate/reports.pdf', { params: { range: 'custom', ...reportForm }, responseType: 'blob' });
+        const url = URL.createObjectURL(response.data);
+        window.open(url, '_blank', 'noopener,noreferrer');
+        window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+        setGeneralReportOpen(false);
+    };
 
     useEffect(() => {
         if (!isReports) return;
@@ -140,7 +162,7 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                         </div>
                     </CardHeader>
                     <CardContent className="p-4">
-                        <SyndicateTable section={section} rows={tableRows} status={tableStatus} errorMessage={tableError} onRetry={reloadTable} i18n={syndicate} common={common} />
+                        <SyndicateTable section={section} rows={tableRows} status={tableStatus} errorMessage={tableError} onRetry={reloadTable} i18n={syndicate} common={common} onReport={setReportTarget} />
                         {tableStatus === 'ready' && tableRows.length > 0 && (
                             <div className="mt-4 rounded-md border border-border">
                                 <Pagination meta={tableMeta} onPrev={() => setPage((p) => p - 1)} onNext={() => setPage((p) => p + 1)} />
@@ -161,6 +183,7 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
 
             {isReports && (
                 <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+                    <div className="col-span-full flex justify-end"><Button type="button" onClick={() => setGeneralReportOpen(true)}><FileChartColumn className="size-4" />{syndicate.generate_general_report}</Button></div>
                     {reportsStatus === 'loading' && <p className="col-span-full py-8 text-center text-sm text-muted-foreground">{syndicate.loading_data}</p>}
                     {reportsStatus === 'error' && <p className="col-span-full py-8 text-center text-sm text-[var(--color-danger-strong)]">{syndicate.load_failed_section}</p>}
                     {reportsStatus === 'ready' && reports && (
@@ -253,6 +276,8 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                     <GrowthChart rows={monthlyOrderGrowth} totalLabel={syndicate.total_orders} />
                 </InsightPanel>
             )}
+            <Dialog open={!!reportTarget} onOpenChange={(open) => { if (!open) setReportTarget(null); }}><DialogContent><DialogHeader><DialogTitle>{syndicate.vendor_report}</DialogTitle><DialogDescription>{reportTarget?.store_name}</DialogDescription></DialogHeader><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1.5 text-sm font-medium">{syndicate.from}<Input type="date" value={reportForm.date_from} onChange={(e) => setReportForm({ ...reportForm, date_from: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium">{syndicate.to}<Input type="date" value={reportForm.date_to} onChange={(e) => setReportForm({ ...reportForm, date_to: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{syndicate.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={reportForm.locale} onChange={(e) => setReportForm({ ...reportForm, locale: e.target.value })}><option value="ar">العربية</option><option value="en">English</option></select></label></div><DialogFooter><Button type="button" disabled={!reportForm.date_from || !reportForm.date_to || reportForm.date_from > reportForm.date_to} onClick={generateVendorReport}><FileText className="size-4" />{syndicate.generate_report}</Button></DialogFooter></DialogContent></Dialog>
+            <Dialog open={generalReportOpen} onOpenChange={setGeneralReportOpen}><DialogContent><DialogHeader><DialogTitle>{syndicate.general_report}</DialogTitle><DialogDescription>{syndicate.general_report_copy}</DialogDescription></DialogHeader><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1.5 text-sm font-medium">{syndicate.from}<Input type="date" value={reportForm.date_from} onChange={(e) => setReportForm({ ...reportForm, date_from: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium">{syndicate.to}<Input type="date" value={reportForm.date_to} onChange={(e) => setReportForm({ ...reportForm, date_to: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{syndicate.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={reportForm.locale} onChange={(e) => setReportForm({ ...reportForm, locale: e.target.value })}><option value="ar">العربية</option><option value="en">English</option></select></label></div><DialogFooter><Button type="button" disabled={!reportForm.date_from || !reportForm.date_to || reportForm.date_from > reportForm.date_to} onClick={generateGeneralReport}><FileChartColumn className="size-4" />{syndicate.generate_report}</Button></DialogFooter></DialogContent></Dialog>
         </SyndicateLayout>
     );
 }
@@ -281,7 +306,7 @@ function useSyndicateTable(section, enabled, page) {
     return { status, rows, meta, errorMessage, reload: load };
 }
 
-function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, common }) {
+function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, common, onReport }) {
     const columnsBySection = {
         categories: [
             { key: 'name', label: i18n.th_category, render: (r) => <span className="font-semibold text-foreground">{r.name}</span> },
@@ -298,6 +323,7 @@ function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, co
             { key: 'domain_sales', label: i18n.completed_sales, align: 'end', render: (r) => money(r.domain_sales) },
             { key: 'last_activity_at', label: i18n.last_activity ?? 'Last activity', render: (r) => r.last_activity_at ? new Date(r.last_activity_at).toLocaleDateString() : '—' },
             { key: 'status', label: i18n.th_status, render: (r) => <StatusBadge tone={r.is_active ? 'success' : 'danger'}>{r.is_active ? common.active : common.inactive}</StatusBadge> },
+            { key: 'actions', label: i18n.th_actions, render: (r) => <div className="flex items-center justify-center gap-1"><Button asChild size="sm" variant="ghost"><Link href={route('syndicate.vendors.show', r.id)}><Eye className="size-4" />{common.view_details}</Link></Button><Button type="button" size="sm" variant="outline" onClick={() => onReport(r)}><FileText className="size-4" />{i18n.report}</Button></div> },
         ],
         products: [
             { key: 'name', label: i18n.th_products, render: (r) => <span className="font-semibold text-foreground">{r.name}</span> },

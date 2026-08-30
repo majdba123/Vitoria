@@ -6,9 +6,8 @@
     $links = [
         ['group' => __('vendor.group_overview'), 'route' => 'vendor.dashboard', 'label' => __('vendor.dashboard'), 'icon' => 'fa-solid fa-grid-2'],
         ['group' => __('vendor.group_store'), 'route' => 'vendor.products.index', 'label' => __('vendor.products'), 'icon' => 'fa-solid fa-box-open'],
-        ['group' => __('vendor.group_store'), 'route' => 'vendor.discounts.index', 'label' => __('vendor.discounts'), 'icon' => 'fa-solid fa-badge-percent'],
         ['group' => __('vendor.group_store'), 'route' => 'vendor.orders.index', 'label' => __('vendor.orders'), 'icon' => 'fa-solid fa-bag-shopping'],
-        ['group' => __('vendor.group_store'), 'route' => 'vendor.commission', 'label' => __('vendor.commission'), 'icon' => 'fa-solid fa-chart-line'],
+        ['group' => __('vendor.group_store'), 'route' => 'vendor.sales', 'label' => __('vendor.sales'), 'icon' => 'fa-solid fa-chart-line'],
         ['group' => __('vendor.group_store'), 'route' => 'vendor.notifications.index', 'label' => __('vendor.notifications'), 'icon' => 'fa-regular fa-bell'],
         ['group' => __('vendor.group_account'), 'route' => 'vendor.profile', 'label' => __('common.profile'), 'icon' => 'fa-regular fa-user'],
     ];

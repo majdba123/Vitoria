@@ -17,4 +17,5 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::get('orders', [DashboardController::class, 'orders'])->name('orders');
     Route::get('podcasts', [DashboardController::class, 'podcasts'])->name('podcasts');
     Route::get('reports', [DashboardController::class, 'reports'])->name('reports');
+    Route::get('reports.pdf', [DashboardController::class, 'reportPdf'])->middleware('throttle:dashboard.stats')->name('reports.pdf');
 });

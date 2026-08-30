@@ -2,7 +2,7 @@
 
 return [
     'title' => 'الرؤية الشاملة للمورّد', 'period_note' => 'تعتمد تحليلات الفترة على تاريخ إنشاء الطلب، ويظهر رصيد دفتر الأستاذ الكلي بشكل منفصل.',
-    'overview' => 'نظرة عامة', 'products' => 'المنتجات', 'orders' => 'المبيعات والطلبات', 'finance' => 'المالية ودفتر الأستاذ',
+    'overview' => 'نظرة عامة', 'products' => 'المنتجات', 'orders' => 'الطلبات', 'sales' => 'المبيعات', 'finance' => 'المالية ودفتر الأستاذ',
     'returns' => 'المرتجعات والمبالغ المستردة', 'staff' => 'فريق العمل', 'documents' => 'المستندات', 'activity' => 'النشاط', 'categories' => 'الفئات',
     'today' => 'اليوم', '7_days' => '7 أيام', '30_days' => '30 يوماً', '90_days' => '90 يوماً', 'this_year' => 'هذه السنة', 'custom' => 'فترة مخصصة', 'all' => 'كل المدة',
     'total_products' => 'المنتجات', 'active_products' => 'المنتجات النشطة', 'pending_products' => 'المنتجات قيد المراجعة', 'total_orders' => 'الطلبات',
@@ -19,4 +19,8 @@ return [
     'provider' => 'مزود الدفع', 'method' => 'طريقة الدفع', 'payment_amount' => 'المبلغ', 'refunded_amount' => 'المبلغ المسترد', 'reference' => 'رقم مرجعي',
     'paid_at' => 'تاريخ الدفع', 'failed_at' => 'تاريخ الفشل', 'failure_reason' => 'سبب الفشل', 'coupon_code' => 'الرمز', 'coupon_value' => 'القيمة',
     'changed_by' => 'تم التغيير بواسطة', 'cancelled_by' => 'تم الإلغاء بواسطة', 'cancelled_at' => 'تاريخ الإلغاء', 'reason' => 'السبب',
+    'report_dialog_copy' => 'اختر نطاقاً زمنياً شاملاً ولغة التقرير.', 'from' => 'من', 'to' => 'إلى', 'report_language' => 'لغة التقرير', 'generate_report' => 'إنشاء التقرير',
+    'add_payment' => 'إضافة دفعة', 'payment_dialog_copy' => 'سجّل تسوية مالية ثابتة من المنصة إلى هذا التاجر.', 'amount' => 'المبلغ', 'payment_date' => 'تاريخ الدفعة',
+    'bank_transfer' => 'تحويل بنكي', 'cash' => 'نقداً', 'other' => 'أخرى', 'payment' => 'الدفعة', 'after_payment' => 'المتبقي بعد الدفعة', 'confirm_payment' => 'تأكيد الدفعة',
+    'saving' => 'جارٍ الحفظ…', 'payment_failed' => 'تعذر تسجيل الدفعة.',
 ];

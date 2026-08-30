@@ -3,16 +3,19 @@
 namespace App\Http\Controllers\Api\Syndicate;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SyndicateVendorReportRequest;
 use App\Http\Requests\VendorMapRequest;
 use App\Models\Syndicate;
 use App\Services\Syndicate\SyndicateDashboardService;
+use App\Services\Syndicate\SyndicateReportService;
 use App\Services\Vendor\VendorMapService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class DashboardController extends Controller
 {
-    public function __construct(public SyndicateDashboardService $dashboardService) {}
+    public function __construct(public SyndicateDashboardService $dashboardService, private readonly SyndicateReportService $reportService) {}
 
     public function overview(Request $request): JsonResponse
     {
@@ -100,6 +103,23 @@ class DashboardController extends Controller
         return response()->json([
             'message' => __('Syndicate reports retrieved successfully.'),
             'data' => $this->dashboardService->reports($this->syndicate($request)),
+        ]);
+    }
+
+    public function reportPdf(SyndicateVendorReportRequest $request): Response
+    {
+        $report = $this->reportService->render(
+            $this->syndicate($request),
+            $request->period(),
+            $request->validated('locale'),
+        );
+
+        return response($report['bytes'], 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$report['filename'].'"',
+            'Content-Length' => (string) strlen($report['bytes']),
+            'X-Content-Type-Options' => 'nosniff',
+            'X-Vetora-Report-Domain' => $this->syndicate($request)->type,
         ]);
     }
 

@@ -179,11 +179,12 @@ test('the commission dashboard response explicitly separates ledger-authoritativ
 
     $component = file_get_contents(resource_path('js/Pages/Vendor/Commission.jsx'));
     expect($component)
-        ->toContain("{ key: 'projected_order_total', labelKey: 'completed_orders_total'")
-        ->toContain("{ key: 'commission_total', labelKey: 'commission_total_label'")
-        ->toContain("{ key: 'paid_amount', labelKey: 'paid_to_you'")
-        ->toContain("{ key: 'remaining_amount', labelKey: 'remaining_label'")
-        ->toContain('value={formatMoney(financials[key])}');
+        ->toContain("{ key: 'gross_sales', labelKey: 'gross_sales'")
+        ->toContain("{ key: 'net_earnings', labelKey: 'net_earnings'")
+        ->toContain("{ key: 'commission', labelKey: 'commission_total_label'")
+        ->toContain("{ key: 'settled', labelKey: 'paid_to_you'")
+        ->toContain("{ key: 'outstanding', labelKey: 'remaining_label'")
+        ->toContain('value={count ? Number(statusCounts.completed || 0).toLocaleString() : formatMoney(ledgerSummary[key])}');
 });
 
 test('the ledger backfill --dry-run writes nothing, even against legacy data with a since-changed commission rate', function () {
@@ -280,4 +281,54 @@ test('two settlement requests racing off the same stale outstanding balance can 
     ])->assertCreated();
 
     expect(app(VendorLedgerService::class)->summary($vendor->fresh())['outstanding'])->toBe(0.0);
+});
+
+test('settlement validation idempotency and vendor ledger synchronization use one authoritative record', function () {
+    $vendor = Vendor::factory()->create();
+    $otherVendor = Vendor::factory()->create();
+    $category = Category::query()->create(['name' => 'Settlement Category', 'type' => Category::TYPE_AGRICULTURE, 'commission' => 10]);
+    $product = Product::factory()->for($vendor)->create(['category_id' => $category->id]);
+    completedOrderWithLedgerEntry($vendor, $product, 1000);
+
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
+
+    $this->postJson("/api/admin/vendors/{$vendor->id}/settlements", ['amount' => 0, 'method' => 'cash'])->assertUnprocessable();
+    $this->postJson("/api/admin/vendors/{$vendor->id}/settlements", ['amount' => -10, 'method' => 'cash'])->assertUnprocessable();
+    $this->postJson("/api/admin/vendors/{$vendor->id}/settlements", ['amount' => 901, 'method' => 'cash'])->assertUnprocessable();
+
+    $payload = [
+        'amount' => 400,
+        'payment_date' => now()->toDateString(),
+        'method' => 'bank_transfer',
+        'reference' => 'QA-SETTLEMENT-1',
+        'notes' => 'Stakeholder QA payment',
+        'idempotency_key' => '7c0dfe86-bcb3-4fc8-95d9-37e51317d40e',
+    ];
+    $this->postJson("/api/admin/vendors/{$vendor->id}/settlements", $payload)->assertCreated();
+    $this->postJson("/api/admin/vendors/{$vendor->id}/settlements", $payload)->assertCreated();
+
+    expect(\App\Models\VendorSettlement::query()->where('vendor_id', $vendor->id)->count())->toBe(1)
+        ->and(\App\Models\VendorSettlement::query()->where('vendor_id', $otherVendor->id)->count())->toBe(0)
+        ->and($vendor->fresh()->paid_amount)->toBe('400.00')
+        ->and(app(VendorLedgerService::class)->summary($vendor->fresh()))->toMatchArray([
+            'gross_sales' => 1000.0,
+            'commission' => 100.0,
+            'net_earnings' => 900.0,
+            'settled' => 400.0,
+            'outstanding' => 500.0,
+        ])
+        ->and(\App\Models\AuditLog::query()->where('action', 'vendor_ledger.settlement')->count())->toBe(1);
+
+    $vendorUser = $vendor->user;
+    Sanctum::actingAs($vendorUser);
+    $this->getJson('/api/vendor/ledger/summary')
+        ->assertOk()
+        ->assertJsonPath('data.settled', 400)
+        ->assertJsonPath('data.outstanding', 500);
+    $this->getJson('/api/vendor/ledger')
+        ->assertOk()
+        ->assertJsonPath('data.0.type', 'settlement')
+        ->assertJsonPath('data.0.direction', 'debit')
+        ->assertJsonPath('data.0.amount', '400.00');
 });

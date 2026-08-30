@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
-import { Plus, Check } from 'lucide-react';
+import { Plus, Check, Copy, FileText } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { PageHeader } from '@/Components/admin/PageHeader';
 import { DataTable } from '@/Components/admin/DataTable';
@@ -17,6 +17,7 @@ import {
     SelectValue,
 } from '@/Components/ui/select';
 import { Card, CardContent } from '@/Components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
 import { useAdminList } from '@/hooks/use-admin-list';
 import { useI18n } from '@/hooks/use-i18n';
 
@@ -38,6 +39,8 @@ export default function VendorsIndex() {
     const [isDeleting, setIsDeleting] = useState(false);
     const [flash, setFlash] = useState(null);
     const [deleteError, setDeleteError] = useState(null);
+    const [reportTarget, setReportTarget] = useState(null);
+    const [reportForm, setReportForm] = useState({ date_from: new Date(Date.now() - 29 * 86_400_000).toISOString().slice(0, 10), date_to: new Date().toISOString().slice(0, 10), locale: 'ar' });
 
     const { status: loadStatus, rows, meta, errorMessage, reload } = useAdminList('/api/admin/vendors', {
         page,
@@ -90,6 +93,15 @@ export default function VendorsIndex() {
         });
     };
 
+    const generateReport = async () => {
+        if (!reportTarget) return;
+        const response = await window.axios.get(`/api/admin/vendors/${reportTarget.id}/report.pdf`, { params: { range: 'custom', ...reportForm }, responseType: 'blob' });
+        const url = URL.createObjectURL(response.data);
+        window.open(url, '_blank', 'noopener,noreferrer');
+        window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+        setReportTarget(null);
+    };
+
     const columns = [
         {
             key: 'store',
@@ -107,6 +119,31 @@ export default function VendorsIndex() {
             ),
         },
         { key: 'owner', label: admin.th_owner, render: (row) => row.user?.name ?? '—' },
+        {
+            key: 'phone',
+            label: admin.th_phone,
+            render: (row) => {
+                const phone = row.user?.phone_number;
+
+                return (
+                    <div className="inline-flex items-center gap-1.5" dir="ltr">
+                        <span className="select-all tabular-nums">{phone || common.not_specified}</span>
+                        {phone && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-sm"
+                                aria-label={admin.copy_phone}
+                                title={admin.copy_phone}
+                                onClick={() => navigator.clipboard.writeText(phone)}
+                            >
+                                <Copy className="size-3.5" aria-hidden="true" />
+                            </Button>
+                        )}
+                    </div>
+                );
+            },
+        },
         {
             key: 'type',
             label: admin.th_type,
@@ -141,6 +178,10 @@ export default function VendorsIndex() {
                     </Button>
                     <Button asChild variant="outline" size="sm">
                         <Link href={route('admin.vendors.edit', row.id)}>{common.edit ?? 'Edit'}</Link>
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => setReportTarget(row)}>
+                        <FileText className="size-3.5" aria-hidden="true" />
+                        {admin.report}
                     </Button>
                     <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => { setDeleteError(null); setDeleteTarget(row); }}>
                         {common.delete ?? 'Delete'}
@@ -216,6 +257,17 @@ export default function VendorsIndex() {
                 onConfirm={confirmDelete}
             />
             {deleteError && <p role="alert" className="rounded-md border border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-danger-strong)]">{deleteError}</p>}
+            <Dialog open={!!reportTarget} onOpenChange={(open) => { if (!open) setReportTarget(null); }}>
+                <DialogContent>
+                    <DialogHeader><DialogTitle>{admin.vendor_report}</DialogTitle><DialogDescription>{reportTarget?.store_name}</DialogDescription></DialogHeader>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        <label className="grid gap-1.5 text-sm font-medium">{admin.from}<Input type="date" value={reportForm.date_from} onChange={(e) => setReportForm({ ...reportForm, date_from: e.target.value })} /></label>
+                        <label className="grid gap-1.5 text-sm font-medium">{admin.to}<Input type="date" value={reportForm.date_to} onChange={(e) => setReportForm({ ...reportForm, date_to: e.target.value })} /></label>
+                        <label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{admin.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={reportForm.locale} onChange={(e) => setReportForm({ ...reportForm, locale: e.target.value })}><option value="ar">العربية</option><option value="en">English</option></select></label>
+                    </div>
+                    <DialogFooter><Button type="button" disabled={!reportForm.date_from || !reportForm.date_to || reportForm.date_from > reportForm.date_to} onClick={generateReport}><FileText className="size-4" />{admin.generate_report}</Button></DialogFooter>
+                </DialogContent>
+            </Dialog>
         </AdminLayout>
     );
 }

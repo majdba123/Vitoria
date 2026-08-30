@@ -39,11 +39,17 @@ class SyriaGovernorates
      */
     public const CITY_TO_GOVERNORATE = [
         'Damascus' => 'damascus',
+        'دمشق' => 'damascus',
         'Aleppo' => 'aleppo',
+        'حلب' => 'aleppo',
         'Homs' => 'homs',
+        'حمص' => 'homs',
         'Hama' => 'hama',
+        'حماة' => 'hama',
         'Latakia' => 'latakia',
+        'اللاذقية' => 'latakia',
         'Tartus' => 'tartus',
+        'طرطوس' => 'tartus',
         'Idlib' => 'idlib',
         'Raqqa' => 'raqqa',
         'Deir ez-Zor' => 'deir_ez_zor',

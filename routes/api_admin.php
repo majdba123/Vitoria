@@ -54,6 +54,7 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::get('vendors/{vendor}/analytics/returns', [\App\Http\Controllers\Api\Admin\VendorAnalyticsController::class, 'returns'])->name('vendors.analytics.returns');
     Route::get('vendors/{vendor}/analytics/activity', [\App\Http\Controllers\Api\Admin\VendorAnalyticsController::class, 'activity'])->name('vendors.analytics.activity');
     Route::get('vendors/{vendor}/analytics/export-summary', [\App\Http\Controllers\Api\Admin\VendorAnalyticsController::class, 'exportSummary'])->name('vendors.analytics.export-summary');
+    Route::get('vendors/{vendor}/report.pdf', [\App\Http\Controllers\Api\Admin\VendorAnalyticsController::class, 'report'])->middleware('throttle:dashboard.stats')->name('vendors.report');
     Route::get('vendors/{vendor}/commission-stats', [VendorCommissionController::class, 'show'])->name('vendors.commission-stats');
     Route::post('vendors/{vendor}/commission-paid', [VendorCommissionController::class, 'updatePaidAmount'])->middleware('throttle:api.write')->name('vendors.commission-paid');
     Route::get('vendors/{vendor}/commercial-register', [VendorController::class, 'downloadCommercialRegister'])->name('vendors.commercial-register');

@@ -5,7 +5,7 @@ import { StatCard } from '@/Components/admin/dashboard/StatCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 import { Button } from '@/Components/ui/button';
-import { Wallet, DollarSign, HandCoins, TrendingDown } from 'lucide-react';
+import { Wallet, DollarSign, HandCoins, TrendingDown, ShoppingBag } from 'lucide-react';
 import { useI18n } from '@/hooks/use-i18n';
 
 function formatMoney(amount) {
@@ -13,10 +13,12 @@ function formatMoney(amount) {
 }
 
 const SUMMARY_METRICS = [
-    { key: 'projected_order_total', labelKey: 'completed_orders_total', icon: DollarSign },
-    { key: 'commission_total', labelKey: 'commission_total_label', icon: Wallet },
-    { key: 'paid_amount', labelKey: 'paid_to_you', icon: HandCoins, tone: 'success' },
-    { key: 'remaining_amount', labelKey: 'remaining_label', icon: TrendingDown, tone: 'danger' },
+    { key: 'gross_sales', labelKey: 'gross_sales', icon: DollarSign },
+    { key: 'completed_orders', labelKey: 'status_completed', icon: ShoppingBag, count: true },
+    { key: 'net_earnings', labelKey: 'net_earnings', icon: Wallet },
+    { key: 'commission', labelKey: 'commission_total_label', icon: TrendingDown },
+    { key: 'settled', labelKey: 'paid_to_you', icon: HandCoins, tone: 'success' },
+    { key: 'outstanding', labelKey: 'remaining_label', icon: TrendingDown, tone: 'danger' },
 ];
 
 export default function VendorCommission() {
@@ -26,8 +28,16 @@ export default function VendorCommission() {
 
     const load = () => {
         setStatus('loading');
-        window.axios.get('/api/vendor/commission-stats', { silent: true }).then((res) => {
-            setData(res.data?.data ?? {});
+        Promise.all([
+            window.axios.get('/api/vendor/commission-stats', { silent: true }),
+            window.axios.get('/api/vendor/ledger/summary', { silent: true }),
+            window.axios.get('/api/vendor/ledger', { silent: true }),
+        ]).then(([stats, summary, ledger]) => {
+            setData({
+                ...(stats.data?.data ?? {}),
+                ledgerSummary: summary.data?.data ?? {},
+                ledgerEntries: ledger.data?.data ?? [],
+            });
             setStatus('ready');
         }).catch(() => setStatus('error'));
     };
@@ -35,7 +45,8 @@ export default function VendorCommission() {
     useEffect(load, []);
 
     const vendorInfo = data?.vendor ?? {};
-    const financials = data?.financials ?? {};
+    const ledgerSummary = data?.ledgerSummary ?? {};
+    const ledgerEntries = data?.ledgerEntries ?? [];
     const orders = data?.orders ?? {};
     const statusCounts = orders.status_counts ?? {};
     const total = Number(orders.total || 0);
@@ -64,12 +75,12 @@ export default function VendorCommission() {
                 copy={vendor.commission_dashboard_copy}
             />
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                {SUMMARY_METRICS.map(({ key, labelKey, icon, tone }) => (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+                {SUMMARY_METRICS.map(({ key, labelKey, icon, tone, count }) => (
                     <StatCard
                         key={key}
                         label={vendor[labelKey]}
-                        value={formatMoney(financials[key])}
+                        value={count ? Number(statusCounts.completed || 0).toLocaleString() : formatMoney(ledgerSummary[key])}
                         icon={icon}
                         status={status}
                         tone={tone}
@@ -113,15 +124,47 @@ export default function VendorCommission() {
                         <p className="text-xs text-muted-foreground">{vendor.payment_summary_copy}</p>
                         <div className="rounded-md border border-border bg-muted/40 p-3">
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{vendor.paid_amount_label}</p>
-                            <p className="mt-1 text-lg font-bold text-[var(--color-success-strong)]">{formatMoney(financials.paid_amount)}</p>
+                            <p className="mt-1 text-lg font-bold text-[var(--color-success-strong)]">{formatMoney(ledgerSummary.settled)}</p>
                         </div>
                         <div className="rounded-md border border-border bg-muted/40 p-3">
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{vendor.remaining_amount_label}</p>
-                            <p className="mt-1 text-lg font-bold text-[var(--color-danger-strong)]">{formatMoney(financials.remaining_amount)}</p>
+                            <p className="mt-1 text-lg font-bold text-[var(--color-danger-strong)]">{formatMoney(ledgerSummary.outstanding)}</p>
                         </div>
                     </CardContent>
                 </Card>
             </div>
+
+            <Card className="border-border/80 shadow-none">
+                <CardHeader className="border-b border-border/80">
+                    <CardTitle className="text-base font-bold">{vendor.financial_history}</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>{vendor.th_date}</TableHead>
+                                <TableHead>{vendor.th_type}</TableHead>
+                                <TableHead>{vendor.th_direction}</TableHead>
+                                <TableHead>{vendor.th_amount}</TableHead>
+                                <TableHead>{vendor.th_description}</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {ledgerEntries.length === 0 ? (
+                                <TableRow><TableCell colSpan={5} className="py-8 text-center text-muted-foreground">{vendor.no_financial_movements}</TableCell></TableRow>
+                            ) : ledgerEntries.map((entry) => (
+                                <TableRow key={entry.id}>
+                                    <TableCell>{new Date(entry.created_at).toLocaleDateString()}</TableCell>
+                                    <TableCell className="font-medium">{entry.type_name}</TableCell>
+                                    <TableCell><span className={entry.direction === 'credit' ? 'text-[var(--color-success-strong)]' : 'text-[var(--color-danger-strong)]'}>{entry.direction === 'credit' ? vendor.credit : vendor.debit}</span></TableCell>
+                                    <TableCell className="tabular-nums">{formatMoney(entry.amount)}</TableCell>
+                                    <TableCell className="whitespace-normal text-muted-foreground">{entry.description}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
 
             <Card className="border-border/80 shadow-none">
                 <CardHeader className="border-b border-border/80">

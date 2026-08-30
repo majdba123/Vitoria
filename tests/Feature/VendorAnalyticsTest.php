@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Vendor;
 use App\Models\VendorLedgerEntry;
 use App\Services\Commerce\VendorLedgerService;
+use App\Services\Syndicate\SyndicateReportService;
 use App\Services\Vendor\SyndicateVendorPdfService;
 use App\Services\Vendor\VendorAnalyticsService;
 use Carbon\CarbonImmutable;
@@ -80,6 +81,19 @@ test('admin vendor 360 uses the immutable ledger and excludes another vendor', f
         ->assertJsonPath('data.finance.all_time.net_earnings', 660);
 
     expect(app(VendorLedgerService::class)->summary($data['both']))->toMatchArray($response->json('data.finance.all_time'));
+    expect($response->json('data.vendor'))->not->toHaveKey('owner');
+});
+
+test('admin vendor list exposes owner phone only on the authorized admin endpoint', function () {
+    $vendor = Vendor::factory()->create();
+    $vendor->user->update(['phone_number' => '+963944123456']);
+
+    Sanctum::actingAs(User::factory()->create());
+    $this->getJson('/api/admin/vendors')->assertForbidden();
+
+    Sanctum::actingAs(User::factory()->admin()->create());
+    $this->getJson('/api/admin/vendors')->assertOk()
+        ->assertJsonPath('data.0.user.phone_number', '+963944123456');
 });
 
 test('admin product and order endpoints are vendor isolated', function () {
@@ -208,6 +222,42 @@ test('syndicate exports a non-empty scoped pdf with safe headers', function () {
         ->and(substr($response->getContent(), 0, 4))->toBe('%PDF');
 });
 
+test('admin exports Arabic and English Vendor PDFs across all Vendor domains', function () {
+    $data = analyticsFixture();
+    Sanctum::actingAs(User::factory()->admin()->create());
+
+    foreach (['ar', 'en'] as $locale) {
+        $response = $this->get("/api/admin/vendors/{$data['both']->id}/report.pdf?range=30_days&locale={$locale}");
+        $response->assertOk()->assertHeader('content-type', 'application/pdf');
+        expect(strlen($response->getContent()))->toBeGreaterThan(1000)
+            ->and(substr($response->getContent(), 0, 4))->toBe('%PDF');
+    }
+
+    $period = ['key' => '30_days', 'from' => CarbonImmutable::today()->subDays(29)->startOfDay(), 'to' => CarbonImmutable::today()->endOfDay()];
+    $report = app(SyndicateVendorPdfService::class)->render($data['both'], null, $period, 'en');
+    expect($report['data']['scope']['domain'])->toBeNull()
+        ->and($report['data']['kpis']['gross_sales'])->toBe(800.0)
+        ->and(collect($report['data']['products'])->pluck('id'))->toContain($data['agProduct']->id, $data['vetProduct']->id);
+});
+
+test('general syndicate PDF aggregates only the authenticated domain and selected period', function () {
+    $data = analyticsFixture();
+    $syndicate = Syndicate::factory()->create(['type' => Category::TYPE_AGRICULTURE]);
+    Sanctum::actingAs($syndicate->user);
+
+    $response = $this->get('/api/syndicate/reports.pdf?range=30_days&locale=ar');
+    $response->assertOk()->assertHeader('content-type', 'application/pdf')
+        ->assertHeader('x-vetora-report-domain', Category::TYPE_AGRICULTURE);
+    expect(strlen($response->getContent()))->toBeGreaterThan(1000);
+
+    $period = ['key' => '30_days', 'from' => CarbonImmutable::today()->subDays(29)->startOfDay(), 'to' => CarbonImmutable::today()->endOfDay()];
+    $report = app(SyndicateReportService::class)->data($syndicate, $period);
+    expect($report['kpis']['gross_sales'])->toBe(200.0)
+        ->and($report['kpis']['completed_orders'])->toBe(1)
+        ->and(collect($report['top_products'])->pluck('id'))->toContain($data['agProduct']->id)->not->toContain($data['vetProduct']->id, $data['otherProduct']->id)
+        ->and(collect($report['vendor_performance'])->pluck('id'))->toContain($data['both']->id)->not->toContain($data['other']->id);
+});
+
 test('syndicate pdf source data reconciles with dashboard and excludes the other domain', function (string $domain, int $units, float $sales, string $includedProduct, string $excludedProduct) {
     $data = analyticsFixture();
     $syndicate = Syndicate::factory()->create(['type' => $domain]);
@@ -220,7 +270,7 @@ test('syndicate pdf source data reconciles with dashboard and excludes the other
         ->and($report['data']['kpis']['units_sold'])->toBe($units)
         ->and((float) $report['data']['kpis']['gross_sales'])->toBe($sales)
         ->and(collect($report['data']['products'])->pluck('id'))->toContain($data[$includedProduct]->id)->not->toContain($data[$excludedProduct]->id)
-        ->and($report['data']['vendor']['owner'])->not->toHaveKeys(['email', 'phone_number'])
+        ->and($report['data']['vendor'])->not->toHaveKey('owner')
         ->and($report['data']['orders']->first())->not->toHaveKeys(['customer', 'shipping_address', 'payment']);
 })->with([
     'agriculture report' => [Category::TYPE_AGRICULTURE, 2, 200.0, 'agProduct', 'vetProduct'],

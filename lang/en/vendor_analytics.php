@@ -2,7 +2,7 @@
 
 return [
     'title' => 'Vendor 360', 'period_note' => 'Period analytics use the order creation date. All-time ledger balance is shown separately.',
-    'overview' => 'Overview', 'products' => 'Products', 'orders' => 'Sales & Orders', 'finance' => 'Finance / Ledger',
+    'overview' => 'Overview', 'products' => 'Products', 'orders' => 'Orders', 'sales' => 'Sales', 'finance' => 'Finance / Ledger',
     'returns' => 'Returns & Refunds', 'staff' => 'Staff', 'documents' => 'Documents', 'activity' => 'Activity', 'categories' => 'Categories',
     'today' => 'Today', '7_days' => '7 days', '30_days' => '30 days', '90_days' => '90 days', 'this_year' => 'This year', 'custom' => 'Custom', 'all' => 'All time',
     'total_products' => 'Products', 'active_products' => 'Active products', 'pending_products' => 'Pending products', 'total_orders' => 'Orders',
@@ -19,4 +19,8 @@ return [
     'provider' => 'Provider', 'method' => 'Method', 'payment_amount' => 'Amount', 'refunded_amount' => 'Refunded amount', 'reference' => 'Reference',
     'paid_at' => 'Paid at', 'failed_at' => 'Failed at', 'failure_reason' => 'Failure reason', 'coupon_code' => 'Code', 'coupon_value' => 'Value',
     'changed_by' => 'Changed by', 'cancelled_by' => 'Cancelled by', 'cancelled_at' => 'Cancelled at', 'reason' => 'Reason',
+    'report_dialog_copy' => 'Choose an inclusive date range and report language.', 'from' => 'From', 'to' => 'To', 'report_language' => 'Report language', 'generate_report' => 'Generate report',
+    'add_payment' => 'Add Payment', 'payment_dialog_copy' => 'Record an immutable settlement from the platform to this Vendor.', 'amount' => 'Amount', 'payment_date' => 'Payment date',
+    'bank_transfer' => 'Bank transfer', 'cash' => 'Cash', 'other' => 'Other', 'payment' => 'Payment', 'after_payment' => 'After payment', 'confirm_payment' => 'Confirm payment',
+    'saving' => 'Saving…', 'payment_failed' => 'The payment could not be recorded.',
 ];

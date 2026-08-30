@@ -490,7 +490,7 @@ export default function Home({ selectedType }) {
 
                             <section id="best-selling" className="storefront-section scroll-mt-24">
                                 <div className="page-shell py-0">
-                                    <div className="commerce-section-header border-t-2 border-foreground pt-7">
+                                    <div className="commerce-section-header">
                                         <div>
                                             <h2 className="commerce-title">{home.bestselling_title}</h2>
                                         </div>

@@ -16,9 +16,9 @@ class SyndicateVendorPdfService
      * @param  array{key: string, from: \Carbon\CarbonImmutable|null, to: \Carbon\CarbonImmutable|null}  $period
      * @return array{bytes: string, filename: string, data: array<string, mixed>}
      */
-    public function render(Vendor $vendor, Syndicate $syndicate, array $period, string $locale): array
+    public function render(Vendor $vendor, ?Syndicate $syndicate, array $period, string $locale): array
     {
-        $data = $this->analytics->report($vendor, $period, $syndicate->type);
+        $data = $this->analytics->report($vendor, $period, $syndicate?->type);
         $isArabic = $locale === 'ar';
         $temporaryDirectory = storage_path('app/tmp/mpdf');
 

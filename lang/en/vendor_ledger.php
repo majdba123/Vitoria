@@ -26,6 +26,7 @@ return [
     'settlement_amount_invalid' => 'The settlement amount must be greater than zero.',
     'settlement_method_invalid' => 'Please choose a valid settlement method.',
     'settlement_exceeds_outstanding' => 'The settlement amount exceeds this vendor\'s outstanding balance.',
+    'settlement_date_future' => 'The payment date cannot be in the future.',
     'settlement_recorded' => 'Settlement recorded.',
     'adjustment_recorded' => 'Adjustment recorded.',
     'paid_amount_not_greater_than_settled' => 'This vendor already has :settled recorded as settled. Enter a higher total to record an additional payout.',

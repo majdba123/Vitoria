@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
-import { Activity, BadgeDollarSign, Boxes, CalendarRange, FileDown, Package, RotateCcw, Search, ShoppingBag, Store } from 'lucide-react';
+import { Activity, BadgeDollarSign, Banknote, Boxes, CalendarRange, FileDown, Package, RotateCcw, Search, ShoppingBag, Store } from 'lucide-react';
 import { PageHeader } from '@/Components/admin/PageHeader';
 import { Pagination } from '@/Components/admin/Pagination';
 import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
@@ -10,6 +10,7 @@ import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/Components/ui/chart';
 import { Input } from '@/Components/ui/input';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 
@@ -24,7 +25,8 @@ export function Vendor360({ vendorId, mode = 'admin' }) {
     const [custom, setCustom] = useState({ date_from: '', date_to: '' });
     const [overview, setOverview] = useState(null);
     const [status, setStatus] = useState('loading');
-    const [tab, setTab] = useState('overview');
+    const [tab, setTab] = useState(mode === 'admin' ? 'products' : 'overview');
+    const [reportOpen, setReportOpen] = useState(false);
     const base = `/api/${mode === 'admin' ? 'admin' : 'syndicate'}/vendors/${vendorId}`;
     const params = useMemo(() => ({ range, ...(range === 'custom' ? custom : {}) }), [range, custom]);
 
@@ -40,23 +42,23 @@ export function Vendor360({ vendorId, mode = 'admin' }) {
     const approve = () => window.axios.patch(`/api/admin/vendors/${vendorId}/approve`, {}, { silent: true }).then(load);
 
     const vendor = overview?.vendor;
-    const exportReport = async (reportLocale) => {
-        const reportHref = `${base}/report.pdf?${new URLSearchParams({ ...params, locale: reportLocale }).toString()}`;
+    const exportReport = async (reportParams) => {
+        const reportHref = `${base}/report.pdf?${new URLSearchParams(reportParams).toString()}`;
         const response = await window.axios.get(reportHref, { responseType: 'blob' });
         const disposition = response.headers['content-disposition'] ?? '';
         const filename = disposition.match(/filename="?([^";]+)"?/i)?.[1] ?? `vetora-vendor-report-${vendorId}.pdf`;
         const downloadUrl = URL.createObjectURL(response.data);
         const link = document.createElement('a');
         link.href = downloadUrl;
-        link.download = filename;
+        link.target = '_blank';
         document.body.appendChild(link);
         link.click();
         link.remove();
-        URL.revokeObjectURL(downloadUrl);
+        window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 60_000);
     };
     const finance = overview?.finance?.all_time ?? overview?.finance ?? {};
     const tabs = mode === 'admin'
-        ? ['overview', 'products', 'orders', 'finance', 'returns', 'staff', 'documents', 'activity']
+        ? ['products', 'orders', 'sales']
         : ['overview', 'products', 'orders', 'returns', 'categories'];
 
     return (
@@ -65,8 +67,9 @@ export function Vendor360({ vendorId, mode = 'admin' }) {
                 breadcrumb={mode === 'admin' ? [{ label: t.title, href: route('admin.vendors.index') }] : [{ label: t.title, href: route('syndicate.vendors') }]}
                 title={<Identity vendor={vendor} loading={status === 'loading'} common={common} locale={locale} />}
                 copy={t.period_note}
-                actions={vendor ? (mode === 'admin' ? <>{vendor.status === 'pending' && <Button size="sm" onClick={approve}>{common.approve}</Button>}<Button asChild variant="outline" size="sm"><Link href={route('admin.vendors.edit', vendor.id)}>{common.edit}</Link></Button></> : <><Button type="button" variant="outline" size="sm" disabled={range === 'custom' && (!custom.date_from || !custom.date_to)} onClick={() => exportReport('ar')}><FileDown className="size-4" />تقرير PDF بالعربية</Button><Button type="button" variant="outline" size="sm" disabled={range === 'custom' && (!custom.date_from || !custom.date_to)} onClick={() => exportReport('en')}><FileDown className="size-4" />Export PDF in English</Button></>) : null}
+                actions={vendor ? <>{mode === 'admin' && vendor.status === 'pending' && <Button size="sm" onClick={approve}>{common.approve}</Button>}<Button type="button" variant="outline" size="sm" onClick={() => setReportOpen(true)}><FileDown className="size-4" />{t.export_pdf}</Button>{mode === 'admin' && <Button asChild variant="outline" size="sm"><Link href={route('admin.vendors.edit', vendor.id)}>{common.edit}</Link></Button>}</> : null}
             />
+            <ReportDialog open={reportOpen} onOpenChange={setReportOpen} labels={t} onGenerate={exportReport} />
             <PeriodFilter range={range} onRange={setRange} custom={custom} onCustom={setCustom} labels={t} />
             {status === 'error' && <div role="alert" className="rounded-lg border border-destructive/30 bg-destructive/5 p-5 text-sm text-destructive">{t.load_failed}</div>}
             <Tabs value={tab} onValueChange={setTab}>
@@ -85,7 +88,7 @@ export function Vendor360({ vendorId, mode = 'admin' }) {
                     <OrdersCards rows={overview?.recent_orders ?? []} title={t.recent_orders} empty={t.no_data} locale={locale} mode={mode} />
                 </TabsContent>
                 {tabs.filter((name) => name !== 'overview' && name !== 'categories').map((name) => (
-                    <TabsContent key={name} value={name} className="pt-5"><RemoteTab active={tab === name} name={name} base={base} params={params} vendorId={vendorId} mode={mode} labels={t} common={common} locale={locale} /></TabsContent>
+                    <TabsContent key={name} value={name} className="pt-5"><RemoteTab active={tab === name} name={name} base={base} params={params} vendorId={vendorId} mode={mode} labels={t} common={common} locale={locale} finance={finance} onChanged={load} /></TabsContent>
                 ))}
                 <TabsContent value="categories" className="pt-5"><RankedList rows={overview?.category_performance ?? []} title={t.category_performance} empty={t.no_data} locale={locale} /></TabsContent>
             </Tabs>
@@ -95,7 +98,15 @@ export function Vendor360({ vendorId, mode = 'admin' }) {
 
 function Identity({ vendor, loading, common, locale }) {
     if (loading && !vendor) return <span className="text-muted-foreground">•••</span>;
-    return <span className="flex min-w-0 items-center gap-3"><Avatar className="size-14"><AvatarImage src={vendor?.logo_url} alt={common.logo_alt} /><AvatarFallback><Store className="size-5" /></AvatarFallback></Avatar><span className="min-w-0"><span className="block truncate">{vendor?.store_name ?? '—'}</span><span className="mt-1 flex flex-wrap items-center gap-2 text-sm font-normal text-muted-foreground"><span>{vendor?.owner?.name}</span><StatusBadge tone={vendor?.is_active ? 'success' : 'danger'}>{vendor?.is_active ? common.active : common.inactive}</StatusBadge><span>{vendor?.business_type}</span><span>{vendor?.city?.name}</span><span>{vendor?.registration_source}</span><span>{formatDate(vendor?.joined_at, locale)}</span>{vendor?.categories?.map((category) => <StatusBadge key={category.id} tone="brand">{category.name}</StatusBadge>)}</span></span></span>;
+    return <span className="flex min-w-0 items-center gap-3"><Avatar className="size-14"><AvatarImage src={vendor?.logo_url} alt={common.logo_alt} /><AvatarFallback><Store className="size-5" /></AvatarFallback></Avatar><span className="min-w-0"><span className="block truncate">{vendor?.store_name ?? '—'}</span><span className="mt-1 flex flex-wrap items-center gap-2 text-sm font-normal text-muted-foreground"><StatusBadge tone={vendor?.is_active ? 'success' : 'danger'}>{vendor?.is_active ? common.active : common.inactive}</StatusBadge><span>{vendor?.business_type}</span><span>{vendor?.city?.name}</span>{vendor?.categories?.map((category) => <StatusBadge key={category.id} tone="brand">{category.name}</StatusBadge>)}</span></span></span>;
+}
+
+function ReportDialog({ open, onOpenChange, labels, onGenerate }) {
+    const today = new Date().toISOString().slice(0, 10);
+    const monthAgo = new Date(Date.now() - 29 * 86_400_000).toISOString().slice(0, 10);
+    const [form, setForm] = useState({ date_from: monthAgo, date_to: today, locale: 'ar' });
+    const valid = form.date_from && form.date_to && form.date_from <= form.date_to;
+    return <Dialog open={open} onOpenChange={onOpenChange}><DialogContent><DialogHeader><DialogTitle>{labels.export_pdf}</DialogTitle><DialogDescription>{labels.report_dialog_copy}</DialogDescription></DialogHeader><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1.5 text-sm font-medium">{labels.from}<Input type="date" value={form.date_from} onChange={(e) => setForm({ ...form, date_from: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium">{labels.to}<Input type="date" value={form.date_to} onChange={(e) => setForm({ ...form, date_to: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{labels.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={form.locale} onChange={(e) => setForm({ ...form, locale: e.target.value })}><option value="ar">العربية</option><option value="en">English</option></select></label></div><DialogFooter><Button type="button" disabled={!valid} onClick={() => { onGenerate({ range: 'custom', ...form }); onOpenChange(false); }}><FileDown className="size-4" />{labels.generate_report}</Button></DialogFooter></DialogContent></Dialog>;
 }
 
 function PeriodFilter({ range, onRange, custom, onCustom, labels }) {
@@ -118,13 +129,39 @@ function RankedList({ rows, title, empty, locale, horizontal = false }) { return
 function OrdersCards({ rows, title, empty, locale, mode }) { return <Card className="border-border/80 shadow-none"><CardHeader><CardTitle className="text-base">{title}</CardTitle></CardHeader><CardContent className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">{rows.length ? rows.map((row) => <OrderRow key={row.id} row={row} locale={locale} mode={mode} />) : <Empty text={empty} />}</CardContent></Card>; }
 function OrderRow({ row, locale, mode }) { const href = mode === 'admin' ? route('admin.orders.show', row.id) : null; const content = <><span className="font-semibold">{row.order_number}</span><span className="text-sm tabular-nums text-muted-foreground">{formatValue(row.scoped_sales ?? row.subtotal, true, locale)}</span><StatusBadge tone={row.status === 'completed' ? 'success' : row.status === 'cancelled' ? 'danger' : 'warning'}>{row.status}</StatusBadge></>; return href ? <Link href={href} className="flex min-h-12 items-center justify-between gap-3 rounded-md border border-border px-3 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{content}</Link> : <div className="flex min-h-12 items-center justify-between gap-3 rounded-md border border-border px-3">{content}</div>; }
 
-function RemoteTab({ active, name, base, params, vendorId, mode, labels, common, locale }) {
+function RemoteTab({ active, name, base, params, vendorId, mode, labels, common, locale, finance, onChanged }) {
     const [state, setState] = useState({ status: 'idle', rows: [], meta: null }); const [page, setPage] = useState(1); const [search, setSearch] = useState('');
-    const endpoint = name === 'finance' ? `${base}/ledger` : name === 'staff' ? `${base}/staff` : name === 'documents' ? `/api/admin/vendor-documents` : `${base}/analytics/${name}`;
+    const [paymentOpen, setPaymentOpen] = useState(false);
+    const endpoint = ['finance', 'sales'].includes(name) ? `${base}/ledger` : name === 'staff' ? `${base}/staff` : name === 'documents' ? `/api/admin/vendor-documents` : `${base}/analytics/${name}`;
     const load = useCallback(() => { if (!active) return; setState((s) => ({ ...s, status: 'loading' })); window.axios.get(endpoint, { params: { ...params, page, search, ...(name === 'documents' ? { vendor_id: vendorId } : {}) }, silent: true }).then((res) => { const data = res.data.data; setState({ status: 'ready', rows: name === 'staff' ? [data.owner, ...(data.members || [])].filter(Boolean) : Array.isArray(data) ? data : [], meta: res.data.meta }); }).catch(() => setState({ status: 'error', rows: [], meta: null })); }, [active, endpoint, name, page, params, search, vendorId]);
     useEffect(load, [load]);
-    const exportHref = mode === 'admin' && name === 'products' ? `/api/admin/exports/products?vendor_id=${vendorId}` : mode === 'admin' && name === 'orders' ? `/api/admin/exports/orders?vendor_id=${vendorId}` : mode === 'admin' && name === 'finance' ? `${base}/analytics/export-summary?${new URLSearchParams(params)}` : null;
-    return <Card className="border-border/80 shadow-none"><CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between"><CardTitle className="text-base">{labels[name]}</CardTitle><div className="flex flex-wrap items-center gap-2">{exportHref && <Button asChild variant="outline" size="sm"><a href={exportHref}>CSV</a></Button>}{['products', 'orders'].includes(name) && <label className="relative"><Search className="pointer-events-none absolute start-3 top-3 size-4 text-muted-foreground" /><Input aria-label={labels.search} value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="min-h-11 ps-9" placeholder={labels.search} /></label>}</div></CardHeader><CardContent><ResponsiveRecords rows={state.rows} status={state.status} type={name} locale={locale} mode={mode} empty={labels.no_data} labels={labels} common={common} /></CardContent>{state.meta && <div className="px-6 pb-4"><Pagination meta={state.meta} onPrev={() => setPage((p) => p - 1)} onNext={() => setPage((p) => p + 1)} /></div>}</Card>;
+    const exportHref = mode === 'admin' && name === 'products' ? `/api/admin/exports/products?vendor_id=${vendorId}` : mode === 'admin' && name === 'orders' ? `/api/admin/exports/orders?vendor_id=${vendorId}` : mode === 'admin' && ['finance', 'sales'].includes(name) ? `${base}/analytics/export-summary?${new URLSearchParams(params)}` : null;
+    const handlePaymentRecorded = () => { load(); onChanged?.(); };
+    return <div className="space-y-4">{name === 'sales' && <><FinanceStrip values={finance} labels={labels} locale={locale} title={labels.all_time_finance} /><div className="flex justify-end"><Button type="button" onClick={() => setPaymentOpen(true)} disabled={Number(finance?.outstanding || 0) <= 0}><Banknote className="size-4" />{labels.add_payment}</Button></div><PaymentDialog open={paymentOpen} onOpenChange={setPaymentOpen} vendorId={vendorId} outstanding={Number(finance?.outstanding || 0)} labels={labels} locale={locale} onRecorded={handlePaymentRecorded} /></>}<Card className="border-border/80 shadow-none"><CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between"><CardTitle className="text-base">{labels[name]}</CardTitle><div className="flex flex-wrap items-center gap-2">{exportHref && <Button asChild variant="outline" size="sm"><a href={exportHref}>CSV</a></Button>}{['products', 'orders'].includes(name) && <label className="relative"><Search className="pointer-events-none absolute start-3 top-3 size-4 text-muted-foreground" /><Input aria-label={labels.search} value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="min-h-11 ps-9" placeholder={labels.search} /></label>}</div></CardHeader><CardContent><ResponsiveRecords rows={state.rows} status={state.status} type={name} locale={locale} mode={mode} empty={labels.no_data} labels={labels} common={common} /></CardContent>{state.meta && <div className="px-6 pb-4"><Pagination meta={state.meta} onPrev={() => setPage((p) => p - 1)} onNext={() => setPage((p) => p + 1)} /></div>}</Card></div>;
+}
+
+function PaymentDialog({ open, onOpenChange, vendorId, outstanding, labels, locale, onRecorded }) {
+    const today = new Date().toISOString().slice(0, 10);
+    const [form, setForm] = useState({ amount: '', payment_date: today, method: 'bank_transfer', reference: '', notes: '' });
+    const [error, setError] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+    const amount = Number(form.amount || 0);
+    const remaining = Math.max(outstanding - amount, 0);
+    const submit = async () => {
+        setSubmitting(true); setError('');
+        try {
+            const idempotencyKey = globalThis.crypto?.randomUUID?.() ?? 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (character) => {
+                const random = Math.floor(Math.random() * 16);
+                return (character === 'x' ? random : (random & 0x3) | 0x8).toString(16);
+            });
+            await window.axios.post(`/api/admin/vendors/${vendorId}/settlements`, { ...form, amount, idempotency_key: idempotencyKey }, { silent: true });
+            setForm({ amount: '', payment_date: today, method: 'bank_transfer', reference: '', notes: '' });
+            onOpenChange(false); onRecorded();
+        } catch (requestError) {
+            setError(requestError.response?.data?.message ?? labels.payment_failed);
+        } finally { setSubmitting(false); }
+    };
+    return <Dialog open={open} onOpenChange={onOpenChange}><DialogContent><DialogHeader><DialogTitle>{labels.add_payment}</DialogTitle><DialogDescription>{labels.payment_dialog_copy}</DialogDescription></DialogHeader><div className="grid gap-4"><label className="grid gap-1.5 text-sm font-medium">{labels.amount}<Input type="number" min="0.01" step="0.01" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium">{labels.payment_date}<Input type="date" max={today} value={form.payment_date} onChange={(e) => setForm({ ...form, payment_date: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium">{labels.method}<select className="h-11 rounded-md border border-input bg-background px-3" value={form.method} onChange={(e) => setForm({ ...form, method: e.target.value })}><option value="bank_transfer">{labels.bank_transfer}</option><option value="cash">{labels.cash}</option><option value="other">{labels.other}</option></select></label><label className="grid gap-1.5 text-sm font-medium">{labels.reference}<Input value={form.reference} onChange={(e) => setForm({ ...form, reference: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium">{labels.notes}<Input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></label><div className="rounded-md border border-border bg-muted/40 p-4 text-sm"><div className="flex justify-between"><span>{labels.outstanding}</span><strong>{formatValue(outstanding, true, locale)}</strong></div><div className="mt-2 flex justify-between"><span>{labels.payment}</span><strong>{formatValue(amount, true, locale)}</strong></div><div className="mt-2 flex justify-between border-t border-border pt-2"><span>{labels.after_payment}</span><strong>{formatValue(remaining, true, locale)}</strong></div></div>{error && <p role="alert" className="text-sm text-destructive">{error}</p>}</div><DialogFooter><Button type="button" disabled={submitting || amount <= 0 || amount > outstanding || !form.payment_date} onClick={submit}>{submitting ? labels.saving : labels.confirm_payment}</Button></DialogFooter></DialogContent></Dialog>;
 }
 
 function ResponsiveRecords({ rows, status, type, locale, mode, empty, labels, common }) {
@@ -136,7 +173,7 @@ function ResponsiveRecords({ rows, status, type, locale, mode, empty, labels, co
 function Record({ row, type, locale, mode }) {
     if (type === 'products') return <><Link href={mode === 'admin' ? route('admin.products.show', row.id) : '#'} className="flex items-center gap-3 font-semibold"><Avatar className="size-10 rounded-md"><AvatarImage src={row.image_url} /><AvatarFallback><Package className="size-4" /></AvatarFallback></Avatar>{row.name}</Link><span>{row.category?.name}</span><span>{row.units_sold} units</span><span>{formatValue(row.completed_sales_amount, true, locale)}</span><span>{row.status} · {row.is_active ? 'active' : 'inactive'}</span></>;
     if (type === 'returns') return <><span className="font-semibold">{row.return_number}</span><span>{row.order?.order_number}</span><span>{row.reason}</span><span>{formatValue(row.refund_amount ?? row.scoped_return_amount, true, locale)}</span><span>{row.status}</span></>;
-    if (type === 'finance') return <><span className="font-semibold">{row.type}</span><span>{row.order?.order_number ?? '—'}</span><span>{row.direction}</span><span>{formatValue(row.amount, true, locale)}</span><span>{formatDate(row.created_at, locale)}</span></>;
+    if (['finance', 'sales'].includes(type)) return <><span className="font-semibold">{row.type}</span><span>{row.order?.order_number ?? '—'}</span><span>{row.direction === 'credit' ? 'Credit / دائن' : 'Debit / مدين'}</span><span>{formatValue(row.amount, true, locale)}</span><span>{formatDate(row.created_at, locale)}</span></>;
     if (type === 'documents') return <><span className="font-semibold">{row.title}</span><span>{row.type_name}</span><span>{row.status_name}</span><span>{row.reviewed_by ?? '—'}</span><span>{formatDate(row.created_at, locale)}</span></>;
     if (type === 'staff') return <><span className="font-semibold">{row.name}</span><span>{row.email}</span><span>{row.role_name}</span><span>{row.status ?? 'owner'}</span><span>{formatDate(row.joined_at, locale)}</span></>;
     return <><span className="font-semibold">{row.action}</span><span>{row.actor?.name ?? '—'}</span><span>{row.entity_type}</span><span>{row.entity_id}</span><span>{formatDate(row.created_at, locale)}</span></>;

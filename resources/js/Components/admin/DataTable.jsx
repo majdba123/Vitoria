@@ -41,7 +41,7 @@ export function DataTable({ columns, rows, status, errorMessage, onRetry, rowHre
                 <TableHeader>
                     <TableRow className="hover:bg-transparent">
                         {columns.map((column) => (
-                            <TableHead key={column.key} className={column.align === 'end' ? 'text-end' : undefined}>
+                            <TableHead key={column.key}>
                                 {column.label}
                             </TableHead>
                         ))}
