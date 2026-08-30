@@ -1,0 +1,125 @@
+- generic [ref=f4e3]:
+  - navigation "Syndicate navigation" [ref=f4e5]:
+    - generic [ref=f4e6]:
+      - list [ref=f4e8]:
+        - listitem [ref=f4e9]:
+          - link "Vetora مركز النقابة" [ref=f4e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8019/syndicate/dashboard
+            - generic [ref=f4e17]:
+              - generic [ref=f4e18]: Vetora
+              - generic [ref=f4e19]: مركز النقابة
+      - generic [ref=f4e21]:
+        - generic [ref=f4e22]: مساحة النقابة
+        - list [ref=f4e24]:
+          - listitem [ref=f4e25]:
+            - link "نظرة عامة" [ref=f4e26] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/dashboard
+          - listitem [ref=f4e33]:
+            - link "التصنيفات" [ref=f4e34] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/categories
+          - listitem [ref=f4e40]:
+            - link "التجار" [ref=f4e41] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/vendors
+          - listitem [ref=f4e47]:
+            - link "المنتجات" [ref=f4e48] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/products
+          - listitem [ref=f4e54]:
+            - link "البودكاست" [ref=f4e55] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/podcasts
+          - listitem [ref=f4e60]:
+            - link "الطلبات" [ref=f4e61] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/orders
+          - listitem [ref=f4e66]:
+            - link "المبيعات" [ref=f4e67] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/sales
+          - listitem [ref=f4e72]:
+            - link "التقارير" [ref=f4e73] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/reports
+          - listitem [ref=f4e77]:
+            - link "Notifications" [ref=f4e78] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/notifications
+      - paragraph [ref=f4e84]: مساحة النقابة
+  - main [ref=f4e85]:
+    - generic [ref=f4e87]:
+      - button "Toggle Sidebar" [ref=f4e88]
+      - generic [ref=f4e90]:
+        - paragraph [ref=f4e91]: مركز النقابة
+        - heading "الرؤية الشاملة للمورّد" [level=1] [ref=f4e92]
+      - generic [ref=f4e93]:
+        - generic [ref=f4e94]: زراعي
+        - link "الرئيسية" [ref=f4e96] [cursor=pointer]:
+          - /url: http://127.0.0.1:8019/
+        - button "اختر اللغة" [ref=f4e97]
+        - button "الإشعارات" [ref=f4e98]
+        - button "تبديل الوضع الفاتح أو الداكن" [ref=f4e99]
+        - button "تسجيل الخروج" [ref=f4e100]
+    - generic [ref=f4e101]:
+      - generic [ref=f4e103]:
+        - navigation [ref=f4e104]:
+          - link "الرؤية الشاملة للمورّد" [ref=f4e106] [cursor=pointer]:
+            - /url: http://127.0.0.1:8019/syndicate/vendors
+        - heading "•••" [level=1] [ref=f4e107]
+        - paragraph [ref=f4e108]: تعتمد تحليلات الفترة على تاريخ إنشاء الطلب، ويظهر رصيد دفتر الأستاذ الكلي بشكل منفصل.
+      - generic [ref=f4e110]:
+        - generic [ref=f4e111]: تحليلات مبيعات الفترة
+        - combobox "تحليلات مبيعات الفترة" [ref=f4e114]:
+          - option "اليوم"
+          - option "7 أيام"
+          - option "30 يوماً" [selected]
+          - option "90 يوماً"
+          - option "هذه السنة"
+          - option "فترة مخصصة"
+          - option "كل المدة"
+      - generic [ref=f4e115]:
+        - region "الرؤية الشاملة للمورّد" [ref=f4e116]:
+          - tablist [ref=f4e117]:
+            - tab "نظرة عامة" [selected] [ref=f4e118]
+            - tab "المنتجات" [ref=f4e119]
+            - tab "المبيعات والطلبات" [ref=f4e120]
+            - tab "المرتجعات والمبالغ المستردة" [ref=f4e121]
+            - tab "الفئات" [ref=f4e122]
+        - tabpanel "نظرة عامة" [ref=f4e123]:
+          - generic [ref=f4e124]:
+            - generic [ref=f4e125]:
+              - paragraph [ref=f4e127]: المنتجات
+              - paragraph [ref=f4e132]: —
+            - generic [ref=f4e133]:
+              - paragraph [ref=f4e135]: المنتجات النشطة
+              - paragraph [ref=f4e138]: —
+            - generic [ref=f4e139]:
+              - paragraph [ref=f4e141]: المنتجات قيد المراجعة
+              - paragraph [ref=f4e152]: —
+            - generic [ref=f4e153]:
+              - paragraph [ref=f4e155]: الطلبات
+              - paragraph [ref=f4e159]: —
+            - generic [ref=f4e160]:
+              - paragraph [ref=f4e162]: الطلبات المكتملة
+              - paragraph [ref=f4e166]: —
+            - generic [ref=f4e167]:
+              - paragraph [ref=f4e169]: الطلبات الملغاة
+              - paragraph [ref=f4e173]: —
+            - generic [ref=f4e174]:
+              - paragraph [ref=f4e176]: الوحدات المباعة
+              - paragraph [ref=f4e187]: —
+            - generic [ref=f4e188]:
+              - paragraph [ref=f4e190]: المبيعات المكتملة
+              - paragraph [ref=f4e194]: —
+            - generic [ref=f4e195]:
+              - paragraph [ref=f4e197]: المبالغ المستردة المكتملة
+              - paragraph [ref=f4e201]: —
+            - generic [ref=f4e202]:
+              - paragraph [ref=f4e204]: متوسط قيمة الطلب المكتمل
+              - paragraph [ref=f4e208]: —
+          - generic [ref=f4e209]:
+            - generic [ref=f4e210]:
+              - generic [ref=f4e211]: اتجاه المبيعات المكتملة
+              - generic [ref=f4e213]: لا توجد بيانات ضمن هذا النطاق.
+            - generic [ref=f4e215]:
+              - generic [ref=f4e216]: أفضل المنتجات
+              - generic [ref=f4e218]: لا توجد بيانات ضمن هذا النطاق.
+          - generic [ref=f4e220]:
+            - generic [ref=f4e221]: أداء الفئات
+            - generic [ref=f4e223]: لا توجد بيانات ضمن هذا النطاق.
+          - generic [ref=f4e225]:
+            - generic [ref=f4e226]: أحدث الطلبات
+            - generic [ref=f4e228]: لا توجد بيانات ضمن هذا النطاق.

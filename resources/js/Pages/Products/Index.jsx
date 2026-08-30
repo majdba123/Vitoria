@@ -250,7 +250,7 @@ export default function ProductsIndex() {
                             </div>
                         )}
                         emptyContent={(
-                            <div className="empty-state py-20">
+                            <div className="empty-state py-10 sm:py-12">
                                 <PackageX className="mx-auto h-16 w-16 text-muted-foreground/20" />
                                 <p className="mt-4 font-bold text-muted-foreground">{nav.products_empty}</p>
                             </div>

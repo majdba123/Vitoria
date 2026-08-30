@@ -66,11 +66,11 @@ export default function Register() {
     return (
         <PublicLayout title={authPage.create_account_title} noindex>
             <section className="workspace-shell workspace-section">
-                <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-                    <aside className="surface-card overflow-hidden p-8 sm:p-10">
+                <div className="grid items-start gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-8">
+                    <aside className="surface-card overflow-hidden p-6 sm:p-8 lg:sticky lg:top-24 lg:p-10">
                         <span className="eyebrow">{authPage.register_intro_eyebrow}</span>
-                        <h1 className="mt-6 font-display text-4xl font-extrabold tracking-tight text-foreground">{authPage.create_account_title}</h1>
-                        <p className="mt-4 text-base leading-8 text-muted-foreground">{authPage.join_today}</p>
+                        <h1 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">{authPage.create_account_title}</h1>
+                        <p className="mt-3 text-base leading-7 text-muted-foreground">{authPage.join_today}</p>
                     </aside>
 
                     <section className="auth-shell">

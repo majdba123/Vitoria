@@ -1,0 +1,125 @@
+- generic [ref=f3e3]:
+  - navigation "Syndicate navigation" [ref=f3e5]:
+    - generic [ref=f3e6]:
+      - list [ref=f3e8]:
+        - listitem [ref=f3e9]:
+          - link "Vetora Syndicate hub" [ref=f3e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8019/syndicate/dashboard
+            - generic [ref=f3e17]:
+              - generic [ref=f3e18]: Vetora
+              - generic [ref=f3e19]: Syndicate hub
+      - generic [ref=f3e21]:
+        - generic [ref=f3e22]: Syndicate Workspace
+        - list [ref=f3e24]:
+          - listitem [ref=f3e25]:
+            - link "Overview" [ref=f3e26] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/dashboard
+          - listitem [ref=f3e33]:
+            - link "Categories" [ref=f3e34] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/categories
+          - listitem [ref=f3e40]:
+            - link "Vendors" [ref=f3e41] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/vendors
+          - listitem [ref=f3e47]:
+            - link "Products" [ref=f3e48] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/products
+          - listitem [ref=f3e54]:
+            - link "Podcasts" [ref=f3e55] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/podcasts
+          - listitem [ref=f3e60]:
+            - link "Orders" [ref=f3e61] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/orders
+          - listitem [ref=f3e66]:
+            - link "Sales" [ref=f3e67] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/sales
+          - listitem [ref=f3e72]:
+            - link "Reports" [ref=f3e73] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/reports
+          - listitem [ref=f3e77]:
+            - link "Notifications" [ref=f3e78] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/notifications
+      - paragraph [ref=f3e84]: Syndicate workspace
+  - main [ref=f3e85]:
+    - generic [ref=f3e87]:
+      - button "Toggle Sidebar" [ref=f3e88]
+      - generic [ref=f3e90]:
+        - paragraph [ref=f3e91]: Syndicate hub
+        - heading "Vendor 360" [level=1] [ref=f3e92]
+      - generic [ref=f3e93]:
+        - generic [ref=f3e94]: Agriculture
+        - link "Home" [ref=f3e96] [cursor=pointer]:
+          - /url: http://127.0.0.1:8019/
+        - button "Choose language" [ref=f3e97]
+        - button "Notifications" [ref=f3e98]
+        - button "Toggle light or dark theme" [ref=f3e99]
+        - button "Sign Out" [ref=f3e100]
+    - generic [ref=f3e101]:
+      - generic [ref=f3e103]:
+        - navigation [ref=f3e104]:
+          - link "Vendor 360" [ref=f3e106] [cursor=pointer]:
+            - /url: http://127.0.0.1:8019/syndicate/vendors
+        - heading "•••" [level=1] [ref=f3e107]
+        - paragraph [ref=f3e108]: Period analytics use the order creation date. All-time ledger balance is shown separately.
+      - generic [ref=f3e110]:
+        - generic [ref=f3e111]: Period sales analytics
+        - combobox "Period sales analytics" [ref=f3e114]:
+          - option "Today"
+          - option "7 days"
+          - option "30 days" [selected]
+          - option "90 days"
+          - option "This year"
+          - option "Custom"
+          - option "All time"
+      - generic [ref=f3e115]:
+        - region "Vendor 360" [ref=f3e116]:
+          - tablist [ref=f3e117]:
+            - tab "Overview" [selected] [ref=f3e118]
+            - tab "Products" [ref=f3e119]
+            - tab "Sales & Orders" [ref=f3e120]
+            - tab "Returns & Refunds" [ref=f3e121]
+            - tab "Categories" [ref=f3e122]
+        - tabpanel "Overview" [ref=f3e123]:
+          - generic [ref=f3e124]:
+            - generic [ref=f3e125]:
+              - paragraph [ref=f3e127]: Products
+              - paragraph [ref=f3e132]: —
+            - generic [ref=f3e133]:
+              - paragraph [ref=f3e135]: Active products
+              - paragraph [ref=f3e138]: —
+            - generic [ref=f3e139]:
+              - paragraph [ref=f3e141]: Pending products
+              - paragraph [ref=f3e152]: —
+            - generic [ref=f3e153]:
+              - paragraph [ref=f3e155]: Orders
+              - paragraph [ref=f3e159]: —
+            - generic [ref=f3e160]:
+              - paragraph [ref=f3e162]: Completed orders
+              - paragraph [ref=f3e166]: —
+            - generic [ref=f3e167]:
+              - paragraph [ref=f3e169]: Cancelled orders
+              - paragraph [ref=f3e173]: —
+            - generic [ref=f3e174]:
+              - paragraph [ref=f3e176]: Units sold
+              - paragraph [ref=f3e187]: —
+            - generic [ref=f3e188]:
+              - paragraph [ref=f3e190]: Completed sales
+              - paragraph [ref=f3e194]: —
+            - generic [ref=f3e195]:
+              - paragraph [ref=f3e197]: Completed refunds
+              - paragraph [ref=f3e201]: —
+            - generic [ref=f3e202]:
+              - paragraph [ref=f3e204]: Average completed order value
+              - paragraph [ref=f3e208]: —
+          - generic [ref=f3e209]:
+            - generic [ref=f3e210]:
+              - generic [ref=f3e211]: Completed sales trend
+              - generic [ref=f3e213]: No data in this scope.
+            - generic [ref=f3e215]:
+              - generic [ref=f3e216]: Top products
+              - generic [ref=f3e218]: No data in this scope.
+          - generic [ref=f3e220]:
+            - generic [ref=f3e221]: Category performance
+            - generic [ref=f3e223]: No data in this scope.
+          - generic [ref=f3e225]:
+            - generic [ref=f3e226]: Recent orders
+            - generic [ref=f3e228]: No data in this scope.

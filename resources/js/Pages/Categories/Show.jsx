@@ -110,7 +110,7 @@ export default function CategoriesShow({ categoryId, category }) {
                         )}
 
                         {productsStatus === 'ready' && products.length === 0 && (
-                            <div className="empty-state py-16 text-center text-sm text-muted-foreground">{categoryI18n.no_products}</div>
+                            <div className="empty-state py-10 text-center text-sm text-muted-foreground sm:py-12">{categoryI18n.no_products}</div>
                         )}
 
                         {productsStatus === 'ready' && products.length > 0 && (

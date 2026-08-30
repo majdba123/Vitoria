@@ -489,7 +489,7 @@ export default function ProductsShow({ productId, product }) {
         return (
             <PublicLayout title={products.error_title} noindex>
                 <div className="page-shell">
-                    <div className="empty-state py-16">
+                    <div className="empty-state py-10 sm:py-12">
                         <AlertTriangle className="mx-auto h-16 w-16 text-muted-foreground/30" />
                         <p className="mt-4 text-base font-bold text-foreground">{products.error_title}</p>
                         <p className="mt-1 text-sm text-muted-foreground">{products.error_copy}</p>

@@ -517,7 +517,7 @@ export default function ProfileIndex() {
 
                 <div className="page-shell">
                     {!user ? (
-                        <div className="empty-state py-20">
+                        <div className="empty-state py-10 sm:py-12">
                             <p className="mt-4 text-base font-bold text-foreground">{profile.sign_in_to_view}</p>
                             <Link href={route('login')} className="btn-primary mt-4 inline-flex">{authPage.sign_in ?? nav.sign_in}</Link>
                         </div>

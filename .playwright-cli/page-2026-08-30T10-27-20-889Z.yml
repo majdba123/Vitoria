@@ -1,0 +1,160 @@
+- generic [ref=f2e297]:
+  - navigation "Syndicate navigation" [ref=f2e299]:
+    - generic [ref=f2e300]:
+      - list [ref=f2e302]:
+        - listitem [ref=f2e303]:
+          - link "Vetora Syndicate hub" [ref=f2e304] [cursor=pointer]:
+            - /url: http://127.0.0.1:8019/syndicate/dashboard
+            - generic [ref=f2e311]:
+              - generic [ref=f2e312]: Vetora
+              - generic [ref=f2e313]: Syndicate hub
+      - generic [ref=f2e315]:
+        - generic [ref=f2e316]: Syndicate Workspace
+        - list [ref=f2e318]:
+          - listitem [ref=f2e319]:
+            - link "Overview" [ref=f2e320] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/dashboard
+          - listitem [ref=f2e327]:
+            - link "Categories" [ref=f2e328] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/categories
+          - listitem [ref=f2e334]:
+            - link "Vendors" [ref=f2e335] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/vendors
+          - listitem [ref=f2e341]:
+            - link "Products" [ref=f2e342] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/products
+          - listitem [ref=f2e348]:
+            - link "Podcasts" [ref=f2e349] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/podcasts
+          - listitem [ref=f2e354]:
+            - link "Orders" [ref=f2e355] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/orders
+          - listitem [ref=f2e360]:
+            - link "Sales" [ref=f2e361] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/sales
+          - listitem [ref=f2e366]:
+            - link "Reports" [ref=f2e367] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/reports
+          - listitem [ref=f2e371]:
+            - link "Notifications" [ref=f2e372] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/notifications
+      - paragraph [ref=f2e378]: Syndicate workspace
+  - main [ref=f2e379]:
+    - generic [ref=f2e381]:
+      - button "Toggle Sidebar" [ref=f2e382]
+      - generic [ref=f2e384]:
+        - paragraph [ref=f2e385]: Syndicate hub
+        - heading "Vendor 360" [level=1] [ref=f2e386]
+      - generic [ref=f2e387]:
+        - generic [ref=f2e388]: Agriculture
+        - link "Home" [ref=f2e390] [cursor=pointer]:
+          - /url: http://127.0.0.1:8019/
+        - button "Choose language" [ref=f2e391]
+        - button "Notifications" [ref=f2e392]
+        - button "Toggle light or dark theme" [ref=f2e393]
+        - button "Sign Out" [ref=f2e394]
+    - generic [ref=f2e395]:
+      - generic [ref=f2e396]:
+        - generic [ref=f2e397]:
+          - navigation [ref=f2e398]:
+            - link "Vendor 360" [ref=f2e400] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/vendors
+          - heading "Logo تاجر المستلزمات الزراعية تاجر المستلزمات الزراعية Active agriculture دمشق admin Aug 30, 2026 البذور الأسمدة أنظمة الري البيوت البلاستيكية المعدات الزراعية المبيدات الزراعية التربة والسماد العضوي أدوات الحصاد" [level=1] [ref=f2e401]:
+            - generic [ref=f2e402]:
+              - img "Logo" [ref=f2e404]
+              - generic [ref=f2e405]:
+                - generic [ref=f2e406]: تاجر المستلزمات الزراعية
+                - generic [ref=f2e407]:
+                  - generic [ref=f2e408]: تاجر المستلزمات الزراعية
+                  - generic [ref=f2e409]: Active
+                  - generic [ref=f2e410]: agriculture
+                  - generic [ref=f2e411]: دمشق
+                  - generic [ref=f2e412]: admin
+                  - generic [ref=f2e413]: Aug 30, 2026
+                  - generic [ref=f2e414]: البذور
+                  - generic [ref=f2e415]: الأسمدة
+                  - generic [ref=f2e416]: أنظمة الري
+                  - generic [ref=f2e417]: البيوت البلاستيكية
+                  - generic [ref=f2e418]: المعدات الزراعية
+                  - generic [ref=f2e419]: المبيدات الزراعية
+                  - generic [ref=f2e420]: التربة والسماد العضوي
+                  - generic [ref=f2e421]: أدوات الحصاد
+          - paragraph [ref=f2e422]: Period analytics use the order creation date. All-time ledger balance is shown separately.
+        - generic [ref=f2e423]:
+          - button "تقرير PDF بالعربية" [ref=f2e424]
+          - button "Export PDF in English" [ref=f2e425]
+      - generic [ref=f2e427]:
+        - generic [ref=f2e428]: Period sales analytics
+        - combobox "Period sales analytics" [ref=f2e431]:
+          - option "Today"
+          - option "7 days"
+          - option "30 days" [selected]
+          - option "90 days"
+          - option "This year"
+          - option "Custom"
+          - option "All time"
+      - generic [ref=f2e432]:
+        - region "Vendor 360" [ref=f2e433]:
+          - tablist [ref=f2e434]:
+            - tab "Overview" [selected] [ref=f2e435]
+            - tab "Products" [ref=f2e436]
+            - tab "Sales & Orders" [ref=f2e437]
+            - tab "Returns & Refunds" [ref=f2e438]
+            - tab "Categories" [ref=f2e439]
+        - tabpanel "Overview" [ref=f2e440]:
+          - generic [ref=f2e441]:
+            - generic [ref=f2e442]:
+              - paragraph [ref=f2e444]: Products
+              - paragraph [ref=f2e449]: "8"
+            - generic [ref=f2e450]:
+              - paragraph [ref=f2e452]: Active products
+              - paragraph [ref=f2e455]: "8"
+            - generic [ref=f2e456]:
+              - paragraph [ref=f2e458]: Pending products
+              - paragraph [ref=f2e469]: "0"
+            - generic [ref=f2e470]:
+              - paragraph [ref=f2e472]: Orders
+              - paragraph [ref=f2e476]: "0"
+            - generic [ref=f2e477]:
+              - paragraph [ref=f2e479]: Completed orders
+              - paragraph [ref=f2e483]: "0"
+            - generic [ref=f2e484]:
+              - paragraph [ref=f2e486]: Cancelled orders
+              - paragraph [ref=f2e490]: "0"
+            - generic [ref=f2e491]:
+              - paragraph [ref=f2e493]: Units sold
+              - paragraph [ref=f2e504]: "0"
+            - generic [ref=f2e505]:
+              - paragraph [ref=f2e507]: Completed sales
+              - paragraph [ref=f2e511]: 0 SYP
+            - generic [ref=f2e512]:
+              - paragraph [ref=f2e514]: Completed refunds
+              - paragraph [ref=f2e518]: 0 SYP
+            - generic [ref=f2e519]:
+              - paragraph [ref=f2e521]: Average completed order value
+              - paragraph [ref=f2e525]: 0 SYP
+          - region [ref=f2e526]:
+            - heading "Period sales analytics" [level=2] [ref=f2e527]
+            - generic [ref=f2e528]:
+              - generic [ref=f2e529]:
+                - paragraph [ref=f2e530]: Platform commission
+                - paragraph [ref=f2e531]: 0 SYP
+              - generic [ref=f2e532]:
+                - paragraph [ref=f2e533]: Completed refunds
+                - paragraph [ref=f2e534]: 0 SYP
+              - generic [ref=f2e535]:
+                - paragraph [ref=f2e536]: Net vendor earnings
+                - paragraph [ref=f2e537]: 0 SYP
+          - generic [ref=f2e538]:
+            - generic [ref=f2e539]:
+              - generic [ref=f2e540]: Completed sales trend
+              - generic [ref=f2e542]: No data in this scope.
+            - generic [ref=f2e544]:
+              - generic [ref=f2e545]: Top products
+              - generic [ref=f2e547]: No data in this scope.
+          - generic [ref=f2e549]:
+            - generic [ref=f2e550]: Category performance
+            - generic [ref=f2e552]: No data in this scope.
+          - generic [ref=f2e554]:
+            - generic [ref=f2e555]: Recent orders
+            - generic [ref=f2e557]: No data in this scope.

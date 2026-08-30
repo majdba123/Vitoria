@@ -1,0 +1,104 @@
+- generic [ref=f3e3]:
+  - navigation "Vendor navigation" [ref=f3e5]:
+    - generic [ref=f3e6]:
+      - list [ref=f3e8]:
+        - listitem [ref=f3e9]:
+          - link "Vetora بائع" [ref=f3e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8019/vendor/dashboard
+            - generic [ref=f3e16]:
+              - generic [ref=f3e17]: Vetora
+              - generic [ref=f3e18]: بائع
+      - generic [ref=f3e19]:
+        - generic [ref=f3e20]:
+          - generic [ref=f3e21]: نظرة عامة
+          - list [ref=f3e23]:
+            - listitem [ref=f3e24]:
+              - link "لوحة التحكم" [ref=f3e25] [cursor=pointer]:
+                - /url: http://127.0.0.1:8019/vendor/dashboard
+        - generic [ref=f3e32]:
+          - generic [ref=f3e33]: متجري
+          - list [ref=f3e35]:
+            - listitem [ref=f3e36]:
+              - link "المنتجات" [ref=f3e37] [cursor=pointer]:
+                - /url: http://127.0.0.1:8019/vendor/products
+            - listitem [ref=f3e43]:
+              - link "الخصومات" [ref=f3e44] [cursor=pointer]:
+                - /url: http://127.0.0.1:8019/vendor/discounts
+            - listitem [ref=f3e50]:
+              - link "الطلبات" [ref=f3e51] [cursor=pointer]:
+                - /url: http://127.0.0.1:8019/vendor/orders
+            - listitem [ref=f3e56]:
+              - link "العمولة" [ref=f3e57] [cursor=pointer]:
+                - /url: http://127.0.0.1:8019/vendor/commission
+            - listitem [ref=f3e62]:
+              - link "الإشعارات" [ref=f3e63] [cursor=pointer]:
+                - /url: http://127.0.0.1:8019/vendor/notifications
+        - generic [ref=f3e68]:
+          - generic [ref=f3e69]: الحساب
+          - list [ref=f3e71]:
+            - listitem [ref=f3e72]:
+              - link "الملف الشخصي" [ref=f3e73] [cursor=pointer]:
+                - /url: http://127.0.0.1:8019/vendor/profile
+        - generic [ref=f3e78]: التصنيفات
+      - list [ref=f3e83]:
+        - listitem [ref=f3e84]:
+          - button "ت تاجر المستلزمات الزراعية بائع" [ref=f3e85]:
+            - generic [ref=f3e86]: ت
+            - generic [ref=f3e88]:
+              - generic [ref=f3e89]: تاجر المستلزمات الزراعية
+              - generic [ref=f3e90]: بائع
+  - main [ref=f3e94]:
+    - generic [ref=f3e96]:
+      - button "Toggle Sidebar" [ref=f3e97]
+      - generic [ref=f3e99]:
+        - paragraph [ref=f3e100]: بائع
+        - heading "لوحة التحكم" [level=1] [ref=f3e101]
+      - generic [ref=f3e102]:
+        - link "الرئيسية" [ref=f3e103] [cursor=pointer]:
+          - /url: http://127.0.0.1:8019/
+        - button "اختر اللغة" [ref=f3e104]
+        - button "الإشعارات" [ref=f3e105]
+        - button "تبديل المظهر" [ref=f3e106]
+        - button "تسجيل الخروج" [ref=f3e107]
+    - generic [ref=f3e108]:
+      - generic [ref=f3e109]:
+        - generic [ref=f3e110]:
+          - paragraph [ref=f3e111]: مساحة البائع
+          - heading "نظرة عامة على المتجر" [level=2] [ref=f3e112]
+          - paragraph [ref=f3e113]: تابع حالة المتجر وأحدث المنتجات والإجراءات الأساسية من مساحة عمل مختصرة وواضحة.
+        - generic [ref=f3e114]:
+          - link "إضافة منتج" [ref=f3e115] [cursor=pointer]:
+            - /url: http://127.0.0.1:8019/vendor/products/create
+          - link "الطلبات" [ref=f3e116] [cursor=pointer]:
+            - /url: http://127.0.0.1:8019/vendor/orders
+      - generic [ref=f3e117]:
+        - paragraph [ref=f3e121]: حالة المتجر
+        - paragraph [ref=f3e130]: إجمالي المنتجات
+        - paragraph [ref=f3e140]: المنتجات النشطة
+        - paragraph [ref=f3e151]: الطلبات
+      - generic [ref=f3e157]:
+        - generic [ref=f3e159]:
+          - generic [ref=f3e160]:
+            - heading "أحدث المنتجات" [level=3] [ref=f3e161]
+            - paragraph [ref=f3e162]: أحدث منتجاتك وحالتها الحالية في الواجهة.
+          - link "عرض الكل" [ref=f3e163] [cursor=pointer]:
+            - /url: http://127.0.0.1:8019/vendor/products
+        - generic [ref=f3e170]:
+          - generic [ref=f3e171]:
+            - generic [ref=f3e172]: إجراءات سريعة
+            - paragraph [ref=f3e173]: انتقل بسرعة بين أكثر المهام استخدامًا.
+          - generic [ref=f3e174]:
+            - link "إضافة منتج" [ref=f3e175] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/vendor/products/create
+            - link "المنتجات" [ref=f3e177] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/vendor/products
+            - link "الطلبات" [ref=f3e182] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/vendor/orders
+            - link "العمولة" [ref=f3e185] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/vendor/commission
+      - generic [ref=f3e190]:
+        - heading "Orders, last 7 days" [level=3] [ref=f3e191]
+        - paragraph [ref=f3e192]: Real order counts for your store (confirmed + completed), updated daily.
+      - generic [ref=f3e201]:
+        - heading "معلومات المتجر" [level=3] [ref=f3e202]
+        - paragraph [ref=f3e203]: عرض مختصر لأهم بيانات الحساب والمتجر.

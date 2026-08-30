@@ -1,0 +1,131 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - navigation "القائمة" [ref=e4]:
+      - link "Vetora":
+        - /url: http://127.0.0.1:8021/
+        - img "Vetora"
+      - generic [ref=e5]:
+        - button "السلة" [ref=e6]
+        - button "القائمة" [ref=e10]
+  - main [ref=e12]:
+    - generic [ref=e14]:
+      - complementary [ref=e15]:
+        - generic [ref=e16]: أنشئ حسابك
+        - heading "إنشاء حساب" [level=1] [ref=e17]
+        - paragraph [ref=e18]: انضم إلى Vetora اليوم
+      - generic [ref=e19]:
+        - generic [ref=e20]:
+          - generic [ref=e21]:
+            - generic [ref=e22]: نموذج التسجيل
+            - heading "أكمل إعداد ملفك في Vetora." [level=2] [ref=e23]
+          - link "تسجيل الدخول" [ref=e24] [cursor=pointer]:
+            - /url: http://127.0.0.1:8021/login
+        - generic [ref=e26]:
+          - generic [ref=e27]:
+            - generic [ref=e28]:
+              - generic [ref=e29]:
+                - text: الاسم الكامل
+                - generic [ref=e30]: "*"
+              - textbox "الاسم الكامل *" [ref=e31]:
+                - /placeholder: أدخل اسمك الكامل
+            - generic [ref=e32]:
+              - generic [ref=e33]:
+                - text: رقم الهاتف
+                - generic [ref=e34]: "*"
+              - textbox "رقم الهاتف *" [ref=e35]:
+                - /placeholder: 09XXXXXXXX
+            - generic [ref=e36]:
+              - generic [ref=e37]:
+                - text: الرقم الوطني
+                - generic [ref=e38]: "*"
+              - textbox "الرقم الوطني *" [ref=e39]:
+                - /placeholder: أدخل رقمك الوطني
+            - generic [ref=e40]:
+              - generic [ref=e41]:
+                - text: العمر
+                - generic [ref=e42]: "*"
+              - spinbutton "العمر *" [ref=e43]
+            - generic [ref=e44]:
+              - generic [ref=e45]:
+                - text: رقم العضوية
+                - generic [ref=e46]: "*"
+              - textbox "رقم العضوية *" [ref=e47]:
+                - /placeholder: "مثال: MEM-12345"
+            - generic [ref=e48]:
+              - generic [ref=e49]:
+                - text: المدينة
+                - generic [ref=e50]: "*"
+              - combobox "المدينة" [ref=e51]:
+                - generic: اختر مدينتك
+              - combobox [ref=e52]
+          - generic [ref=e53]:
+            - generic [ref=e54]:
+              - generic [ref=e55]:
+                - text: البريد الإلكتروني
+                - generic [ref=e56]: "*"
+              - textbox "البريد الإلكتروني *" [ref=e57]:
+                - /placeholder: you@example.com
+            - generic [ref=e58]:
+              - generic [ref=e59]:
+                - text: كلمة المرور
+                - generic [ref=e60]: "*"
+              - generic [ref=e61]:
+                - textbox "كلمة المرور *" [ref=e62]:
+                  - /placeholder: أدخل كلمة المرور
+                - button "Show password" [ref=e63]
+            - generic [ref=e67]:
+              - generic [ref=e68]:
+                - text: تأكيد كلمة المرور
+                - generic [ref=e69]: "*"
+              - generic [ref=e70]:
+                - textbox "تأكيد كلمة المرور *" [ref=e71]:
+                  - /placeholder: أعد كتابة كلمة المرور
+                - button "Show password" [ref=e72]
+          - generic [ref=e76]:
+            - paragraph [ref=e77]:
+              - text: لديك حساب بالفعل؟
+              - link "تسجيل الدخول" [ref=e78] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/login
+            - button "إنشاء حساب" [ref=e79]
+  - contentinfo [ref=e80]:
+    - generic [ref=e82]:
+      - generic [ref=e83]:
+        - generic [ref=e84]:
+          - link "Vetora":
+            - /url: http://127.0.0.1:8021/
+            - img "Vetora"
+          - paragraph [ref=e85]: سوق ذكي للمنتجات الزراعية والبيطرية
+        - generic [ref=e86]:
+          - heading "تسوق" [level=2] [ref=e87]
+          - list [ref=e88]:
+            - listitem [ref=e89]:
+              - link "التصنيفات" [ref=e90] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/categories
+            - listitem [ref=e91]:
+              - link "جميع المنتجات" [ref=e92] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/products
+            - listitem [ref=e93]:
+              - link "الأسئلة الشائعة" [ref=e94] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/faq
+        - generic [ref=e95]:
+          - heading "حساب" [level=2] [ref=e96]
+          - list [ref=e97]:
+            - listitem [ref=e98]:
+              - link "تسجيل الدخول" [ref=e99] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/login
+            - listitem [ref=e100]:
+              - link "إنشاء حساب" [ref=e101] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/register
+        - generic [ref=e102]:
+          - heading "تواصل" [level=2] [ref=e103]
+          - list [ref=e104]:
+            - listitem [ref=e105]:
+              - link "تواصل معنا" [ref=e106] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/contact
+      - generic [ref=e107]:
+        - paragraph [ref=e108]: © 2026 Vetora. جميع الحقوق محفوظة.
+        - generic [ref=e109]:
+          - link "سياسة الخصوصية" [ref=e110] [cursor=pointer]:
+            - /url: http://127.0.0.1:8021/pages/privacy-policy
+          - link "شروط الخدمة" [ref=e111] [cursor=pointer]:
+            - /url: http://127.0.0.1:8021/pages/terms-of-service

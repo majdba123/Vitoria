@@ -1,0 +1,241 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - navigation:
+          - generic:
+            - generic:
+              - list:
+                - listitem:
+                  - link:
+                    - /url: http://127.0.0.1:8019/vendor/dashboard
+                    - generic:
+                      - generic: Vetora
+                      - generic: Vendor
+            - generic:
+              - generic:
+                - generic: Overview
+                - generic:
+                  - list:
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/vendor/dashboard
+                        - generic: Dashboard
+              - generic:
+                - generic: My Store
+                - generic:
+                  - list:
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/vendor/products
+                        - generic: Products
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/vendor/discounts
+                        - generic: Discounts
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/vendor/orders
+                        - generic: Orders
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/vendor/commission
+                        - generic: Commission
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/vendor/notifications
+                        - generic: Notifications
+              - generic:
+                - generic: Account
+                - generic:
+                  - list:
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/vendor/profile
+                        - generic: Profile
+              - generic:
+                - generic: Categories
+                - generic:
+                  - generic:
+                    - button:
+                      - generic: البذور
+                      - generic: 5%
+                    - paragraph: Agriculture Categories
+                  - generic:
+                    - button:
+                      - generic: الأسمدة
+                      - generic: 5%
+                    - paragraph: Agriculture Categories
+                  - generic:
+                    - button:
+                      - generic: أنظمة الري
+                      - generic: 6%
+                    - paragraph: Agriculture Categories
+                  - generic:
+                    - button:
+                      - generic: البيوت البلاستيكية
+                      - generic: 6%
+                    - paragraph: Agriculture Categories
+                  - generic:
+                    - button:
+                      - generic: المعدات الزراعية
+                      - generic: 7%
+                    - paragraph: Agriculture Categories
+                  - generic:
+                    - button:
+                      - generic: المبيدات الزراعية
+                      - generic: 5%
+                    - paragraph: Agriculture Categories
+                  - generic:
+                    - button:
+                      - generic: التربة والسماد العضوي
+                      - generic: 5%
+                    - paragraph: Agriculture Categories
+                  - generic:
+                    - button:
+                      - generic: أدوات الحصاد
+                      - generic: 6%
+                    - paragraph: Agriculture Categories
+            - generic:
+              - list:
+                - listitem:
+                  - button:
+                    - generic: ت
+                    - generic:
+                      - generic: تاجر المستلزمات الزراعية
+                      - generic: Seller
+      - main:
+        - generic:
+          - generic:
+            - button:
+              - generic: Toggle Sidebar
+            - generic:
+              - paragraph: Vendor
+              - heading [level=1]: Dashboard
+            - generic:
+              - link:
+                - /url: http://127.0.0.1:8019/
+              - button [expanded]
+              - button
+              - button
+              - button
+        - generic:
+          - generic:
+            - generic:
+              - paragraph: Vendor workspace
+              - heading [level=2]: تاجر المستلزمات الزراعية
+              - paragraph: Track your store status, latest products, and core actions from one compact workspace.
+            - generic:
+              - link:
+                - /url: http://127.0.0.1:8019/vendor/products/create
+                - text: Add product
+              - link:
+                - /url: http://127.0.0.1:8019/vendor/orders
+                - text: Orders
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - paragraph: Store status
+                  - paragraph: Active
+            - generic:
+              - generic:
+                - generic:
+                  - paragraph: Total products
+                  - paragraph: "8"
+            - generic:
+              - generic:
+                - generic:
+                  - paragraph: Active products
+                  - paragraph: "8"
+            - generic:
+              - generic:
+                - generic:
+                  - paragraph: Orders
+                  - paragraph: "0"
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - heading [level=3]: Recent products
+                  - paragraph: Your newest products and their current visibility.
+                - link:
+                  - /url: http://127.0.0.1:8019/vendor/products
+                  - text: View all
+              - generic:
+                - generic:
+                  - link:
+                    - /url: http://127.0.0.1:8019/vendor/products/7
+                    - generic:
+                      - paragraph: Ready-Made Agricultural Greenhouse
+                      - paragraph: البيوت البلاستيكية
+                    - generic: Active
+                  - link:
+                    - /url: http://127.0.0.1:8019/vendor/products/8
+                    - generic:
+                      - paragraph: Compact Agricultural Tractor
+                      - paragraph: المعدات الزراعية
+                    - generic: Active
+                  - link:
+                    - /url: http://127.0.0.1:8019/vendor/products/9
+                    - generic:
+                      - paragraph: Natural Soil Amendment
+                      - paragraph: التربة والسماد العضوي
+                    - generic: Active
+                  - link:
+                    - /url: http://127.0.0.1:8019/vendor/products/10
+                    - generic:
+                      - paragraph: Manual Harvest Tools Set
+                      - paragraph: أدوات الحصاد
+                    - generic: Active
+                  - link:
+                    - /url: http://127.0.0.1:8019/vendor/products/1
+                    - generic:
+                      - paragraph: Premium Wheat Seeds
+                      - paragraph: البذور
+                    - generic: Active
+            - generic:
+              - generic:
+                - generic: Quick actions
+                - paragraph: Move quickly between the tasks you use most.
+              - generic:
+                - link:
+                  - /url: http://127.0.0.1:8019/vendor/products/create
+                  - text: Add product
+                - link:
+                  - /url: http://127.0.0.1:8019/vendor/products
+                  - text: Products
+                - link:
+                  - /url: http://127.0.0.1:8019/vendor/orders
+                  - text: Orders
+                - link:
+                  - /url: http://127.0.0.1:8019/vendor/commission
+                  - text: Commission
+          - generic:
+            - generic:
+              - generic:
+                - heading [level=3]: Orders, last 7 days
+                - paragraph: Real order counts for your store (confirmed + completed), updated daily.
+            - generic: No orders in the last 7 days.
+          - generic:
+            - generic:
+              - generic:
+                - heading [level=3]: Store information
+                - paragraph: A compact view of the main account and store details.
+            - generic:
+              - generic:
+                - generic:
+                  - paragraph: Store name
+                  - paragraph: تاجر المستلزمات الزراعية
+                - generic:
+                  - paragraph: Owner
+                  - paragraph: تاجر المستلزمات الزراعية
+                - generic:
+                  - paragraph: City
+                  - paragraph: دمشق
+                - generic:
+                  - paragraph: Email
+                  - paragraph: agriculture.vendor@vetora.test
+  - menu "Choose language" [active] [ref=f1e305]:
+    - menuitem "العربية" [ref=f1e306]
+    - menuitem "English" [ref=f1e307]

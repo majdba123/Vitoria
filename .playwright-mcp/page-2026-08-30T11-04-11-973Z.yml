@@ -1,0 +1,70 @@
+- generic [ref=f3e2]:
+  - banner [ref=f3e3]:
+    - navigation "القائمة" [ref=f3e4]:
+      - link [ref=f3e5] [cursor=pointer]:
+        - /url: http://127.0.0.1:8021/
+        - img "Vetora" [ref=f3e6]
+      - generic [ref=f3e7]:
+        - button "السلة" [ref=f3e8]
+        - button "القائمة" [ref=f3e12]
+  - main [ref=f3e14]:
+    - generic [ref=f3e16]:
+      - generic [ref=f3e17]:
+        - heading "تواصل مع فريق Vetora" [level=1] [ref=f3e18]
+        - paragraph [ref=f3e19]: أرسل استفسارك أو طلبك أو رسالة المورد، وسنعود إليك في أقرب وقت.
+      - generic [ref=f3e20]:
+        - generic [ref=f3e21]:
+          - generic [ref=f3e22]: الاسم
+          - textbox "الاسم" [ref=f3e23]:
+            - /placeholder: أدخل اسمك
+        - generic [ref=f3e24]:
+          - generic [ref=f3e25]: البريد الإلكتروني *
+          - textbox "البريد الإلكتروني *" [ref=f3e26]:
+            - /placeholder: you@example.com
+        - generic [ref=f3e27]:
+          - generic [ref=f3e28]: الرسالة *
+          - textbox "الرسالة *" [ref=f3e29]:
+            - /placeholder: اكتب ما تحتاجه هنا...
+        - button "إرسال الرسالة" [ref=f3e30]
+  - contentinfo [ref=f3e31]:
+    - generic [ref=f3e33]:
+      - generic [ref=f3e34]:
+        - generic [ref=f3e35]:
+          - link [ref=f3e36] [cursor=pointer]:
+            - /url: http://127.0.0.1:8021/
+            - img "Vetora" [ref=f3e37]
+          - paragraph [ref=f3e38]: سوق ذكي للمنتجات الزراعية والبيطرية
+        - generic [ref=f3e39]:
+          - heading "تسوق" [level=2] [ref=f3e40]
+          - list [ref=f3e41]:
+            - listitem [ref=f3e42]:
+              - link "التصنيفات" [ref=f3e43] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/categories
+            - listitem [ref=f3e44]:
+              - link "جميع المنتجات" [ref=f3e45] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/products
+            - listitem [ref=f3e46]:
+              - link "الأسئلة الشائعة" [ref=f3e47] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/faq
+        - generic [ref=f3e48]:
+          - heading "حساب" [level=2] [ref=f3e49]
+          - list [ref=f3e50]:
+            - listitem [ref=f3e51]:
+              - link "تسجيل الدخول" [ref=f3e52] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/login
+            - listitem [ref=f3e53]:
+              - link "إنشاء حساب" [ref=f3e54] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/register
+        - generic [ref=f3e55]:
+          - heading "تواصل" [level=2] [ref=f3e56]
+          - list [ref=f3e57]:
+            - listitem [ref=f3e58]:
+              - link "تواصل معنا" [ref=f3e59] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/contact
+      - generic [ref=f3e60]:
+        - paragraph [ref=f3e61]: © 2026 Vetora. جميع الحقوق محفوظة.
+        - generic [ref=f3e62]:
+          - link "سياسة الخصوصية" [ref=f3e63] [cursor=pointer]:
+            - /url: http://127.0.0.1:8021/pages/privacy-policy
+          - link "شروط الخدمة" [ref=f3e64] [cursor=pointer]:
+            - /url: http://127.0.0.1:8021/pages/terms-of-service

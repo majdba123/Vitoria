@@ -103,7 +103,7 @@ export default function CheckoutIndex() {
 
     return (
         <PublicLayout title={checkout.title} noindex>
-            <div className="min-h-screen bg-transparent">
+            <div className="bg-transparent">
                 <div className="catalog-page-band">
                     <div className="page-shell py-3">
                         <nav className="page-breadcrumb">

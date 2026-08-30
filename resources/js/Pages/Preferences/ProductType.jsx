@@ -12,7 +12,7 @@ export default function ProductTypePreference({ selectedType }) {
 
     return (
         <PublicLayout title={preferences.title} noindex>
-            <div className="page-shell min-h-[calc(100vh-5rem)] py-10 sm:py-16">
+            <div className="page-shell py-8 sm:py-12">
                 <div className="mx-auto max-w-6xl border-y-2 border-foreground py-8 sm:py-10">
                     <div className="max-w-2xl text-start">
                         <span className="eyebrow">{preferences.start_browsing}</span>

@@ -1,0 +1,186 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - navigation:
+          - generic:
+            - generic:
+              - list:
+                - listitem:
+                  - link:
+                    - /url: http://127.0.0.1:8019/syndicate/dashboard
+                    - generic:
+                      - generic: Vetora
+                      - generic: Syndicate hub
+            - generic:
+              - generic:
+                - generic: Syndicate Workspace
+                - generic:
+                  - list:
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/syndicate/dashboard
+                        - generic: Overview
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/syndicate/categories
+                        - generic: Categories
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/syndicate/vendors
+                        - generic: Vendors
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/syndicate/products
+                        - generic: Products
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/syndicate/podcasts
+                        - generic: Podcasts
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/syndicate/orders
+                        - generic: Orders
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/syndicate/sales
+                        - generic: Sales
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/syndicate/reports
+                        - generic: Reports
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8019/syndicate/notifications
+                        - generic: Notifications
+            - generic:
+              - paragraph: Syndicate workspace
+      - main:
+        - generic:
+          - generic:
+            - button:
+              - generic: Toggle Sidebar
+            - generic:
+              - paragraph: Syndicate hub
+              - heading [level=1]: Vendor 360
+            - generic:
+              - generic: Agriculture
+              - link:
+                - /url: http://127.0.0.1:8019/
+              - button [expanded]
+              - button
+              - button
+              - button
+        - generic:
+          - generic:
+            - generic:
+              - navigation:
+                - generic:
+                  - link:
+                    - /url: http://127.0.0.1:8019/syndicate/vendors
+                    - text: Vendor 360
+              - heading [level=1]:
+                - generic:
+                  - generic:
+                    - generic: تاجر المستلزمات الزراعية
+                    - generic:
+                      - generic: تاجر المستلزمات الزراعية
+                      - generic: Active
+                      - generic: agriculture
+                      - generic: دمشق
+                      - generic: admin
+                      - generic: Aug 30, 2026
+                      - generic: البذور
+                      - generic: الأسمدة
+                      - generic: أنظمة الري
+                      - generic: البيوت البلاستيكية
+                      - generic: المعدات الزراعية
+                      - generic: المبيدات الزراعية
+                      - generic: التربة والسماد العضوي
+                      - generic: أدوات الحصاد
+              - paragraph: Period analytics use the order creation date. All-time ledger balance is shown separately.
+            - generic:
+              - button: تقرير PDF بالعربية
+              - button: Export PDF in English
+          - generic:
+            - generic:
+              - generic: Period sales analytics
+              - combobox
+          - generic:
+            - region:
+              - tablist:
+                - tab [selected]: Overview
+                - tab: Products
+                - tab: Sales & Orders
+                - tab: Returns & Refunds
+                - tab: Categories
+            - tabpanel:
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Products
+                  - paragraph: "8"
+                - generic:
+                  - generic:
+                    - paragraph: Active products
+                  - paragraph: "8"
+                - generic:
+                  - generic:
+                    - paragraph: Pending products
+                  - paragraph: "0"
+                - generic:
+                  - generic:
+                    - paragraph: Orders
+                  - paragraph: "0"
+                - generic:
+                  - generic:
+                    - paragraph: Completed orders
+                  - paragraph: "0"
+                - generic:
+                  - generic:
+                    - paragraph: Cancelled orders
+                  - paragraph: "0"
+                - generic:
+                  - generic:
+                    - paragraph: Units sold
+                  - paragraph: "0"
+                - generic:
+                  - generic:
+                    - paragraph: Completed sales
+                  - paragraph: 0 SYP
+                - generic:
+                  - generic:
+                    - paragraph: Completed refunds
+                  - paragraph: 0 SYP
+                - generic:
+                  - generic:
+                    - paragraph: Average completed order value
+                  - paragraph: 0 SYP
+              - region:
+                - heading [level=2]: Period sales analytics
+                - generic:
+                  - generic:
+                    - paragraph: Platform commission
+                    - paragraph: 0 SYP
+                  - generic:
+                    - paragraph: Completed refunds
+                    - paragraph: 0 SYP
+                  - generic:
+                    - paragraph: Net vendor earnings
+                    - paragraph: 0 SYP
+              - generic:
+                - generic:
+                  - generic: Completed sales trend
+                  - generic: No data in this scope.
+                - generic:
+                  - generic: Top products
+                  - generic: No data in this scope.
+              - generic:
+                - generic: Category performance
+                - generic: No data in this scope.
+              - generic:
+                - generic: Recent orders
+                - generic: No data in this scope.
+  - menu "Choose language" [active] [ref=f3e230]:
+    - menuitem "العربية" [ref=f3e231]
+    - menuitem "English" [ref=f3e232]

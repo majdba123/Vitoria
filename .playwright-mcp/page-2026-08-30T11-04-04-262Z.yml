@@ -1,0 +1,76 @@
+- generic [ref=f2e2]:
+  - banner [ref=f2e3]:
+    - navigation "القائمة" [ref=f2e4]:
+      - link [ref=f2e5] [cursor=pointer]:
+        - /url: http://127.0.0.1:8021/
+        - img "Vetora" [ref=f2e6]
+      - generic [ref=f2e7]:
+        - button "السلة" [ref=f2e8]
+        - button "القائمة" [ref=f2e12]
+  - main [ref=f2e14]:
+    - generic [ref=f2e16]:
+      - generic [ref=f2e17]:
+        - generic [ref=f2e18]: ابدأ التصفح
+        - heading "اختر نوع المنتجات التي ترغب في تصفحها" [level=1] [ref=f2e19]
+        - paragraph [ref=f2e20]: سيتم عرض التصنيفات والمنتجات المناسبة لاختيارك فقط، ويمكنك تغيير هذا الاختيار لاحقا من نفس الصفحة أو من الملف الشخصي.
+      - generic [ref=f2e21]:
+        - link "اختيار القسم الزراعي" [ref=f2e22] [cursor=pointer]:
+          - /url: http://127.0.0.1:8021/product-type/select?preferred_product_type=agriculture&redirect_to=categories
+          - generic [ref=f2e23]: محدد الآن
+          - generic [ref=f2e29]:
+            - generic [ref=f2e30]: زراعي
+            - generic [ref=f2e31]: تصفح المنتجات والخدمات الزراعية المناسبة لاحتياجاتك اليومية.
+          - generic [ref=f2e32]:
+            - generic [ref=f2e33]: عرض التصنيفات المطابقة فقط
+            - generic [ref=f2e36]: تصفية المنتجات والبحث حسب القسم المحدد
+        - link "اختيار القسم البيطري" [ref=f2e42] [cursor=pointer]:
+          - /url: http://127.0.0.1:8021/product-type/select?preferred_product_type=veterinary&redirect_to=categories
+          - generic [ref=f2e43]: اختيار
+          - generic [ref=f2e50]:
+            - generic [ref=f2e51]: بيطري
+            - generic [ref=f2e52]: تصفح المنتجات والخدمات البيطرية مع وصول أسرع للفئات المناسبة.
+          - generic [ref=f2e53]:
+            - generic [ref=f2e54]: عرض التصنيفات المطابقة فقط
+            - generic [ref=f2e57]: تصفية المنتجات والبحث حسب القسم المحدد
+  - contentinfo [ref=f2e63]:
+    - generic [ref=f2e65]:
+      - generic [ref=f2e66]:
+        - generic [ref=f2e67]:
+          - link [ref=f2e68] [cursor=pointer]:
+            - /url: http://127.0.0.1:8021/
+            - img "Vetora" [ref=f2e69]
+          - paragraph [ref=f2e70]: سوق ذكي للمنتجات الزراعية والبيطرية
+        - generic [ref=f2e71]:
+          - heading "تسوق" [level=2] [ref=f2e72]
+          - list [ref=f2e73]:
+            - listitem [ref=f2e74]:
+              - link "التصنيفات" [ref=f2e75] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/categories
+            - listitem [ref=f2e76]:
+              - link "جميع المنتجات" [ref=f2e77] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/products
+            - listitem [ref=f2e78]:
+              - link "الأسئلة الشائعة" [ref=f2e79] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/faq
+        - generic [ref=f2e80]:
+          - heading "حساب" [level=2] [ref=f2e81]
+          - list [ref=f2e82]:
+            - listitem [ref=f2e83]:
+              - link "تسجيل الدخول" [ref=f2e84] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/login
+            - listitem [ref=f2e85]:
+              - link "إنشاء حساب" [ref=f2e86] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/register
+        - generic [ref=f2e87]:
+          - heading "تواصل" [level=2] [ref=f2e88]
+          - list [ref=f2e89]:
+            - listitem [ref=f2e90]:
+              - link "تواصل معنا" [ref=f2e91] [cursor=pointer]:
+                - /url: http://127.0.0.1:8021/contact
+      - generic [ref=f2e92]:
+        - paragraph [ref=f2e93]: © 2026 Vetora. جميع الحقوق محفوظة.
+        - generic [ref=f2e94]:
+          - link "سياسة الخصوصية" [ref=f2e95] [cursor=pointer]:
+            - /url: http://127.0.0.1:8021/pages/privacy-policy
+          - link "شروط الخدمة" [ref=f2e96] [cursor=pointer]:
+            - /url: http://127.0.0.1:8021/pages/terms-of-service

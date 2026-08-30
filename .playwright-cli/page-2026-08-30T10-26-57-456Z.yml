@@ -1,0 +1,142 @@
+- generic [ref=f2e3]:
+  - navigation "Syndicate navigation" [ref=f2e5]:
+    - generic [ref=f2e6]:
+      - list [ref=f2e8]:
+        - listitem [ref=f2e9]:
+          - link "Vetora Syndicate hub" [ref=f2e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8019/syndicate/dashboard
+            - generic [ref=f2e17]:
+              - generic [ref=f2e18]: Vetora
+              - generic [ref=f2e19]: Syndicate hub
+      - generic [ref=f2e21]:
+        - generic [ref=f2e22]: Syndicate Workspace
+        - list [ref=f2e24]:
+          - listitem [ref=f2e25]:
+            - link "Overview" [ref=f2e26] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/dashboard
+          - listitem [ref=f2e33]:
+            - link "Categories" [ref=f2e34] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/categories
+          - listitem [ref=f2e40]:
+            - link "Vendors" [ref=f2e41] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/vendors
+          - listitem [ref=f2e47]:
+            - link "Products" [ref=f2e48] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/products
+          - listitem [ref=f2e54]:
+            - link "Podcasts" [ref=f2e55] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/podcasts
+          - listitem [ref=f2e60]:
+            - link "Orders" [ref=f2e61] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/orders
+          - listitem [ref=f2e66]:
+            - link "Sales" [ref=f2e67] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/sales
+          - listitem [ref=f2e72]:
+            - link "Reports" [ref=f2e73] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/reports
+          - listitem [ref=f2e77]:
+            - link "Notifications" [ref=f2e78] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/notifications
+      - paragraph [ref=f2e84]: Syndicate workspace
+  - main [ref=f2e85]:
+    - generic [ref=f2e87]:
+      - button "Toggle Sidebar" [ref=f2e88]
+      - generic [ref=f2e90]:
+        - paragraph [ref=f2e91]: Syndicate hub
+        - heading "Vendors" [level=1] [ref=f2e92]
+      - generic [ref=f2e93]:
+        - generic [ref=f2e94]: Agriculture
+        - link "Home" [ref=f2e96] [cursor=pointer]:
+          - /url: http://127.0.0.1:8019/
+        - button "Choose language" [ref=f2e97]
+        - button "Notifications" [ref=f2e98]
+        - button "Toggle light or dark theme" [ref=f2e99]
+        - button "Sign Out" [ref=f2e100]
+    - generic [ref=f2e101]:
+      - generic [ref=f2e102]:
+        - generic [ref=f2e103]:
+          - heading "Loading data..." [level=1] [ref=f2e104]
+          - paragraph [ref=f2e105]: View only the records related to the current syndicate type with a compact, role-focused layout.
+        - generic [ref=f2e106]:
+          - generic [ref=f2e107]: Active
+          - link "Sales" [ref=f2e108] [cursor=pointer]:
+            - /url: http://127.0.0.1:8019/syndicate/sales
+          - link "Reports" [ref=f2e109] [cursor=pointer]:
+            - /url: http://127.0.0.1:8019/syndicate/reports
+      - heading "Overview" [level=2] [ref=f2e110]
+      - generic [ref=f2e111]:
+        - paragraph [ref=f2e115]: Vendors
+        - paragraph [ref=f2e125]: Products
+        - paragraph [ref=f2e135]: Total orders
+      - generic [ref=f2e141]:
+        - generic [ref=f2e143]:
+          - generic [ref=f2e144]: Records
+          - paragraph [ref=f2e145]: The list updates based on the current section and syndicate type.
+        - region "No data available." [ref=f2e147]:
+          - table [ref=f2e149]:
+            - rowgroup [ref=f2e150]:
+              - row [ref=f2e151]:
+                - columnheader "Store" [ref=f2e152]
+                - columnheader "Type" [ref=f2e153]
+                - columnheader "City" [ref=f2e154]
+                - columnheader "Products" [ref=f2e155]
+                - columnheader "Completed" [ref=f2e156]
+                - columnheader "Completed sales" [ref=f2e157]
+                - columnheader "Last activity" [ref=f2e158]
+                - columnheader "Status" [ref=f2e159]
+            - rowgroup [ref=f2e160]:
+              - row [ref=f2e161]:
+                - cell [ref=f2e162]
+                - cell [ref=f2e164]
+                - cell [ref=f2e166]
+                - cell [ref=f2e168]
+                - cell [ref=f2e170]
+                - cell [ref=f2e172]
+                - cell [ref=f2e174]
+                - cell [ref=f2e176]
+              - row [ref=f2e178]:
+                - cell [ref=f2e179]
+                - cell [ref=f2e181]
+                - cell [ref=f2e183]
+                - cell [ref=f2e185]
+                - cell [ref=f2e187]
+                - cell [ref=f2e189]
+                - cell [ref=f2e191]
+                - cell [ref=f2e193]
+              - row [ref=f2e195]:
+                - cell [ref=f2e196]
+                - cell [ref=f2e198]
+                - cell [ref=f2e200]
+                - cell [ref=f2e202]
+                - cell [ref=f2e204]
+                - cell [ref=f2e206]
+                - cell [ref=f2e208]
+                - cell [ref=f2e210]
+              - row [ref=f2e212]:
+                - cell [ref=f2e213]
+                - cell [ref=f2e215]
+                - cell [ref=f2e217]
+                - cell [ref=f2e219]
+                - cell [ref=f2e221]
+                - cell [ref=f2e223]
+                - cell [ref=f2e225]
+                - cell [ref=f2e227]
+              - row [ref=f2e229]:
+                - cell [ref=f2e230]
+                - cell [ref=f2e232]
+                - cell [ref=f2e234]
+                - cell [ref=f2e236]
+                - cell [ref=f2e238]
+                - cell [ref=f2e240]
+                - cell [ref=f2e242]
+                - cell [ref=f2e244]
+              - row [ref=f2e246]:
+                - cell [ref=f2e247]
+                - cell [ref=f2e249]
+                - cell [ref=f2e251]
+                - cell [ref=f2e253]
+                - cell [ref=f2e255]
+                - cell [ref=f2e257]
+                - cell [ref=f2e259]
+                - cell [ref=f2e261]

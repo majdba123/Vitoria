@@ -20,7 +20,7 @@ export function DataState({ status, onRetry, loadingSkeleton, isEmpty = false, e
 
     if (status === 'error') {
         return (
-            <div className="empty-state py-20">
+            <div className="empty-state py-10 sm:py-12">
                 {errorMessage}
                 {onRetry && (
                     <button type="button" onClick={onRetry} className="mx-auto mt-3 flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">

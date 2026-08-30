@@ -1,0 +1,107 @@
+- generic [ref=f1e3]:
+  - navigation "Syndicate navigation" [ref=f1e5]:
+    - generic [ref=f1e6]:
+      - list [ref=f1e8]:
+        - listitem [ref=f1e9]:
+          - link "Vetora Syndicate hub" [ref=f1e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8019/syndicate/dashboard
+            - generic [ref=f1e17]:
+              - generic [ref=f1e18]: Vetora
+              - generic [ref=f1e19]: Syndicate hub
+      - generic [ref=f1e21]:
+        - generic [ref=f1e22]: Syndicate Workspace
+        - list [ref=f1e24]:
+          - listitem [ref=f1e25]:
+            - link "Overview" [ref=f1e26] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/dashboard
+          - listitem [ref=f1e33]:
+            - link "Categories" [ref=f1e34] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/categories
+          - listitem [ref=f1e40]:
+            - link "Vendors" [ref=f1e41] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/vendors
+          - listitem [ref=f1e47]:
+            - link "Products" [ref=f1e48] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/products
+          - listitem [ref=f1e54]:
+            - link "Podcasts" [ref=f1e55] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/podcasts
+          - listitem [ref=f1e60]:
+            - link "Orders" [ref=f1e61] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/orders
+          - listitem [ref=f1e66]:
+            - link "Sales" [ref=f1e67] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/sales
+          - listitem [ref=f1e72]:
+            - link "Reports" [ref=f1e73] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/reports
+          - listitem [ref=f1e77]:
+            - link "Notifications" [ref=f1e78] [cursor=pointer]:
+              - /url: http://127.0.0.1:8019/syndicate/notifications
+      - paragraph [ref=f1e84]: Syndicate workspace
+  - main [ref=f1e85]:
+    - generic [ref=f1e87]:
+      - button "Toggle Sidebar" [ref=f1e88]
+      - generic [ref=f1e90]:
+        - paragraph [ref=f1e91]: Syndicate hub
+        - heading "Overview" [level=1] [ref=f1e92]
+      - generic [ref=f1e93]:
+        - generic [ref=f1e94]: Agriculture
+        - link "Home" [ref=f1e96] [cursor=pointer]:
+          - /url: http://127.0.0.1:8019/
+        - button "Choose language" [ref=f1e97]
+        - button "Notifications" [ref=f1e98]
+        - button "Toggle light or dark theme" [ref=f1e99]
+        - button "Sign Out" [ref=f1e100]
+    - generic [ref=f1e101]:
+      - generic [ref=f1e102]:
+        - generic [ref=f1e103]:
+          - heading "Loading data..." [level=1] [ref=f1e104]
+          - paragraph [ref=f1e105]: View only the records related to the current syndicate type with a compact, role-focused layout.
+        - generic [ref=f1e106]:
+          - generic [ref=f1e107]: Active
+          - link "Sales" [ref=f1e108] [cursor=pointer]:
+            - /url: http://127.0.0.1:8019/syndicate/sales
+          - link "Reports" [ref=f1e109] [cursor=pointer]:
+            - /url: http://127.0.0.1:8019/syndicate/reports
+      - heading "Overview" [level=2] [ref=f1e110]
+      - generic [ref=f1e111]:
+        - paragraph [ref=f1e115]: Vendors
+        - paragraph [ref=f1e125]: Products
+        - paragraph [ref=f1e135]: Total orders
+      - generic [ref=f1e141]:
+        - generic [ref=f1e142]: Vendor distribution
+        - group "Vendor distribution" [ref=f1e147]:
+          - 'img "Aleppo، Agricultural vendors: 0" [ref=f1e148]'
+          - 'img "Idlib، Agricultural vendors: 0" [ref=f1e149]'
+          - 'img "Latakia، Agricultural vendors: 0" [ref=f1e150]'
+          - 'img "Tartus، Agricultural vendors: 0" [ref=f1e151]'
+          - 'img "Hama، Agricultural vendors: 0" [ref=f1e152]'
+          - 'img "Homs، Agricultural vendors: 0" [ref=f1e153]'
+          - 'img "Al-Hasakah، Agricultural vendors: 0" [ref=f1e154]'
+          - 'img "Raqqa، Agricultural vendors: 0" [ref=f1e155]'
+          - 'img "Deir ez-Zor، Agricultural vendors: 0" [ref=f1e156]'
+          - 'img "Rif Dimashq، Agricultural vendors: 0" [ref=f1e157]'
+          - 'img "Damascus، Agricultural vendors: 0" [ref=f1e158]'
+          - 'img "Quneitra، Agricultural vendors: 0" [ref=f1e159]'
+          - 'img "Daraa، Agricultural vendors: 0" [ref=f1e160]'
+          - 'img "As-Suwayda، Agricultural vendors: 0" [ref=f1e161]'
+      - generic [ref=f1e162]:
+        - generic [ref=f1e166]:
+          - heading "Top performance" [level=3] [ref=f1e167]
+          - paragraph [ref=f1e168]: Best categories, products, and vendors by sales activity.
+        - generic [ref=f1e175]:
+          - generic [ref=f1e176]: Quick summary
+          - generic [ref=f1e178]:
+            - generic [ref=f1e179]:
+              - generic [ref=f1e180]: Categories
+              - generic [ref=f1e181]: "0"
+            - generic [ref=f1e182]:
+              - generic [ref=f1e183]: Vendors
+              - generic [ref=f1e184]: "0"
+            - generic [ref=f1e185]:
+              - generic [ref=f1e186]: Products
+              - generic [ref=f1e187]: "0"
+      - generic [ref=f1e190]:
+        - heading "Orders per Month (Last 12 Months)" [level=3] [ref=f1e191]
+        - paragraph [ref=f1e192]: Real order counts across your syndicate's categories.

@@ -1,0 +1,148 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - navigation "القائمة" [ref=e4]:
+      - link "Vetora":
+        - /url: http://127.0.0.1:8020/
+        - img "Vetora"
+      - generic [ref=e5]:
+        - button "التصنيفات" [ref=e7]
+        - link "المنتجات" [ref=e15] [cursor=pointer]:
+          - /url: http://127.0.0.1:8020/products
+        - link "الأسئلة الشائعة" [ref=e16] [cursor=pointer]:
+          - /url: http://127.0.0.1:8020/faq
+        - link "تواصل معنا" [ref=e17] [cursor=pointer]:
+          - /url: http://127.0.0.1:8020/contact
+      - search [ref=e18]:
+        - searchbox "ابحث عن المنتجات" [ref=e19]
+      - generic [ref=e20]:
+        - generic [ref=e21]:
+          - button "اختر اللغة" [ref=e22]
+          - button "تبديل الوضع الفاتح أو الداكن" [ref=e23]
+        - button "السلة" [ref=e24]
+        - generic [ref=e28]:
+          - link "تسجيل الدخول" [ref=e29] [cursor=pointer]:
+            - /url: http://127.0.0.1:8020/login
+          - link "إنشاء حساب" [ref=e30] [cursor=pointer]:
+            - /url: http://127.0.0.1:8020/register
+  - main [ref=e31]:
+    - generic [ref=e33]:
+      - complementary [ref=e34]:
+        - generic [ref=e35]: أنشئ حسابك
+        - heading "إنشاء حساب" [level=1] [ref=e36]
+        - paragraph [ref=e37]: انضم إلى Vetora اليوم
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - generic [ref=e41]: نموذج التسجيل
+            - heading "أكمل إعداد ملفك في Vetora." [level=2] [ref=e42]
+          - link "تسجيل الدخول" [ref=e43] [cursor=pointer]:
+            - /url: http://127.0.0.1:8020/login
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - generic [ref=e47]:
+              - generic [ref=e48]:
+                - text: الاسم الكامل
+                - generic [ref=e49]: "*"
+              - textbox "الاسم الكامل *" [ref=e50]:
+                - /placeholder: أدخل اسمك الكامل
+            - generic [ref=e51]:
+              - generic [ref=e52]:
+                - text: رقم الهاتف
+                - generic [ref=e53]: "*"
+              - textbox "رقم الهاتف *" [ref=e54]:
+                - /placeholder: 09XXXXXXXX
+            - generic [ref=e55]:
+              - generic [ref=e56]:
+                - text: الرقم الوطني
+                - generic [ref=e57]: "*"
+              - textbox "الرقم الوطني *" [ref=e58]:
+                - /placeholder: أدخل رقمك الوطني
+            - generic [ref=e59]:
+              - generic [ref=e60]:
+                - text: العمر
+                - generic [ref=e61]: "*"
+              - spinbutton "العمر *" [ref=e62]
+            - generic [ref=e63]:
+              - generic [ref=e64]:
+                - text: رقم العضوية
+                - generic [ref=e65]: "*"
+              - textbox "رقم العضوية *" [ref=e66]:
+                - /placeholder: "مثال: MEM-12345"
+            - generic [ref=e67]:
+              - generic [ref=e68]:
+                - text: المدينة
+                - generic [ref=e69]: "*"
+              - combobox "المدينة" [ref=e70]:
+                - generic: اختر مدينتك
+              - combobox [ref=e71]
+          - generic [ref=e72]:
+            - generic [ref=e73]:
+              - generic [ref=e74]:
+                - text: البريد الإلكتروني
+                - generic [ref=e75]: "*"
+              - textbox "البريد الإلكتروني *" [ref=e76]:
+                - /placeholder: you@example.com
+            - generic [ref=e77]:
+              - generic [ref=e78]:
+                - text: كلمة المرور
+                - generic [ref=e79]: "*"
+              - generic [ref=e80]:
+                - textbox "كلمة المرور *" [ref=e81]:
+                  - /placeholder: أدخل كلمة المرور
+                - button "Show password" [ref=e82]
+            - generic [ref=e86]:
+              - generic [ref=e87]:
+                - text: تأكيد كلمة المرور
+                - generic [ref=e88]: "*"
+              - generic [ref=e89]:
+                - textbox "تأكيد كلمة المرور *" [ref=e90]:
+                  - /placeholder: أعد كتابة كلمة المرور
+                - button "Show password" [ref=e91]
+          - generic [ref=e95]:
+            - paragraph [ref=e96]:
+              - text: لديك حساب بالفعل؟
+              - link "تسجيل الدخول" [ref=e97] [cursor=pointer]:
+                - /url: http://127.0.0.1:8020/login
+            - button "إنشاء حساب" [ref=e98]
+  - contentinfo [ref=e99]:
+    - generic [ref=e101]:
+      - generic [ref=e102]:
+        - generic [ref=e103]:
+          - link "Vetora":
+            - /url: http://127.0.0.1:8020/
+            - img "Vetora"
+          - paragraph [ref=e104]: سوق ذكي للمنتجات الزراعية والبيطرية
+        - generic [ref=e105]:
+          - heading "تسوق" [level=2] [ref=e106]
+          - list [ref=e107]:
+            - listitem [ref=e108]:
+              - link "التصنيفات" [ref=e109] [cursor=pointer]:
+                - /url: http://127.0.0.1:8020/categories
+            - listitem [ref=e110]:
+              - link "جميع المنتجات" [ref=e111] [cursor=pointer]:
+                - /url: http://127.0.0.1:8020/products
+            - listitem [ref=e112]:
+              - link "الأسئلة الشائعة" [ref=e113] [cursor=pointer]:
+                - /url: http://127.0.0.1:8020/faq
+        - generic [ref=e114]:
+          - heading "حساب" [level=2] [ref=e115]
+          - list [ref=e116]:
+            - listitem [ref=e117]:
+              - link "تسجيل الدخول" [ref=e118] [cursor=pointer]:
+                - /url: http://127.0.0.1:8020/login
+            - listitem [ref=e119]:
+              - link "إنشاء حساب" [ref=e120] [cursor=pointer]:
+                - /url: http://127.0.0.1:8020/register
+        - generic [ref=e121]:
+          - heading "تواصل" [level=2] [ref=e122]
+          - list [ref=e123]:
+            - listitem [ref=e124]:
+              - link "تواصل معنا" [ref=e125] [cursor=pointer]:
+                - /url: http://127.0.0.1:8020/contact
+      - generic [ref=e126]:
+        - paragraph [ref=e127]: © 2026 Vetora. جميع الحقوق محفوظة.
+        - generic [ref=e128]:
+          - link "سياسة الخصوصية" [ref=e129] [cursor=pointer]:
+            - /url: http://127.0.0.1:8020/pages/privacy-policy
+          - link "شروط الخدمة" [ref=e130] [cursor=pointer]:
+            - /url: http://127.0.0.1:8020/pages/terms-of-service
