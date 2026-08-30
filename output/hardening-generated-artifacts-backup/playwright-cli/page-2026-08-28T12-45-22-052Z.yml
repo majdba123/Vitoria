@@ -1,0 +1,152 @@
+- generic [ref=f7e1]:
+  - generic [ref=f7e2]:
+    - banner [ref=f7e3]:
+      - navigation "القائمة" [ref=f7e4]:
+        - link [ref=f7e5] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/
+          - img "Vetora" [ref=f7e6]
+        - generic [ref=f7e7]:
+          - button "السلة" [ref=f7e8]:
+            - generic [ref=f7e189]: "1"
+          - button "P" [ref=f7e13]
+          - button "القائمة" [ref=f7e18]
+    - main [ref=f7e20]:
+      - generic [ref=f7e21]:
+        - navigation [ref=f7e24]:
+          - link "الرئيسية" [ref=f7e25] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/
+          - link "المنتجات" [ref=f7e28] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/products
+          - generic [ref=f7e31]: مستلزمات إسطبل متكاملة
+        - generic [ref=f7e32]:
+          - generic [ref=f7e33]:
+            - generic [ref=f7e34]:
+              - button "عرض صورة أكبر" [ref=f7e36]:
+                - img "مستلزمات إسطبل متكاملة" [ref=f7e37]
+              - generic [ref=f7e38]:
+                - generic [ref=f7e39]:
+                  - generic [ref=f7e40]:
+                    - paragraph [ref=f7e41]: الوسائط
+                    - heading "معرض صور المنتج" [level=2] [ref=f7e42]
+                  - generic [ref=f7e43]: 1 صورة
+                - button "مستلزمات إسطبل متكاملة" [ref=f7e45]:
+                  - img "مستلزمات إسطبل متكاملة thumbnail" [ref=f7e46]
+            - generic [ref=f7e47]:
+              - generic [ref=f7e48]:
+                - generic [ref=f7e49]:
+                  - generic [ref=f7e50]:
+                    - paragraph [ref=f7e51]: نظرة عامة على المنتج
+                    - heading "مستلزمات إسطبل متكاملة" [level=1] [ref=f7e52]
+                  - button "السلة" [ref=f7e53]
+                - generic [ref=f7e56]: لا توجد تقييمات بعد
+                - generic [ref=f7e69]:
+                  - generic [ref=f7e70]: "60"
+                  - generic [ref=f7e71]: SYP
+                - generic [ref=f7e72]:
+                  - generic [ref=f7e73]:
+                    - paragraph [ref=f7e74]: التصنيف
+                    - paragraph [ref=f7e75]: مستلزمات المواشي
+                  - generic [ref=f7e76]:
+                    - paragraph [ref=f7e77]: التصنيف الفرعي
+                    - paragraph [ref=f7e78]: مستلزمات إسطبل
+                  - generic [ref=f7e79]:
+                    - paragraph [ref=f7e80]: الكمية
+                    - paragraph [ref=f7e81]: 45 وحدة
+                  - generic [ref=f7e82]:
+                    - paragraph [ref=f7e83]: البائع
+                    - paragraph [ref=f7e84]:
+                      - link "تاجر المستلزمات البيطرية" [ref=f7e85] [cursor=pointer]:
+                        - /url: http://127.0.0.1:8000/vendors/2
+                - generic [ref=f7e86]:
+                  - generic [ref=f7e87]:
+                    - generic [ref=f7e88]:
+                      - paragraph [ref=f7e89]: الخصم والتوفر
+                      - paragraph [ref=f7e90]: خصم مجدول
+                    - generic [ref=f7e91]: متوفر
+                  - generic [ref=f7e93]:
+                    - generic [ref=f7e94]:
+                      - paragraph [ref=f7e95]: قيمة الخصم
+                      - paragraph [ref=f7e96]: 0.00%
+                    - generic [ref=f7e97]:
+                      - paragraph [ref=f7e98]: بداية الخصم
+                      - paragraph [ref=f7e99]: —
+                    - generic [ref=f7e100]:
+                      - paragraph [ref=f7e101]: نهاية الخصم
+                      - paragraph [ref=f7e102]: —
+                - button "أضف إلى السلة" [active] [ref=f7e104]
+              - generic [ref=f7e109]:
+                - paragraph [ref=f7e110]: الوصف
+                - heading "ما الذي يميز هذا المنتج" [level=2] [ref=f7e111]
+                - paragraph [ref=f7e112]: مجموعة مستلزمات إسطبل متكاملة لراحة ورعاية المواشي.
+          - generic [ref=f7e113]:
+            - paragraph [ref=f7e114]: المواصفات
+            - heading "المواصفات" [level=2] [ref=f7e115]
+            - generic [ref=f7e116]:
+              - generic [ref=f7e117]:
+                - term [ref=f7e118]: الأنواع المستهدفة
+                - definition [ref=f7e119]: Cattle, Sheep
+              - generic [ref=f7e120]:
+                - term [ref=f7e121]: ظروف التخزين
+                - definition [ref=f7e122]: يحفظ في مكان جاف
+          - generic [ref=f7e124]:
+            - generic [ref=f7e126]:
+              - paragraph [ref=f7e127]: التقييمات
+              - heading "التقييمات" [level=2] [ref=f7e128]
+            - generic [ref=f7e130]:
+              - generic [ref=f7e131]:
+                - generic [ref=f7e132]: تقييمك
+                - generic [ref=f7e133]:
+                  - button "1 نجمة" [ref=f7e134]
+                  - button "2 نجمة" [ref=f7e137]
+                  - button "3 نجمة" [ref=f7e140]
+                  - button "4 نجمة" [ref=f7e143]
+                  - button "5 نجمة" [ref=f7e146]
+              - generic [ref=f7e149]:
+                - generic [ref=f7e150]: تعليق
+                - textbox "تعليق" [ref=f7e151]:
+                  - /placeholder: اكتب تقييمك هنا…
+              - button "إرسال التقييم" [ref=f7e152]
+            - paragraph [ref=f7e188]: لا توجد تقييمات بعد.
+    - contentinfo [ref=f7e154]:
+      - generic [ref=f7e156]:
+        - generic [ref=f7e157]:
+          - generic [ref=f7e158]:
+            - link [ref=f7e159] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/
+              - img "Vetora" [ref=f7e160]
+            - paragraph [ref=f7e161]: سوق ذكي للمنتجات الزراعية والبيطرية
+          - generic [ref=f7e162]:
+            - heading "تسوق" [level=2] [ref=f7e163]
+            - list [ref=f7e164]:
+              - listitem [ref=f7e165]:
+                - link "التصنيفات" [ref=f7e166] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/categories
+              - listitem [ref=f7e167]:
+                - link "جميع المنتجات" [ref=f7e168] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/products
+              - listitem [ref=f7e169]:
+                - link "الأسئلة الشائعة" [ref=f7e170] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/faq
+          - generic [ref=f7e171]:
+            - heading "حساب" [level=2] [ref=f7e172]
+            - list [ref=f7e173]:
+              - listitem [ref=f7e174]:
+                - link "تسجيل الدخول" [ref=f7e175] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/login
+              - listitem [ref=f7e176]:
+                - link "إنشاء حساب" [ref=f7e177] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/register
+          - generic [ref=f7e178]:
+            - heading "تواصل" [level=2] [ref=f7e179]
+            - list [ref=f7e180]:
+              - listitem [ref=f7e181]:
+                - link "تواصل معنا" [ref=f7e182] [cursor=pointer]:
+                  - /url: http://127.0.0.1:8000/contact
+        - generic [ref=f7e183]:
+          - paragraph [ref=f7e184]: © 2026 Vetora. جميع الحقوق محفوظة.
+          - generic [ref=f7e185]:
+            - link "سياسة الخصوصية" [ref=f7e186] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/pages/privacy-policy
+            - link "شروط الخدمة" [ref=f7e187] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/pages/terms-of-service
+  - alert [ref=f7e190]: تمت الإضافة إلى السلة!

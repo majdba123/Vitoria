@@ -1,0 +1,184 @@
+- generic:
+  - generic:
+    - banner:
+      - navigation:
+        - link:
+          - /url: http://127.0.0.1:8000/
+        - generic:
+          - button:
+            - generic: "1"
+          - button
+    - main:
+      - generic:
+        - generic:
+          - complementary:
+            - generic: أنشئ حسابك
+            - heading [level=1]: إنشاء حساب
+            - paragraph: انضم إلى Vetora اليوم
+            - generic:
+              - generic:
+                - generic: "01"
+                - paragraph: حساب عميل
+                - paragraph: اكتشف المنتجات، واحفظ المفضلة، وأدر طلباتك من مساحة شخصية متقنة.
+              - generic:
+                - generic: "02"
+                - paragraph: حساب تاجر
+                - paragraph: أطلق متجرك، واطلب الموافقة، وابدأ البيع ضمن الفئات التي يخدمها نشاطك.
+              - generic:
+                - generic: "03"
+                - paragraph: منصة موحدة
+                - paragraph: هوية واحدة ونظام واحد وانتقال أكثر سلاسة من الموقع العام إلى لوحة التشغيل.
+          - generic:
+            - generic:
+              - generic:
+                - generic: نموذج التسجيل
+                - heading [level=2]: أكمل إعداد ملفك في Vetora.
+              - link:
+                - /url: http://127.0.0.1:8000/login
+                - text: تسجيل الدخول
+            - generic:
+              - generic:
+                - generic:
+                  - generic: نوع الحساب *
+                  - generic:
+                    - generic:
+                      - radio [checked]
+                      - generic:
+                        - generic: مستخدم عادي
+                        - generic: اشترِ وتابع طلباتك
+                    - generic:
+                      - radio
+                      - generic:
+                        - generic: تاجر / بائع
+                        - generic: بِع عبر عدة فئات
+                - generic:
+                  - generic:
+                    - generic:
+                      - text: الاسم الكامل
+                      - generic: "*"
+                    - textbox:
+                      - /placeholder: أدخل اسمك الكامل
+                      - text: Production Smoke Customer
+                  - generic:
+                    - generic:
+                      - text: رقم الهاتف
+                      - generic: "*"
+                    - textbox:
+                      - /placeholder: 09XXXXXXXX
+                      - text: "0999991234"
+                  - generic:
+                    - generic:
+                      - text: الرقم الوطني
+                      - generic: "*"
+                    - textbox:
+                      - /placeholder: أدخل رقمك الوطني
+                      - text: "99000123456"
+                  - generic:
+                    - generic:
+                      - text: العمر
+                      - generic: "*"
+                    - spinbutton: "30"
+                  - generic:
+                    - generic:
+                      - text: رقم العضوية
+                      - generic: "*"
+                    - textbox:
+                      - /placeholder: "مثال: MEM-12345"
+                      - text: SMOKE-20260828
+                  - generic:
+                    - generic:
+                      - text: المدينة
+                      - generic: "*"
+                    - combobox [expanded]:
+                      - generic: اختر مدينتك
+                    - combobox
+                - generic:
+                  - generic:
+                    - generic:
+                      - text: البريد الإلكتروني
+                      - generic: "*"
+                    - textbox:
+                      - /placeholder: you@example.com
+                      - text: smoke.20260828@vetora.test
+                  - generic:
+                    - generic:
+                      - text: كلمة المرور
+                      - generic: "*"
+                    - generic:
+                      - textbox:
+                        - /placeholder: أدخل كلمة المرور
+                        - text: SmokePass123!
+                      - button
+                  - generic:
+                    - generic:
+                      - text: تأكيد كلمة المرور
+                      - generic: "*"
+                    - generic:
+                      - textbox:
+                        - /placeholder: أعد كتابة كلمة المرور
+                        - text: SmokePass123!
+                      - button
+                - generic:
+                  - paragraph:
+                    - text: لديك حساب بالفعل؟
+                    - link:
+                      - /url: http://127.0.0.1:8000/login
+                      - text: تسجيل الدخول
+                  - button: إنشاء حساب
+    - contentinfo:
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - link:
+                - /url: http://127.0.0.1:8000/
+              - paragraph: سوق ذكي للمنتجات الزراعية والبيطرية
+            - generic:
+              - heading [level=2]: تسوق
+              - list:
+                - listitem:
+                  - link:
+                    - /url: http://127.0.0.1:8000/categories
+                    - text: التصنيفات
+                - listitem:
+                  - link:
+                    - /url: http://127.0.0.1:8000/products
+                    - text: جميع المنتجات
+                - listitem:
+                  - link:
+                    - /url: http://127.0.0.1:8000/faq
+                    - text: الأسئلة الشائعة
+            - generic:
+              - heading [level=2]: حساب
+              - list:
+                - listitem:
+                  - link:
+                    - /url: http://127.0.0.1:8000/login
+                    - text: تسجيل الدخول
+                - listitem:
+                  - link:
+                    - /url: http://127.0.0.1:8000/register
+                    - text: إنشاء حساب
+            - generic:
+              - heading [level=2]: تواصل
+              - list:
+                - listitem:
+                  - link:
+                    - /url: http://127.0.0.1:8000/contact
+                    - text: تواصل معنا
+          - generic:
+            - paragraph: © 2026 Vetora. جميع الحقوق محفوظة.
+            - generic:
+              - link:
+                - /url: http://127.0.0.1:8000/pages/privacy-policy
+                - text: سياسة الخصوصية
+              - link:
+                - /url: http://127.0.0.1:8000/pages/terms-of-service
+                - text: شروط الخدمة
+  - listbox [ref=f3e144]:
+    - option "اللاذقية" [active] [ref=f3e145]
+    - option "حلب" [ref=f3e148]
+    - option "حماة" [ref=f3e151]
+    - option "حمص" [ref=f3e154]
+    - option "دمشق" [ref=f3e157]
+    - option "طرطوس" [ref=f3e160]

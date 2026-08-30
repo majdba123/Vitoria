@@ -1,0 +1,195 @@
+- generic [ref=f5e3]:
+  - navigation "Admin navigation" [ref=f5e5]:
+    - generic [ref=f5e6]:
+      - list [ref=f5e8]:
+        - listitem [ref=f5e9]:
+          - link "Vetora Admin" [ref=f5e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8018/admin/dashboard
+            - generic [ref=f5e15]:
+              - generic [ref=f5e16]: Vetora
+              - generic [ref=f5e17]: Admin
+      - generic [ref=f5e18]:
+        - generic [ref=f5e19]:
+          - generic [ref=f5e20]: Overview
+          - list [ref=f5e22]:
+            - listitem [ref=f5e23]:
+              - link "Dashboard" [ref=f5e24] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/dashboard
+        - generic [ref=f5e31]:
+          - generic [ref=f5e32]: Management
+          - list [ref=f5e34]:
+            - listitem [ref=f5e35]:
+              - link "Vendors" [ref=f5e36] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/vendors
+            - listitem [ref=f5e42]:
+              - link "Syndicates" [ref=f5e43] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/syndicates
+            - listitem [ref=f5e50]:
+              - link "Products" [ref=f5e51] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/products
+            - listitem [ref=f5e57]:
+              - link "Employees" [ref=f5e58] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/employees
+            - listitem [ref=f5e72]:
+              - link "Coupons" [ref=f5e73] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/coupons
+            - listitem [ref=f5e77]:
+              - link "Orders" [ref=f5e78] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/orders
+            - listitem [ref=f5e83]:
+              - link "Users" [ref=f5e84] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/users
+            - listitem [ref=f5e91]:
+              - link "Notifications" [ref=f5e92] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/notifications
+            - listitem [ref=f5e97]:
+              - link "Contact messages" [ref=f5e98] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/contact-messages
+            - listitem [ref=f5e103]:
+              - link "About us" [ref=f5e104] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/about-us
+            - listitem [ref=f5e108]:
+              - link "Pages" [ref=f5e109] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/pages
+            - listitem [ref=f5e114]:
+              - link "Banners" [ref=f5e115] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/banners
+        - generic [ref=f5e121]:
+          - generic [ref=f5e122]: Catalog
+          - list [ref=f5e124]:
+            - listitem [ref=f5e125]:
+              - link "Categories" [ref=f5e126] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/categories
+            - listitem [ref=f5e132]:
+              - link "Subcategories" [ref=f5e133] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/subcategories
+            - listitem [ref=f5e139]:
+              - link "Cities" [ref=f5e140] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/cities
+      - list [ref=f5e147]:
+        - listitem [ref=f5e148]:
+          - button "م مدير النظام Admin" [ref=f5e149]:
+            - generic [ref=f5e150]: م
+            - generic [ref=f5e152]:
+              - generic [ref=f5e153]: مدير النظام
+              - generic [ref=f5e154]: Admin
+  - main [ref=f5e158]:
+    - generic [ref=f5e160]:
+      - button "Toggle Sidebar" [ref=f5e161]
+      - generic [ref=f5e163]:
+        - paragraph [ref=f5e164]: Admin
+        - heading "Dashboard" [level=1] [ref=f5e165]
+      - generic [ref=f5e166]:
+        - link "Home" [ref=f5e167] [cursor=pointer]:
+          - /url: http://127.0.0.1:8018/
+        - button "Choose language" [ref=f5e168]
+        - button "Notifications" [ref=f5e169]
+        - button "Toggle theme" [ref=f5e170]
+        - button "Sign Out" [ref=f5e171]
+    - generic [ref=f5e172]:
+      - generic [ref=f5e173]:
+        - generic [ref=f5e174]:
+          - paragraph [ref=f5e175]: Admin
+          - heading "Control center" [level=2] [ref=f5e176]
+          - paragraph [ref=f5e177]: Track platform health, review growth signals, and jump into the most important admin actions.
+        - generic [ref=f5e178]:
+          - link "Add Vendor" [ref=f5e179] [cursor=pointer]:
+            - /url: http://127.0.0.1:8018/admin/vendors/create
+          - link "Add user" [ref=f5e180] [cursor=pointer]:
+            - /url: http://127.0.0.1:8018/admin/users/create
+      - generic [ref=f5e181]:
+        - generic [ref=f5e182]:
+          - heading "Platform snapshot" [level=3] [ref=f5e183]
+          - paragraph [ref=f5e184]: Live totals across users, vendors, syndicates, and products.
+        - generic [ref=f5e185]:
+          - paragraph [ref=f5e189]: Total vendors
+          - paragraph [ref=f5e199]: Total products
+          - paragraph [ref=f5e209]: Total users
+          - paragraph [ref=f5e220]: Total syndicates
+        - generic [ref=f5e227]:
+          - generic [ref=f5e228]:
+            - generic [ref=f5e229]: Active vendors
+            - generic [ref=f5e230]: "0"
+          - generic [ref=f5e231]:
+            - generic [ref=f5e232]: Inactive vendors
+            - generic [ref=f5e233]: "0"
+          - generic [ref=f5e234]:
+            - generic [ref=f5e235]: Active products
+            - generic [ref=f5e236]: "0"
+      - generic [ref=f5e237]:
+        - generic [ref=f5e238]:
+          - heading "Business insights" [level=3] [ref=f5e239]
+          - paragraph [ref=f5e240]: Distribution, momentum, and gaps that deserve attention.
+        - generic [ref=f5e241]:
+          - generic [ref=f5e244]:
+            - heading "Vendors by type" [level=3] [ref=f5e245]
+            - paragraph [ref=f5e246]: Agriculture, veterinary, or mixed business coverage.
+          - generic [ref=f5e255]:
+            - heading "Categories by type" [level=3] [ref=f5e256]
+            - paragraph [ref=f5e257]: Catalog distribution by business line.
+          - generic [ref=f5e266]:
+            - heading "Syndicates by type" [level=3] [ref=f5e267]
+            - paragraph [ref=f5e268]: Agent coverage by business line.
+          - generic [ref=f5e277]:
+            - heading "Recent syndicate agents" [level=3] [ref=f5e278]
+            - paragraph [ref=f5e279]: Newest agriculture and veterinary agent accounts.
+          - generic [ref=f5e288]:
+            - heading "Products by type" [level=3] [ref=f5e289]
+            - paragraph [ref=f5e290]: Product volume split by catalog type.
+          - generic [ref=f5e299]:
+            - heading "Monthly product growth" [level=3] [ref=f5e300]
+            - paragraph [ref=f5e301]: New products created during the last 12 months.
+        - generic [ref=f5e305]:
+          - generic [ref=f5e308]:
+            - heading "Top vendors" [level=3] [ref=f5e309]
+            - paragraph [ref=f5e310]: Ranked by published product count.
+          - generic [ref=f5e319]:
+            - heading "Most selected categories" [level=3] [ref=f5e320]
+            - paragraph [ref=f5e321]: Categories most frequently assigned to vendors.
+          - generic [ref=f5e330]:
+            - heading "Categories without products" [level=3] [ref=f5e331]
+            - paragraph [ref=f5e332]: Catalog gaps that need product coverage.
+          - generic [ref=f5e341]:
+            - heading "Categories without vendors" [level=3] [ref=f5e342]
+            - paragraph [ref=f5e343]: Business lines without assigned vendors.
+      - generic [ref=f5e350]: Vendor distribution
+      - generic [ref=f5e356]:
+        - generic [ref=f5e358]:
+          - generic [ref=f5e359]:
+            - heading "Vendors by category" [level=3] [ref=f5e360]
+            - paragraph [ref=f5e361]: Vendor distribution across linked categories.
+          - link "View vendors" [ref=f5e362] [cursor=pointer]:
+            - /url: http://127.0.0.1:8018/admin/vendors
+        - generic [ref=f5e370]:
+          - generic [ref=f5e371]:
+            - heading "Recent products" [level=3] [ref=f5e372]
+            - paragraph [ref=f5e373]: Latest products added to the platform.
+          - link "Show all" [ref=f5e374] [cursor=pointer]:
+            - /url: http://127.0.0.1:8018/admin/products
+      - generic [ref=f5e381]:
+        - generic [ref=f5e382]:
+          - heading "Recent activity" [level=3] [ref=f5e383]
+          - paragraph [ref=f5e384]: Latest products and registrations that may need follow-up.
+        - generic [ref=f5e387]:
+          - heading "Recent vendors" [level=3] [ref=f5e388]
+          - paragraph [ref=f5e389]: Latest vendor accounts added to the platform.
+      - generic [ref=f5e396]:
+        - generic [ref=f5e397]:
+          - heading "Quick actions" [level=3] [ref=f5e398]
+          - paragraph [ref=f5e399]: Shortcuts to the most frequent admin workflows.
+        - generic [ref=f5e400]:
+          - link [ref=f5e401] [cursor=pointer]:
+            - /url: http://127.0.0.1:8018/admin/vendors
+            - generic [ref=f5e408]:
+              - paragraph [ref=f5e409]: Manage vendors
+              - paragraph [ref=f5e410]: Review, update, and activate vendor accounts.
+          - link [ref=f5e413] [cursor=pointer]:
+            - /url: http://127.0.0.1:8018/admin/users
+            - generic [ref=f5e421]:
+              - paragraph [ref=f5e422]: Manage users
+              - paragraph [ref=f5e423]: Browse and maintain platform user accounts.
+          - link [ref=f5e426] [cursor=pointer]:
+            - /url: http://127.0.0.1:8018/admin/products
+            - generic [ref=f5e433]:
+              - paragraph [ref=f5e434]: Manage products
+              - paragraph [ref=f5e435]: Review product records and publishing status.

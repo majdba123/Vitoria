@@ -12,6 +12,7 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::get('vendors/{vendor}/analytics/products', [\App\Http\Controllers\Api\Syndicate\VendorAnalyticsController::class, 'products'])->name('vendors.analytics.products');
     Route::get('vendors/{vendor}/analytics/orders', [\App\Http\Controllers\Api\Syndicate\VendorAnalyticsController::class, 'orders'])->name('vendors.analytics.orders');
     Route::get('vendors/{vendor}/analytics/returns', [\App\Http\Controllers\Api\Syndicate\VendorAnalyticsController::class, 'returns'])->name('vendors.analytics.returns');
+    Route::get('vendors/{vendor}/report.pdf', [\App\Http\Controllers\Api\Syndicate\VendorAnalyticsController::class, 'report'])->middleware('throttle:dashboard.stats')->name('vendors.report');
     Route::get('products', [DashboardController::class, 'products'])->name('products');
     Route::get('orders', [DashboardController::class, 'orders'])->name('orders');
     Route::get('podcasts', [DashboardController::class, 'podcasts'])->name('podcasts');

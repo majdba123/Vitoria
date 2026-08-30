@@ -1,0 +1,139 @@
+- generic [ref=f8e2]:
+  - banner [ref=f8e3]:
+    - navigation "القائمة" [ref=f8e4]:
+      - link [ref=f8e5] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/
+        - img "Vetora" [ref=f8e6]
+      - generic [ref=f8e7]:
+        - button "السلة" [ref=f8e8]:
+          - generic [ref=f8e68]: "1"
+        - button "P" [ref=f8e13]
+        - button "القائمة" [ref=f8e18]
+  - main [ref=f8e20]:
+    - generic [ref=f8e21]:
+      - navigation [ref=f8e24]:
+        - link "الرئيسية" [ref=f8e25] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/
+        - generic [ref=f8e28]: إتمام الطلب
+      - generic [ref=f8e29]:
+        - heading "إتمام الطلب" [level=1] [ref=f8e30]
+        - generic [ref=f8e69]:
+          - generic [ref=f8e70]:
+            - generic [ref=f8e71]:
+              - generic [ref=f8e72]:
+                - heading "عنوان التوصيل" [level=2] [ref=f8e73]
+                - button "عنوان جديد" [active] [ref=f8e74]
+              - paragraph [ref=f8e76]: لا توجد لديك عناوين توصيل محفوظة.
+              - generic [ref=f8e113]:
+                - generic [ref=f8e114]:
+                  - generic [ref=f8e115]:
+                    - generic [ref=f8e116]: نوع العنوان
+                    - combobox "نوع العنوان" [ref=f8e117] [cursor=pointer]:
+                      - option "المنزل" [selected]
+                      - option "العمل"
+                      - option "المزرعة"
+                      - option "العيادة"
+                      - option "الصيدلية"
+                      - option "أخرى"
+                  - generic [ref=f8e118]:
+                    - generic [ref=f8e119]: اسم المستلم
+                    - textbox "اسم المستلم" [ref=f8e120]
+                  - generic [ref=f8e121]:
+                    - generic [ref=f8e122]: رقم الهاتف
+                    - textbox "رقم الهاتف" [ref=f8e123]
+                  - generic [ref=f8e124]:
+                    - generic [ref=f8e125]: المحافظة
+                    - textbox "المحافظة" [ref=f8e126]
+                  - generic [ref=f8e127]:
+                    - generic [ref=f8e128]: المدينة
+                    - textbox "المدينة" [ref=f8e129]
+                  - generic [ref=f8e130]:
+                    - generic [ref=f8e131]: المنطقة
+                    - textbox "المنطقة" [ref=f8e132]
+                  - generic [ref=f8e133]:
+                    - generic [ref=f8e134]: الشارع
+                    - textbox "الشارع" [ref=f8e135]
+                  - generic [ref=f8e136]:
+                    - generic [ref=f8e137]: ملاحظات التوصيل
+                    - textbox "ملاحظات التوصيل" [ref=f8e138]
+                - generic [ref=f8e139]:
+                  - button "حفظ العنوان" [ref=f8e140]
+                  - button "إلغاء" [ref=f8e141]
+            - generic [ref=f8e77]:
+              - heading "مراجعة الطلب" [level=2] [ref=f8e78]
+              - generic [ref=f8e80]:
+                - generic [ref=f8e81]:
+                  - paragraph [ref=f8e82]: مستلزمات إسطبل متكاملة
+                  - paragraph [ref=f8e83]: البائع تاجر المستلزمات البيطرية
+                  - paragraph [ref=f8e84]: الكمية 1 × 60 SYP
+                - paragraph [ref=f8e85]: 60 SYP
+            - generic [ref=f8e86]:
+              - heading "طريقة الدفع" [level=2] [ref=f8e87]
+              - generic [ref=f8e88]:
+                - generic [ref=f8e89] [cursor=pointer]:
+                  - radio "الدفع عند الاستلام ادفع لمندوب التوصيل عند وصول طلبك." [checked] [ref=f8e90]
+                  - generic [ref=f8e91]:
+                    - generic [ref=f8e92]: الدفع عند الاستلام
+                    - generic [ref=f8e93]: ادفع لمندوب التوصيل عند وصول طلبك.
+                - paragraph [ref=f8e94]: هذه هي طريقة الدفع الوحيدة المتاحة حالياً.
+          - complementary [ref=f8e95]:
+            - heading "الإجمالي" [level=2] [ref=f8e96]
+            - generic [ref=f8e97]:
+              - generic [ref=f8e98]: رمز الخصم
+              - generic [ref=f8e99]:
+                - textbox "رمز الخصم" [ref=f8e100]:
+                  - /placeholder: أدخل الرمز
+                - button "تطبيق" [ref=f8e101]
+            - generic [ref=f8e102]:
+              - generic [ref=f8e103]:
+                - term [ref=f8e104]: المجموع الفرعي
+                - definition [ref=f8e105]: 60 SYP
+              - generic [ref=f8e106]:
+                - term [ref=f8e107]: الشحن
+                - definition [ref=f8e108]: مجاني
+              - generic [ref=f8e109]:
+                - term [ref=f8e110]: الإجمالي
+                - definition [ref=f8e111]: 60 SYP
+            - button "تأكيد الطلب" [ref=f8e112]
+  - contentinfo [ref=f8e34]:
+    - generic [ref=f8e36]:
+      - generic [ref=f8e37]:
+        - generic [ref=f8e38]:
+          - link [ref=f8e39] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/
+            - img "Vetora" [ref=f8e40]
+          - paragraph [ref=f8e41]: سوق ذكي للمنتجات الزراعية والبيطرية
+        - generic [ref=f8e42]:
+          - heading "تسوق" [level=2] [ref=f8e43]
+          - list [ref=f8e44]:
+            - listitem [ref=f8e45]:
+              - link "التصنيفات" [ref=f8e46] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/categories
+            - listitem [ref=f8e47]:
+              - link "جميع المنتجات" [ref=f8e48] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/products
+            - listitem [ref=f8e49]:
+              - link "الأسئلة الشائعة" [ref=f8e50] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/faq
+        - generic [ref=f8e51]:
+          - heading "حساب" [level=2] [ref=f8e52]
+          - list [ref=f8e53]:
+            - listitem [ref=f8e54]:
+              - link "تسجيل الدخول" [ref=f8e55] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+            - listitem [ref=f8e56]:
+              - link "إنشاء حساب" [ref=f8e57] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/register
+        - generic [ref=f8e58]:
+          - heading "تواصل" [level=2] [ref=f8e59]
+          - list [ref=f8e60]:
+            - listitem [ref=f8e61]:
+              - link "تواصل معنا" [ref=f8e62] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/contact
+      - generic [ref=f8e63]:
+        - paragraph [ref=f8e64]: © 2026 Vetora. جميع الحقوق محفوظة.
+        - generic [ref=f8e65]:
+          - link "سياسة الخصوصية" [ref=f8e66] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/privacy-policy
+          - link "شروط الخدمة" [ref=f8e67] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/terms-of-service

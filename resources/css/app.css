@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@import 'leaflet/dist/leaflet.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -431,8 +430,7 @@
 
     /* ---- Vetora Precision public storefront ----------------------------- */
     .commerce-section-header {
-        @apply mb-6 flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-end sm:justify-between;
-        border-color: var(--color-border);
+        @apply mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between;
     }
 
     .commerce-kicker {
@@ -2414,43 +2412,4 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
-}
-
-/* ==========================================================================
-   LEAFLET
-   Plain Leaflet renders its own chrome, so it needs three project-level
-   corrections: the map surface must use the theme's card colours instead of
-   Leaflet's hardcoded greys, the raster tiles need dimming in dark mode (they
-   are photographic, not themeable), and popup/attribution text must stay LTR
-   inside an RTL document because coordinates and OSM credit are not translated.
-   ========================================================================== */
-.leaflet-container {
-    background-color: var(--muted);
-    font-family: inherit;
-    z-index: 0;
-}
-
-.dark .leaflet-tile-pane {
-    filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.9);
-}
-
-.leaflet-popup-content-wrapper,
-.leaflet-popup-tip {
-    background-color: var(--card);
-    color: var(--card-foreground);
-}
-
-.leaflet-control-attribution,
-.leaflet-control-zoom a {
-    background-color: var(--card);
-    color: var(--card-foreground);
-}
-
-.leaflet-control-attribution,
-.leaflet-control-zoom {
-    direction: ltr;
-}
-
-.leaflet-container a.leaflet-popup-close-button {
-    color: var(--muted-foreground);
 }

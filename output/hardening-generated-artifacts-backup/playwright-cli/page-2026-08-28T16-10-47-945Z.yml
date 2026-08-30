@@ -1,0 +1,39 @@
+- main [ref=f4e3]:
+  - generic [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - link "Vetora" [ref=f4e6] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/
+      - generic [ref=f4e8]:
+        - button "اختر اللغة" [ref=f4e9]
+        - button "تبديل المظهر" [ref=f4e10]
+    - generic [ref=f4e12]:
+      - generic [ref=f4e13]:
+        - generic [ref=f4e14]: تسجيل دخول آمن
+        - heading "مرحباً بعودتك" [level=1] [ref=f4e18]
+        - paragraph [ref=f4e19]: سجّل الدخول إلى حسابك
+      - generic [ref=f4e20]:
+        - generic [ref=f4e21]:
+          - generic [ref=f4e22]:
+            - text: رقم الهاتف
+            - generic [ref=f4e23]: "*"
+          - textbox "رقم الهاتف *" [ref=f4e24]:
+            - /placeholder: 09XXXXXXXX
+        - generic [ref=f4e25]:
+          - generic [ref=f4e26]:
+            - text: كلمة المرور
+            - generic [ref=f4e27]: "*"
+          - generic [ref=f4e28]:
+            - textbox "كلمة المرور *" [ref=f4e29]:
+              - /placeholder: أدخل كلمة المرور
+            - button "Show password" [ref=f4e30]
+        - button "تسجيل الدخول" [ref=f4e34]
+      - generic [ref=f4e35]:
+        - paragraph [ref=f4e36]: ليس لديك حساب؟
+        - link "أنشئ حساباً" [ref=f4e37] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/register
+    - paragraph [ref=f4e40]: الدخول إلى Vetora
+  - complementary "مساحة عمل متقنة لكل عميل وبائع وشريك." [ref=f4e41]:
+    - generic [ref=f4e43]:
+      - paragraph [ref=f4e44]: الدخول إلى Vetora
+      - heading "مساحة عمل متقنة لكل عميل وبائع وشريك." [level=2] [ref=f4e45]
+      - paragraph [ref=f4e46]: سجّل الدخول للانتقال من الاستكشاف إلى التنفيذ عبر واجهة متجر أكثر سلاسة ولوحات تشغيل أوضح ولغة موحدة للمنتج.

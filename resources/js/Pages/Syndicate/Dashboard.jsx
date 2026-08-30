@@ -9,10 +9,8 @@ import { InsightPanel } from '@/Components/admin/dashboard/InsightPanel';
 import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
-import { VendorMapPanel } from '@/Components/maps/VendorMapPanel';
-import { ViewSwitch } from '@/Components/maps/ViewSwitch';
-import { Store, Package, ShoppingBag } from 'lucide-react';
+import { DashboardVendorMap } from '@/Components/maps/DashboardVendorMap';
+import { BarChart3, FileChartColumn, Package, ShoppingBag, Store } from 'lucide-react';
 import { useI18n } from '@/hooks/use-i18n';
 import { GrowthChart } from '@/Components/admin/dashboard/GrowthChart';
 
@@ -63,22 +61,7 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
     useEffect(loadOverview, []);
 
     const [page, setPage] = useState(1);
-    const [vendorView, setVendorView] = useState('table');
-    const [vendorCityId, setVendorCityId] = useState('all');
-    const [vendorCities, setVendorCities] = useState([]);
-    const isVendorSection = section === 'vendors';
-    const showVendorMap = isVendorSection && vendorView === 'map';
-    const { status: tableStatus, rows: tableRows, meta: tableMeta, errorMessage: tableError, reload: reloadTable } = useSyndicateTable(section, isTableSection && !showVendorMap, page, vendorCityId);
-
-    useEffect(() => {
-        if (!isVendorSection) return;
-        window.axios.get('/api/syndicate/vendors/map', { silent: true }).then((res) => setVendorCities(res.data?.data?.cities ?? []));
-    }, [isVendorSection]);
-
-    const changeVendorCity = (value) => {
-        setVendorCityId(value);
-        setPage(1);
-    };
+    const { status: tableStatus, rows: tableRows, meta: tableMeta, errorMessage: tableError, reload: reloadTable } = useSyndicateTable(section, isTableSection, page);
 
     const [reportsStatus, setReportsStatus] = useState('loading');
     const [reports, setReports] = useState(null);
@@ -108,10 +91,10 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                     <>
                         <StatusBadge tone={syndicateInfo.status === 'inactive' ? 'danger' : 'success'}>{syndicateInfo.status === 'inactive' ? syndicate.inactive : syndicate.active}</StatusBadge>
                         <Button asChild variant="outline" size="sm">
-                            <Link href={route('syndicate.sales')}>{syndicate.sales_cta}</Link>
+                            <Link href={route('syndicate.sales')}><BarChart3 className="size-4" aria-hidden="true" />{syndicate.sales_cta}</Link>
                         </Button>
                         <Button asChild size="sm">
-                            <Link href={route('syndicate.reports')}>{syndicate.reports_cta}</Link>
+                            <Link href={route('syndicate.reports')}><FileChartColumn className="size-4" aria-hidden="true" />{syndicate.reports_cta}</Link>
                         </Button>
                     </>
                 }
@@ -143,17 +126,9 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                 </div>
             )}
 
-            {showVendorMap && (
-                <>
-                    <div className="flex flex-wrap items-end justify-end gap-3">
-                        <VendorCityFilter value={vendorCityId} onChange={changeVendorCity} cities={vendorCities} common={common} />
-                        <ViewSwitch view={vendorView} onChange={setVendorView} />
-                    </div>
-                    <VendorMapPanel endpoint="/api/syndicate/vendors/map" cityId={vendorCityId} onCityIdChange={changeVendorCity} showCityFilter={false} />
-                </>
-            )}
+            {isOverview && <DashboardVendorMap endpoint="/api/syndicate/vendors/map" />}
 
-            {isTableSection && !showVendorMap && (
+            {isTableSection && (
                 <Card className="gap-0 border-border/80 py-0 shadow-none">
                     <CardHeader className="flex-row items-center justify-between border-b border-border/80 py-4">
                         <div>
@@ -161,8 +136,6 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                             <p className="mt-1 text-xs text-muted-foreground">{syndicate.records_subtitle}</p>
                         </div>
                         <div className="flex items-center gap-3">
-                            {isVendorSection && <VendorCityFilter value={vendorCityId} onChange={changeVendorCity} cities={vendorCities} common={common} />}
-                            {isVendorSection && <ViewSwitch view={vendorView} onChange={setVendorView} />}
                             {tableStatus === 'ready' && <StatusBadge tone="brand">{tableMeta.total}</StatusBadge>}
                         </div>
                     </CardHeader>
@@ -284,7 +257,7 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
     );
 }
 
-function useSyndicateTable(section, enabled, page, cityId) {
+function useSyndicateTable(section, enabled, page) {
     const [status, setStatus] = useState('loading');
     const [rows, setRows] = useState([]);
     const [meta, setMeta] = useState({});
@@ -293,7 +266,7 @@ function useSyndicateTable(section, enabled, page, cityId) {
     const load = () => {
         if (!enabled) return;
         setStatus('loading');
-        window.axios.get(`/api/syndicate/${section}`, { params: { page, per_page: 15, city_id: section === 'vendors' && cityId !== 'all' ? cityId : undefined }, silent: true }).then((res) => {
+        window.axios.get(`/api/syndicate/${section}`, { params: { page, per_page: 15 }, silent: true }).then((res) => {
             setRows(res.data?.data ?? []);
             setMeta(res.data?.meta ?? {});
             setStatus('ready');
@@ -303,24 +276,9 @@ function useSyndicateTable(section, enabled, page, cityId) {
         });
     };
 
-    useEffect(load, [section, enabled, page, cityId]);
+    useEffect(load, [section, enabled, page]);
 
     return { status, rows, meta, errorMessage, reload: load };
-}
-
-function VendorCityFilter({ value, onChange, cities, common }) {
-    return (
-        <div className="w-48">
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">{common.map_city_filter}</label>
-            <Select value={value} onValueChange={onChange}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">{common.map_all_cities}</SelectItem>
-                    {cities.map((city) => <SelectItem key={city.id} value={String(city.id)}>{city.name}</SelectItem>)}
-                </SelectContent>
-            </Select>
-        </div>
-    );
 }
 
 function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, common }) {

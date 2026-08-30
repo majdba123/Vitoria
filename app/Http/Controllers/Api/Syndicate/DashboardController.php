@@ -52,16 +52,15 @@ class DashboardController extends Controller
      * The Table/Map payload for the Vendors section, restricted to the
      * canonical syndicate vendor scope and stripped of every admin-only URL.
      */
-    public function vendorsMap(VendorMapRequest $request, VendorMapService $mapService): JsonResponse
+    public function vendorsMap(Request $request, VendorMapService $mapService): JsonResponse
     {
         $type = $this->syndicate($request)->type;
 
         return response()->json([
             'message' => __('Vendor map retrieved successfully.'),
-            'data' => $mapService->payload(
+            'data' => $mapService->dashboardPayload(
                 fn () => $this->dashboardService->vendorQuery($type),
-                $request->filters(),
-                withAdminActions: false,
+                $type,
             ),
         ]);
     }

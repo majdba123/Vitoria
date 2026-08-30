@@ -29,7 +29,7 @@ class VendorAnalyticsRequest extends FormRequest
         return [
             'range' => ['sometimes', 'string', Rule::in(['today', '7_days', '30_days', '90_days', 'this_year', 'custom', 'all'])],
             'date_from' => ['nullable', 'date', 'required_if:range,custom'],
-            'date_to' => ['nullable', 'date', 'required_if:range,custom', 'after_or_equal:date_from'],
+            'date_to' => ['nullable', 'date', 'required_if:range,custom', 'after_or_equal:date_from', 'before_or_equal:today'],
             'search' => ['nullable', 'string', 'max:100'],
             'category_id' => ['nullable', 'integer', 'exists:categories,id'],
             'product_status' => ['nullable', 'string', Rule::in([Product::STATUS_PENDING, Product::STATUS_APPROVED, Product::STATUS_REJECTED])],

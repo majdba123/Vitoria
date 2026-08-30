@@ -1,4 +1,4 @@
-import { RefreshCw } from 'lucide-react';
+import { Inbox, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/Components/ui/card';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { Link } from '@inertiajs/react';
@@ -42,7 +42,7 @@ export function InsightPanel({ title, copy, action, status, isEmpty, emptyMessag
                 )}
 
                 {status === 'ready' && isEmpty && (
-                    <div className="rounded-md border border-dashed border-border py-8 text-center text-sm text-muted-foreground">{emptyMessage}</div>
+                    <div className="rounded-md border border-dashed border-border py-8 text-center text-sm text-muted-foreground"><Inbox className="mx-auto mb-2 size-6" strokeWidth={1.5} aria-hidden="true" />{emptyMessage}</div>
                 )}
 
                 {status === 'ready' && !isEmpty && children}

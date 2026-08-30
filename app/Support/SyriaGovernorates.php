@@ -79,4 +79,10 @@ class SyriaGovernorates
 
         return self::CITY_TO_GOVERNORATE[$cityName] ?? null;
     }
+
+    /** @return list<string> */
+    public static function cityNamesForKey(string $key): array
+    {
+        return array_keys(array_filter(self::CITY_TO_GOVERNORATE, fn (string $governorate): bool => $governorate === $key));
+    }
 }

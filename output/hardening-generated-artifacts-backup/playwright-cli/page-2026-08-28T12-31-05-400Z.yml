@@ -1,0 +1,104 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - navigation "Menu" [ref=e4]:
+      - link [ref=e116] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/
+        - img "Vetora" [ref=e117]
+      - generic [ref=e5]:
+        - button "Categories" [ref=e7]
+        - link "Products" [ref=e15] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/products
+        - link "FAQ" [ref=e16] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/faq
+        - link "Contact Us" [ref=e17] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/contact
+      - search [ref=e18]:
+        - searchbox "Search products" [ref=e19]
+      - generic [ref=e20]:
+        - generic [ref=e21]:
+          - button "Choose language" [ref=e22]
+          - button "Toggle light or dark theme" [ref=e23]
+        - button "Cart" [ref=e24]
+        - generic [ref=e28]:
+          - link "Sign In" [ref=e29] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/login
+          - link "Register" [ref=e30] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/register
+  - main [ref=e31]:
+    - generic [ref=e33]:
+      - generic "Agricultural specialist inspecting crops in the field" [ref=e34]
+      - generic [ref=e35]:
+        - generic [ref=e36]: Smart browsing for agriculture and veterinary products
+        - heading "Choose faster. Browse smarter." [level=1] [ref=e37]:
+          - text: Choose faster.
+          - generic [ref=e38]: Browse smarter.
+        - paragraph [ref=e39]: Start from the right product type, move into the right category and subcategory, and reach the products that matter without clutter.
+        - generic [ref=e40]:
+          - link "Explore products" [ref=e41] [cursor=pointer]:
+            - /url: "#products"
+          - link "Browse categories" [ref=e44] [cursor=pointer]:
+            - /url: "#categories"
+        - paragraph [ref=e47]: Built for growers, veterinary teams, suppliers, and purchasing staff.
+    - region [ref=e48]:
+      - generic [ref=e49]:
+        - paragraph [ref=e50]: Choose your trade
+        - heading "One marketplace, two specialist catalogues" [level=2] [ref=e51]
+        - paragraph [ref=e52]: Select the field you work in. Prices, categories, and available stock will follow that choice throughout the store.
+      - generic [ref=e53]:
+        - link "Agriculture Agricultural products and supplies with a clear, fast browsing flow. Enter agriculture" [ref=e54] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/product-type/select?preferred_product_type=agriculture&redirect_to=home
+          - generic [ref=e55]: "01"
+          - generic [ref=e60]:
+            - generic [ref=e61]: Agriculture
+            - generic [ref=e63]: Agricultural products and supplies with a clear, fast browsing flow.
+          - generic [ref=e64]: Enter agriculture
+        - link "Veterinary Veterinary products and supplies with a smoother, easier shopping experience. Enter veterinary" [active] [ref=e67] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/product-type/select?preferred_product_type=veterinary&redirect_to=home
+          - generic [ref=e68]: "02"
+          - generic [ref=e74]:
+            - generic [ref=e75]: Veterinary
+            - generic [ref=e77]: Veterinary products and supplies with a smoother, easier shopping experience.
+          - generic [ref=e78]: Enter veterinary
+    - paragraph [ref=e83]: Choose the product type first to show the matching categories and products.
+  - contentinfo [ref=e84]:
+    - generic [ref=e86]:
+      - generic [ref=e87]:
+        - generic [ref=e88]:
+          - link [ref=e118] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/
+            - img "Vetora" [ref=e119]
+          - paragraph [ref=e89]: Your trusted online marketplace.
+        - generic [ref=e90]:
+          - heading "Shop" [level=2] [ref=e91]
+          - list [ref=e92]:
+            - listitem [ref=e93]:
+              - link "Categories" [ref=e94] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/categories
+            - listitem [ref=e95]:
+              - link "All Products" [ref=e96] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/products
+            - listitem [ref=e97]:
+              - link "FAQ" [ref=e98] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/faq
+        - generic [ref=e99]:
+          - heading "Account" [level=2] [ref=e100]
+          - list [ref=e101]:
+            - listitem [ref=e102]:
+              - link "Sign In" [ref=e103] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+            - listitem [ref=e104]:
+              - link "Create Account" [ref=e105] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/register
+        - generic [ref=e106]:
+          - heading "Contact" [level=2] [ref=e107]
+          - list [ref=e108]:
+            - listitem [ref=e109]:
+              - link "Contact Us" [ref=e110] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/contact
+      - generic [ref=e111]:
+        - paragraph [ref=e112]: © 2026 Vetora. All rights reserved.
+        - generic [ref=e113]:
+          - link "Privacy Policy" [ref=e114] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/privacy-policy
+          - link "Terms of Service" [ref=e115] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/terms-of-service

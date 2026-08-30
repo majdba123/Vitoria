@@ -3,15 +3,18 @@
 namespace App\Http\Controllers\Api\Syndicate;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SyndicateVendorReportRequest;
 use App\Http\Requests\VendorAnalyticsRequest;
 use App\Models\Vendor;
 use App\Services\Syndicate\SyndicateDashboardService;
+use App\Services\Vendor\SyndicateVendorPdfService;
 use App\Services\Vendor\VendorAnalyticsService;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class VendorAnalyticsController extends Controller
 {
-    public function __construct(private readonly VendorAnalyticsService $analytics, private readonly SyndicateDashboardService $dashboard) {}
+    public function __construct(private readonly VendorAnalyticsService $analytics, private readonly SyndicateDashboardService $dashboard, private readonly SyndicateVendorPdfService $pdf) {}
 
     public function overview(VendorAnalyticsRequest $request, Vendor $vendor): JsonResponse
     {
@@ -31,6 +34,20 @@ class VendorAnalyticsController extends Controller
     public function returns(VendorAnalyticsRequest $request, Vendor $vendor): JsonResponse
     {
         return $this->paginated($this->analytics->returns($vendor, $request->period(), $request->perPage(), $this->domain($request, $vendor)));
+    }
+
+    public function report(SyndicateVendorReportRequest $request, Vendor $vendor): Response
+    {
+        $domain = $this->domain($request, $vendor);
+        $report = $this->pdf->render($vendor, $request->user()->syndicate, $request->period(), $request->validated('locale'));
+
+        return response($report['bytes'], 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$report['filename'].'"',
+            'Content-Length' => (string) strlen($report['bytes']),
+            'X-Content-Type-Options' => 'nosniff',
+            'X-Vetora-Report-Domain' => $domain,
+        ]);
     }
 
     private function domain(VendorAnalyticsRequest $request, Vendor $vendor): string

@@ -1,0 +1,344 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - navigation:
+          - generic:
+            - generic:
+              - list:
+                - listitem:
+                  - link:
+                    - /url: http://127.0.0.1:8018/admin/dashboard
+                    - generic:
+                      - generic: Vetora
+                      - generic: Admin
+            - generic:
+              - generic:
+                - generic: Overview
+                - generic:
+                  - list:
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/dashboard
+                        - generic: Dashboard
+              - generic:
+                - generic: Management
+                - generic:
+                  - list:
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/vendors
+                        - generic: Vendors
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/syndicates
+                        - generic: Syndicates
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/products
+                        - generic: Products
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/employees
+                        - generic: Employees
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/coupons
+                        - generic: Coupons
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/orders
+                        - generic: Orders
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/users
+                        - generic: Users
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/notifications
+                        - generic: Notifications
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/contact-messages
+                        - generic: Contact messages
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/about-us
+                        - generic: About us
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/pages
+                        - generic: Pages
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/banners
+                        - generic: Banners
+              - generic:
+                - generic: Catalog
+                - generic:
+                  - list:
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/categories
+                        - generic: Categories
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/subcategories
+                        - generic: Subcategories
+                    - listitem:
+                      - link:
+                        - /url: http://127.0.0.1:8018/admin/cities
+                        - generic: Cities
+            - generic:
+              - list:
+                - listitem:
+                  - button:
+                    - generic: م
+                    - generic:
+                      - generic: مدير النظام
+                      - generic: Admin
+      - main:
+        - generic:
+          - generic:
+            - button:
+              - generic: Toggle Sidebar
+            - generic:
+              - paragraph: Admin
+              - heading [level=1]: Dashboard
+            - generic:
+              - link:
+                - /url: http://127.0.0.1:8018/
+              - button [expanded]
+              - button
+              - button
+              - button
+        - generic:
+          - generic:
+            - generic:
+              - paragraph: Admin
+              - heading [level=2]: Control center
+              - paragraph: Track platform health, review growth signals, and jump into the most important admin actions.
+            - generic:
+              - link:
+                - /url: http://127.0.0.1:8018/admin/vendors/create
+                - text: Add Vendor
+              - link:
+                - /url: http://127.0.0.1:8018/admin/users/create
+                - text: Add user
+          - generic:
+            - generic:
+              - heading [level=3]: Platform snapshot
+              - paragraph: Live totals across users, vendors, syndicates, and products.
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Total vendors
+                    - paragraph: "0"
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Total products
+                    - paragraph: "0"
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Total users
+                    - paragraph: "1"
+              - generic:
+                - generic:
+                  - generic:
+                    - paragraph: Total syndicates
+                    - paragraph: "0"
+            - generic:
+              - generic:
+                - generic: Active vendors
+                - generic: "0"
+              - generic:
+                - generic: Inactive vendors
+                - generic: "0"
+              - generic:
+                - generic: Active products
+                - generic: "0"
+          - generic:
+            - generic:
+              - heading [level=3]: Business insights
+              - paragraph: Distribution, momentum, and gaps that deserve attention.
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - heading [level=3]: Vendors by type
+                    - paragraph: Agriculture, veterinary, or mixed business coverage.
+                - generic:
+                  - generic:
+                    - link:
+                      - /url: http://127.0.0.1:8018/admin/vendors?business_type=agriculture
+                      - paragraph: Agriculture
+                      - paragraph: "0"
+                    - link:
+                      - /url: http://127.0.0.1:8018/admin/vendors?business_type=veterinary
+                      - paragraph: Veterinary
+                      - paragraph: "0"
+                    - link:
+                      - /url: http://127.0.0.1:8018/admin/vendors?business_type=both
+                      - paragraph: Agriculture and Veterinary
+                      - paragraph: "0"
+              - generic:
+                - generic:
+                  - generic:
+                    - heading [level=3]: Categories by type
+                    - paragraph: Catalog distribution by business line.
+                - generic:
+                  - generic:
+                    - link:
+                      - /url: http://127.0.0.1:8018/admin/categories?type=agriculture
+                      - paragraph: Agriculture
+                      - paragraph: "0"
+                    - link:
+                      - /url: http://127.0.0.1:8018/admin/categories?type=veterinary
+                      - paragraph: Veterinary
+                      - paragraph: "0"
+              - generic:
+                - generic:
+                  - generic:
+                    - heading [level=3]: Syndicates by type
+                    - paragraph: Agent coverage by business line.
+                - generic:
+                  - generic:
+                    - link:
+                      - /url: http://127.0.0.1:8018/admin/syndicates?type=agriculture
+                      - paragraph: Agriculture
+                      - paragraph: "0"
+                    - link:
+                      - /url: http://127.0.0.1:8018/admin/syndicates?type=veterinary
+                      - paragraph: Veterinary
+                      - paragraph: "0"
+              - generic:
+                - generic:
+                  - generic:
+                    - heading [level=3]: Recent syndicate agents
+                    - paragraph: Newest agriculture and veterinary agent accounts.
+                - generic: No syndicate agents yet.
+              - generic:
+                - generic:
+                  - generic:
+                    - heading [level=3]: Products by type
+                    - paragraph: Product volume split by catalog type.
+                - generic:
+                  - generic:
+                    - link:
+                      - /url: http://127.0.0.1:8018/admin/products?category_type=agriculture
+                      - paragraph: Agriculture
+                      - paragraph: "0"
+                    - link:
+                      - /url: http://127.0.0.1:8018/admin/products?category_type=veterinary
+                      - paragraph: Veterinary
+                      - paragraph: "0"
+              - generic:
+                - generic:
+                  - generic:
+                    - heading [level=3]: Monthly product growth
+                    - paragraph: New products created during the last 12 months.
+                - generic: No product growth data yet.
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - heading [level=3]: Top vendors
+                    - paragraph: Ranked by published product count.
+                - generic: No vendor product totals yet.
+              - generic:
+                - generic:
+                  - generic:
+                    - heading [level=3]: Most selected categories
+                    - paragraph: Categories most frequently assigned to vendors.
+                - generic: No category preferences yet.
+              - generic:
+                - generic:
+                  - generic:
+                    - heading [level=3]: Categories without products
+                    - paragraph: Catalog gaps that need product coverage.
+                - generic: No coverage gaps right now.
+              - generic:
+                - generic:
+                  - generic:
+                    - heading [level=3]: Categories without vendors
+                    - paragraph: Business lines without assigned vendors.
+                - generic: No coverage gaps right now.
+          - generic:
+            - generic:
+              - generic: Vendor distribution
+              - generic:
+                - generic:
+                  - generic:
+                    - group:
+                      - link
+                      - link
+                      - link
+                      - link
+                      - link
+                      - link
+                      - link
+                      - link
+                      - link
+                      - link
+                      - link
+                      - link
+                      - link
+                      - link
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - heading [level=3]: Vendors by category
+                  - paragraph: Vendor distribution across linked categories.
+                - link:
+                  - /url: http://127.0.0.1:8018/admin/vendors
+                  - text: View vendors
+              - generic: No vendor-category statistics yet.
+            - generic:
+              - generic:
+                - generic:
+                  - heading [level=3]: Recent products
+                  - paragraph: Latest products added to the platform.
+                - link:
+                  - /url: http://127.0.0.1:8018/admin/products
+                  - text: Show all
+              - generic: No products yet.
+          - generic:
+            - generic:
+              - heading [level=3]: Recent activity
+              - paragraph: Latest products and registrations that may need follow-up.
+            - generic:
+              - generic:
+                - generic:
+                  - heading [level=3]: Recent vendors
+                  - paragraph: Latest vendor accounts added to the platform.
+              - generic: No vendors yet
+          - generic:
+            - generic:
+              - heading [level=3]: Quick actions
+              - paragraph: Shortcuts to the most frequent admin workflows.
+            - generic:
+              - link:
+                - /url: http://127.0.0.1:8018/admin/vendors
+                - generic:
+                  - generic:
+                    - paragraph: Manage vendors
+                    - paragraph: Review, update, and activate vendor accounts.
+              - link:
+                - /url: http://127.0.0.1:8018/admin/users
+                - generic:
+                  - generic:
+                    - paragraph: Manage users
+                    - paragraph: Browse and maintain platform user accounts.
+              - link:
+                - /url: http://127.0.0.1:8018/admin/products
+                - generic:
+                  - generic:
+                    - paragraph: Manage products
+                    - paragraph: Review product records and publishing status.
+  - menu "Choose language" [active] [ref=f5e526]:
+    - menuitem "العربية" [ref=f5e527]
+    - menuitem "English" [ref=f5e528]

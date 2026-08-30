@@ -5,7 +5,6 @@ import { PageHeader } from '@/Components/admin/PageHeader';
 import { TextField, SelectField, TextareaField } from '@/Components/admin/form/FormField';
 import { CategoryCheckboxGroup } from '@/Components/admin/CategoryCheckboxGroup';
 import { ImageUploadCircle } from '@/Components/admin/ImageUploadCircle';
-import { LocationPicker } from '@/Components/maps/LocationPicker';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
 import { Switch } from '@/Components/ui/switch';
@@ -180,15 +179,6 @@ export default function VendorsEdit({ vendorId }) {
                             </div>
                             <TextareaField id="description" label="Description" rows={3} value={form.description} onChange={(e) => set('description')(e.target.value)} error={errors.description} />
                         </fieldset>
-
-                        <Separator />
-
-                        <LocationPicker
-                            latitude={form.latitude}
-                            longitude={form.longitude}
-                            onChange={({ latitude, longitude }) => setForm((f) => ({ ...f, latitude, longitude }))}
-                            error={errors.latitude ?? errors.longitude}
-                        />
 
                         <Separator />
 

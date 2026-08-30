@@ -1,0 +1,64 @@
+- generic [ref=f5e2]:
+  - banner [ref=f5e3]:
+    - navigation "القائمة" [ref=f5e4]:
+      - link [ref=f5e5] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/
+        - img "Vetora" [ref=f5e6]
+      - generic [ref=f5e7]:
+        - button "السلة" [ref=f5e8]
+        - button "P" [ref=f5e13]
+        - button "القائمة" [ref=f5e18]
+  - main [ref=f5e20]:
+    - navigation "جميع التصنيفات" [ref=f5e23]:
+      - link "الرئيسية" [ref=f5e24] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/
+    - generic [ref=f5e29]:
+      - generic [ref=f5e30]:
+        - paragraph [ref=f5e31]: Vetora Marketplace
+        - heading "جميع التصنيفات" [level=1] [ref=f5e32]
+        - paragraph [ref=f5e33]: تصفّح كل التصنيفات والتصنيفات الفرعية
+      - generic "كل الأنواع" [ref=f5e34]:
+        - button "زراعي" [ref=f5e35]
+        - button "بيطري" [pressed] [ref=f5e36]
+  - contentinfo [ref=f5e42]:
+    - generic [ref=f5e44]:
+      - generic [ref=f5e45]:
+        - generic [ref=f5e46]:
+          - link [ref=f5e47] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/
+            - img "Vetora" [ref=f5e48]
+          - paragraph [ref=f5e49]: سوق ذكي للمنتجات الزراعية والبيطرية
+        - generic [ref=f5e50]:
+          - heading "تسوق" [level=2] [ref=f5e51]
+          - list [ref=f5e52]:
+            - listitem [ref=f5e53]:
+              - link "التصنيفات" [ref=f5e54] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/categories
+            - listitem [ref=f5e55]:
+              - link "جميع المنتجات" [ref=f5e56] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/products
+            - listitem [ref=f5e57]:
+              - link "الأسئلة الشائعة" [ref=f5e58] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/faq
+        - generic [ref=f5e59]:
+          - heading "حساب" [level=2] [ref=f5e60]
+          - list [ref=f5e61]:
+            - listitem [ref=f5e62]:
+              - link "تسجيل الدخول" [ref=f5e63] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+            - listitem [ref=f5e64]:
+              - link "إنشاء حساب" [ref=f5e65] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/register
+        - generic [ref=f5e66]:
+          - heading "تواصل" [level=2] [ref=f5e67]
+          - list [ref=f5e68]:
+            - listitem [ref=f5e69]:
+              - link "تواصل معنا" [ref=f5e70] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/contact
+      - generic [ref=f5e71]:
+        - paragraph [ref=f5e72]: © 2026 Vetora. جميع الحقوق محفوظة.
+        - generic [ref=f5e73]:
+          - link "سياسة الخصوصية" [ref=f5e74] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/privacy-policy
+          - link "شروط الخدمة" [ref=f5e75] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/terms-of-service

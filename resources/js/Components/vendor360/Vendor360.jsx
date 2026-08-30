@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
-import { CalendarRange, Package, Search, Store } from 'lucide-react';
+import { Activity, BadgeDollarSign, Boxes, CalendarRange, FileDown, Package, RotateCcw, Search, ShoppingBag, Store } from 'lucide-react';
 import { PageHeader } from '@/Components/admin/PageHeader';
 import { Pagination } from '@/Components/admin/Pagination';
 import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
@@ -15,6 +15,7 @@ import { useI18n, useLocale } from '@/hooks/use-i18n';
 
 const MONEY_KEYS = new Set(['gross_sales', 'refunds', 'commission', 'net_earnings', 'settled', 'outstanding', 'average_completed_order_value']);
 const KPI_KEYS = ['total_products', 'active_products', 'pending_products', 'total_orders', 'completed_orders', 'cancelled_orders', 'units_sold', 'gross_sales', 'refunds', 'average_completed_order_value'];
+const KPI_ICONS = { total_products: Package, active_products: Activity, pending_products: Boxes, total_orders: ShoppingBag, completed_orders: ShoppingBag, cancelled_orders: RotateCcw, units_sold: Boxes, gross_sales: BadgeDollarSign, refunds: RotateCcw, average_completed_order_value: BadgeDollarSign };
 
 export function Vendor360({ vendorId, mode = 'admin' }) {
     const { vendorAnalytics: t = {}, common = {} } = useI18n();
@@ -39,6 +40,20 @@ export function Vendor360({ vendorId, mode = 'admin' }) {
     const approve = () => window.axios.patch(`/api/admin/vendors/${vendorId}/approve`, {}, { silent: true }).then(load);
 
     const vendor = overview?.vendor;
+    const exportReport = async (reportLocale) => {
+        const reportHref = `${base}/report.pdf?${new URLSearchParams({ ...params, locale: reportLocale }).toString()}`;
+        const response = await window.axios.get(reportHref, { responseType: 'blob' });
+        const disposition = response.headers['content-disposition'] ?? '';
+        const filename = disposition.match(/filename="?([^";]+)"?/i)?.[1] ?? `vetora-vendor-report-${vendorId}.pdf`;
+        const downloadUrl = URL.createObjectURL(response.data);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(downloadUrl);
+    };
     const finance = overview?.finance?.all_time ?? overview?.finance ?? {};
     const tabs = mode === 'admin'
         ? ['overview', 'products', 'orders', 'finance', 'returns', 'staff', 'documents', 'activity']
@@ -50,7 +65,7 @@ export function Vendor360({ vendorId, mode = 'admin' }) {
                 breadcrumb={mode === 'admin' ? [{ label: t.title, href: route('admin.vendors.index') }] : [{ label: t.title, href: route('syndicate.vendors') }]}
                 title={<Identity vendor={vendor} loading={status === 'loading'} common={common} locale={locale} />}
                 copy={t.period_note}
-                actions={mode === 'admin' && vendor ? <>{vendor.status === 'pending' && <Button size="sm" onClick={approve}>{common.approve}</Button>}<Button asChild variant="outline" size="sm"><Link href={route('admin.vendors.edit', vendor.id)}>{common.edit}</Link></Button></> : null}
+                actions={vendor ? (mode === 'admin' ? <>{vendor.status === 'pending' && <Button size="sm" onClick={approve}>{common.approve}</Button>}<Button asChild variant="outline" size="sm"><Link href={route('admin.vendors.edit', vendor.id)}>{common.edit}</Link></Button></> : <><Button type="button" variant="outline" size="sm" disabled={range === 'custom' && (!custom.date_from || !custom.date_to)} onClick={() => exportReport('ar')}><FileDown className="size-4" />تقرير PDF بالعربية</Button><Button type="button" variant="outline" size="sm" disabled={range === 'custom' && (!custom.date_from || !custom.date_to)} onClick={() => exportReport('en')}><FileDown className="size-4" />Export PDF in English</Button></>) : null}
             />
             <PeriodFilter range={range} onRange={setRange} custom={custom} onCustom={setCustom} labels={t} />
             {status === 'error' && <div role="alert" className="rounded-lg border border-destructive/30 bg-destructive/5 p-5 text-sm text-destructive">{t.load_failed}</div>}
@@ -88,7 +103,7 @@ function PeriodFilter({ range, onRange, custom, onCustom, labels }) {
 }
 
 function KpiGrid({ values = {}, labels, locale, loading }) {
-    return <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border min-[380px]:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5">{KPI_KEYS.map((key) => <div key={key} className="min-h-24 bg-card p-4"><p className="text-xs font-medium text-muted-foreground">{labels[key]}</p><p className="mt-2 text-xl font-bold tabular-nums text-foreground">{loading ? '—' : formatValue(values?.[key], MONEY_KEYS.has(key), locale)}</p></div>)}</div>;
+    return <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border min-[380px]:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5">{KPI_KEYS.map((key) => { const Icon = KPI_ICONS[key]; return <div key={key} className="min-h-24 bg-card p-4"><div className="flex items-start justify-between gap-3"><p className="text-xs font-medium text-muted-foreground">{labels[key]}</p><Icon className="size-4 shrink-0 text-primary" strokeWidth={1.5} aria-hidden="true" /></div><p className="mt-2 text-xl font-bold tabular-nums text-foreground">{loading ? '—' : formatValue(values?.[key], MONEY_KEYS.has(key), locale)}</p></div>; })}</div>;
 }
 
 function FinanceStrip({ values = {}, labels, locale, title }) { const keys = ['gross_sales', 'commission', 'refunds', 'adjustments', 'net_earnings', 'settled', 'outstanding'].filter((key) => values?.[key] !== undefined); return keys.length ? <section aria-labelledby="finance-summary-title"><h2 id="finance-summary-title" className="mb-2 text-sm font-bold text-foreground">{title}</h2><div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7">{keys.map((key) => <div key={key} className="bg-muted/30 px-4 py-3"><p className="text-xs text-muted-foreground">{labels[key]}</p><p className="mt-1 font-bold tabular-nums">{formatValue(values[key], true, locale)}</p></div>)}</div></section> : null; }

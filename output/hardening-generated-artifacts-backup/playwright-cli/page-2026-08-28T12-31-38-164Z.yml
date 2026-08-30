@@ -1,0 +1,304 @@
+- generic [ref=e2]:
+  - banner [ref=e122]:
+    - navigation "Menu" [ref=e123]:
+      - link [ref=e124] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/
+        - img "Vetora" [ref=e125]
+      - generic [ref=e126]:
+        - button "Categories" [ref=e128]
+        - link "Products" [ref=e136] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/products
+        - link "FAQ" [ref=e137] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/faq
+        - link "Contact Us" [ref=e138] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/contact
+      - search [ref=e139]:
+        - searchbox "Search products" [ref=e140]
+      - generic [ref=e141]:
+        - generic [ref=e142]:
+          - button "Choose language" [ref=e143]
+          - button "Toggle light or dark theme" [ref=e144]
+        - button "Cart" [ref=e145]
+        - generic [ref=e149]:
+          - link "Sign In" [ref=e150] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/login
+          - link "Register" [ref=e151] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/register
+  - main [ref=e152]:
+    - generic [ref=e154]:
+      - generic "Agricultural specialist inspecting crops in the field" [ref=e155]
+      - generic [ref=e156]:
+        - generic [ref=e157]: Smart browsing for agriculture and veterinary products
+        - heading "Choose faster. Browse smarter." [level=1] [ref=e158]:
+          - text: Choose faster.
+          - generic [ref=e159]: Browse smarter.
+        - paragraph [ref=e160]: Start from the right product type, move into the right category and subcategory, and reach the products that matter without clutter.
+        - generic [ref=e161]:
+          - link "Explore products" [ref=e162] [cursor=pointer]:
+            - /url: "#products"
+          - link "Browse categories" [ref=e165] [cursor=pointer]:
+            - /url: "#categories"
+        - paragraph [ref=e168]: Built for growers, veterinary teams, suppliers, and purchasing staff.
+    - region [ref=e169]:
+      - generic [ref=e170]:
+        - paragraph [ref=e171]: Choose your trade
+        - heading "One marketplace, two specialist catalogues" [level=2] [ref=e172]
+        - paragraph [ref=e173]: Select the field you work in. Prices, categories, and available stock will follow that choice throughout the store.
+      - generic [ref=e174]:
+        - link "Agriculture Agricultural products and supplies with a clear, fast browsing flow. Enter agriculture" [ref=e175] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/product-type/select?preferred_product_type=agriculture&redirect_to=home
+          - generic [ref=e176]: "01"
+          - generic [ref=e181]:
+            - generic [ref=e182]: Agriculture
+            - generic [ref=e184]: Agricultural products and supplies with a clear, fast browsing flow.
+          - generic [ref=e185]: Enter agriculture
+        - link "Veterinary Selected now Veterinary products and supplies with a smoother, easier shopping experience. Enter veterinary" [ref=e188] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/product-type/select?preferred_product_type=veterinary&redirect_to=home
+          - generic [ref=e189]: "02"
+          - generic [ref=e195]:
+            - generic [ref=e196]:
+              - generic [ref=e197]: Veterinary
+              - generic [ref=e198]: Selected now
+            - generic [ref=e199]: Veterinary products and supplies with a smoother, easier shopping experience.
+          - generic [ref=e200]: Enter veterinary
+    - generic [ref=e204]:
+      - generic [ref=e206]:
+        - paragraph [ref=e207]: Start here
+        - heading "Choose a category" [level=2] [ref=e208]
+        - paragraph [ref=e209]: Browse the right category first, then move naturally into its subcategories and products.
+      - generic [ref=e210]:
+        - article [ref=e211]:
+          - button "خدمات بيطرية خدمات بيطرية Veterinary Products in this category" [ref=e212]:
+            - img "خدمات بيطرية" [ref=e214]
+            - generic [ref=e215]:
+              - generic [ref=e216]:
+                - heading "خدمات بيطرية" [level=3] [ref=e217]
+                - generic [ref=e218]: Veterinary
+              - paragraph [ref=e219]: Products in this category
+        - article [ref=e220]:
+          - button "المطهرات البيطرية المطهرات البيطرية Veterinary Products in this category" [ref=e221]:
+            - img "المطهرات البيطرية" [ref=e223]
+            - generic [ref=e224]:
+              - generic [ref=e225]:
+                - heading "المطهرات البيطرية" [level=3] [ref=e226]
+                - generic [ref=e227]: Veterinary
+              - paragraph [ref=e228]: Products in this category
+        - article [ref=e229]:
+          - button "مستلزمات المواشي مستلزمات المواشي Veterinary 2 subcategories" [active] [ref=e230]:
+            - img "مستلزمات المواشي" [ref=e232]
+            - generic [ref=e233]:
+              - generic [ref=e234]:
+                - heading "مستلزمات المواشي" [level=3] [ref=e235]
+                - generic [ref=e236]: Veterinary
+              - paragraph [ref=e237]: 2 subcategories
+          - generic [ref=e238]:
+            - button "Therapeutic Feed" [ref=e239]
+            - button "Stable Supplies" [ref=e240]
+        - article [ref=e241]:
+          - button "أدوات رعاية الحيوانات أدوات رعاية الحيوانات Veterinary Products in this category" [ref=e242]:
+            - img "أدوات رعاية الحيوانات" [ref=e244]
+            - generic [ref=e245]:
+              - generic [ref=e246]:
+                - heading "أدوات رعاية الحيوانات" [level=3] [ref=e247]
+                - generic [ref=e248]: Veterinary
+              - paragraph [ref=e249]: Products in this category
+        - article [ref=e250]:
+          - button "مكملات الأعلاف مكملات الأعلاف Veterinary Products in this category" [ref=e251]:
+            - img "مكملات الأعلاف" [ref=e253]
+            - generic [ref=e254]:
+              - generic [ref=e255]:
+                - heading "مكملات الأعلاف" [level=3] [ref=e256]
+                - generic [ref=e257]: Veterinary
+              - paragraph [ref=e258]: Products in this category
+        - article [ref=e259]:
+          - button "معدات العيادات البيطرية معدات العيادات البيطرية Veterinary 2 subcategories" [ref=e260]:
+            - img "معدات العيادات البيطرية" [ref=e262]
+            - generic [ref=e263]:
+              - generic [ref=e264]:
+                - heading "معدات العيادات البيطرية" [level=3] [ref=e265]
+                - generic [ref=e266]: Veterinary
+              - paragraph [ref=e267]: 2 subcategories
+          - generic [ref=e268]:
+            - button "Measuring Devices" [ref=e269]
+            - button "Examination Tools" [ref=e270]
+        - article [ref=e271]:
+          - button "اللقاحات اللقاحات Veterinary 3 subcategories" [ref=e272]:
+            - img "اللقاحات" [ref=e274]
+            - generic [ref=e275]:
+              - generic [ref=e276]:
+                - heading "اللقاحات" [level=3] [ref=e277]
+                - generic [ref=e278]: Veterinary
+              - paragraph [ref=e279]: 3 subcategories
+          - generic [ref=e280]:
+            - button "Cattle Vaccines" [ref=e281]
+            - button "Sheep Vaccines" [ref=e282]
+            - button "Poultry Vaccines" [ref=e283]
+        - article [ref=e284]:
+          - button "الأدوية البيطرية الأدوية البيطرية Veterinary 3 subcategories" [ref=e285]:
+            - img "الأدوية البيطرية" [ref=e287]
+            - generic [ref=e288]:
+              - generic [ref=e289]:
+                - heading "الأدوية البيطرية" [level=3] [ref=e290]
+                - generic [ref=e291]: Veterinary
+              - paragraph [ref=e292]: 3 subcategories
+          - generic [ref=e293]:
+            - button "Injectable Solutions" [ref=e294]
+            - button "Anti-inflammatories" [ref=e295]
+            - button "Antibiotics" [ref=e296]
+    - generic [ref=e354]:
+      - generic [ref=e356]:
+        - generic [ref=e357]:
+          - generic [ref=e358]:
+            - img "مستلزمات المواشي" [ref=e360]
+            - generic [ref=e361]:
+              - paragraph [ref=e362]: Browsing category
+              - heading "مستلزمات المواشي" [level=2] [ref=e363]
+              - paragraph [ref=e364]: 2 subcategories
+          - button "Change category" [ref=e365]
+        - generic [ref=e366]:
+          - generic [ref=e368]:
+            - paragraph [ref=e369]: Browse by subcategory
+            - paragraph [ref=e370]: Select a subcategory to narrow the visible products.
+          - generic [ref=e371]:
+            - button "All subcategories" [ref=e372]
+            - button "Therapeutic Feed" [ref=e373]
+            - button "Stable Supplies" [ref=e374]
+      - generic [ref=e376]:
+        - generic [ref=e377]:
+          - generic [ref=e378]:
+            - paragraph [ref=e379]: New arrivals
+            - heading "Latest products" [level=2] [ref=e380]
+            - paragraph [ref=e381]: Fresh products matched to your selected category and subcategory.
+          - link "View All" [ref=e382] [cursor=pointer]:
+            - /url: /products?category_id=14&type=veterinary
+        - article [ref=e386]:
+          - generic [ref=e387]:
+            - link [ref=e388] [cursor=pointer]:
+              - /url: /products/14
+              - img "Complete Stable Supplies Kit" [ref=e389]
+            - button "Complete Stable Supplies Kit" [ref=e390]
+          - generic [ref=e393]:
+            - link [ref=e394] [cursor=pointer]:
+              - /url: /products/14
+              - heading "Complete Stable Supplies Kit" [level=3] [ref=e395]
+            - generic [ref=e396]:
+              - generic [ref=e397]:
+                - generic [ref=e398]: 60 SYP
+                - generic [ref=e399]: In stock
+              - 'button "Add to cart: Complete Stable Supplies Kit" [ref=e400]'
+      - generic [ref=e405]:
+        - generic [ref=e406]:
+          - generic [ref=e407]:
+            - paragraph [ref=e408]: Best sellers
+            - heading "Best-selling products" [level=2] [ref=e409]
+            - paragraph [ref=e410]: The products customers buy most often in this section.
+          - link "View All" [ref=e411] [cursor=pointer]:
+            - /url: /products?category_id=14&sort=best_selling&type=veterinary
+        - article [ref=e415]:
+          - generic [ref=e416]:
+            - link [ref=e417] [cursor=pointer]:
+              - /url: /products/14
+              - img "Complete Stable Supplies Kit" [ref=e418]
+            - generic [ref=e419]: "#1"
+            - button "Complete Stable Supplies Kit" [ref=e420]
+          - generic [ref=e423]:
+            - link [ref=e424] [cursor=pointer]:
+              - /url: /products/14
+              - heading "Complete Stable Supplies Kit" [level=3] [ref=e425]
+            - generic [ref=e426]:
+              - generic [ref=e427]:
+                - generic [ref=e428]: 60 SYP
+                - generic [ref=e429]: In stock
+              - 'button "Add to cart: Complete Stable Supplies Kit" [ref=e430]'
+      - generic [ref=e435]:
+        - generic [ref=e436]:
+          - generic [ref=e437]:
+            - paragraph [ref=e438]: Popular now
+            - heading "Most favorited products" [level=2] [ref=e439]
+            - paragraph [ref=e440]: Popular items customers keep coming back to.
+          - link "View All" [ref=e441] [cursor=pointer]:
+            - /url: /products?category_id=14&sort=most_favorited&type=veterinary
+        - article [ref=e445]:
+          - generic [ref=e446]:
+            - link [ref=e447] [cursor=pointer]:
+              - /url: /products/14
+              - img "Complete Stable Supplies Kit" [ref=e448]
+            - button "Complete Stable Supplies Kit" [ref=e449]
+          - generic [ref=e452]:
+            - link [ref=e453] [cursor=pointer]:
+              - /url: /products/14
+              - heading "Complete Stable Supplies Kit" [level=3] [ref=e454]
+            - generic [ref=e455]:
+              - generic [ref=e456]:
+                - generic [ref=e457]: 60 SYP
+                - generic [ref=e458]: In stock
+              - 'button "Add to cart: Complete Stable Supplies Kit" [ref=e459]'
+    - generic [ref=e300]:
+      - generic [ref=e301]:
+        - generic [ref=e302]: Contact us
+        - heading "Talk to the Vetora team" [level=2] [ref=e303]
+        - paragraph [ref=e304]: Send your question, request, or supplier inquiry and we will get back to you shortly.
+      - generic [ref=e305]:
+        - generic [ref=e306]:
+          - generic [ref=e307]: Your name
+          - textbox "Your name" [ref=e308]:
+            - /placeholder: Enter your name
+        - generic [ref=e309]:
+          - generic [ref=e310]: Email address *
+          - textbox "Email address *" [ref=e311]:
+            - /placeholder: you@example.com
+        - generic [ref=e312]:
+          - generic [ref=e313]: Message *
+          - textbox "Message *" [ref=e314]:
+            - /placeholder: Tell us what you need...
+        - button "Send message" [ref=e315]
+    - generic "Trusted by leading syndicates" [ref=e317]:
+      - generic [ref=e319]:
+        - img "Syrian Veterinarians Syndicate"
+        - img "Agricultural syndicate partner"
+        - img "Technology partner"
+        - img "Syrian Veterinarians Syndicate"
+        - img "Agricultural syndicate partner"
+        - img "Technology partner"
+  - contentinfo [ref=e320]:
+    - generic [ref=e322]:
+      - generic [ref=e323]:
+        - generic [ref=e324]:
+          - link [ref=e325] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/
+            - img "Vetora" [ref=e326]
+          - paragraph [ref=e327]: Your trusted online marketplace.
+        - generic [ref=e328]:
+          - heading "Shop" [level=2] [ref=e329]
+          - list [ref=e330]:
+            - listitem [ref=e331]:
+              - link "Categories" [ref=e332] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/categories
+            - listitem [ref=e333]:
+              - link "All Products" [ref=e334] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/products
+            - listitem [ref=e335]:
+              - link "FAQ" [ref=e336] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/faq
+        - generic [ref=e337]:
+          - heading "Account" [level=2] [ref=e338]
+          - list [ref=e339]:
+            - listitem [ref=e340]:
+              - link "Sign In" [ref=e341] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+            - listitem [ref=e342]:
+              - link "Create Account" [ref=e343] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/register
+        - generic [ref=e344]:
+          - heading "Contact" [level=2] [ref=e345]
+          - list [ref=e346]:
+            - listitem [ref=e347]:
+              - link "Contact Us" [ref=e348] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/contact
+      - generic [ref=e349]:
+        - paragraph [ref=e350]: © 2026 Vetora. All rights reserved.
+        - generic [ref=e351]:
+          - link "Privacy Policy" [ref=e352] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/privacy-policy
+          - link "Terms of Service" [ref=e353] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/terms-of-service

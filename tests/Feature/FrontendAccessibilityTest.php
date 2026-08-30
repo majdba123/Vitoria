@@ -37,7 +37,7 @@ test('multipart admin forms preserve array field semantics', function () {
 });
 
 test('vendor map is a local focusable svg rather than a third party tile map', function () {
-    $source = file_get_contents(resource_path('js/Components/maps/VendorMap.jsx'));
+    $source = file_get_contents(resource_path('js/Components/maps/DashboardVendorMap.jsx'));
 
     expect($source)
         ->toContain('<svg viewBox=')
@@ -45,6 +45,19 @@ test('vendor map is a local focusable svg rather than a third party tile map', f
         ->toContain('tabIndex="0"')
         ->not->toContain('TILE_URL')
         ->not->toContain('loadLeaflet');
+});
+
+test('map ownership is limited to the two dashboards and admin drilldown initializes its filter', function () {
+    $adminDashboard = file_get_contents(resource_path('js/Pages/Admin/Dashboard.jsx'));
+    $syndicateDashboard = file_get_contents(resource_path('js/Pages/Syndicate/Dashboard.jsx'));
+    $adminVendors = file_get_contents(resource_path('js/Pages/Admin/Vendors/Index.jsx'));
+
+    expect($adminDashboard)->toContain('<DashboardVendorMap')
+        ->and($syndicateDashboard)->toContain('isOverview && <DashboardVendorMap')
+        ->and($adminVendors)->not->toContain('DashboardVendorMap')
+        ->not->toContain('ViewSwitch')
+        ->toContain("initialQuery.get('governorate')")
+        ->toContain('governorate: governorate');
 });
 
 test('locale formatters use one explicit western-digit locale for Arabic screens', function () {

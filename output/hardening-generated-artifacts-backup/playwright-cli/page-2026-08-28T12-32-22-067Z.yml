@@ -1,0 +1,151 @@
+- generic [ref=e2]:
+  - banner [ref=e463]:
+    - navigation "Menu" [ref=e464]:
+      - link [ref=e465] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/
+        - img "Vetora" [ref=e466]
+      - generic [ref=e467]:
+        - button "Categories" [ref=e469]
+        - link "Products" [ref=e477] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/products
+        - link "FAQ" [ref=e478] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/faq
+        - link "Contact Us" [ref=e479] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/contact
+      - search [ref=e480]:
+        - searchbox "Search products" [ref=e481]
+      - generic [ref=e482]:
+        - generic [ref=e483]:
+          - button "Choose language" [ref=e484]
+          - button "Toggle light or dark theme" [ref=e485]
+        - button "Cart" [ref=e486]
+        - generic [ref=e490]:
+          - link "Sign In" [ref=e491] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/login
+          - link "Register" [ref=e492] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/register
+  - main [ref=e493]:
+    - generic [ref=e494]:
+      - navigation [ref=e497]:
+        - link "Home" [ref=e498] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/
+        - link "Products" [ref=e501] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/products
+        - generic [ref=e504]: Complete Stable Supplies Kit
+      - generic [ref=e505]:
+        - generic [ref=e506]:
+          - generic [ref=e507]:
+            - button "View larger image" [ref=e509]:
+              - img "Complete Stable Supplies Kit" [ref=e510]
+            - generic [ref=e511]:
+              - generic [ref=e512]:
+                - generic [ref=e513]:
+                  - paragraph [ref=e514]: Media
+                  - heading "Product Gallery" [level=2] [ref=e515]
+                - generic [ref=e516]: 1 photo
+              - button "Complete Stable Supplies Kit" [ref=e518]:
+                - img "Complete Stable Supplies Kit thumbnail" [ref=e519]
+          - generic [ref=e520]:
+            - generic [ref=e521]:
+              - generic [ref=e522]:
+                - generic [ref=e523]:
+                  - paragraph [ref=e524]: Product Overview
+                  - heading "Complete Stable Supplies Kit" [level=1] [ref=e525]
+                - button "Cart" [ref=e526]
+              - generic [ref=e529]: No ratings yet
+              - generic [ref=e542]:
+                - generic [ref=e543]: "60"
+                - generic [ref=e544]: SYP
+              - generic [ref=e545]:
+                - generic [ref=e546]:
+                  - paragraph [ref=e547]: Category
+                  - paragraph [ref=e548]: مستلزمات المواشي
+                - generic [ref=e549]:
+                  - paragraph [ref=e550]: Subcategory
+                  - paragraph [ref=e551]: Stable Supplies
+                - generic [ref=e552]:
+                  - paragraph [ref=e553]: Quantity
+                  - paragraph [ref=e554]: 45 units
+                - generic [ref=e555]:
+                  - paragraph [ref=e556]: Vendor
+                  - paragraph [ref=e557]:
+                    - link "تاجر المستلزمات البيطرية" [ref=e558] [cursor=pointer]:
+                      - /url: http://127.0.0.1:8000/vendors/2
+              - generic [ref=e559]:
+                - generic [ref=e560]:
+                  - generic [ref=e561]:
+                    - paragraph [ref=e562]: Discount and availability
+                    - paragraph [ref=e563]: Scheduled discount
+                  - generic [ref=e564]: In stock
+                - generic [ref=e566]:
+                  - generic [ref=e567]:
+                    - paragraph [ref=e568]: Discount Value
+                    - paragraph [ref=e569]: 0.00%
+                  - generic [ref=e570]:
+                    - paragraph [ref=e571]: Discount Starts
+                    - paragraph [ref=e572]: —
+                  - generic [ref=e573]:
+                    - paragraph [ref=e574]: Discount Ends
+                    - paragraph [ref=e575]: —
+              - button "Add to cart" [ref=e577]
+            - generic [ref=e582]:
+              - paragraph [ref=e583]: Description
+              - heading "What this product is about" [level=2] [ref=e584]
+              - paragraph [ref=e585]: مجموعة مستلزمات إسطبل متكاملة لراحة ورعاية المواشي.
+        - generic [ref=e586]:
+          - paragraph [ref=e587]: Specifications
+          - heading "Specifications" [level=2] [ref=e588]
+          - generic [ref=e589]:
+            - generic [ref=e590]:
+              - term [ref=e591]: Target Species
+              - definition [ref=e592]: Cattle, Sheep
+            - generic [ref=e593]:
+              - term [ref=e594]: Storage Conditions
+              - definition [ref=e595]: يحفظ في مكان جاف
+        - generic [ref=e597]:
+          - generic [ref=e599]:
+            - paragraph [ref=e600]: Reviews
+            - heading "Reviews" [level=2] [ref=e601]
+          - paragraph [ref=e602]: Loading product details...
+  - contentinfo [ref=e603]:
+    - generic [ref=e605]:
+      - generic [ref=e606]:
+        - generic [ref=e607]:
+          - link [ref=e608] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/
+            - img "Vetora" [ref=e609]
+          - paragraph [ref=e610]: Your trusted online marketplace.
+        - generic [ref=e611]:
+          - heading "Shop" [level=2] [ref=e612]
+          - list [ref=e613]:
+            - listitem [ref=e614]:
+              - link "Categories" [ref=e615] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/categories
+            - listitem [ref=e616]:
+              - link "All Products" [ref=e617] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/products
+            - listitem [ref=e618]:
+              - link "FAQ" [ref=e619] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/faq
+        - generic [ref=e620]:
+          - heading "Account" [level=2] [ref=e621]
+          - list [ref=e622]:
+            - listitem [ref=e623]:
+              - link "Sign In" [ref=e624] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+            - listitem [ref=e625]:
+              - link "Create Account" [ref=e626] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/register
+        - generic [ref=e627]:
+          - heading "Contact" [level=2] [ref=e628]
+          - list [ref=e629]:
+            - listitem [ref=e630]:
+              - link "Contact Us" [ref=e631] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/contact
+      - generic [ref=e632]:
+        - paragraph [ref=e633]: © 2026 Vetora. All rights reserved.
+        - generic [ref=e634]:
+          - link "Privacy Policy" [ref=e635] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/privacy-policy
+          - link "Terms of Service" [ref=e636] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/terms-of-service

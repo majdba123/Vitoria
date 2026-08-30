@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from '@inertiajs/react';
-import { Plus, Store, Package, Users, ArrowRight } from 'lucide-react';
+import { Building2, Plus, Store, Package, Users, ArrowRight } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Button } from '@/Components/ui/button';
 import { StatCard } from '@/Components/admin/dashboard/StatCard';
@@ -9,6 +9,7 @@ import { ListRow, StatusBadge } from '@/Components/admin/dashboard/ListRow';
 import { MetricTileGrid } from '@/Components/admin/dashboard/MetricTileGrid';
 import { GrowthChart } from '@/Components/admin/dashboard/GrowthChart';
 import { CategoryCoverage } from '@/Components/admin/dashboard/CategoryCoverage';
+import { DashboardVendorMap } from '@/Components/maps/DashboardVendorMap';
 import { useAdminDashboard } from '@/hooks/use-admin-dashboard';
 import { useI18n } from '@/hooks/use-i18n';
 
@@ -97,7 +98,7 @@ export default function Dashboard() {
                     <StatCard label={admin.total_vendors} value={vendorsTotal} icon={Store} status={vendorsStatCardStatus} onRetry={vendors.refetch} />
                     <StatCard label={admin.total_products} value={productsTotal} icon={Package} status={productsStatCardStatus} onRetry={products.refetch} />
                     <StatCard label={admin.total_users} value={usersTotal} icon={Users} status={users.status} onRetry={users.refetch} />
-                    <StatCard label={admin.total_syndicates} value={syndicatesTotal} icon={Users} status={overview.status} onRetry={overview.refetch} />
+                    <StatCard label={admin.total_syndicates} value={syndicatesTotal} icon={Building2} status={overview.status} onRetry={overview.refetch} />
                 </div>
 
                 <div className="flex flex-wrap gap-y-3 border-t border-border/70 pt-4">
@@ -310,6 +311,10 @@ export default function Dashboard() {
                         </div>
                     </InsightPanel>
                 </div>
+            </section>
+
+            <section>
+                <DashboardVendorMap endpoint="/api/admin/vendors/map" adminDrilldown />
             </section>
 
             {/* Coverage + recent products */}

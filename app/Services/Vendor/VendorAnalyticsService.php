@@ -47,7 +47,7 @@ class VendorAnalyticsService
                 'gross_sales' => $grossSales,
                 'refunds' => $refunds['amount'],
                 'average_completed_order_value' => $completedOrders ? round($grossSales / $completedOrders, 2) : 0.0,
-                'last_sale_at' => $this->lines($vendor, ['key' => 'all', 'from' => null, 'to' => null], $domain)->where('orders.status', Order::STATUS_COMPLETED)->max('orders.created_at'),
+                'last_sale_at' => $this->lines($vendor, $period, $domain)->where('orders.status', Order::STATUS_COMPLETED)->max('orders.created_at'),
             ],
             'trend' => $this->trend($vendor, $period, $domain),
             'top_products' => $this->topProducts($vendor, $period, $domain),
@@ -128,6 +128,40 @@ class VendorAnalyticsService
                 ->orWhere(fn (Builder $nested) => $nested->where('entity_type', 'VendorLedgerEntry')->whereIn('entity_id', $ledgerIds))
                 ->orWhere(fn (Builder $nested) => $nested->where('entity_type', 'VendorSettlement')->whereIn('entity_id', $settlementIds));
         })->latest()->paginate($perPage);
+    }
+
+    /**
+     * @param  array{key: string, from: CarbonImmutable|null, to: CarbonImmutable|null}  $period
+     * @return array<string, mixed>
+     */
+    public function report(Vendor $vendor, array $period, string $domain): array
+    {
+        $overview = $this->overview($vendor, $period, $domain);
+        $products = collect($this->products($vendor, $period, [], 100, $domain)->items());
+        $refundsByProduct = $this->refundsByProduct($vendor, $period, $domain);
+
+        $products = $products->map(function (array $product) use ($refundsByProduct): array {
+            $product['refunds'] = round((float) ($refundsByProduct[$product['id']] ?? 0), 2);
+
+            return $product;
+        });
+        $overview['vendor']['owner'] = array_intersect_key($overview['vendor']['owner'] ?? [], array_flip(['id', 'name']));
+        $orders = collect($this->orders($vendor, $period, [], 50, $domain)->items())->map(fn (array $order): array => [
+            'id' => $order['id'],
+            'order_number' => $order['order_number'],
+            'products' => $order['products'],
+            'scoped_sales' => $order['scoped_sales'],
+            'status' => $order['status'],
+            'created_at' => $order['created_at'],
+        ]);
+
+        return array_merge($overview, [
+            'products' => $products,
+            'orders' => $orders,
+            'returns' => collect($this->returns($vendor, $period, 50, $domain)->items()),
+            'category_performance' => $this->reportCategoryPerformance($vendor, collect($overview['category_performance']), $domain),
+            'generated_at' => now(),
+        ]);
     }
 
     public function productQuery(Vendor $vendor, ?string $domain = null): Builder
@@ -271,6 +305,45 @@ class VendorAnalyticsService
             ->groupByRaw('COALESCE(snapshot_categories.id, categories.id), COALESCE(snapshot_categories.name, categories.name), COALESCE(order_items.category_type, snapshot_categories.type, categories.type)')
             ->orderByDesc('sales')->get()
             ->map(fn ($row) => ['id' => $row->category_id, 'name' => $row->category_name, 'type' => $row->category_type, 'units_sold' => (int) $row->units_sold, 'sales' => round((float) $row->sales, 2)]);
+    }
+
+    /** @param array{key: string, from: CarbonImmutable|null, to: CarbonImmutable|null} $period */
+    private function refundsByProduct(Vendor $vendor, array $period, string $domain): Collection
+    {
+        $query = DB::table('return_items')
+            ->join('order_returns', 'order_returns.id', '=', 'return_items.order_return_id')
+            ->join('order_items', 'order_items.id', '=', 'return_items.order_item_id')
+            ->leftJoin('products', 'products.id', '=', 'order_items.product_id')
+            ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
+            ->leftJoin('categories as snapshot_categories', 'snapshot_categories.id', '=', 'order_items.category_id_snapshot')
+            ->where('order_returns.vendor_id', $vendor->id)
+            ->whereRaw('COALESCE(order_items.category_type, snapshot_categories.type, categories.type) = ?', [$domain]);
+
+        $this->period($query, $period, 'order_returns.created_at');
+
+        return $query->selectRaw('return_items.product_id, SUM(return_items.line_total) total')
+            ->groupBy('return_items.product_id')->pluck('total', 'return_items.product_id');
+    }
+
+    private function reportCategoryPerformance(Vendor $vendor, Collection $sales, string $domain): Collection
+    {
+        $productCounts = $this->productQuery($vendor, $domain)
+            ->join('categories', 'categories.id', '=', 'products.category_id')
+            ->selectRaw('categories.id, categories.name, categories.type, COUNT(products.id) products_count')
+            ->groupBy('categories.id', 'categories.name', 'categories.type')->get();
+
+        return $productCounts->map(function ($category) use ($sales): array {
+            $performance = $sales->firstWhere('id', $category->id);
+
+            return [
+                'id' => $category->id,
+                'name' => $category->name,
+                'type' => $category->type,
+                'products_count' => (int) $category->products_count,
+                'units_sold' => (int) ($performance['units_sold'] ?? 0),
+                'sales' => round((float) ($performance['sales'] ?? 0), 2),
+            ];
+        });
     }
 
     private function periodRefunds(Vendor $vendor, array $period): array

@@ -12,7 +12,7 @@ return [
     'top_products' => 'Top products', 'category_performance' => 'Category performance', 'recent_orders' => 'Recent orders', 'search' => 'Search',
     'all_statuses' => 'All statuses', 'all_categories' => 'All categories', 'apply' => 'Apply', 'no_data' => 'No data in this scope.',
     'attribution_unavailable' => 'Exact domain net earnings are unavailable because mixed-domain orders have order-level ledger entries. No amount has been estimated.',
-    'all_time_finance' => 'All-time ledger balance', 'period_analytics' => 'Period sales analytics', 'view' => 'View', 'load_failed' => 'Vendor analytics could not be loaded.',
+    'all_time_finance' => 'All-time ledger balance', 'period_analytics' => 'Period sales analytics', 'view' => 'View', 'load_failed' => 'Vendor analytics could not be loaded.', 'export_pdf' => 'Export PDF Report',
     'order_details' => 'Order details', 'shipping_address' => 'Shipping address', 'payment_info' => 'Payment', 'coupon' => 'Coupon', 'status_history' => 'Status history', 'cancellation' => 'Cancellation',
     'recipient_name' => 'Recipient', 'phone' => 'Phone', 'alternate_phone' => 'Alternate phone', 'governorate' => 'Governorate', 'city' => 'City', 'district' => 'District',
     'street' => 'Street', 'building' => 'Building', 'floor' => 'Floor', 'landmark' => 'Landmark', 'postal_code' => 'Postal code', 'notes' => 'Notes',

@@ -1,0 +1,102 @@
+- generic [ref=f3e3]:
+  - navigation "Admin navigation" [ref=f3e5]:
+    - generic [ref=f3e6]:
+      - list [ref=f3e8]:
+        - listitem [ref=f3e9]:
+          - link "Vetora Admin" [ref=f3e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8018/admin/dashboard
+            - generic [ref=f3e15]:
+              - generic [ref=f3e16]: Vetora
+              - generic [ref=f3e17]: Admin
+      - generic [ref=f3e18]:
+        - generic [ref=f3e19]:
+          - generic [ref=f3e20]: Overview
+          - list [ref=f3e22]:
+            - listitem [ref=f3e23]:
+              - link "Dashboard" [ref=f3e24] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/dashboard
+        - generic [ref=f3e31]:
+          - generic [ref=f3e32]: Management
+          - list [ref=f3e34]:
+            - listitem [ref=f3e35]:
+              - link "Vendors" [ref=f3e36] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/vendors
+            - listitem [ref=f3e42]:
+              - link "Syndicates" [ref=f3e43] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/syndicates
+            - listitem [ref=f3e50]:
+              - link "Products" [ref=f3e51] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/products
+            - listitem [ref=f3e57]:
+              - link "Employees" [ref=f3e58] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/employees
+            - listitem [ref=f3e72]:
+              - link "Coupons" [ref=f3e73] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/coupons
+            - listitem [ref=f3e77]:
+              - link "Orders" [ref=f3e78] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/orders
+            - listitem [ref=f3e83]:
+              - link "Users" [ref=f3e84] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/users
+            - listitem [ref=f3e91]:
+              - link "Notifications" [ref=f3e92] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/notifications
+            - listitem [ref=f3e97]:
+              - link "Contact messages" [ref=f3e98] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/contact-messages
+            - listitem [ref=f3e103]:
+              - link "About us" [ref=f3e104] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/about-us
+            - listitem [ref=f3e108]:
+              - link "Pages" [ref=f3e109] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/pages
+            - listitem [ref=f3e114]:
+              - link "Banners" [ref=f3e115] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/banners
+        - generic [ref=f3e121]:
+          - generic [ref=f3e122]: Catalog
+          - list [ref=f3e124]:
+            - listitem [ref=f3e125]:
+              - link "Categories" [ref=f3e126] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/categories
+            - listitem [ref=f3e132]:
+              - link "Subcategories" [ref=f3e133] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/subcategories
+            - listitem [ref=f3e139]:
+              - link "Cities" [ref=f3e140] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/cities
+      - list [ref=f3e147]:
+        - listitem [ref=f3e148]:
+          - button "م مدير النظام Admin" [ref=f3e149]:
+            - generic [ref=f3e150]: م
+            - generic [ref=f3e152]:
+              - generic [ref=f3e153]: مدير النظام
+              - generic [ref=f3e154]: Admin
+  - main [ref=f3e158]:
+    - generic [ref=f3e160]:
+      - button "Toggle Sidebar" [ref=f3e161]
+      - generic [ref=f3e163]:
+        - paragraph [ref=f3e164]: Admin
+        - heading "Notifications" [level=1] [ref=f3e165]
+      - generic [ref=f3e166]:
+        - link "Home" [ref=f3e167] [cursor=pointer]:
+          - /url: http://127.0.0.1:8018/
+        - button "Choose language" [ref=f3e168]
+        - button "Notifications" [ref=f3e169]
+        - button "Toggle theme" [ref=f3e170]
+        - button "Sign Out" [ref=f3e171]
+    - generic [ref=f3e172]:
+      - generic [ref=f3e173]:
+        - generic [ref=f3e174]:
+          - heading "Notifications" [level=1] [ref=f3e175]
+          - paragraph [ref=f3e176]: Your ongoing activity, decisions, and account updates in one place.
+        - generic [ref=f3e177]:
+          - button "Mark all as read" [disabled]
+          - link "Send notification" [ref=f3e178] [cursor=pointer]:
+            - /url: http://127.0.0.1:8018/admin/notifications/send
+      - generic [ref=f3e186]:
+        - generic [ref=f3e187]:
+          - generic [ref=f3e188]: Notification preferences
+          - paragraph [ref=f3e189]: Control what Vetora remembers about how you want to be contacted.
+        - paragraph [ref=f3e191]: Loading preferences…

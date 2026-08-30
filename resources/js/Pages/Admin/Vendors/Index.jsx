@@ -17,14 +17,12 @@ import {
     SelectValue,
 } from '@/Components/ui/select';
 import { Card, CardContent } from '@/Components/ui/card';
-import { VendorMapPanel } from '@/Components/maps/VendorMapPanel';
-import { ViewSwitch } from '@/Components/maps/ViewSwitch';
 import { useAdminList } from '@/hooks/use-admin-list';
 import { useI18n } from '@/hooks/use-i18n';
 
 export default function VendorsIndex() {
     const { admin, common } = useI18n();
-    const [view, setView] = useState('table');
+    const initialQuery = new URLSearchParams(typeof window === 'undefined' ? '' : window.location.search);
     const [page, setPage] = useState(1);
     const [status, setStatusFilter] = useState('all');
     const [businessType, setBusinessType] = useState('all');
@@ -33,6 +31,9 @@ export default function VendorsIndex() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [categories, setCategories] = useState([]);
+    const [cities, setCities] = useState([]);
+    const [cityId, setCityId] = useState(initialQuery.get('city_id') ?? 'all');
+    const [governorate, setGovernorate] = useState(initialQuery.get('governorate') ?? 'all');
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [flash, setFlash] = useState(null);
@@ -46,10 +47,13 @@ export default function VendorsIndex() {
         category_id: categoryId === 'all' ? undefined : categoryId,
         name: name || undefined,
         email: email || undefined,
+        city_id: cityId === 'all' ? undefined : cityId,
+        governorate: governorate === 'all' ? undefined : governorate,
     });
 
     useEffect(() => {
         window.axios.get('/api/admin/categories', { silent: true }).then((res) => setCategories(res.data?.data ?? []));
+        window.axios.get('/api/cities', { silent: true }).then((res) => setCities(res.data?.data ?? []));
     }, []);
 
     const showFlash = (message) => {
@@ -152,23 +156,24 @@ export default function VendorsIndex() {
                 title={admin.manage_vendors_title}
                 copy={admin.manage_vendor_accounts_copy}
                 actions={
-                    <>
-                        <ViewSwitch view={view} onChange={setView} />
-                        <Button asChild size="sm">
+                    <Button asChild size="sm">
                             <Link href={route('admin.vendors.create')}>
                                 <Plus className="size-4" />
                                 {admin.add_vendor}
                             </Link>
-                        </Button>
-                    </>
+                    </Button>
                 }
             />
 
             {flash && <p className="rounded-md border border-[var(--color-success-200)] bg-[var(--color-success-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-success-strong)]">{flash}</p>}
 
-            {view === 'map' && <VendorMapPanel endpoint="/api/admin/vendors/map" />}
+            {(cityId !== 'all' || governorate !== 'all') && (
+                <div className="flex flex-wrap items-center gap-2" aria-label={admin.active_filters ?? 'Active filters'}>
+                    {cityId !== 'all' && <FilterChip label={`City: ${cities.find((city) => String(city.id) === cityId)?.name ?? cityId}`} onRemove={() => { setCityId('all'); setPage(1); clearUrlFilter('city_id'); }} />}
+                    {governorate !== 'all' && <FilterChip label={`Region: ${governorate.replaceAll('_', ' ')}`} onRemove={() => { setGovernorate('all'); setPage(1); clearUrlFilter('governorate'); }} />}
+                </div>
+            )}
 
-            {view === 'table' && (
             <Card className="border-border/80 shadow-none">
                 <CardContent className="grid gap-4 p-4 sm:grid-cols-3 lg:grid-cols-6">
                     <FilterSelect label={admin.status_label} value={status} onValueChange={(v) => { setStatusFilter(v); setPage(1); }} allLabel={admin.all_statuses} options={[{ value: 'pending', label: common.pending }, { value: 'active', label: common.active }, { value: 'inactive', label: common.inactive }]} />
@@ -185,9 +190,6 @@ export default function VendorsIndex() {
                     </div>
                 </CardContent>
             </Card>
-            )}
-
-            {view === 'table' && (
             <div>
                 <DataTable
                     columns={columns}
@@ -204,7 +206,6 @@ export default function VendorsIndex() {
                     </div>
                 )}
             </div>
-            )}
 
             <DeleteConfirmDialog
                 open={!!deleteTarget}
@@ -217,6 +218,16 @@ export default function VendorsIndex() {
             {deleteError && <p role="alert" className="rounded-md border border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-danger-strong)]">{deleteError}</p>}
         </AdminLayout>
     );
+}
+
+function clearUrlFilter(key) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete(key);
+    window.history.replaceState({}, '', url);
+}
+
+function FilterChip({ label, onRemove }) {
+    return <span className="inline-flex items-center gap-2 rounded-md border border-border bg-muted px-3 py-1.5 text-sm font-medium">{label}<button type="button" onClick={onRemove} className="rounded-sm px-1 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Remove ${label}`}>×</button></span>;
 }
 
 function FilterSelect({ label, value, onValueChange, allLabel, options }) {

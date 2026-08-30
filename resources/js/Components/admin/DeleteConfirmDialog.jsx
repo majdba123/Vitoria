@@ -1,4 +1,4 @@
-import { Loader2 } from 'lucide-react';
+import { Loader2, Trash2 } from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -36,7 +36,7 @@ export function DeleteConfirmDialog({ open, onOpenChange, title, description, is
                         disabled={isDeleting}
                         className="bg-[var(--color-danger-500)] text-white hover:bg-[var(--color-danger-600)] focus-visible:ring-[var(--color-danger-500)]/40"
                     >
-                        {isDeleting && <Loader2 className="size-4 animate-spin" />}
+                        {isDeleting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Trash2 className="size-4" aria-hidden="true" />}
                         {common.delete ?? 'Delete'}
                     </AlertDialogAction>
                 </AlertDialogFooter>

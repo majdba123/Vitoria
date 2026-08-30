@@ -1,4 +1,4 @@
-import { RefreshCw } from 'lucide-react';
+import { AlertTriangle, RefreshCw, SearchX } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 import { Skeleton } from '@/Components/ui/skeleton';
@@ -15,6 +15,7 @@ export function DataTable({ columns, rows, status, errorMessage, onRetry, rowHre
     if (status === 'error') {
         return (
             <div className="rounded-lg border border-dashed border-border py-14 text-center">
+                <AlertTriangle className="mx-auto mb-3 size-6 text-[var(--color-danger-strong)]" aria-hidden="true" />
                 <p className="text-sm font-semibold text-foreground">{errorMessage ?? common.error_generic ?? 'Something went wrong.'}</p>
                 <button type="button" onClick={onRetry} className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
                     <RefreshCw className="size-3.5" />
@@ -27,6 +28,7 @@ export function DataTable({ columns, rows, status, errorMessage, onRetry, rowHre
     if (status === 'ready' && rows.length === 0) {
         return (
             <div className="rounded-lg border border-dashed border-border py-14 text-center">
+                <SearchX className="mx-auto mb-3 size-7 text-muted-foreground" strokeWidth={1.5} aria-hidden="true" />
                 <p className="text-sm font-semibold text-foreground">{emptyTitle}</p>
                 {emptyHint && <p className="mt-1 text-sm text-muted-foreground">{emptyHint}</p>}
             </div>

@@ -1,0 +1,47 @@
+- generic:
+  - generic:
+    - main:
+      - generic:
+        - generic:
+          - link:
+            - /url: http://127.0.0.1:8000/
+            - generic: Vetora
+          - generic:
+            - button [expanded]
+            - button
+        - generic:
+          - generic:
+            - generic:
+              - generic: Secure sign in
+              - heading [level=1]: Welcome back
+              - paragraph: Sign in to your account
+            - generic:
+              - generic:
+                - generic:
+                  - text: Phone Number
+                  - generic: "*"
+                - textbox:
+                  - /placeholder: 09XXXXXXXX
+              - generic:
+                - generic:
+                  - text: Password
+                  - generic: "*"
+                - generic:
+                  - textbox:
+                    - /placeholder: Enter your password
+                  - button
+              - button: Sign In
+            - generic:
+              - paragraph: Don't have an account?
+              - link:
+                - /url: http://127.0.0.1:8000/register
+                - text: Create one
+        - paragraph: Vetora access
+      - complementary:
+        - generic:
+          - paragraph: Vetora access
+          - heading [level=2]: A refined workspace for every buyer, seller, and partner.
+          - paragraph: Sign in to move from discovery into action with a smoother storefront, cleaner dashboards, and a single product language across the platform.
+  - menu "Choose language" [active] [ref=f1e47]:
+    - menuitem "العربية" [ref=f1e48]
+    - menuitem "English" [ref=f1e49]

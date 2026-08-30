@@ -1,0 +1,165 @@
+- generic [ref=f3e2]:
+  - banner [ref=f3e3]:
+    - navigation "القائمة" [ref=f3e4]:
+      - link [ref=f3e5] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/
+        - img "Vetora" [ref=f3e6]
+      - generic [ref=f3e7]:
+        - button "السلة" [ref=f3e8]:
+          - generic [ref=f3e142]: "1"
+        - button "القائمة" [ref=f3e12]
+  - main [ref=f3e14]:
+    - generic [ref=f3e16]:
+      - complementary [ref=f3e17]:
+        - generic [ref=f3e18]: أنشئ حسابك
+        - heading "إنشاء حساب" [level=1] [ref=f3e19]
+        - paragraph [ref=f3e20]: انضم إلى Vetora اليوم
+        - generic [ref=f3e21]:
+          - generic [ref=f3e22]:
+            - generic [ref=f3e23]: "01"
+            - paragraph [ref=f3e24]: حساب عميل
+            - paragraph [ref=f3e25]: اكتشف المنتجات، واحفظ المفضلة، وأدر طلباتك من مساحة شخصية متقنة.
+          - generic [ref=f3e26]:
+            - generic [ref=f3e27]: "02"
+            - paragraph [ref=f3e28]: حساب تاجر
+            - paragraph [ref=f3e29]: أطلق متجرك، واطلب الموافقة، وابدأ البيع ضمن الفئات التي يخدمها نشاطك.
+          - generic [ref=f3e30]:
+            - generic [ref=f3e31]: "03"
+            - paragraph [ref=f3e32]: منصة موحدة
+            - paragraph [ref=f3e33]: هوية واحدة ونظام واحد وانتقال أكثر سلاسة من الموقع العام إلى لوحة التشغيل.
+      - generic [ref=f3e34]:
+        - generic [ref=f3e35]:
+          - generic [ref=f3e36]:
+            - generic [ref=f3e37]: نموذج التسجيل
+            - heading "أكمل إعداد ملفك في Vetora." [level=2] [ref=f3e38]
+          - link "تسجيل الدخول" [ref=f3e39] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/login
+        - generic [ref=f3e41]:
+          - generic [ref=f3e42]:
+            - generic [ref=f3e43]: نوع الحساب *
+            - generic [ref=f3e44]:
+              - generic [ref=f3e45] [cursor=pointer]:
+                - radio "مستخدم عادي اشترِ وتابع طلباتك" [checked] [ref=f3e46]
+                - generic [ref=f3e47]:
+                  - generic [ref=f3e48]: مستخدم عادي
+                  - generic [ref=f3e49]: اشترِ وتابع طلباتك
+              - generic [ref=f3e50] [cursor=pointer]:
+                - radio "تاجر / بائع بِع عبر عدة فئات" [ref=f3e51]
+                - generic [ref=f3e52]:
+                  - generic [ref=f3e53]: تاجر / بائع
+                  - generic [ref=f3e54]: بِع عبر عدة فئات
+          - generic [ref=f3e55]:
+            - generic [ref=f3e56]:
+              - generic [ref=f3e57]:
+                - text: الاسم الكامل
+                - generic [ref=f3e58]: "*"
+              - textbox "الاسم الكامل *" [ref=f3e59]:
+                - /placeholder: أدخل اسمك الكامل
+                - text: Production Smoke Customer
+            - generic [ref=f3e60]:
+              - generic [ref=f3e61]:
+                - text: رقم الهاتف
+                - generic [ref=f3e62]: "*"
+              - textbox "رقم الهاتف *" [ref=f3e63]:
+                - /placeholder: 09XXXXXXXX
+                - text: "0999991234"
+            - generic [ref=f3e64]:
+              - generic [ref=f3e65]:
+                - text: الرقم الوطني
+                - generic [ref=f3e66]: "*"
+              - textbox "الرقم الوطني *" [ref=f3e67]:
+                - /placeholder: أدخل رقمك الوطني
+                - text: "99000123456"
+            - generic [ref=f3e68]:
+              - generic [ref=f3e69]:
+                - text: العمر
+                - generic [ref=f3e70]: "*"
+              - spinbutton "العمر *" [ref=f3e71]: "30"
+            - generic [ref=f3e72]:
+              - generic [ref=f3e73]:
+                - text: رقم العضوية
+                - generic [ref=f3e74]: "*"
+              - textbox "رقم العضوية *" [ref=f3e75]:
+                - /placeholder: "مثال: MEM-12345"
+                - text: SMOKE-20260828
+            - generic [ref=f3e76]:
+              - generic [ref=f3e77]:
+                - text: المدينة
+                - generic [ref=f3e78]: "*"
+              - combobox "المدينة" [active] [ref=f3e79]:
+                - generic: حمص
+              - combobox [ref=f3e143]
+          - generic [ref=f3e81]:
+            - generic [ref=f3e82]:
+              - generic [ref=f3e83]:
+                - text: البريد الإلكتروني
+                - generic [ref=f3e84]: "*"
+              - textbox "البريد الإلكتروني *" [ref=f3e85]:
+                - /placeholder: you@example.com
+                - text: smoke.20260828@vetora.test
+            - generic [ref=f3e86]:
+              - generic [ref=f3e87]:
+                - text: كلمة المرور
+                - generic [ref=f3e88]: "*"
+              - generic [ref=f3e89]:
+                - textbox "كلمة المرور *" [ref=f3e90]:
+                  - /placeholder: أدخل كلمة المرور
+                  - text: SmokePass123!
+                - button "Show password" [ref=f3e91]
+            - generic [ref=f3e95]:
+              - generic [ref=f3e96]:
+                - text: تأكيد كلمة المرور
+                - generic [ref=f3e97]: "*"
+              - generic [ref=f3e98]:
+                - textbox "تأكيد كلمة المرور *" [ref=f3e99]:
+                  - /placeholder: أعد كتابة كلمة المرور
+                  - text: SmokePass123!
+                - button "Show password" [ref=f3e100]
+          - generic [ref=f3e104]:
+            - paragraph [ref=f3e105]:
+              - text: لديك حساب بالفعل؟
+              - link "تسجيل الدخول" [ref=f3e106] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+            - button "إنشاء حساب" [ref=f3e107]
+  - contentinfo [ref=f3e108]:
+    - generic [ref=f3e110]:
+      - generic [ref=f3e111]:
+        - generic [ref=f3e112]:
+          - link [ref=f3e113] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/
+            - img "Vetora" [ref=f3e114]
+          - paragraph [ref=f3e115]: سوق ذكي للمنتجات الزراعية والبيطرية
+        - generic [ref=f3e116]:
+          - heading "تسوق" [level=2] [ref=f3e117]
+          - list [ref=f3e118]:
+            - listitem [ref=f3e119]:
+              - link "التصنيفات" [ref=f3e120] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/categories
+            - listitem [ref=f3e121]:
+              - link "جميع المنتجات" [ref=f3e122] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/products
+            - listitem [ref=f3e123]:
+              - link "الأسئلة الشائعة" [ref=f3e124] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/faq
+        - generic [ref=f3e125]:
+          - heading "حساب" [level=2] [ref=f3e126]
+          - list [ref=f3e127]:
+            - listitem [ref=f3e128]:
+              - link "تسجيل الدخول" [ref=f3e129] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/login
+            - listitem [ref=f3e130]:
+              - link "إنشاء حساب" [ref=f3e131] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/register
+        - generic [ref=f3e132]:
+          - heading "تواصل" [level=2] [ref=f3e133]
+          - list [ref=f3e134]:
+            - listitem [ref=f3e135]:
+              - link "تواصل معنا" [ref=f3e136] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/contact
+      - generic [ref=f3e137]:
+        - paragraph [ref=f3e138]: © 2026 Vetora. جميع الحقوق محفوظة.
+        - generic [ref=f3e139]:
+          - link "سياسة الخصوصية" [ref=f3e140] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/privacy-policy
+          - link "شروط الخدمة" [ref=f3e141] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/pages/terms-of-service

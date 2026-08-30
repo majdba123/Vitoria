@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Eye } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { PageHeader } from '@/Components/admin/PageHeader';
 import { DataTable } from '@/Components/admin/DataTable';
@@ -86,7 +87,7 @@ export default function OrdersIndex() {
             label: 'Action',
             align: 'end',
             render: (row) => (
-                <a href={`/admin/orders/${row.id}`} className="text-sm font-semibold text-primary hover:underline">View</a>
+                <a href={`/admin/orders/${row.id}`} className="inline-flex min-h-10 items-center gap-1.5 rounded-md px-2 text-sm font-semibold text-primary hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Eye className="size-4" aria-hidden="true" />View</a>
             ),
         },
     ];

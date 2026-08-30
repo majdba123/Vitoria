@@ -1,0 +1,175 @@
+- generic [ref=f2e3]:
+  - navigation "Admin navigation" [ref=f2e5]:
+    - generic [ref=f2e6]:
+      - list [ref=f2e8]:
+        - listitem [ref=f2e9]:
+          - link "Vetora Admin" [ref=f2e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8018/admin/dashboard
+            - generic [ref=f2e15]:
+              - generic [ref=f2e16]: Vetora
+              - generic [ref=f2e17]: Admin
+      - generic [ref=f2e18]:
+        - generic [ref=f2e19]:
+          - generic [ref=f2e20]: Overview
+          - list [ref=f2e22]:
+            - listitem [ref=f2e23]:
+              - link "Dashboard" [ref=f2e24] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/dashboard
+        - generic [ref=f2e31]:
+          - generic [ref=f2e32]: Management
+          - list [ref=f2e34]:
+            - listitem [ref=f2e35]:
+              - link "Vendors" [ref=f2e36] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/vendors
+            - listitem [ref=f2e42]:
+              - link "Syndicates" [ref=f2e43] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/syndicates
+            - listitem [ref=f2e50]:
+              - link "Products" [ref=f2e51] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/products
+            - listitem [ref=f2e57]:
+              - link "Employees" [ref=f2e58] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/employees
+            - listitem [ref=f2e72]:
+              - link "Coupons" [ref=f2e73] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/coupons
+            - listitem [ref=f2e77]:
+              - link "Orders" [ref=f2e78] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/orders
+            - listitem [ref=f2e83]:
+              - link "Users" [ref=f2e84] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/users
+            - listitem [ref=f2e91]:
+              - link "Notifications" [ref=f2e92] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/notifications
+            - listitem [ref=f2e97]:
+              - link "Contact messages" [ref=f2e98] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/contact-messages
+            - listitem [ref=f2e103]:
+              - link "About us" [ref=f2e104] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/about-us
+            - listitem [ref=f2e108]:
+              - link "Pages" [ref=f2e109] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/pages
+            - listitem [ref=f2e114]:
+              - link "Banners" [ref=f2e115] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/banners
+        - generic [ref=f2e121]:
+          - generic [ref=f2e122]: Catalog
+          - list [ref=f2e124]:
+            - listitem [ref=f2e125]:
+              - link "Categories" [ref=f2e126] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/categories
+            - listitem [ref=f2e132]:
+              - link "Subcategories" [ref=f2e133] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/subcategories
+            - listitem [ref=f2e139]:
+              - link "Cities" [ref=f2e140] [cursor=pointer]:
+                - /url: http://127.0.0.1:8018/admin/cities
+      - list [ref=f2e147]:
+        - listitem [ref=f2e148]:
+          - button "م مدير النظام Admin" [ref=f2e149]:
+            - generic [ref=f2e150]: م
+            - generic [ref=f2e152]:
+              - generic [ref=f2e153]: مدير النظام
+              - generic [ref=f2e154]: Admin
+  - main [ref=f2e158]:
+    - generic [ref=f2e160]:
+      - button "Toggle Sidebar" [ref=f2e161]
+      - generic [ref=f2e163]:
+        - paragraph [ref=f2e164]: Admin
+        - heading "Manage products" [level=1] [ref=f2e165]
+      - generic [ref=f2e166]:
+        - link "Home" [ref=f2e167] [cursor=pointer]:
+          - /url: http://127.0.0.1:8018/
+        - button "Choose language" [ref=f2e168]
+        - button "Notifications" [ref=f2e169]
+        - button "Toggle theme" [ref=f2e170]
+        - button "Sign Out" [ref=f2e171]
+    - generic [ref=f2e172]:
+      - generic [ref=f2e173]:
+        - generic [ref=f2e174]:
+          - heading "Manage products" [level=1] [ref=f2e175]
+          - paragraph [ref=f2e176]: Review product records and publishing status.
+        - generic [ref=f2e177]:
+          - button "Import Products" [ref=f2e178]
+          - link "Add Product" [ref=f2e179] [cursor=pointer]:
+            - /url: http://127.0.0.1:8018/admin/products/create
+      - generic [ref=f2e181]:
+        - generic [ref=f2e182]:
+          - generic [ref=f2e183]: Filter by Vendor
+          - combobox "Filter by Vendor" [ref=f2e184]:
+            - generic: All Vendors
+        - generic [ref=f2e185]:
+          - generic [ref=f2e186]: Filter by Product Status
+          - combobox "Filter by Product Status" [ref=f2e187]:
+            - generic: All Status
+        - generic [ref=f2e188]:
+          - generic [ref=f2e189]: Filter by Type
+          - combobox "Filter by Type" [ref=f2e190]:
+            - generic: All Types
+        - generic [ref=f2e191]:
+          - generic [ref=f2e192]: Filter by Category
+          - combobox "Filter by Category" [ref=f2e193]:
+            - generic: All Categories
+        - generic [ref=f2e194]:
+          - generic [ref=f2e195]: Filter by Active
+          - combobox "Filter by Active" [ref=f2e196]:
+            - generic: All
+        - generic [ref=f2e197]:
+          - generic [ref=f2e198]: Filter by Discount
+          - combobox "Filter by Discount" [ref=f2e199]:
+            - generic: All
+      - region "No products yet." [ref=f2e201]:
+        - table [ref=f2e203]:
+          - rowgroup [ref=f2e204]:
+            - row [ref=f2e205]:
+              - columnheader "Name" [ref=f2e206]
+              - columnheader "Price" [ref=f2e207]
+              - columnheader "Qty" [ref=f2e208]
+              - columnheader "Active" [ref=f2e209]
+              - columnheader "Approval Status:" [ref=f2e210]
+              - columnheader "Actions" [ref=f2e211]
+          - rowgroup [ref=f2e212]:
+            - row [ref=f2e213]:
+              - cell [ref=f2e214]
+              - cell [ref=f2e216]
+              - cell [ref=f2e218]
+              - cell [ref=f2e220]
+              - cell [ref=f2e222]
+              - cell [ref=f2e224]
+            - row [ref=f2e226]:
+              - cell [ref=f2e227]
+              - cell [ref=f2e229]
+              - cell [ref=f2e231]
+              - cell [ref=f2e233]
+              - cell [ref=f2e235]
+              - cell [ref=f2e237]
+            - row [ref=f2e239]:
+              - cell [ref=f2e240]
+              - cell [ref=f2e242]
+              - cell [ref=f2e244]
+              - cell [ref=f2e246]
+              - cell [ref=f2e248]
+              - cell [ref=f2e250]
+            - row [ref=f2e252]:
+              - cell [ref=f2e253]
+              - cell [ref=f2e255]
+              - cell [ref=f2e257]
+              - cell [ref=f2e259]
+              - cell [ref=f2e261]
+              - cell [ref=f2e263]
+            - row [ref=f2e265]:
+              - cell [ref=f2e266]
+              - cell [ref=f2e268]
+              - cell [ref=f2e270]
+              - cell [ref=f2e272]
+              - cell [ref=f2e274]
+              - cell [ref=f2e276]
+            - row [ref=f2e278]:
+              - cell [ref=f2e279]
+              - cell [ref=f2e281]
+              - cell [ref=f2e283]
+              - cell [ref=f2e285]
+              - cell [ref=f2e287]
+              - cell [ref=f2e289]

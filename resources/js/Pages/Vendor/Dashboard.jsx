@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
-import { CheckCircle2, Package, PackageCheck, ShoppingBag } from 'lucide-react';
+import { BarChart3, CheckCircle2, Package, PackageCheck, Plus, ReceiptText, ShoppingBag } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 import VendorLayout from '@/Layouts/VendorLayout';
 import { StatCard } from '@/Components/admin/dashboard/StatCard';
@@ -57,10 +57,10 @@ export default function VendorDashboard() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                     <Button asChild size="sm">
-                        <Link href={route('vendor.products.create')}>{vendor.create_product}</Link>
+                        <Link href={route('vendor.products.create')}><Plus className="size-4" aria-hidden="true" />{vendor.create_product}</Link>
                     </Button>
                     <Button asChild size="sm" variant="outline">
-                        <Link href={route('vendor.orders.index')}>{vendor.orders}</Link>
+                        <Link href={route('vendor.orders.index')}><ShoppingBag className="size-4" aria-hidden="true" />{vendor.orders}</Link>
                     </Button>
                 </div>
             </section>
@@ -102,14 +102,12 @@ export default function VendorDashboard() {
                     </CardHeader>
                     <CardContent className="grid gap-3 p-5">
                         {[
-                            { href: route('vendor.products.create'), label: vendor.create_product },
-                            { href: route('vendor.products.index'), label: vendor.products },
-                            { href: route('vendor.orders.index'), label: vendor.orders },
-                            { href: route('vendor.commission'), label: vendor.commission },
+                            { href: route('vendor.products.create'), label: vendor.create_product, icon: Plus },
+                            { href: route('vendor.products.index'), label: vendor.products, icon: Package },
+                            { href: route('vendor.orders.index'), label: vendor.orders, icon: ReceiptText },
+                            { href: route('vendor.commission'), label: vendor.commission, icon: BarChart3 },
                         ].map((action) => (
-                            <Link key={action.label} href={action.href} className="rounded-md border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary/50 hover:bg-accent/40">
-                                {action.label}
-                            </Link>
+                            <QuickAction key={action.label} {...action} />
                         ))}
                     </CardContent>
                 </Card>
@@ -153,4 +151,8 @@ export default function VendorDashboard() {
             </InsightPanel>
         </VendorLayout>
     );
+}
+
+function QuickAction({ href, label, icon: Icon }) {
+    return <Link href={href} className="flex min-h-11 items-center gap-3 rounded-md border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary/50 hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Icon className="size-4 shrink-0 text-primary" aria-hidden="true" />{label}</Link>;
 }

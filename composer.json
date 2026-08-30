@@ -16,6 +16,7 @@
         "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
+        "mpdf/mpdf": "^8.3",
         "predis/predis": "^3.3",
         "tightenco/ziggy": "^2.6"
     },

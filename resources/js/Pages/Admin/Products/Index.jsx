@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
-import { Plus, Package } from 'lucide-react';
+import { Eye, MessageSquareText, Package, Pencil, Plus, Trash2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { PageHeader } from '@/Components/admin/PageHeader';
 import { DataTable } from '@/Components/admin/DataTable';
@@ -148,16 +148,16 @@ export default function ProductsIndex({ discountOnly = false }) {
             render: (row) => (
                 <div className="inline-flex flex-wrap items-center justify-end gap-1.5">
                     <Button asChild variant="ghost" size="sm">
-                        <Link href={route('admin.products.show', row.id)}>{admin.show}</Link>
+                        <Link href={route('admin.products.show', row.id)}><Eye className="size-4" aria-hidden="true" />{admin.show}</Link>
                     </Button>
                     <Button asChild variant="ghost" size="sm">
-                        <Link href={route('admin.products.reviews', row.id)}>{admin.reviews}</Link>
+                        <Link href={route('admin.products.reviews', row.id)}><MessageSquareText className="size-4" aria-hidden="true" />{admin.reviews}</Link>
                     </Button>
                     <Button asChild variant="outline" size="sm">
-                        <Link href={route('admin.products.edit', row.id)}>{common.edit ?? 'Edit'}</Link>
+                        <Link href={route('admin.products.edit', row.id)}><Pencil className="size-4" aria-hidden="true" />{common.edit ?? 'Edit'}</Link>
                     </Button>
                     <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => setDeleteTarget(row)}>
-                        {admin.remove}
+                        <Trash2 className="size-4" aria-hidden="true" />{admin.remove}
                     </Button>
                 </div>
             ),

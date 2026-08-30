@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreVendorRequest;
 use App\Http\Requests\Admin\UpdateVendorRequest;
-use App\Http\Requests\VendorMapRequest;
+use App\Http\Requests\Admin\VendorIndexRequest;
 use App\Http\Resources\Admin\VendorResource;
 use App\Models\Vendor;
 use App\Services\Admin\VendorService;
 use App\Services\AuditLogService;
 use App\Services\Vendor\VendorMapService;
+use App\Support\SyriaGovernorates;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +27,7 @@ class VendorController extends Controller
     /**
      * List all vendors.
      */
-    public function index(Request $request): JsonResponse
+    public function index(VendorIndexRequest $request): JsonResponse
     {
         $vendors = Vendor::query()
             ->with(['user', 'categories.subcategories', 'city'])
@@ -53,6 +54,10 @@ class VendorController extends Controller
             ->when($request->filled('category_id'), function ($query) use ($request) {
                 $query->whereHas('categories', fn ($categoryQuery) => $categoryQuery->where('categories.id', (int) $request->input('category_id')));
             })
+            ->when($request->filled('city_id'), fn ($query) => $query->where('vendors.city_id', $request->integer('city_id')))
+            ->when($request->filled('governorate'), function ($query) use ($request) {
+                $query->whereHas('city', fn ($cityQuery) => $cityQuery->whereIn('name', SyriaGovernorates::cityNamesForKey((string) $request->string('governorate'))));
+            })
             ->latest()
             ->paginate(15);
 
@@ -68,18 +73,12 @@ class VendorController extends Controller
         ]);
     }
 
-    /**
-     * Map points, unmapped vendors and mapped/unmapped counts for the
-     * Table/Map view on the Vendors page.
-     */
-    public function map(VendorMapRequest $request, VendorMapService $mapService): JsonResponse
+    public function map(VendorMapService $mapService): JsonResponse
     {
         return response()->json([
             'message' => __('Vendor map retrieved successfully.'),
-            'data' => $mapService->payload(
+            'data' => $mapService->dashboardPayload(
                 fn () => Vendor::query(),
-                $request->filters(),
-                withAdminActions: true,
             ),
         ]);
     }

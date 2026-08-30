@@ -5,7 +5,6 @@ import VendorLayout from '@/Layouts/VendorLayout';
 import { PageHeader } from '@/Components/admin/PageHeader';
 import { TextField, TextareaField } from '@/Components/admin/form/FormField';
 import { ImageUploadCircle } from '@/Components/admin/ImageUploadCircle';
-import { LocationPicker } from '@/Components/maps/LocationPicker';
 import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
@@ -180,15 +179,6 @@ export default function VendorProfile() {
                             </div>
                             <TextareaField id="description" label="Description" rows={3} placeholder="Tell customers about your store..." value={form.description} onChange={(e) => set('description')(e.target.value)} error={errors.description} />
                         </fieldset>
-
-                        <Separator />
-
-                        <LocationPicker
-                            latitude={form.latitude}
-                            longitude={form.longitude}
-                            onChange={({ latitude, longitude }) => setForm((f) => ({ ...f, latitude, longitude }))}
-                            error={errors.latitude ?? errors.longitude}
-                        />
 
                         <Separator />
 

@@ -10,6 +10,10 @@ use App\Models\User;
 use App\Models\Vendor;
 use App\Models\VendorLedgerEntry;
 use App\Services\Commerce\VendorLedgerService;
+use App\Services\Vendor\SyndicateVendorPdfService;
+use App\Services\Vendor\VendorAnalyticsService;
+use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 
 function analyticsCompletedOrder(Vendor $vendor, array $lines): Order
@@ -187,4 +191,88 @@ test('normal users and vendors cannot access privileged analytics surfaces', fun
     Sanctum::actingAs($vendor->user);
     $this->getJson("/api/admin/vendors/{$vendor->id}/analytics/overview")->assertForbidden();
     $this->getJson("/api/syndicate/vendors/{$vendor->id}/analytics/overview")->assertForbidden();
+});
+
+test('syndicate exports a non-empty scoped pdf with safe headers', function () {
+    $data = analyticsFixture();
+    $syndicate = Syndicate::factory()->create(['type' => Category::TYPE_AGRICULTURE]);
+    Sanctum::actingAs($syndicate->user);
+
+    $response = $this->get("/api/syndicate/vendors/{$data['both']->id}/report.pdf?range=30_days&locale=en");
+
+    $response->assertOk()->assertHeader('content-type', 'application/pdf')
+        ->assertHeader('x-vetora-report-domain', Category::TYPE_AGRICULTURE);
+    expect($response->headers->get('content-disposition'))
+        ->toContain("vetora-vendor-report-{$data['both']->id}-")
+        ->and(strlen($response->getContent()))->toBeGreaterThan(1000)
+        ->and(substr($response->getContent(), 0, 4))->toBe('%PDF');
+});
+
+test('syndicate pdf source data reconciles with dashboard and excludes the other domain', function (string $domain, int $units, float $sales, string $includedProduct, string $excludedProduct) {
+    $data = analyticsFixture();
+    $syndicate = Syndicate::factory()->create(['type' => $domain]);
+    $period = ['key' => '30_days', 'from' => CarbonImmutable::today()->subDays(29)->startOfDay(), 'to' => CarbonImmutable::today()->endOfDay()];
+
+    $dashboard = app(VendorAnalyticsService::class)->overview($data['both'], $period, $domain);
+    $report = app(SyndicateVendorPdfService::class)->render($data['both'], $syndicate, $period, 'en');
+
+    expect($report['data']['kpis']['gross_sales'])->toBe($dashboard['kpis']['gross_sales'])
+        ->and($report['data']['kpis']['units_sold'])->toBe($units)
+        ->and((float) $report['data']['kpis']['gross_sales'])->toBe($sales)
+        ->and(collect($report['data']['products'])->pluck('id'))->toContain($data[$includedProduct]->id)->not->toContain($data[$excludedProduct]->id)
+        ->and($report['data']['vendor']['owner'])->not->toHaveKeys(['email', 'phone_number'])
+        ->and($report['data']['orders']->first())->not->toHaveKeys(['customer', 'shipping_address', 'payment']);
+})->with([
+    'agriculture report' => [Category::TYPE_AGRICULTURE, 2, 200.0, 'agProduct', 'vetProduct'],
+    'veterinary report' => [Category::TYPE_VETERINARY, 3, 600.0, 'vetProduct', 'agProduct'],
+]);
+
+test('syndicate report period changes totals and custom ranges validate', function () {
+    $data = analyticsFixture();
+    DB::table('orders')->where('id', $data['agOrder']->id)->update(['created_at' => now()->subDays(45), 'updated_at' => now()->subDays(45)]);
+    $syndicate = Syndicate::factory()->create(['type' => Category::TYPE_AGRICULTURE]);
+    Sanctum::actingAs($syndicate->user);
+
+    $period = ['key' => '30_days', 'from' => CarbonImmutable::today()->subDays(29)->startOfDay(), 'to' => CarbonImmutable::today()->endOfDay()];
+    $report = app(SyndicateVendorPdfService::class)->render($data['both'], $syndicate, $period, 'en');
+    expect($report['data']['kpis']['gross_sales'])->toBe(0.0)
+        ->and($report['data']['kpis']['completed_orders'])->toBe(0);
+
+    $this->get("/api/syndicate/vendors/{$data['both']->id}/report.pdf?range=custom&date_from=2026-08-20&date_to=2026-08-01&locale=en")->assertUnprocessable();
+    $this->get("/api/syndicate/vendors/{$data['both']->id}/report.pdf?range=all&locale=en")->assertUnprocessable();
+});
+
+test('syndicate report denies unrelated vendors and ignores domain manipulation', function () {
+    $data = analyticsFixture();
+    $agriculture = Syndicate::factory()->create(['type' => Category::TYPE_AGRICULTURE]);
+    Sanctum::actingAs($agriculture->user);
+
+    $this->get("/api/syndicate/vendors/{$data['other']->id}/report.pdf?range=30_days&locale=en")->assertNotFound();
+    $this->get("/api/syndicate/vendors/{$data['both']->id}/report.pdf?range=30_days&locale=en&syndicate_type=veterinary")
+        ->assertOk()->assertHeader('x-vetora-report-domain', Category::TYPE_AGRICULTURE);
+});
+
+test('syndicate report supports explicit Arabic and English presentation from identical scoped data', function () {
+    $data = analyticsFixture();
+    $syndicate = Syndicate::factory()->create(['type' => Category::TYPE_VETERINARY]);
+    Sanctum::actingAs($syndicate->user);
+
+    $arabic = $this->get("/api/syndicate/vendors/{$data['both']->id}/report.pdf?range=30_days&locale=ar");
+    $english = $this->get("/api/syndicate/vendors/{$data['both']->id}/report.pdf?range=30_days&locale=en");
+    $this->get("/api/syndicate/vendors/{$data['both']->id}/report.pdf?range=30_days&locale=fr")->assertUnprocessable();
+
+    $arabic->assertOk()->assertHeader('content-type', 'application/pdf');
+    $english->assertOk()->assertHeader('content-type', 'application/pdf');
+    expect(strlen($arabic->getContent()))->toBeGreaterThan(1000)
+        ->and(strlen($english->getContent()))->toBeGreaterThan(1000);
+
+    $period = ['key' => '30_days', 'from' => CarbonImmutable::today()->subDays(29)->startOfDay(), 'to' => CarbonImmutable::today()->endOfDay()];
+    $report = app(VendorAnalyticsService::class)->report($data['both'], $period, Category::TYPE_VETERINARY);
+    $arabicHtml = view('reports.syndicate-vendor', ['data' => $report, 'syndicate' => $syndicate, 'isArabic' => true])->render();
+    $englishHtml = view('reports.syndicate-vendor', ['data' => $report, 'syndicate' => $syndicate, 'isArabic' => false])->render();
+
+    expect($arabicHtml)->toContain('dir="rtl"', 'تقرير أداء التاجر', 'زراعي وبيطري', 'نشط', 'مكتمل', '600.00 ل.س')
+        ->not->toContain('Vendor Performance Report')
+        ->and($englishHtml)->toContain('dir="ltr"', 'Vendor Performance Report', '600.00 SYP')
+        ->and($report['kpis']['gross_sales'])->toBe(600.0);
 });
