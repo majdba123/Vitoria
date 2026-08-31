@@ -38,7 +38,7 @@ export default function UsersShow({ userId }) {
                 title={
                     <span className="flex items-center gap-4">
                         <Avatar className="size-14 ring-4 ring-background">
-                            <AvatarImage src={user?.avatar_url} />
+                            <AvatarImage src={user?.avatar_url} alt={user?.name ?? ''} />
                             <AvatarFallback className="bg-accent text-accent-foreground text-lg">{(user?.name || 'U').charAt(0).toUpperCase()}</AvatarFallback>
                         </Avatar>
                         <span>

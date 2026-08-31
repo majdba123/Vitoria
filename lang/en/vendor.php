@@ -144,4 +144,6 @@ return [
     'js_unknown_category' => 'Unknown',
     'js_no_trend_data' => 'No trend data available.',
     'loading' => 'Loading...',
+    'retry' => 'Retry',
+    'currency_syp' => 'SYP',
 ];

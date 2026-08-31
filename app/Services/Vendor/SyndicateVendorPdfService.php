@@ -38,7 +38,7 @@ class SyndicateVendorPdfService
             'margin_bottom' => 18,
         ]);
         $pdf->SetHTMLHeader(view('reports.syndicate-vendor-header', compact('data', 'syndicate', 'isArabic'))->render());
-        $pdf->SetHTMLFooter('<div style="text-align:center;color:#64748b;font-size:9px">{PAGENO} / {nbpg}</div>');
+        $pdf->SetHTMLFooter('<div dir="ltr" style="direction:ltr;text-align:center;color:#64748b;font-size:9px">{PAGENO} / {nbpg}</div>');
         $pdf->WriteHTML(view('reports.syndicate-vendor', compact('data', 'syndicate', 'isArabic'))->render(), HTMLParserMode::DEFAULT_MODE);
 
         $from = $data['scope']['period']['from'] ?? 'all';

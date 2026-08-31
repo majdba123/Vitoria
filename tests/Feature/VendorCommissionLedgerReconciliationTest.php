@@ -184,7 +184,7 @@ test('the commission dashboard response explicitly separates ledger-authoritativ
         ->toContain("{ key: 'commission', labelKey: 'commission_total_label'")
         ->toContain("{ key: 'settled', labelKey: 'paid_to_you'")
         ->toContain("{ key: 'outstanding', labelKey: 'remaining_label'")
-        ->toContain('value={count ? Number(statusCounts.completed || 0).toLocaleString() : formatMoney(ledgerSummary[key])}');
+        ->toContain('value={count ? Number(statusCounts.completed || 0).toLocaleString(locale) : formatMoney(ledgerSummary[key], locale, vendor.currency_syp)}');
 });
 
 test('the ledger backfill --dry-run writes nothing, even against legacy data with a since-changed commission rate', function () {

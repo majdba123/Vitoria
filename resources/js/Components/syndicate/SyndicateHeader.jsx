@@ -31,7 +31,7 @@ export function SyndicateHeader({ title }) {
 
                 <div className="flex items-center gap-1.5">
                     <span className="hidden lg:inline-flex"><StatusBadge tone="brand">{syndicate[typeKey]}</StatusBadge></span>
-                    <Button asChild variant="ghost" size="icon" className="size-11" aria-label={nav.home ?? 'Home'} title={nav.home ?? 'Home'}>
+                    <Button asChild variant="ghost" size="icon" className="hidden size-11 sm:inline-flex" aria-label={nav.home ?? 'Home'} title={nav.home ?? 'Home'}>
                         <Link href={route('home')}>
                             <Home className="size-4" />
                         </Link>

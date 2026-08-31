@@ -35,7 +35,7 @@ class SyndicateReportService
             'default_font' => 'dejavusans', 'autoScriptToLang' => true, 'autoLangToFont' => true,
             'tempDir' => $temporaryDirectory, 'margin_top' => 18, 'margin_bottom' => 18,
         ]);
-        $pdf->SetHTMLFooter('<div style="text-align:center;color:#64748b;font-size:9px">{PAGENO} / {nbpg}</div>');
+        $pdf->SetHTMLFooter('<div dir="ltr" style="direction:ltr;text-align:center;color:#64748b;font-size:9px">{PAGENO} / {nbpg}</div>');
         $pdf->WriteHTML(view('reports.syndicate-general', compact('data', 'syndicate', 'isArabic'))->render(), HTMLParserMode::DEFAULT_MODE);
         $from = $data['period']['from'] ?? 'all';
         $to = $data['period']['to'] ?? now()->toDateString();

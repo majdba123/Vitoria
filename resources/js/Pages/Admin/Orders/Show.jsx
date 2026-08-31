@@ -65,7 +65,7 @@ export default function OrdersShow({ orderId }) {
                 <CardContent className="space-y-4 p-5 sm:p-6">
                     <div className="flex flex-wrap items-center gap-2">
                         <StatusBadge tone={STATUS_TONE[order.status] ?? 'warning'}>{copy.status?.[order.status] ?? order.status}</StatusBadge>
-                        <StatusBadge tone="brand">{order.payment_way || 'cash'}</StatusBadge>
+                        <StatusBadge tone="brand">{copy[order.payment_way || 'cash'] ?? order.payment_way ?? copy.cash}</StatusBadge>
                     </div>
 
                     {order.status === 'out_for_delivery' && (
@@ -85,7 +85,7 @@ export default function OrdersShow({ orderId }) {
                             { label: copy.order_number, value: order.order_number },
                             { label: copy.vendor, value: order.vendor?.store_name },
                             { label: copy.items_count, value: order.items_count ?? (order.items || []).length },
-                            { label: copy.payment_method, value: order.payment_way || copy.cash },
+                            { label: copy.payment_method, value: copy[order.payment_way || 'cash'] ?? order.payment_way ?? copy.cash },
                         ].map((item) => (
                             <div key={item.label} className="rounded-md border border-border bg-muted/40 p-3">
                                 <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{item.label}</p>

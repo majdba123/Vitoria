@@ -54,6 +54,7 @@ return [
     'not_specified' => 'غير محدد',
     'no_data' => 'لا توجد بيانات متاحة.',
     'completed' => 'مكتمل',
+    'cancelled' => 'ملغي',
     'avatar_alt' => 'الصورة الرمزية',
     'logo_alt' => 'الشعار',
     'last_updated' => 'آخر تحديث',

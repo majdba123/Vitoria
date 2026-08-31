@@ -23,4 +23,7 @@ return [
     'add_payment' => 'Add Payment', 'payment_dialog_copy' => 'Record an immutable settlement from the platform to this Vendor.', 'amount' => 'Amount', 'payment_date' => 'Payment date',
     'bank_transfer' => 'Bank transfer', 'cash' => 'Cash', 'other' => 'Other', 'payment' => 'Payment', 'after_payment' => 'After payment', 'confirm_payment' => 'Confirm payment',
     'saving' => 'Saving…', 'payment_failed' => 'The payment could not be recorded.',
+    'credit' => 'Credit', 'debit' => 'Debit', 'units' => 'units',
+    'agriculture' => 'Agriculture', 'veterinary' => 'Veterinary', 'both' => 'Agriculture & Veterinary',
+    'ledger_sale' => 'Sale', 'ledger_commission' => 'Commission', 'ledger_settlement' => 'Settlement', 'ledger_refund' => 'Refund', 'ledger_adjustment' => 'Adjustment',
 ];

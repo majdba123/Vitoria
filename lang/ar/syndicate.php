@@ -78,4 +78,13 @@ return [
     'inactive_products' => 'منتجات غير نشطة',
     'active_merchants' => 'تجار نشطون',
     'inactive_merchants' => 'تجار غير نشطين',
+    'notifications' => 'الإشعارات',
+    'currency_syp' => 'ل.س',
+    'status_pending' => 'قيد الانتظار',
+    'status_confirmed' => 'مؤكد',
+    'status_preparing' => 'قيد التجهيز',
+    'status_shipped' => 'تم الشحن',
+    'status_out_for_delivery' => 'قيد التوصيل',
+    'status_completed' => 'مكتمل',
+    'status_cancelled' => 'ملغى',
 ];

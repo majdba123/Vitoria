@@ -78,4 +78,13 @@ return [
     'inactive_products' => 'Inactive products',
     'active_merchants' => 'Active vendors',
     'inactive_merchants' => 'Inactive vendors',
+    'notifications' => 'Notifications',
+    'currency_syp' => 'SYP',
+    'status_pending' => 'Pending',
+    'status_confirmed' => 'Confirmed',
+    'status_preparing' => 'Preparing',
+    'status_shipped' => 'Shipped',
+    'status_out_for_delivery' => 'Out for delivery',
+    'status_completed' => 'Completed',
+    'status_cancelled' => 'Cancelled',
 ];

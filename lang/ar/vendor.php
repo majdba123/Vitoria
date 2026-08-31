@@ -144,4 +144,6 @@ return [
     'js_unknown_category' => 'غير معروف',
     'js_no_trend_data' => 'لا توجد بيانات اتجاه متاحة.',
     'loading' => 'جارٍ التحميل...',
+    'retry' => 'إعادة المحاولة',
+    'currency_syp' => 'ل.س',
 ];

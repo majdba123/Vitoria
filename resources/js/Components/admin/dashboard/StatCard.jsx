@@ -17,9 +17,9 @@ export function StatCard({ label, value, icon: Icon, status = 'ready', onRetry, 
 
     return (
         <Card className="border-border/80 shadow-none">
-            <CardContent className="flex items-start justify-between gap-4 px-5 py-4">
+            <CardContent className="flex items-start justify-between gap-5 px-5 py-5 lg:px-6">
                 <div className="min-w-0 flex-1">
-                    <p className="truncate text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{label}</p>
+                    <p className="truncate text-sm font-semibold text-muted-foreground">{label}</p>
                     {status === 'loading' && <Skeleton className="mt-3 h-7 w-16" />}
                     {status === 'error' && (
                         <button type="button" onClick={onRetry} className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-[var(--color-danger-strong)]">
@@ -27,10 +27,10 @@ export function StatCard({ label, value, icon: Icon, status = 'ready', onRetry, 
                             {common.refresh ?? 'Retry'}
                         </button>
                     )}
-                    {status === 'ready' && <p className={`mt-2 text-2xl font-bold tabular-nums ${toneClass}`}><bdi>{displayValue}</bdi></p>}
+                    {status === 'ready' && <p className={`mt-2 text-2xl font-bold tabular-nums lg:text-3xl ${toneClass}`}><bdi>{displayValue}</bdi></p>}
                 </div>
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground">
-                    <Icon className="size-5" strokeWidth={1.5} />
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground">
+                    <Icon className="size-5.5" strokeWidth={1.5} aria-hidden="true" />
                 </span>
             </CardContent>
         </Card>

@@ -23,4 +23,7 @@ return [
     'add_payment' => 'إضافة دفعة', 'payment_dialog_copy' => 'سجّل تسوية مالية ثابتة من المنصة إلى هذا التاجر.', 'amount' => 'المبلغ', 'payment_date' => 'تاريخ الدفعة',
     'bank_transfer' => 'تحويل بنكي', 'cash' => 'نقداً', 'other' => 'أخرى', 'payment' => 'الدفعة', 'after_payment' => 'المتبقي بعد الدفعة', 'confirm_payment' => 'تأكيد الدفعة',
     'saving' => 'جارٍ الحفظ…', 'payment_failed' => 'تعذر تسجيل الدفعة.',
+    'credit' => 'دائن', 'debit' => 'مدين', 'units' => 'وحدة',
+    'agriculture' => 'زراعي', 'veterinary' => 'بيطري', 'both' => 'زراعي وبيطري',
+    'ledger_sale' => 'بيع', 'ledger_commission' => 'عمولة', 'ledger_settlement' => 'دفعة مسوّاة', 'ledger_refund' => 'مبلغ مسترد', 'ledger_adjustment' => 'تسوية محاسبية',
 ];

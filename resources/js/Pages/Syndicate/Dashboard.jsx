@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import { DashboardVendorMap } from '@/Components/maps/DashboardVendorMap';
 import { BarChart3, Eye, FileChartColumn, FileText, Package, ShoppingBag, Store } from 'lucide-react';
-import { useI18n } from '@/hooks/use-i18n';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { GrowthChart } from '@/Components/admin/dashboard/GrowthChart';
 import { Input } from '@/Components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
@@ -20,8 +20,8 @@ const TABLE_SECTIONS = ['categories', 'vendors', 'products', 'orders'];
 const TYPE_LABEL_KEY = { agriculture: 'type_agriculture', veterinary: 'type_veterinary' };
 const STATUS_TONE = { pending: 'warning', confirmed: 'success', preparing: 'success', shipped: 'brand', out_for_delivery: 'brand', completed: 'brand', cancelled: 'danger' };
 
-function money(v) {
-    return `${Number(v || 0).toLocaleString()} SYP`;
+function money(v, locale, currency) {
+    return `${Number(v || 0).toLocaleString(locale === 'ar' ? 'ar-SY' : 'en-US')} ${currency}`;
 }
 
 function ReportCard({ title, rows }) {
@@ -44,6 +44,7 @@ function ReportCard({ title, rows }) {
 
 export default function SyndicateDashboard({ section = 'dashboard' }) {
     const { syndicate, common, admin } = useI18n();
+    const locale = useLocale();
     const isTableSection = TABLE_SECTIONS.includes(section);
     const isPodcasts = section === 'podcasts';
     const isReports = section === 'reports';
@@ -162,7 +163,7 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                         </div>
                     </CardHeader>
                     <CardContent className="p-4">
-                        <SyndicateTable section={section} rows={tableRows} status={tableStatus} errorMessage={tableError} onRetry={reloadTable} i18n={syndicate} common={common} onReport={setReportTarget} />
+                        <SyndicateTable section={section} rows={tableRows} status={tableStatus} errorMessage={tableError} onRetry={reloadTable} i18n={syndicate} common={common} onReport={setReportTarget} locale={locale} />
                         {tableStatus === 'ready' && tableRows.length > 0 && (
                             <div className="mt-4 rounded-md border border-border">
                                 <Pagination meta={tableMeta} onPrev={() => setPage((p) => p - 1)} onNext={() => setPage((p) => p + 1)} />
@@ -189,9 +190,9 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                     {reportsStatus === 'ready' && reports && (
                         <>
                             <ReportCard title={syndicate.reports_sales_title} rows={[
-                                [syndicate.total_sales, money(reports.sales?.total_sales)],
-                                [syndicate.completed_sales, money(reports.sales?.completed_sales)],
-                                [syndicate.average_order_value, money(reports.sales?.average_order_value)],
+                                [syndicate.total_sales, money(reports.sales?.total_sales, locale, syndicate.currency_syp)],
+                                [syndicate.completed_sales, money(reports.sales?.completed_sales, locale, syndicate.currency_syp)],
+                                [syndicate.average_order_value, money(reports.sales?.average_order_value, locale, syndicate.currency_syp)],
                             ]} />
                             <ReportCard title={syndicate.reports_orders_title} rows={[
                                 [syndicate.total_orders, reports.orders?.total_orders || 0],
@@ -237,7 +238,7 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                                             <p className="truncate text-sm font-semibold text-foreground">{row.store_name || row.name || '—'}</p>
                                             {row.orders_count != null && <p className="mt-0.5 text-xs text-muted-foreground">{row.orders_count} {syndicate.total_orders?.toLowerCase()}</p>}
                                         </div>
-                                        <StatusBadge tone="brand">{row.sales_total != null ? money(row.sales_total) : (row.products_count || row.count || 0)}</StatusBadge>
+                                        <StatusBadge tone="brand">{row.sales_total != null ? money(row.sales_total, locale, syndicate.currency_syp) : (row.products_count || row.count || 0)}</StatusBadge>
                                     </div>
                                 ))}
                             </div>
@@ -306,7 +307,7 @@ function useSyndicateTable(section, enabled, page) {
     return { status, rows, meta, errorMessage, reload: load };
 }
 
-function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, common, onReport }) {
+function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, common, onReport, locale }) {
     const columnsBySection = {
         categories: [
             { key: 'name', label: i18n.th_category, render: (r) => <span className="font-semibold text-foreground">{r.name}</span> },
@@ -320,8 +321,8 @@ function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, co
             { key: 'city', label: i18n.th_city ?? 'City', render: (r) => r.city?.name || '—' },
             { key: 'products_count', label: i18n.th_products, align: 'end', render: (r) => Number(r.products_count || 0) },
             { key: 'completed_orders_count', label: i18n.completed_orders, align: 'end', render: (r) => Number(r.completed_orders_count || 0) },
-            { key: 'domain_sales', label: i18n.completed_sales, align: 'end', render: (r) => money(r.domain_sales) },
-            { key: 'last_activity_at', label: i18n.last_activity ?? 'Last activity', render: (r) => r.last_activity_at ? new Date(r.last_activity_at).toLocaleDateString() : '—' },
+            { key: 'domain_sales', label: i18n.completed_sales, align: 'end', render: (r) => money(r.domain_sales, locale, i18n.currency_syp) },
+            { key: 'last_activity_at', label: i18n.last_activity ?? 'Last activity', render: (r) => r.last_activity_at ? new Date(r.last_activity_at).toLocaleDateString(locale) : '—' },
             { key: 'status', label: i18n.th_status, render: (r) => <StatusBadge tone={r.is_active ? 'success' : 'danger'}>{r.is_active ? common.active : common.inactive}</StatusBadge> },
             { key: 'actions', label: i18n.th_actions, render: (r) => <div className="flex items-center justify-center gap-1"><Button asChild size="sm" variant="ghost"><Link href={route('syndicate.vendors.show', r.id)}><Eye className="size-4" />{common.view_details}</Link></Button><Button type="button" size="sm" variant="outline" onClick={() => onReport(r)}><FileText className="size-4" />{i18n.report}</Button></div> },
         ],
@@ -335,8 +336,8 @@ function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, co
             { key: 'order', label: i18n.th_order, render: (r) => <span className="font-semibold text-foreground">{r.order_number || `#${r.id}`}</span> },
             { key: 'customer', label: i18n.th_customer, render: (r) => r.user?.name || '—' },
             { key: 'store', label: i18n.th_store, render: (r) => r.vendor?.store_name || '—' },
-            { key: 'total', label: i18n.th_total, align: 'end', render: (r) => money(r.total_amount) },
-            { key: 'status', label: i18n.th_status, render: (r) => <StatusBadge tone={STATUS_TONE[r.status] ?? 'warning'}>{r.status}</StatusBadge> },
+            { key: 'total', label: i18n.th_total, align: 'end', render: (r) => money(r.total_amount, locale, i18n.currency_syp) },
+            { key: 'status', label: i18n.th_status, render: (r) => <StatusBadge tone={STATUS_TONE[r.status] ?? 'warning'}>{i18n[`status_${r.status}`] ?? r.status}</StatusBadge> },
         ],
     };
 

@@ -11,10 +11,10 @@ export function MetricTileGrid({ rows, hrefFor, columns = 3 }) {
                 <Link
                     key={row.type}
                     href={hrefFor(row.type)}
-                    className="rounded-md border border-border/70 bg-card px-4 py-3 transition-colors hover:border-primary/50 hover:bg-accent/40"
+                    className="rounded-md border border-border/70 bg-card px-4 py-4 transition-colors hover:border-primary/50 hover:bg-accent/40"
                 >
-                    <p className="truncate text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{row.label}</p>
-                    <p className="mt-2 text-xl font-bold tabular-nums text-foreground">{Number(row.total || 0)}</p>
+                    <p className="truncate text-sm font-semibold text-muted-foreground">{row.label}</p>
+                    <p className="mt-2 text-2xl font-bold tabular-nums text-foreground">{Number(row.total || 0)}</p>
                 </Link>
             ))}
         </div>

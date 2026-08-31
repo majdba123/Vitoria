@@ -54,6 +54,7 @@ return [
     'not_specified' => 'Not specified',
     'no_data' => 'No data available.',
     'completed' => 'Completed',
+    'cancelled' => 'Cancelled',
     'avatar_alt' => 'Avatar',
     'logo_alt' => 'Logo',
     'last_updated' => 'Last updated',

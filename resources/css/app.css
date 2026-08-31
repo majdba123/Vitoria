@@ -98,7 +98,7 @@
        content may not. The bounded values keep 2K/4K layouts composed while
        letting the gutter breathe continuously between mobile and desktop. */
     --page-max: 100rem;
-    --content-max: 80rem;
+    --content-max: 90rem;
     --page-gutter: clamp(1rem, 3vw, 3rem);
     --section-space: clamp(3rem, 4vw, 4.5rem);
 
@@ -686,7 +686,7 @@
     .form-input,
     .form-select,
     .form-textarea {
-        @apply block min-h-11 w-full px-4 py-2.5 text-sm font-medium outline-none;
+        @apply block min-h-11 w-full px-4 py-2.5 text-base font-medium outline-none;
         border-radius: var(--radius-control);
         border: 1px solid var(--input-border);
         background: var(--input-bg);
@@ -1296,7 +1296,8 @@
     }
 
     .site-header-main {
-        @apply mx-auto flex max-w-screen-2xl items-center gap-3 px-4 py-3 sm:px-6 lg:px-8 lg:gap-5;
+        @apply mx-auto flex items-center gap-3 px-4 py-3 sm:px-6 lg:gap-5 lg:px-8;
+        max-width: var(--page-max);
     }
 
     .site-header-search {
@@ -1305,7 +1306,7 @@
     }
 
     .site-header-search input {
-        @apply w-full py-2.5 text-sm outline-none;
+        @apply min-h-11 w-full py-2.5 text-base outline-none;
         padding-inline-start: 2.5rem;
         padding-inline-end: 0.9rem;
         border-radius: var(--radius-control);
@@ -1327,7 +1328,7 @@
     }
 
     .nav-primary-link {
-        @apply flex shrink-0 items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium whitespace-nowrap;
+        @apply flex min-h-10 shrink-0 items-center gap-1.5 px-3 py-2 text-[0.9375rem] font-medium whitespace-nowrap;
         color: var(--color-text-secondary);
         border-radius: var(--radius-control);
     }
@@ -2000,7 +2001,7 @@
     }
 
     .dashboard-sidebar-link {
-        @apply mb-0.5 min-h-9 gap-2.5 px-3 py-2 text-[13px] font-medium text-slate-300;
+        @apply mb-0.5 min-h-11 gap-3 px-3.5 py-2.5 text-sm font-medium text-slate-300;
         border-radius: 0.25rem;
         border-inline-start: 3px solid transparent;
     }
@@ -2057,15 +2058,15 @@
     }
 
     .dashboard-page-header h2 {
-        @apply text-xl font-bold sm:text-2xl;
+        @apply text-2xl font-bold sm:text-3xl;
     }
 
     .dashboard-section-title {
-        @apply text-sm font-semibold;
+        @apply text-base font-semibold;
     }
 
     .dashboard-section-copy {
-        @apply mt-1 text-[13px] leading-5;
+        @apply mt-1 text-sm leading-6;
     }
 
     html[dir='rtl'] .dashboard-eyebrow {
@@ -2103,7 +2104,7 @@
 
     .stat-tile p[id],
     .metric-card p[id] {
-        @apply mt-1 text-xl font-semibold;
+        @apply mt-1 text-2xl font-semibold;
         font-variant-numeric: tabular-nums;
     }
 
@@ -2131,7 +2132,7 @@
     .dashboard-body table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.8125rem;
+        font-size: 0.9375rem;
         font-variant-numeric: tabular-nums;
     }
 
@@ -2140,13 +2141,13 @@
     }
 
     .dashboard-body th {
-        @apply whitespace-nowrap border-b px-3 py-2.5 text-start text-[11px] font-semibold uppercase tracking-[0.08em];
+        @apply whitespace-nowrap border-b px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-[0.06em];
         border-color: var(--color-border-strong);
         color: var(--color-text-secondary);
     }
 
     .dashboard-body td {
-        @apply border-b px-3 py-2.5 align-middle;
+        @apply border-b px-4 py-3 align-middle;
         border-color: var(--color-border);
     }
 
@@ -2165,7 +2166,31 @@
     }
 
     .dashboard-body label {
-        @apply text-[13px] font-semibold;
+        @apply text-sm font-semibold;
+    }
+
+    .dashboard-body input:not([type='checkbox']):not([type='radio']),
+    .dashboard-body select,
+    .dashboard-body textarea {
+        min-height: 2.75rem;
+        font-size: 1rem;
+    }
+
+    .dashboard-body [data-sidebar='group-label'] {
+        min-height: 2.25rem;
+        font-size: 0.75rem;
+    }
+
+    .dashboard-body [data-sidebar='menu-button'][data-size='default'] {
+        min-height: 2.5rem;
+        padding-inline: 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .dashboard-body [data-sidebar='menu-button'] > svg,
+    .dashboard-sidebar-link > svg {
+        width: 1.125rem;
+        height: 1.125rem;
     }
 
     .dashboard-body .badge {

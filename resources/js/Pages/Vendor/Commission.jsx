@@ -6,10 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 import { Button } from '@/Components/ui/button';
 import { Wallet, DollarSign, HandCoins, TrendingDown, ShoppingBag } from 'lucide-react';
-import { useI18n } from '@/hooks/use-i18n';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
 
-function formatMoney(amount) {
-    return `${new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }).format(Number(amount || 0))} SYP`;
+function formatMoney(amount, locale, currency) {
+    return `${new Intl.NumberFormat(locale === 'ar' ? 'ar-SY' : 'en-US', { maximumFractionDigits: 2 }).format(Number(amount || 0))} ${currency}`;
 }
 
 const SUMMARY_METRICS = [
@@ -23,6 +23,7 @@ const SUMMARY_METRICS = [
 
 export default function VendorCommission() {
     const { vendor } = useI18n();
+    const locale = useLocale();
     const [status, setStatus] = useState('loading');
     const [data, setData] = useState(null);
 
@@ -60,8 +61,8 @@ export default function VendorCommission() {
                 <PageHeader title={vendor.commission_dashboard_heading} copy={vendor.commission_dashboard_copy} />
                 <Card className="border-border/80 shadow-none">
                     <CardContent className="py-14 text-center">
-                        <p className="text-sm font-medium text-[var(--color-danger-strong)]">Failed to load commission stats.</p>
-                        <Button variant="outline" size="sm" className="mt-3" onClick={load}>Retry</Button>
+                        <p className="text-sm font-medium text-[var(--color-danger-strong)]">{vendor.js_failed_load_commission_stats}</p>
+                        <Button variant="outline" size="sm" className="mt-3" onClick={load}>{vendor.retry}</Button>
                     </CardContent>
                 </Card>
             </VendorLayout>
@@ -80,7 +81,7 @@ export default function VendorCommission() {
                     <StatCard
                         key={key}
                         label={vendor[labelKey]}
-                        value={count ? Number(statusCounts.completed || 0).toLocaleString() : formatMoney(ledgerSummary[key])}
+                        value={count ? Number(statusCounts.completed || 0).toLocaleString(locale) : formatMoney(ledgerSummary[key], locale, vendor.currency_syp)}
                         icon={icon}
                         status={status}
                         tone={tone}
@@ -124,11 +125,11 @@ export default function VendorCommission() {
                         <p className="text-xs text-muted-foreground">{vendor.payment_summary_copy}</p>
                         <div className="rounded-md border border-border bg-muted/40 p-3">
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{vendor.paid_amount_label}</p>
-                            <p className="mt-1 text-lg font-bold text-[var(--color-success-strong)]">{formatMoney(ledgerSummary.settled)}</p>
+                            <p className="mt-1 text-lg font-bold text-[var(--color-success-strong)]">{formatMoney(ledgerSummary.settled, locale, vendor.currency_syp)}</p>
                         </div>
                         <div className="rounded-md border border-border bg-muted/40 p-3">
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{vendor.remaining_amount_label}</p>
-                            <p className="mt-1 text-lg font-bold text-[var(--color-danger-strong)]">{formatMoney(ledgerSummary.outstanding)}</p>
+                            <p className="mt-1 text-lg font-bold text-[var(--color-danger-strong)]">{formatMoney(ledgerSummary.outstanding, locale, vendor.currency_syp)}</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -154,10 +155,10 @@ export default function VendorCommission() {
                                 <TableRow><TableCell colSpan={5} className="py-8 text-center text-muted-foreground">{vendor.no_financial_movements}</TableCell></TableRow>
                             ) : ledgerEntries.map((entry) => (
                                 <TableRow key={entry.id}>
-                                    <TableCell>{new Date(entry.created_at).toLocaleDateString()}</TableCell>
+                                    <TableCell>{new Date(entry.created_at).toLocaleDateString(locale)}</TableCell>
                                     <TableCell className="font-medium">{entry.type_name}</TableCell>
                                     <TableCell><span className={entry.direction === 'credit' ? 'text-[var(--color-success-strong)]' : 'text-[var(--color-danger-strong)]'}>{entry.direction === 'credit' ? vendor.credit : vendor.debit}</span></TableCell>
-                                    <TableCell className="tabular-nums">{formatMoney(entry.amount)}</TableCell>
+                                    <TableCell className="tabular-nums">{formatMoney(entry.amount, locale, vendor.currency_syp)}</TableCell>
                                     <TableCell className="whitespace-normal text-muted-foreground">{entry.description}</TableCell>
                                 </TableRow>
                             ))}
@@ -183,15 +184,15 @@ export default function VendorCommission() {
                         <TableBody>
                             {categoryBreakdown.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="py-6 text-center text-sm text-muted-foreground">No completed orders found.</TableCell>
+                                    <TableCell colSpan={4} className="py-6 text-center text-sm text-muted-foreground">{vendor.js_no_completed_orders_found}</TableCell>
                                 </TableRow>
                             ) : (
                                 categoryBreakdown.map((row, index) => (
                                     <TableRow key={index}>
-                                        <TableCell className="font-semibold">{row.category_name ?? 'Unknown'}</TableCell>
+                                        <TableCell className="font-semibold">{row.category_name ?? vendor.js_unknown_category}</TableCell>
                                         <TableCell>{Number(row.commission_rate || 0).toFixed(2)}%</TableCell>
-                                        <TableCell className="font-semibold">{formatMoney(row.sales_total)}</TableCell>
-                                        <TableCell className="font-semibold text-primary">{formatMoney(row.commission_amount)}</TableCell>
+                                        <TableCell className="font-semibold">{formatMoney(row.sales_total, locale, vendor.currency_syp)}</TableCell>
+                                        <TableCell className="font-semibold text-primary">{formatMoney(row.commission_amount, locale, vendor.currency_syp)}</TableCell>
                                     </TableRow>
                                 ))
                             )}
@@ -206,12 +207,12 @@ export default function VendorCommission() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-7 gap-2 p-5">
                     {trend.length === 0 ? (
-                        <p className="col-span-7 text-sm text-muted-foreground">No trend data available.</p>
+                        <p className="col-span-7 text-sm text-muted-foreground">{vendor.js_no_trend_data}</p>
                     ) : (
                         trend.map((point, index) => {
                             const value = Number(point.count || 0);
                             const date = new Date(point.date);
-                            const label = Number.isNaN(date.getTime()) ? point.date : date.toLocaleDateString(undefined, { weekday: 'short' });
+                            const label = Number.isNaN(date.getTime()) ? point.date : date.toLocaleDateString(locale, { weekday: 'short' });
                             const height = Math.max(Math.round((value / trendMax) * 88), 10);
                             return (
                                 <div key={index} className="flex flex-col items-center gap-2 rounded-md border border-border bg-muted p-2">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
-import { Plus, Check, Copy, FileText } from 'lucide-react';
+import { Plus, Check, Copy, Eye, FileText, Pencil, Trash2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { PageHeader } from '@/Components/admin/PageHeader';
 import { DataTable } from '@/Components/admin/DataTable';
@@ -174,17 +174,17 @@ export default function VendorsIndex() {
                         </Button>
                     )}
                     <Button asChild variant="ghost" size="sm">
-                        <Link href={route('admin.vendors.show', row.id)}>{common.view_details ?? 'View'}</Link>
+                        <Link href={route('admin.vendors.show', row.id)}><Eye className="size-3.5" aria-hidden="true" />{common.view_details ?? 'View'}</Link>
                     </Button>
                     <Button asChild variant="outline" size="sm">
-                        <Link href={route('admin.vendors.edit', row.id)}>{common.edit ?? 'Edit'}</Link>
+                        <Link href={route('admin.vendors.edit', row.id)}><Pencil className="size-3.5" aria-hidden="true" />{common.edit ?? 'Edit'}</Link>
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => setReportTarget(row)}>
                         <FileText className="size-3.5" aria-hidden="true" />
                         {admin.report}
                     </Button>
                     <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => { setDeleteError(null); setDeleteTarget(row); }}>
-                        {common.delete ?? 'Delete'}
+                        <Trash2 className="size-3.5" aria-hidden="true" />{common.delete ?? 'Delete'}
                     </Button>
                 </div>
             ),

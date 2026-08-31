@@ -58,7 +58,7 @@
 <h2>{{ $labels['identity'] }}</h2>
 <table class="meta">
     <tr><td><strong>{{ $labels['store'] }}:</strong> <span class="dynamic" dir="auto">{{ $data['vendor']['store_name'] }}</span></td><td><strong>{{ $labels['city'] }}:</strong> <span class="dynamic" dir="auto">{{ $data['vendor']['city']['name'] ?? '—' }}</span></td></tr>
-    <tr><td><strong>{{ $labels['type'] }}:</strong> {{ $translatedValue($data['vendor']['business_type']) }}</td><td><strong>{{ $labels['city'] }}:</strong> <span class="dynamic" dir="auto">{{ $data['vendor']['city']['name'] ?? '—' }}</span></td></tr>
+    <tr><td><strong>{{ $labels['type'] }}:</strong> {{ $translatedValue($data['vendor']['business_type']) }}</td><td></td></tr>
     <tr><td><strong>{{ $labels['status'] }}:</strong> {{ $translatedValue($data['vendor']['status']) }}</td><td><strong>{{ $labels['joined'] }}:</strong> {{ $date($data['vendor']['joined_at']) }}</td></tr>
     <tr><td><strong>{{ $labels['domain'] }}:</strong> {{ $data['scope']['domain'] ? $translatedValue($data['scope']['domain']) : ($isArabic ? 'كامل نشاط التاجر' : 'All vendor activity') }}</td><td><strong>{{ $labels['categories'] }}:</strong> <span class="dynamic" dir="auto">{{ collect($data['vendor']['categories'])->pluck('name')->join(', ') ?: '—' }}</span></td></tr>
 </table>
@@ -91,7 +91,7 @@
 
 <h2>{{ $labels['returns'] }}</h2>
 <table class="report-table"><thead><tr><th>{{ $labels['order'] }}</th><th>{{ $labels['product'] }}</th><th>{{ $labels['amount'] }}</th><th>{{ $labels['return_status'] }}</th><th>{{ $labels['date'] }}</th></tr></thead><tbody>
-@forelse($data['returns'] as $row)@foreach($row['items'] as $item)<tr><td>{{ $row['order']['order_number'] ?? '—' }}</td><td>{{ $item['product']['name'] ?? '—' }}</td><td class="number">{{ $money($item['line_total']) }}</td><td>{{ $row['status'] }}</td><td>{{ $date($row['created_at']) }}</td></tr>@endforeach @empty<tr><td colspan="5">—</td></tr>@endforelse
+@forelse($data['returns'] as $row)@foreach($row['items'] as $item)<tr><td>{{ $row['order']['order_number'] ?? '—' }}</td><td>{{ $item['product']['name'] ?? '—' }}</td><td class="number">{{ $money($item['line_total']) }}</td><td>{{ $translatedValue($row['status']) }}</td><td>{{ $date($row['created_at']) }}</td></tr>@endforeach @empty<tr><td colspan="5">—</td></tr>@endforelse
 </tbody></table>
 
 <h2>{{ $labels['category_performance'] }}</h2>
