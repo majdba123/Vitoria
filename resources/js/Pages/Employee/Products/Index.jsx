@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import EmployeeLayout from '@/Layouts/EmployeeLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { DataTable } from '@/Components/admin/DataTable';
-import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { DataTable } from '@/Components/shared/DataTable';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Button } from '@/Components/ui/button';
 import {
     Select,
@@ -13,7 +13,9 @@ import {
     SelectValue,
 } from '@/Components/ui/select';
 import { Card, CardContent } from '@/Components/ui/card';
-import { useI18n } from '@/hooks/use-i18n';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { formatCurrency } from '@/lib/date-time';
+import { translatedStatus } from '@/lib/translated-enum';
 
 const STATUS_TONE = { approved: 'success', rejected: 'danger', pending: 'warning' };
 
@@ -21,6 +23,7 @@ const TITLE_KEY = { approved: 'active_products_tab', pending: 'pending_products'
 
 export default function EmployeeProductsIndex({ status: statusParam }) {
     const { employee, common, admin } = useI18n();
+    const locale = useLocale();
     const [statusFilter, setStatusFilter] = useState(statusParam ?? 'all');
     const [status, setStatus] = useState('loading');
     const [rows, setRows] = useState([]);
@@ -65,8 +68,8 @@ export default function EmployeeProductsIndex({ status: statusParam }) {
             ),
         },
         { key: 'category', label: admin.categories, render: (row) => row.category?.name || '—' },
-        { key: 'status', label: employee.status, render: (row) => <StatusBadge tone={STATUS_TONE[row.status] ?? 'warning'}>{row.status}</StatusBadge> },
-        { key: 'price', label: common.price ?? 'Price', align: 'end', render: (row) => `${Number.parseFloat(row.price || 0).toLocaleString()} SYP` },
+        { key: 'status', label: employee.status, render: (row) => <StatusBadge tone={STATUS_TONE[row.status] ?? 'warning'}>{translatedStatus(row.status, common)}</StatusBadge> },
+        { key: 'price', label: common.price, align: 'end', render: (row) => formatCurrency(row.price || 0, locale) },
         {
             key: 'actions',
             label: admin.th_actions,
@@ -107,7 +110,7 @@ export default function EmployeeProductsIndex({ status: statusParam }) {
                                 <SelectItem value="rejected">{employee.rejected}</SelectItem>
                             </SelectContent>
                         </Select>
-                        <Button variant="outline" size="sm" onClick={load}>{common.refresh ?? 'Refresh'}</Button>
+                        <Button variant="outline" size="sm" onClick={load}>{common.refresh}</Button>
                     </div>
                 </CardContent>
                 <CardContent className="p-4">

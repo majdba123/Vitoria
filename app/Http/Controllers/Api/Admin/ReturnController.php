@@ -38,7 +38,7 @@ class ReturnController extends Controller
         $returns = $query->paginate(12);
 
         return response()->json([
-            'message' => 'Returns retrieved successfully.',
+            'message' => __('api.returns_retrieved'),
             'data' => $returns->items(),
             'meta' => [
                 'current_page' => $returns->currentPage(),
@@ -55,7 +55,7 @@ class ReturnController extends Controller
             ->with(['order:id,order_number', 'user:id,name,email', 'vendor:id,store_name', 'items', 'refund'])
             ->findOrFail($returnId);
 
-        return response()->json(['message' => 'Return retrieved successfully.', 'data' => $return]);
+        return response()->json(['message' => __('api.return_retrieved'), 'data' => $return]);
     }
 
     public function updateStatus(Request $request, int $returnId): JsonResponse

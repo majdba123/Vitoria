@@ -26,4 +26,12 @@ return [
     'credit' => 'Credit', 'debit' => 'Debit', 'units' => 'units',
     'agriculture' => 'Agriculture', 'veterinary' => 'Veterinary', 'both' => 'Agriculture & Veterinary',
     'ledger_sale' => 'Sale', 'ledger_commission' => 'Commission', 'ledger_settlement' => 'Settlement', 'ledger_refund' => 'Refund', 'ledger_adjustment' => 'Adjustment',
+    'items_count' => ':count items', 'staff_owner' => 'Owner',
+    'provider_cod' => 'Cash on delivery', 'payment_method_cash' => 'Cash',
+    'coupon_percentage' => 'Percentage', 'coupon_fixed' => 'Fixed amount',
+    'entity_Vendor' => 'Vendor', 'entity_Product' => 'Product', 'entity_VendorLedgerEntry' => 'Ledger entry', 'entity_VendorSettlement' => 'Settlement',
+    'action_vendor.activated' => 'Vendor activated', 'action_vendor.approved' => 'Vendor approved', 'action_vendor.suspended' => 'Vendor suspended',
+    'action_product.activated' => 'Product activated', 'action_product.deactivated' => 'Product deactivated',
+    'action_vendor_ledger.adjustment' => 'Ledger adjustment', 'action_vendor_ledger.settlement' => 'Vendor settlement',
+    'action_vendor_ledger.entry.sale' => 'Sale entry', 'action_vendor_ledger.entry.commission' => 'Commission entry', 'action_vendor_ledger.entry.refund' => 'Refund entry', 'action_vendor_ledger.entry.settlement' => 'Settlement entry',
 ];

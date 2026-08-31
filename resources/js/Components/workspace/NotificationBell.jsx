@@ -35,7 +35,7 @@ export function NotificationBell({ viewAllRoute = 'admin.notifications.index', l
     // same notification-copy keys under its own group, so the bell can be
     // reused across portals by just switching which bucket it reads.
     const admin = { ...i18n.admin, ...(i18n[group] ?? {}) };
-    const notificationsLabel = admin.notifications_log ?? admin.notifications ?? 'Notifications';
+    const notificationsLabel = admin.notifications_log ?? admin.notifications;
     const [open, setOpen] = useState(false);
     const [status, setStatus] = useState('idle'); // idle | loading | ready | error
     const [items, setItems] = useState([]);
@@ -124,7 +124,7 @@ export function NotificationBell({ viewAllRoute = 'admin.notifications.index', l
                             className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-primary hover:underline"
                         >
                             <CheckCheck className="size-3.5" />
-                            {admin.mark_all_read ?? 'Mark all as read'}
+                            {admin.mark_all_read}
                         </button>
                     </div>
                 </div>
@@ -133,21 +133,21 @@ export function NotificationBell({ viewAllRoute = 'admin.notifications.index', l
                     {status === 'loading' && (
                         <div className="flex items-center justify-center gap-2 px-4 py-10 text-sm text-muted-foreground">
                             <Loader2 className="size-4 animate-spin" />
-                            {admin.loading ?? 'Loading...'}
+                            {admin.loading ?? common.loading}
                         </div>
                     )}
 
                     {status === 'error' && (
                         <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-                            <p>{admin.dashboard_load_failed ?? admin.failed_notifications ?? 'Failed to load.'}</p>
+                            <p>{admin.dashboard_load_failed ?? admin.failed_notifications}</p>
                             <button type="button" onClick={load} className="mt-2 font-semibold text-primary underline">
-                                {common.refresh ?? 'Retry'}
+                                {common.retry}
                             </button>
                         </div>
                     )}
 
                     {status === 'ready' && items.length === 0 && (
-                        <p className="px-4 py-10 text-center text-sm text-muted-foreground">{admin.no_notifications ?? 'No notifications.'}</p>
+                        <p className="px-4 py-10 text-center text-sm text-muted-foreground">{admin.no_notifications}</p>
                     )}
 
                     {status === 'ready' &&
@@ -174,7 +174,7 @@ export function NotificationBell({ viewAllRoute = 'admin.notifications.index', l
                     href={route(viewAllRoute)}
                     className="block border-t px-4 py-2.5 text-center text-[11px] font-semibold uppercase tracking-wider text-primary hover:bg-accent"
                 >
-                    {admin.view_all ?? 'View all'}
+                    {admin.view_all ?? common.view_all}
                 </Link>
             </DropdownMenuContent>
         </DropdownMenu>

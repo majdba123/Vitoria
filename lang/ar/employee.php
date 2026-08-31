@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'navigation_label' => 'تنقل الموظف',
     'workspace' => 'مساحة الموظف',
     'open_sidebar' => 'فتح القائمة الجانبية',
     'workspace_label' => 'مساحة الموظف',

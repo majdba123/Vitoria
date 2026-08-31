@@ -56,7 +56,7 @@ class OrderController extends Controller
         $orders = $query->latest()->paginate(6);
 
         return response()->json([
-            'message' => 'Orders retrieved successfully.',
+            'message' => __('api.orders_retrieved'),
             'data' => $orders->getCollection()->map(fn (Order $order) => $this->presentOrder($order))->values(),
             'meta' => [
                 'current_page' => $orders->currentPage(),
@@ -89,7 +89,7 @@ class OrderController extends Controller
         $this->authorize('view', $order);
 
         return response()->json([
-            'message' => 'Order retrieved successfully.',
+            'message' => __('api.order_retrieved'),
             'data' => array_merge($this->presentOrder($order), [
                 'shipping_address' => $order->shippingAddress(),
                 'payment' => $order->payment ? [

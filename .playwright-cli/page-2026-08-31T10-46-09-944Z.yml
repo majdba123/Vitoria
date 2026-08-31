@@ -1,0 +1,121 @@
+- generic [ref=f9e3]:
+  - navigation "Vendor navigation" [ref=f9e5]:
+    - generic [ref=f9e6]:
+      - list [ref=f9e8]:
+        - listitem [ref=f9e9]:
+          - link "Vetora Vendor" [ref=f9e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/vendor/dashboard
+            - generic [ref=f9e16]:
+              - generic [ref=f9e17]: Vetora
+              - generic [ref=f9e18]: Vendor
+      - generic [ref=f9e19]:
+        - generic [ref=f9e20]:
+          - generic [ref=f9e21]: Overview
+          - list [ref=f9e23]:
+            - listitem [ref=f9e24]:
+              - link "Dashboard" [ref=f9e25] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/dashboard
+        - generic [ref=f9e32]:
+          - generic [ref=f9e33]: My Store
+          - list [ref=f9e35]:
+            - listitem [ref=f9e36]:
+              - link "Products" [ref=f9e37] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/products
+            - listitem [ref=f9e43]:
+              - link "Orders" [ref=f9e44] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/orders
+            - listitem [ref=f9e49]:
+              - link "Sales" [ref=f9e50] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/sales
+            - listitem [ref=f9e55]:
+              - link "Notifications" [ref=f9e56] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/notifications
+        - generic [ref=f9e61]:
+          - generic [ref=f9e62]: Account
+          - list [ref=f9e64]:
+            - listitem [ref=f9e65]:
+              - link "Profile" [ref=f9e66] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/profile
+        - generic [ref=f9e71]: Categories
+      - list [ref=f9e76]:
+        - listitem [ref=f9e77]:
+          - button "ت تاجر المستلزمات الزراعية Seller" [ref=f9e78]:
+            - generic [ref=f9e79]: ت
+            - generic [ref=f9e81]:
+              - generic [ref=f9e82]: تاجر المستلزمات الزراعية
+              - generic [ref=f9e83]: Seller
+  - main [ref=f9e87]:
+    - generic [ref=f9e89]:
+      - button "Toggle Sidebar" [ref=f9e90]
+      - generic [ref=f9e92]:
+        - paragraph [ref=f9e93]: Vendor
+        - heading "Sales" [level=1] [ref=f9e94]
+      - generic [ref=f9e95]:
+        - link "Home" [ref=f9e96] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/
+        - button "Choose language" [ref=f9e97]
+        - button "Notifications" [ref=f9e98]
+        - button "Toggle theme" [ref=f9e99]
+        - button "Sign Out" [ref=f9e100]
+    - generic [ref=f9e101]:
+      - generic [ref=f9e103]:
+        - heading "Sales and settlements" [level=1] [ref=f9e104]
+        - paragraph [ref=f9e105]: Review completed sales, platform commission, net earnings, payments, and outstanding balance.
+      - generic [ref=f9e106]:
+        - paragraph [ref=f9e110]: Gross sales
+        - paragraph [ref=f9e118]: Completed
+        - paragraph [ref=f9e127]: Net vendor earnings
+        - paragraph [ref=f9e136]: Commission Total
+        - paragraph [ref=f9e145]: Paid to You
+        - paragraph [ref=f9e157]: Remaining
+      - generic [ref=f9e163]:
+        - generic [ref=f9e164]:
+          - generic [ref=f9e165]: Order Status Statistics
+          - generic [ref=f9e167]:
+            - generic [ref=f9e169]:
+              - generic [ref=f9e170]: Pending
+              - generic [ref=f9e171]: 0 (0%)
+            - generic [ref=f9e174]:
+              - generic [ref=f9e175]: Completed
+              - generic [ref=f9e176]: 0 (0%)
+            - generic [ref=f9e179]:
+              - generic [ref=f9e180]: Cancelled
+              - generic [ref=f9e181]: 0 (0%)
+        - generic [ref=f9e183]:
+          - generic [ref=f9e184]: Payment Summary
+          - generic [ref=f9e186]:
+            - paragraph [ref=f9e187]: These values are managed by admin settlement.
+            - generic [ref=f9e188]:
+              - paragraph [ref=f9e189]: Paid Amount
+              - paragraph [ref=f9e190]: 0 SYP
+            - generic [ref=f9e191]:
+              - paragraph [ref=f9e192]: Remaining Amount
+              - paragraph [ref=f9e193]: 0 SYP
+      - generic [ref=f9e194]:
+        - generic [ref=f9e195]: Financial movement history
+        - table [ref=f9e199]:
+          - rowgroup [ref=f9e200]:
+            - row [ref=f9e201]:
+              - columnheader "Date" [ref=f9e202]
+              - columnheader "Type" [ref=f9e203]
+              - columnheader "Direction" [ref=f9e204]
+              - columnheader "Amount" [ref=f9e205]
+              - columnheader "Description" [ref=f9e206]
+          - rowgroup [ref=f9e207]:
+            - row [ref=f9e208]:
+              - cell "No financial movements yet." [ref=f9e209]
+      - generic [ref=f9e210]:
+        - generic [ref=f9e211]: Commission by Category
+        - table [ref=f9e215]:
+          - rowgroup [ref=f9e216]:
+            - row [ref=f9e217]:
+              - columnheader "Category" [ref=f9e218]
+              - columnheader "Commission %" [ref=f9e219]
+              - columnheader "Sales Total" [ref=f9e220]
+              - columnheader "Commission Amount" [ref=f9e221]
+          - rowgroup [ref=f9e222]:
+            - row [ref=f9e223]:
+              - cell "No completed orders found." [ref=f9e224]
+      - generic [ref=f9e225]:
+        - generic [ref=f9e226]: Orders in the Last 7 Days
+        - paragraph [ref=f9e229]: No trend data available.

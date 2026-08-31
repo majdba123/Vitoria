@@ -34,7 +34,7 @@ class ProductDocumentController extends Controller
             ->map(fn (ProductDocument $document) => $this->present($document))
             ->values();
 
-        return response()->json(['message' => 'Documents retrieved successfully.', 'data' => $documents]);
+        return response()->json(['message' => __('api.documents_retrieved'), 'data' => $documents]);
     }
 
     public function store(Request $request, Product $product): JsonResponse
@@ -114,7 +114,7 @@ class ProductDocumentController extends Controller
     {
         $vendor = $request->user()?->managedVendor();
         if (! $vendor) {
-            abort(403, 'Vendor profile not found.');
+            abort(403, __('api.vendor_profile_not_found'));
         }
         if ((int) $product->vendor_id !== (int) $vendor->id) {
             abort(403, __('You do not own this product.'));

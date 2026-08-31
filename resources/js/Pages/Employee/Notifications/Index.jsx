@@ -1,10 +1,10 @@
-import { usePage } from '@inertiajs/react';
 import EmployeeLayout from '@/Layouts/EmployeeLayout';
 import { NotificationCenter } from '@/Components/workspace/NotificationCenter';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
 
 export default function EmployeeNotificationsIndex() {
-    const { props } = usePage();
-    const title = props.locale === 'ar' ? 'الإشعارات' : 'Notifications';
+    const { notificationPreferences } = useI18n();
+    const locale = useLocale();
 
-    return <EmployeeLayout title={title}><NotificationCenter role="employee" locale={props.locale} /></EmployeeLayout>;
+    return <EmployeeLayout title={notificationPreferences.title}><NotificationCenter role="employee" locale={locale} /></EmployeeLayout>;
 }

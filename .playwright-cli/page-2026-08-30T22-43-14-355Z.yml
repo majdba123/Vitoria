@@ -1,0 +1,92 @@
+- main [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - link "Vetora":
+        - /url: http://127.0.0.1:8000/
+        - img "Vetora"
+      - generic [ref=e6]:
+        - button "Choose language" [ref=e7]
+        - button "Toggle theme" [ref=e8]
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - paragraph [ref=e13]: Create your account
+          - heading "Create Account" [level=1] [ref=e14]
+          - paragraph [ref=e15]: Join Vetora today
+        - link "Sign In" [ref=e16] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/login
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - generic [ref=e20]:
+              - text: Full Name
+              - generic [ref=e21]: "*"
+            - textbox "Full Name *" [ref=e22]:
+              - /placeholder: Enter your full name
+          - generic [ref=e23]:
+            - generic [ref=e24]:
+              - text: Phone Number
+              - generic [ref=e25]: "*"
+            - textbox "Phone Number *" [ref=e26]:
+              - /placeholder: 09XXXXXXXX
+          - generic [ref=e27]:
+            - generic [ref=e28]:
+              - text: National ID
+              - generic [ref=e29]: "*"
+            - textbox "National ID *" [ref=e30]:
+              - /placeholder: Enter your national ID
+          - generic [ref=e31]:
+            - generic [ref=e32]:
+              - text: Age
+              - generic [ref=e33]: "*"
+            - spinbutton "Age *" [ref=e34]
+          - generic [ref=e35]:
+            - generic [ref=e36]:
+              - text: Membership number
+              - generic [ref=e37]: "*"
+            - textbox "Membership number *" [ref=e38]:
+              - /placeholder: e.g. MEM-12345
+          - generic [ref=e39]:
+            - generic [ref=e40]:
+              - text: City
+              - generic [ref=e41]: "*"
+            - combobox "City" [ref=e42]:
+              - generic: Select your city
+            - combobox [ref=e43]
+        - generic [ref=e44]:
+          - generic [ref=e45]:
+            - generic [ref=e46]:
+              - text: Email Address
+              - generic [ref=e47]: "*"
+            - textbox "Email Address *" [ref=e48]:
+              - /placeholder: you@example.com
+          - generic [ref=e49]:
+            - generic [ref=e50]:
+              - text: Password
+              - generic [ref=e51]: "*"
+            - generic [ref=e52]:
+              - textbox "Password *" [ref=e53]:
+                - /placeholder: Enter your password
+              - button "Show password" [ref=e54]
+          - generic [ref=e58]:
+            - generic [ref=e59]:
+              - text: Confirm Password
+              - generic [ref=e60]: "*"
+            - generic [ref=e61]:
+              - textbox "Confirm Password *" [ref=e62]:
+                - /placeholder: Repeat your password
+              - button "Show password" [ref=e63]
+        - generic [ref=e67]:
+          - paragraph [ref=e68]:
+            - text: Already have an account?
+            - link "Sign In" [ref=e69] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/login
+          - button "Register" [ref=e70]
+    - paragraph [ref=e71]: Vetora access
+  - complementary "A refined workspace for every buyer, seller, and partner." [ref=e72]:
+    - generic [ref=e74]:
+      - paragraph [ref=e75]: Vetora access
+      - heading "A refined workspace for every buyer, seller, and partner." [level=2] [ref=e76]
+      - paragraph [ref=e77]: Sign in to move from discovery into action with a smoother storefront, cleaner dashboards, and a single product language across the platform.
+      - link "Sign In" [ref=e78] [cursor=pointer]:
+        - /url: http://127.0.0.1:8000/login

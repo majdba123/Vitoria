@@ -63,7 +63,7 @@ export function UserMenu({ roleLabel }) {
                         <DropdownMenuItem asChild>
                             <Link href={route('home')}>
                                 <Home />
-                                {nav.home ?? 'Home'}
+                                {nav.home}
                             </Link>
                         </DropdownMenuItem>
                     </DropdownMenuContent>

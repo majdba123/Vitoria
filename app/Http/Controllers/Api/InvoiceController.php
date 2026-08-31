@@ -21,7 +21,7 @@ class InvoiceController extends Controller
             ->paginate(10);
 
         return response()->json([
-            'message' => 'Invoices retrieved successfully.',
+            'message' => __('api.invoices_retrieved'),
             'data' => $invoices->getCollection()->map(fn (Invoice $invoice) => $this->present($invoice))->values(),
             'meta' => [
                 'current_page' => $invoices->currentPage(),
@@ -37,7 +37,7 @@ class InvoiceController extends Controller
         $invoice = Invoice::query()->with('order:id,order_number')->findOrFail($invoiceId);
         $this->authorize('view', $invoice);
 
-        return response()->json(['message' => 'Invoice retrieved successfully.', 'data' => $this->present($invoice)]);
+        return response()->json(['message' => __('api.invoice_retrieved'), 'data' => $this->present($invoice)]);
     }
 
     /**

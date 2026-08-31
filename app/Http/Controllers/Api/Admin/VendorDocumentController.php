@@ -43,7 +43,7 @@ class VendorDocumentController extends Controller
         $documents = $query->paginate(20);
 
         return response()->json([
-            'message' => 'Documents retrieved successfully.',
+            'message' => __('api.documents_retrieved'),
             'data' => $documents->getCollection()->map(fn (VendorDocument $document) => $this->present($document))->values(),
             'meta' => [
                 'current_page' => $documents->currentPage(),
@@ -58,7 +58,7 @@ class VendorDocumentController extends Controller
     {
         $document = VendorDocument::query()->with(['vendor:id,store_name', 'reviewedBy:id,name'])->findOrFail($documentId);
 
-        return response()->json(['message' => 'Document retrieved successfully.', 'data' => $this->present($document)]);
+        return response()->json(['message' => __('api.document_retrieved'), 'data' => $this->present($document)]);
     }
 
     public function download(int $documentId)

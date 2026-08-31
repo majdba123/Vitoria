@@ -33,13 +33,12 @@ class NotificationService
      */
     public function notifyNewProductApproved(Product $product): void
     {
-        $body = 'منتج جديد متوفر الآن: '.$product->name;
-
         $this->broadcastToAllUsers(
-            title: 'منتج جديد',
-            body: $body,
+            titleKey: 'notifications.new_product.title',
+            bodyKey: 'notifications.new_product.body',
             actionType: AdminNotification::ACTION_PRODUCT,
             actionId: $product->id,
+            replacements: fn (string $locale): array => ['product' => $this->productName($product, $locale)],
         );
     }
 
@@ -52,38 +51,31 @@ class NotificationService
     {
         $order->load('vendor.user');
         $orderNumber = $order->order_number;
-        $bodyAdmin = "طلب جديد تم إنشاؤه. رقم الطلب: #{$orderNumber}";
-        $bodyVendor = "لديك طلب جديد. رقم الطلب: #{$orderNumber}";
-
         $adminIds = User::query()->where('type', User::TYPE_ADMIN)->pluck('id')->all();
         $vendorUserId = $order->vendor?->user_id;
 
         if ($adminIds !== []) {
-            $notification = AdminNotification::query()->create([
-                'title' => 'طلب جديد',
-                'body' => $bodyAdmin,
-                'type' => AdminNotification::TYPE_PRIVATE,
-                'category' => NotificationPreference::CATEGORY_ORDER_UPDATES,
-                'action_type' => AdminNotification::ACTION_ORDER,
-                'action_id' => $order->id,
-                'sent_by' => null,
-            ]);
-            $notification->recipients()->sync($adminIds);
-            $this->broadcastNotification($notification, $adminIds);
+            $this->sendLocalizedNotification(
+                recipientIds: $adminIds,
+                titleKey: 'notifications.new_order.title',
+                bodyKey: 'notifications.new_order.admin_body',
+                category: NotificationPreference::CATEGORY_ORDER_UPDATES,
+                actionType: AdminNotification::ACTION_ORDER,
+                actionId: $order->id,
+                replacements: ['order' => $orderNumber],
+            );
         }
 
         if ($vendorUserId !== null && $vendorUserId !== 0) {
-            $notifVendor = AdminNotification::query()->create([
-                'title' => 'طلب جديد',
-                'body' => $bodyVendor,
-                'type' => AdminNotification::TYPE_PRIVATE,
-                'category' => NotificationPreference::CATEGORY_ORDER_UPDATES,
-                'action_type' => AdminNotification::ACTION_ORDER,
-                'action_id' => $order->id,
-                'sent_by' => null,
-            ]);
-            $notifVendor->recipients()->sync([$vendorUserId]);
-            $this->broadcastNotification($notifVendor, [$vendorUserId]);
+            $this->sendLocalizedNotification(
+                recipientIds: [$vendorUserId],
+                titleKey: 'notifications.new_order.title',
+                bodyKey: 'notifications.new_order.vendor_body',
+                category: NotificationPreference::CATEGORY_ORDER_UPDATES,
+                actionType: AdminNotification::ACTION_ORDER,
+                actionId: $order->id,
+                replacements: ['order' => $orderNumber],
+            );
         }
     }
 
@@ -95,12 +87,9 @@ class NotificationService
         $order->load('vendor.user', 'user');
         $orderNumber = $order->order_number;
 
-        $statusMessages = [
-            'completed' => "تم إكمال الطلب #{$orderNumber}",
-            'cancelled' => "تم إلغاء الطلب #{$orderNumber}",
-            'confirmed' => "تم تأكيد الطلب #{$orderNumber}",
-        ];
-        $body = $statusMessages[$newStatus] ?? "تم تحديث حالة الطلب #{$orderNumber} إلى: {$newStatus}";
+        $bodyKey = in_array($newStatus, [Order::STATUS_COMPLETED, Order::STATUS_CANCELLED, Order::STATUS_CONFIRMED], true)
+            ? "notifications.order_status.{$newStatus}"
+            : 'notifications.order_status.updated';
 
         $recipientIds = User::query()->where('type', User::TYPE_ADMIN)->pluck('id')->all();
         $recipientIds[] = $order->user_id;
@@ -113,18 +102,18 @@ class NotificationService
             return;
         }
 
-        $notification = AdminNotification::query()->create([
-            'title' => 'تحديث الطلب',
-            'body' => $body,
-            'type' => AdminNotification::TYPE_PRIVATE,
-            'category' => NotificationPreference::CATEGORY_ORDER_UPDATES,
-            'action_type' => AdminNotification::ACTION_ORDER,
-            'action_id' => $order->id,
-            'sent_by' => null,
-        ]);
-        $notification->recipients()->sync($recipientIds);
-
-        $this->broadcastNotification($notification, $recipientIds);
+        $this->sendLocalizedNotification(
+            recipientIds: $recipientIds,
+            titleKey: 'notifications.order_status.title',
+            bodyKey: $bodyKey,
+            category: NotificationPreference::CATEGORY_ORDER_UPDATES,
+            actionType: AdminNotification::ACTION_ORDER,
+            actionId: $order->id,
+            replacements: fn (string $locale): array => [
+                'order' => $orderNumber,
+                'status' => trans("common.status.{$newStatus}", locale: $locale),
+            ],
+        );
     }
 
     /**
@@ -133,38 +122,30 @@ class NotificationService
     public function notifyReturnRequested(OrderReturn $return): void
     {
         $orderNumber = $return->order->order_number;
-        $bodyAdmin = "طلب إرجاع جديد لطلب #{$orderNumber}";
-        $bodyVendor = "طلب إرجاع جديد لطلب #{$orderNumber}";
-
         $recipientIds = User::query()->where('type', User::TYPE_ADMIN)->pluck('id')->all();
-
-        $notification = AdminNotification::query()->create([
-            'title' => 'طلب إرجاع',
-            'body' => $bodyAdmin,
-            'type' => AdminNotification::TYPE_PRIVATE,
-            'category' => NotificationPreference::CATEGORY_ORDER_UPDATES,
-            'action_type' => AdminNotification::ACTION_ORDER,
-            'action_id' => $return->order_id,
-            'sent_by' => null,
-        ]);
         if ($recipientIds !== []) {
-            $notification->recipients()->sync($recipientIds);
-            $this->broadcastNotification($notification, $recipientIds);
+            $this->sendLocalizedNotification(
+                recipientIds: $recipientIds,
+                titleKey: 'notifications.return_requested.title',
+                bodyKey: 'notifications.return_requested.body',
+                category: NotificationPreference::CATEGORY_ORDER_UPDATES,
+                actionType: AdminNotification::ACTION_ORDER,
+                actionId: $return->order_id,
+                replacements: ['order' => $orderNumber],
+            );
         }
 
         $vendorUserId = $return->vendor?->user_id;
         if ($vendorUserId) {
-            $notifVendor = AdminNotification::query()->create([
-                'title' => 'طلب إرجاع',
-                'body' => $bodyVendor,
-                'type' => AdminNotification::TYPE_PRIVATE,
-                'category' => NotificationPreference::CATEGORY_ORDER_UPDATES,
-                'action_type' => AdminNotification::ACTION_ORDER,
-                'action_id' => $return->order_id,
-                'sent_by' => null,
-            ]);
-            $notifVendor->recipients()->sync([$vendorUserId]);
-            $this->broadcastNotification($notifVendor, [$vendorUserId]);
+            $this->sendLocalizedNotification(
+                recipientIds: [$vendorUserId],
+                titleKey: 'notifications.return_requested.title',
+                bodyKey: 'notifications.return_requested.body',
+                category: NotificationPreference::CATEGORY_ORDER_UPDATES,
+                actionType: AdminNotification::ACTION_ORDER,
+                actionId: $return->order_id,
+                replacements: ['order' => $orderNumber],
+            );
         }
     }
 
@@ -174,14 +155,10 @@ class NotificationService
     public function notifyReturnStatusUpdated(OrderReturn $return, string $newStatus): void
     {
         $orderNumber = $return->order->order_number;
-        $statusMessages = [
-            OrderReturn::STATUS_APPROVED => "تمت الموافقة على طلب إرجاعك للطلب #{$orderNumber}",
-            OrderReturn::STATUS_REJECTED => "تم رفض طلب إرجاعك للطلب #{$orderNumber}",
-            OrderReturn::STATUS_RECEIVED => "تم استلام المرتجع الخاص بالطلب #{$orderNumber}",
-            OrderReturn::STATUS_COMPLETED => "اكتمل إرجاع الطلب #{$orderNumber}",
-            OrderReturn::STATUS_CANCELLED => "تم إلغاء طلب إرجاع الطلب #{$orderNumber}",
-        ];
-        $body = $statusMessages[$newStatus] ?? "تم تحديث حالة إرجاع الطلب #{$orderNumber}";
+        $knownStatuses = [OrderReturn::STATUS_APPROVED, OrderReturn::STATUS_REJECTED, OrderReturn::STATUS_RECEIVED, OrderReturn::STATUS_COMPLETED, OrderReturn::STATUS_CANCELLED];
+        $bodyKey = in_array($newStatus, $knownStatuses, true)
+            ? "notifications.return_status.{$newStatus}"
+            : 'notifications.return_status.updated';
 
         $recipientIds = array_unique(array_filter([
             $return->user_id,
@@ -192,18 +169,15 @@ class NotificationService
             return;
         }
 
-        $notification = AdminNotification::query()->create([
-            'title' => 'تحديث الإرجاع',
-            'body' => $body,
-            'type' => AdminNotification::TYPE_PRIVATE,
-            'category' => NotificationPreference::CATEGORY_ORDER_UPDATES,
-            'action_type' => AdminNotification::ACTION_ORDER,
-            'action_id' => $return->order_id,
-            'sent_by' => null,
-        ]);
-        $notification->recipients()->sync($recipientIds);
-
-        $this->broadcastNotification($notification, $recipientIds);
+        $this->sendLocalizedNotification(
+            recipientIds: $recipientIds,
+            titleKey: 'notifications.return_status.title',
+            bodyKey: $bodyKey,
+            category: NotificationPreference::CATEGORY_ORDER_UPDATES,
+            actionType: AdminNotification::ACTION_ORDER,
+            actionId: $return->order_id,
+            replacements: ['order' => $orderNumber],
+        );
     }
 
     /**
@@ -212,13 +186,10 @@ class NotificationService
     public function notifyRefundStatusUpdated(Refund $refund, string $newStatus): void
     {
         $orderNumber = $refund->order->order_number;
-        $statusMessages = [
-            Refund::STATUS_PENDING => "تم إنشاء طلب استرداد لطلبك #{$orderNumber}",
-            Refund::STATUS_COMPLETED => "تم استرداد المبلغ لطلبك #{$orderNumber}",
-            Refund::STATUS_FAILED => "فشلت عملية استرداد المبلغ لطلبك #{$orderNumber}",
-            Refund::STATUS_CANCELLED => "تم إلغاء طلب استرداد المبلغ لطلبك #{$orderNumber}",
-        ];
-        $body = $statusMessages[$newStatus] ?? "تم تحديث حالة استرداد المبلغ لطلبك #{$orderNumber}";
+        $knownStatuses = [Refund::STATUS_PENDING, Refund::STATUS_COMPLETED, Refund::STATUS_FAILED, Refund::STATUS_CANCELLED];
+        $bodyKey = in_array($newStatus, $knownStatuses, true)
+            ? "notifications.refund_status.{$newStatus}"
+            : 'notifications.refund_status.updated';
 
         $recipientIds = array_unique(array_filter([$refund->order->user_id]));
 
@@ -226,18 +197,15 @@ class NotificationService
             return;
         }
 
-        $notification = AdminNotification::query()->create([
-            'title' => 'تحديث الاسترداد',
-            'body' => $body,
-            'type' => AdminNotification::TYPE_PRIVATE,
-            'category' => NotificationPreference::CATEGORY_ORDER_UPDATES,
-            'action_type' => AdminNotification::ACTION_ORDER,
-            'action_id' => $refund->order_id,
-            'sent_by' => null,
-        ]);
-        $notification->recipients()->sync($recipientIds);
-
-        $this->broadcastNotification($notification, $recipientIds);
+        $this->sendLocalizedNotification(
+            recipientIds: $recipientIds,
+            titleKey: 'notifications.refund_status.title',
+            bodyKey: $bodyKey,
+            category: NotificationPreference::CATEGORY_ORDER_UPDATES,
+            actionType: AdminNotification::ACTION_ORDER,
+            actionId: $refund->order_id,
+            replacements: ['order' => $orderNumber],
+        );
     }
 
     /**
@@ -246,20 +214,18 @@ class NotificationService
     public function notifyVendorStaffAdded(VendorMember $member): void
     {
         $storeName = $member->vendor->store_name;
-        $roleName = __("vendor_staff.role.{$member->role->key}");
-
-        $notification = AdminNotification::query()->create([
-            'title' => 'إضافة إلى فريق متجر',
-            'body' => "تمت إضافتك إلى فريق متجر {$storeName} بصلاحية: {$roleName}",
-            'type' => AdminNotification::TYPE_PRIVATE,
-            'category' => NotificationPreference::CATEGORY_ACCOUNT_SECURITY,
-            'action_type' => null,
-            'action_id' => null,
-            'sent_by' => null,
-        ]);
-        $notification->recipients()->sync([$member->user_id]);
-
-        $this->broadcastNotification($notification, [$member->user_id]);
+        $this->sendLocalizedNotification(
+            recipientIds: [$member->user_id],
+            titleKey: 'notifications.staff_added.title',
+            bodyKey: 'notifications.staff_added.body',
+            category: NotificationPreference::CATEGORY_ACCOUNT_SECURITY,
+            actionType: null,
+            actionId: null,
+            replacements: fn (string $locale): array => [
+                'store' => $storeName,
+                'role' => trans("vendor_staff.role.{$member->role->key}", locale: $locale),
+            ],
+        );
     }
 
     /**
@@ -279,18 +245,15 @@ class NotificationService
             return;
         }
 
-        $notification = AdminNotification::query()->create([
-            'title' => 'وثيقة تاجر بانتظار المراجعة',
-            'body' => "قدّم متجر {$vendor->store_name} وثيقة جديدة بانتظار المراجعة",
-            'type' => AdminNotification::TYPE_PRIVATE,
-            'category' => NotificationPreference::CATEGORY_VENDOR_COMPLIANCE,
-            'action_type' => null,
-            'action_id' => null,
-            'sent_by' => null,
-        ]);
-        $notification->recipients()->sync($adminIds);
-
-        $this->broadcastNotification($notification, $adminIds);
+        $this->sendLocalizedNotification(
+            recipientIds: $adminIds,
+            titleKey: 'notifications.vendor_document_submitted.title',
+            bodyKey: 'notifications.vendor_document_submitted.body',
+            category: NotificationPreference::CATEGORY_VENDOR_COMPLIANCE,
+            actionType: null,
+            actionId: null,
+            replacements: ['store' => $vendor->store_name],
+        );
     }
 
     /**
@@ -305,22 +268,16 @@ class NotificationService
             return;
         }
 
-        $body = $document->status === VendorDocument::STATUS_VERIFIED
-            ? "تم اعتماد وثيقة: {$document->type}"
-            : "تم رفض وثيقة: {$document->type}";
-
-        $notification = AdminNotification::query()->create([
-            'title' => 'مراجعة وثيقة',
-            'body' => $body,
-            'type' => AdminNotification::TYPE_PRIVATE,
-            'category' => NotificationPreference::CATEGORY_VENDOR_COMPLIANCE,
-            'action_type' => null,
-            'action_id' => null,
-            'sent_by' => null,
-        ]);
-        $notification->recipients()->sync([$ownerId]);
-
-        $this->broadcastNotification($notification, [$ownerId]);
+        $statusKey = $document->status === VendorDocument::STATUS_VERIFIED ? 'verified' : 'rejected';
+        $this->sendLocalizedNotification(
+            recipientIds: [$ownerId],
+            titleKey: 'notifications.vendor_document_reviewed.title',
+            bodyKey: "notifications.vendor_document_reviewed.{$statusKey}",
+            category: NotificationPreference::CATEGORY_VENDOR_COMPLIANCE,
+            actionType: null,
+            actionId: null,
+            replacements: ['document' => $document->type],
+        );
     }
 
     /**
@@ -339,18 +296,15 @@ class NotificationService
 
         $document->loadMissing('product:id,name');
 
-        $notification = AdminNotification::query()->create([
-            'title' => 'وثيقة منتج بانتظار المراجعة',
-            'body' => "تم رفع وثيقة جديدة للمنتج: {$document->product?->name}",
-            'type' => AdminNotification::TYPE_PRIVATE,
-            'category' => NotificationPreference::CATEGORY_VENDOR_COMPLIANCE,
-            'action_type' => AdminNotification::ACTION_PRODUCT,
-            'action_id' => $document->product_id,
-            'sent_by' => null,
-        ]);
-        $notification->recipients()->sync($adminIds);
-
-        $this->broadcastNotification($notification, $adminIds);
+        $this->sendLocalizedNotification(
+            recipientIds: $adminIds,
+            titleKey: 'notifications.product_document_submitted.title',
+            bodyKey: 'notifications.product_document_submitted.body',
+            category: NotificationPreference::CATEGORY_VENDOR_COMPLIANCE,
+            actionType: AdminNotification::ACTION_PRODUCT,
+            actionId: $document->product_id,
+            replacements: fn (string $locale): array => ['product' => $this->productName($document->product, $locale)],
+        );
     }
 
     /**
@@ -365,22 +319,16 @@ class NotificationService
             return;
         }
 
-        $body = $document->status === ProductDocument::STATUS_APPROVED
-            ? "تم اعتماد وثيقة المنتج: {$document->product?->name}"
-            : "تم رفض وثيقة المنتج: {$document->product?->name}";
-
-        $notification = AdminNotification::query()->create([
-            'title' => 'مراجعة وثيقة منتج',
-            'body' => $body,
-            'type' => AdminNotification::TYPE_PRIVATE,
-            'category' => NotificationPreference::CATEGORY_VENDOR_COMPLIANCE,
-            'action_type' => AdminNotification::ACTION_PRODUCT,
-            'action_id' => $document->product_id,
-            'sent_by' => null,
-        ]);
-        $notification->recipients()->sync([$ownerId]);
-
-        $this->broadcastNotification($notification, [$ownerId]);
+        $statusKey = $document->status === ProductDocument::STATUS_APPROVED ? 'approved' : 'rejected';
+        $this->sendLocalizedNotification(
+            recipientIds: [$ownerId],
+            titleKey: 'notifications.product_document_reviewed.title',
+            bodyKey: "notifications.product_document_reviewed.{$statusKey}",
+            category: NotificationPreference::CATEGORY_VENDOR_COMPLIANCE,
+            actionType: AdminNotification::ACTION_PRODUCT,
+            actionId: $document->product_id,
+            replacements: fn (string $locale): array => ['product' => $this->productName($document->product, $locale)],
+        );
     }
 
     /**
@@ -390,13 +338,15 @@ class NotificationService
     public function notifyProductDiscountAdded(Product $product): void
     {
         $pct = $product->discount_percentage ? (int) round((float) $product->discount_percentage) : 0;
-        $body = "خصم جديد على المنتج: {$product->name}".($pct > 0 ? " ({$pct}%)" : '');
-
         $this->broadcastToAllUsers(
-            title: 'خصم على منتج',
-            body: $body,
+            titleKey: 'notifications.discount_added.title',
+            bodyKey: 'notifications.discount_added.body',
             actionType: AdminNotification::ACTION_PRODUCT,
             actionId: $product->id,
+            replacements: fn (string $locale): array => [
+                'product' => $this->productName($product, $locale),
+                'discount' => $pct > 0 ? " ({$pct}%)" : '',
+            ],
         );
     }
 
@@ -406,13 +356,15 @@ class NotificationService
     public function notifyProductDiscountUpdated(Product $product): void
     {
         $pct = $product->discount_percentage ? (int) round((float) $product->discount_percentage) : 0;
-        $body = "تم تحديث الخصم على المنتج: {$product->name}".($pct > 0 ? " ({$pct}%)" : '');
-
         $this->broadcastToAllUsers(
-            title: 'تحديث خصم منتج',
-            body: $body,
+            titleKey: 'notifications.discount_updated.title',
+            bodyKey: 'notifications.discount_updated.body',
             actionType: AdminNotification::ACTION_PRODUCT,
             actionId: $product->id,
+            replacements: fn (string $locale): array => [
+                'product' => $this->productName($product, $locale),
+                'discount' => $pct > 0 ? " ({$pct}%)" : '',
+            ],
         );
     }
 
@@ -422,7 +374,16 @@ class NotificationService
      * it. Shared by the three product-marketing notices above so the
      * recipient-sync logic lives in one place.
      */
-    private function broadcastToAllUsers(string $title, string $body, string $actionType, int $actionId): void
+    /**
+     * @param  array<string, scalar>|callable(string): array<string, scalar>  $replacements
+     */
+    private function broadcastToAllUsers(
+        string $titleKey,
+        string $bodyKey,
+        string $actionType,
+        int $actionId,
+        array|callable $replacements = [],
+    ): void
     {
         $recipientIds = $this->preferenceService->filterEnabled(
             User::query()->pluck('id')->all(),
@@ -433,18 +394,69 @@ class NotificationService
             return;
         }
 
-        $notification = AdminNotification::query()->create([
-            'title' => $title,
-            'body' => $body,
-            'type' => AdminNotification::TYPE_PUBLIC,
-            'category' => NotificationPreference::CATEGORY_MARKETING,
-            'action_type' => $actionType,
-            'action_id' => $actionId,
-            'sent_by' => null,
-        ]);
-        $notification->recipients()->sync($recipientIds);
+        $this->sendLocalizedNotification(
+            recipientIds: $recipientIds,
+            titleKey: $titleKey,
+            bodyKey: $bodyKey,
+            category: NotificationPreference::CATEGORY_MARKETING,
+            actionType: $actionType,
+            actionId: $actionId,
+            replacements: $replacements,
+            type: AdminNotification::TYPE_PUBLIC,
+        );
+    }
 
-        $this->broadcastNotification($notification, $recipientIds);
+    /**
+     * Snapshot one translated notification per recipient locale. Recipient
+     * rows remain explicit, so splitting by language cannot widen visibility.
+     *
+     * @param  array<int>  $recipientIds
+     * @param  array<string, scalar>|callable(string): array<string, scalar>  $replacements
+     */
+    private function sendLocalizedNotification(
+        array $recipientIds,
+        string $titleKey,
+        string $bodyKey,
+        string $category,
+        ?string $actionType,
+        ?int $actionId,
+        array|callable $replacements = [],
+        string $type = AdminNotification::TYPE_PRIVATE,
+    ): void {
+        $recipientsByLocale = User::query()
+            ->whereIn('id', array_values(array_unique($recipientIds)))
+            ->get(['id', 'locale'])
+            ->groupBy(fn (User $user): string => in_array($user->locale, ['ar', 'en'], true)
+                ? $user->locale
+                : (string) config('app.locale', 'ar'));
+
+        foreach ($recipientsByLocale as $locale => $recipients) {
+            $localizedReplacements = is_callable($replacements) ? $replacements($locale) : $replacements;
+            $localizedRecipientIds = $recipients->pluck('id')->map(fn ($id): int => (int) $id)->all();
+
+            $notification = AdminNotification::query()->create([
+                'title' => trans($titleKey, locale: $locale),
+                'body' => trans($bodyKey, $localizedReplacements, $locale),
+                'type' => $type,
+                'category' => $category,
+                'action_type' => $actionType,
+                'action_id' => $actionId,
+                'sent_by' => null,
+            ]);
+            $notification->recipients()->sync($localizedRecipientIds);
+            $this->broadcastNotification($notification, $localizedRecipientIds);
+        }
+    }
+
+    private function productName(?Product $product, string $locale): string
+    {
+        if (! $product) {
+            return trans('common.not_available', locale: $locale);
+        }
+
+        return $locale === 'ar'
+            ? ($product->name_ar ?: $product->name_en ?: $product->name)
+            : ($product->name_en ?: $product->name_ar ?: $product->name);
     }
 
     /**

@@ -6,6 +6,7 @@ import { useCart } from '@/hooks/use-cart';
 import { useFavourites } from '@/hooks/use-favourites';
 import { useAuthUser, useI18n, useLocale } from '@/hooks/use-i18n';
 import { canPurchase } from '@/lib/purchase';
+import { formatCurrency, formatDate, formatNumber, formatPercent } from '@/lib/date-time';
 
 function StarRow({ rating, size = 'h-5 w-5' }) {
     const resolved = Math.min(5, Math.max(0, Math.round(rating)));
@@ -16,13 +17,6 @@ function StarRow({ rating, size = 'h-5 w-5' }) {
             ))}
         </div>
     );
-}
-
-function formatDateOnly(value) {
-    if (!value) return '—';
-    const date = new Date(typeof value === 'string' ? value.replace(' ', 'T') : value);
-    if (Number.isNaN(date.getTime())) return String(value).slice(0, 10);
-    return date.toLocaleDateString();
 }
 
 /**
@@ -260,9 +254,9 @@ function ProductDetail({ product, productId }) {
                             </div>
 
                             <div className="mt-5 flex flex-wrap items-end gap-3 border-b border-border pb-5">
-                                <span className={`text-4xl font-bold tabular-nums ${hasDiscount ? 'text-[var(--color-danger-600)]' : 'text-foreground'}`}>{effectivePrice.toLocaleString()}</span>
-                                <span className="pb-1 text-sm font-semibold text-muted-foreground">SYP</span>
-                                {hasDiscount && <span className="pb-1 text-sm tabular-nums text-muted-foreground line-through">{parseFloat(product.price || 0).toLocaleString()} SYP</span>}
+                                <span className={`text-4xl font-bold tabular-nums ${hasDiscount ? 'text-[var(--color-danger-600)]' : 'text-foreground'}`}>{formatNumber(effectivePrice, locale)}</span>
+                                <span className="pb-1 text-sm font-semibold text-muted-foreground">{common.currency_syp}</span>
+                                {hasDiscount && <span className="pb-1 text-sm tabular-nums text-muted-foreground line-through">{formatCurrency(product.price || 0, locale)}</span>}
                             </div>
 
                             <div className="storefront-spec-grid mt-5">
@@ -316,15 +310,15 @@ function ProductDetail({ product, productId }) {
                                 <div className="mt-4 grid gap-3 sm:grid-cols-3">
                                     <div className="border-s-2 border-border ps-3">
                                         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{products.fields.discount_value}</p>
-                                        <p className="mt-1 text-sm font-semibold tabular-nums text-[var(--color-danger-600)]">{product.discount_percentage ? `${parseFloat(product.discount_percentage).toFixed(2)}%` : products.discount_value_empty}</p>
+                                        <p className="mt-1 text-sm font-semibold tabular-nums text-[var(--color-danger-600)]">{product.discount_percentage ? formatPercent(product.discount_percentage, locale) : products.discount_value_empty}</p>
                                     </div>
                                     <div className="border-s-2 border-border ps-3">
                                         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{products.fields.discount_starts}</p>
-                                        <p className="mt-1 text-sm font-semibold tabular-nums text-foreground">{formatDateOnly(product.discount_starts_at)}</p>
+                                        <p className="mt-1 text-sm font-semibold tabular-nums text-foreground">{product.discount_starts_at ? formatDate(product.discount_starts_at, locale) : '—'}</p>
                                     </div>
                                     <div className="border-s-2 border-border ps-3">
                                         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">{products.fields.discount_ends}</p>
-                                        <p className="mt-1 text-sm font-semibold tabular-nums text-foreground">{formatDateOnly(product.discount_ends_at)}</p>
+                                        <p className="mt-1 text-sm font-semibold tabular-nums text-foreground">{product.discount_ends_at ? formatDate(product.discount_ends_at, locale) : '—'}</p>
                                     </div>
                                 </div>
                             </div>
@@ -337,7 +331,7 @@ function ProductDetail({ product, productId }) {
                                             className="flex h-8 w-8 items-center justify-center text-lg font-semibold text-foreground disabled:opacity-40"
                                             onClick={() => setOrderQuantity((q) => Math.max(minOrderQuantity, q - 1))}
                                             disabled={orderQuantity <= minOrderQuantity}
-                                            aria-label="-"
+                                            aria-label={common.decrease_quantity}
                                         >
                                             −
                                         </button>
@@ -354,7 +348,7 @@ function ProductDetail({ product, productId }) {
                                             type="button"
                                             className="flex h-8 w-8 items-center justify-center text-lg font-semibold text-foreground"
                                             onClick={() => setOrderQuantity((q) => q + 1)}
-                                            aria-label="+"
+                                            aria-label={common.increase_quantity}
                                         >
                                             +
                                         </button>
@@ -426,8 +420,8 @@ function ProductDetail({ product, productId }) {
                                         <article key={review.id} className="py-5">
                                             <div className="flex flex-wrap items-center justify-between gap-3">
                                                 <div>
-                                                    <p className="text-sm font-bold text-foreground">{review.user?.name || 'User'}</p>
-                                                    {review.created_at && <p className="mt-1 text-[11px] text-muted-foreground">{new Date(review.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' })}</p>}
+                                                    <p className="text-sm font-bold text-foreground">{review.user?.name || common.user_fallback}</p>
+                                                    {review.created_at && <p className="mt-1 text-[11px] text-muted-foreground">{formatDate(review.created_at, locale)}</p>}
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     <StarRow rating={review.rating} size="h-4 w-4" />
@@ -461,7 +455,7 @@ function ProductDetail({ product, productId }) {
                         <button
                             type="button"
                             onClick={() => setLightbox(null)}
-                            aria-label="Close"
+                            aria-label={common.close}
                             className="absolute -end-2 -top-2 flex h-10 w-10 items-center justify-center rounded-full bg-white text-gray-900 shadow-lg"
                         >
                             <X className="h-5 w-5" />

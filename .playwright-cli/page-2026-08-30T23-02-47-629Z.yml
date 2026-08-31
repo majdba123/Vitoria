@@ -1,0 +1,143 @@
+- generic [ref=f1e3]:
+  - navigation "Vendor navigation" [ref=f1e5]:
+    - generic [ref=f1e6]:
+      - list [ref=f1e8]:
+        - listitem [ref=f1e9]:
+          - link "Vetora Vendor" [ref=f1e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/vendor/dashboard
+            - generic [ref=f1e16]:
+              - generic [ref=f1e17]: Vetora
+              - generic [ref=f1e18]: Vendor
+      - generic [ref=f1e19]:
+        - generic [ref=f1e20]:
+          - generic [ref=f1e21]: Overview
+          - list [ref=f1e23]:
+            - listitem [ref=f1e24]:
+              - link "Dashboard" [ref=f1e25] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/dashboard
+        - generic [ref=f1e32]:
+          - generic [ref=f1e33]: My Store
+          - list [ref=f1e35]:
+            - listitem [ref=f1e36]:
+              - link "Products" [ref=f1e37] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/products
+            - listitem [ref=f1e43]:
+              - link "Orders" [ref=f1e44] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/orders
+            - listitem [ref=f1e49]:
+              - link "Sales" [ref=f1e50] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/sales
+            - listitem [ref=f1e55]:
+              - link "Notifications" [ref=f1e56] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/notifications
+        - generic [ref=f1e61]:
+          - generic [ref=f1e62]: Account
+          - list [ref=f1e64]:
+            - listitem [ref=f1e65]:
+              - link "Profile" [ref=f1e66] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/profile
+        - generic [ref=f1e71]:
+          - generic [ref=f1e72]: Categories
+          - generic [ref=f1e73]:
+            - generic [ref=f1e74]:
+              - button "البذور 5%" [ref=f1e75]:
+                - generic [ref=f1e81]: البذور
+                - generic [ref=f1e82]: 5%
+              - paragraph [ref=f1e85]: Agriculture Categories
+            - generic [ref=f1e86]:
+              - button "الأسمدة 5%" [ref=f1e87]:
+                - generic [ref=f1e93]: الأسمدة
+                - generic [ref=f1e94]: 5%
+              - paragraph [ref=f1e97]: Agriculture Categories
+            - generic [ref=f1e98]:
+              - button "أنظمة الري 6%" [ref=f1e99]:
+                - generic [ref=f1e105]: أنظمة الري
+                - generic [ref=f1e106]: 6%
+              - paragraph [ref=f1e109]: Agriculture Categories
+            - generic [ref=f1e110]:
+              - button "البيوت البلاستيكية 6%" [ref=f1e111]:
+                - generic [ref=f1e117]: البيوت البلاستيكية
+                - generic [ref=f1e118]: 6%
+              - paragraph [ref=f1e121]: Agriculture Categories
+            - generic [ref=f1e122]:
+              - button "المعدات الزراعية 7%" [ref=f1e123]:
+                - generic [ref=f1e129]: المعدات الزراعية
+                - generic [ref=f1e130]: 7%
+              - paragraph [ref=f1e133]: Agriculture Categories
+            - generic [ref=f1e134]:
+              - button "المبيدات الزراعية 5%" [ref=f1e135]:
+                - generic [ref=f1e141]: المبيدات الزراعية
+                - generic [ref=f1e142]: 5%
+              - paragraph [ref=f1e145]: Agriculture Categories
+            - generic [ref=f1e146]:
+              - button "التربة والسماد العضوي 5%" [ref=f1e147]:
+                - generic [ref=f1e153]: التربة والسماد العضوي
+                - generic [ref=f1e154]: 5%
+              - paragraph [ref=f1e157]: Agriculture Categories
+            - generic [ref=f1e158]:
+              - button "أدوات الحصاد 6%" [ref=f1e159]:
+                - generic [ref=f1e165]: أدوات الحصاد
+                - generic [ref=f1e166]: 6%
+              - paragraph [ref=f1e169]: Agriculture Categories
+      - list [ref=f1e171]:
+        - listitem [ref=f1e172]:
+          - button "ت تاجر المستلزمات الزراعية Seller" [ref=f1e173]:
+            - generic [ref=f1e174]: ت
+            - generic [ref=f1e176]:
+              - generic [ref=f1e177]: تاجر المستلزمات الزراعية
+              - generic [ref=f1e178]: Seller
+  - main [ref=f1e182]:
+    - generic [ref=f1e184]:
+      - button "Toggle Sidebar" [ref=f1e185]
+      - generic [ref=f1e187]:
+        - paragraph [ref=f1e188]: Vendor
+        - heading "Dashboard" [level=1] [ref=f1e189]
+      - generic [ref=f1e190]:
+        - link "Home" [ref=f1e191] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/
+        - button "Choose language" [ref=f1e192]
+        - button "Notifications" [ref=f1e193]
+        - button "Toggle theme" [ref=f1e194]
+        - button "Sign Out" [ref=f1e195]
+    - generic [ref=f1e196]:
+      - generic [ref=f1e197]:
+        - generic [ref=f1e198]:
+          - paragraph [ref=f1e199]: Vendor workspace
+          - heading "Store performance overview" [level=2] [ref=f1e200]
+          - paragraph [ref=f1e201]: Track your store status, latest products, and core actions from one compact workspace.
+        - generic [ref=f1e202]:
+          - link "Add product" [ref=f1e203] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/vendor/products/create
+          - link "Orders" [ref=f1e204] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/vendor/orders
+      - generic [ref=f1e205]:
+        - paragraph [ref=f1e209]: Store status
+        - paragraph [ref=f1e218]: Total products
+        - paragraph [ref=f1e228]: Active products
+        - paragraph [ref=f1e239]: Orders
+      - generic [ref=f1e245]:
+        - generic [ref=f1e247]:
+          - generic [ref=f1e248]:
+            - heading "Recent products" [level=3] [ref=f1e249]
+            - paragraph [ref=f1e250]: Your newest products and their current visibility.
+          - link "View all" [ref=f1e251] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/vendor/products
+        - generic [ref=f1e258]:
+          - generic [ref=f1e259]:
+            - generic [ref=f1e260]: Quick actions
+            - paragraph [ref=f1e261]: Move quickly between the tasks you use most.
+          - generic [ref=f1e262]:
+            - link "Add product" [ref=f1e263] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/vendor/products/create
+            - link "Products" [ref=f1e265] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/vendor/products
+            - link "Orders" [ref=f1e270] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/vendor/orders
+            - link "Sales" [ref=f1e273] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/vendor/sales
+      - generic [ref=f1e278]:
+        - heading "Orders, last 7 days" [level=3] [ref=f1e279]
+        - paragraph [ref=f1e280]: Real order counts for your store (confirmed + completed), updated daily.
+      - generic [ref=f1e289]:
+        - heading "Store information" [level=3] [ref=f1e290]
+        - paragraph [ref=f1e291]: A compact view of the main account and store details.

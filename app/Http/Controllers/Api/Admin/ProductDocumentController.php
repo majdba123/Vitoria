@@ -45,7 +45,7 @@ class ProductDocumentController extends Controller
         $documents = $query->paginate(20);
 
         return response()->json([
-            'message' => 'Documents retrieved successfully.',
+            'message' => __('api.documents_retrieved'),
             'data' => $documents->getCollection()->map(fn (ProductDocument $document) => $this->present($document))->values(),
             'meta' => [
                 'current_page' => $documents->currentPage(),
@@ -60,7 +60,7 @@ class ProductDocumentController extends Controller
     {
         $document = ProductDocument::query()->with(['product:id,name', 'vendor:id,store_name'])->findOrFail($documentId);
 
-        return response()->json(['message' => 'Document retrieved successfully.', 'data' => $this->present($document)]);
+        return response()->json(['message' => __('api.document_retrieved'), 'data' => $this->present($document)]);
     }
 
     public function download(int $documentId)

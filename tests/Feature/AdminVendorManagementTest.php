@@ -468,3 +468,23 @@ test('vendor deletion preserves protected financial history and returns a useful
     $this->assertDatabaseHas('users', ['id' => $vendor->user_id]);
     $this->assertDatabaseHas('orders', ['id' => $order->id]);
 });
+
+test('admin dashboard donut distributions are mutually exclusive and reconcile with their totals', function () {
+    Cache::flush();
+    actingAsAdmin();
+
+    Vendor::factory()->create(['status' => Vendor::STATUS_ACTIVE, 'is_active' => true, 'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE]);
+    Vendor::factory()->create(['status' => Vendor::STATUS_PENDING, 'is_active' => false, 'business_type' => Vendor::BUSINESS_TYPE_VETERINARY]);
+    Vendor::factory()->create(['status' => Vendor::STATUS_INACTIVE, 'is_active' => false, 'business_type' => Vendor::BUSINESS_TYPE_BOTH]);
+
+    $category = Category::query()->create(['name' => 'Donut category', 'type' => Category::TYPE_AGRICULTURE]);
+    Product::factory()->create(['category_id' => $category->id, 'status' => Product::STATUS_APPROVED]);
+    Product::factory()->create(['category_id' => $category->id, 'status' => Product::STATUS_PENDING]);
+    Product::factory()->create(['category_id' => $category->id, 'status' => Product::STATUS_REJECTED]);
+
+    $data = $this->getJson('/api/admin/dashboard/overview')->assertOk()->json('data');
+
+    expect(array_sum($data['vendor_status_distribution']))->toBe($data['total_vendors'])
+        ->and(array_sum($data['product_status_distribution']))->toBe($data['total_products'])
+        ->and(collect($data['vendors_by_type'])->sum('total'))->toBe($data['total_vendors']);
+});

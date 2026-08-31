@@ -4,9 +4,9 @@ import { ChevronRight, Camera, Heart, ImageOff, Loader2, Check } from 'lucide-re
 import PublicLayout from '@/Layouts/PublicLayout';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { useFavourites } from '@/hooks/use-favourites';
-import { useAuthUser, useI18n } from '@/hooks/use-i18n';
+import { useAuthUser, useI18n, useLocale } from '@/hooks/use-i18n';
+import { formatCurrency, formatDate, formatNumber, formatPercent } from '@/lib/date-time';
 
-const ROLE_LABEL = { 0: 'Customer', 1: 'Admin', 2: 'Business account' };
 const ORDER_STATUS_CLASS = {
     pending: 'bg-[var(--color-warning-soft)] text-[var(--color-warning-strong)]',
     confirmed: 'bg-[var(--color-success-soft)] text-[var(--color-success-strong)]',
@@ -18,7 +18,8 @@ const ORDER_STATUS_CLASS = {
 };
 
 function FavouritesPanel() {
-    const { profile } = useI18n();
+    const { profile, common } = useI18n();
+    const locale = useLocale();
     const { toggle } = useFavourites();
     const [status, setStatus] = useState('loading');
     const [products, setProducts] = useState([]);
@@ -44,7 +45,7 @@ function FavouritesPanel() {
                 <div>
                     <h3 className="text-base font-bold text-foreground">{profile.my_favourites}</h3>
                     <p className="text-xs text-muted-foreground">
-                        {status === 'loading' ? 'Loading...' : `${products.length} product${products.length !== 1 ? 's' : ''}`}
+                        {status === 'loading' ? common.loading : profile.products_count.replace(':count', String(products.length))}
                     </p>
                 </div>
             </div>
@@ -82,8 +83,8 @@ function FavouritesPanel() {
                                 <div className="p-3">
                                     <h4 className="line-clamp-2 text-xs font-bold text-foreground group-hover:text-primary">{p.name}</h4>
                                     <div className="mt-1.5 flex items-baseline gap-1">
-                                        <span className="text-sm font-bold text-foreground">{parseFloat(p.price).toLocaleString()}</span>
-                                        <span className="text-[10px] text-muted-foreground">SYP</span>
+                                        <span className="text-sm font-bold text-foreground">{formatNumber(parseFloat(p.price), locale)}</span>
+                                        <span className="text-[10px] text-muted-foreground">{common.currency_syp}</span>
                                     </div>
                                 </div>
                             </Link>
@@ -97,7 +98,8 @@ function FavouritesPanel() {
 
 function OrderCard({ order }) {
     const { profile } = useI18n();
-    const date = order.created_at ? new Date(order.created_at).toLocaleDateString() : '—';
+    const locale = useLocale();
+    const date = order.created_at ? formatDate(order.created_at, locale) : '—';
     const statusClass = ORDER_STATUS_CLASS[String(order.status || '').toLowerCase()] ?? ORDER_STATUS_CLASS.pending;
 
     return (
@@ -115,35 +117,30 @@ function OrderCard({ order }) {
 
             <div className="p-4">
                 <div className="space-y-2">
-                    {(order.items || []).map((item, index) => {
-                        const original = parseFloat(item.original_unit_price || 0).toLocaleString();
-                        const unit = parseFloat(item.unit_price || 0).toLocaleString();
-                        const total = parseFloat(item.line_total || 0).toLocaleString();
-                        return (
-                            <div key={item.id ?? index} className="rounded-md border border-border p-2.5">
-                                <div className="flex items-start justify-between gap-3">
-                                    <div className="min-w-0">
-                                        <p className="truncate text-xs font-bold text-foreground">{item.product_name}</p>
-                                        <p className="text-[11px] text-muted-foreground">{profile.quantity_short} {item.quantity} · {unit} SYP {profile.each}</p>
-                                        {item.has_discount && (
-                                            <>
-                                                <p className="text-[11px] text-muted-foreground line-through">{profile.original_price} {original} SYP</p>
-                                                <p className="text-[11px] text-[var(--color-success-strong)]">{profile.discount} {parseFloat(item.applied_discount_percentage || 0)}% · {profile.saved} {parseFloat(item.discount_amount || 0).toLocaleString()} SYP</p>
-                                            </>
-                                        )}
-                                    </div>
-                                    <p className="shrink-0 text-xs font-bold text-foreground">{total} SYP</p>
+                    {(order.items || []).map((item, index) => (
+                        <div key={item.id ?? index} className="rounded-md border border-border p-2.5">
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="min-w-0">
+                                    <p className="truncate text-xs font-bold text-foreground">{item.product_name}</p>
+                                    <p className="text-[11px] text-muted-foreground">{profile.quantity_short} {item.quantity} · {formatCurrency(item.unit_price || 0, locale)} {profile.each}</p>
+                                    {item.has_discount && (
+                                        <>
+                                            <p className="text-[11px] text-muted-foreground line-through">{profile.original_price} {formatCurrency(item.original_unit_price || 0, locale)}</p>
+                                            <p className="text-[11px] text-[var(--color-success-strong)]">{profile.discount} {formatPercent(item.applied_discount_percentage || 0, locale)} · {profile.saved} {formatCurrency(item.discount_amount || 0, locale)}</p>
+                                        </>
+                                    )}
                                 </div>
+                                <p className="shrink-0 text-xs font-bold text-foreground">{formatCurrency(item.line_total || 0, locale)}</p>
                             </div>
-                        );
-                    })}
+                        </div>
+                    ))}
                 </div>
 
                 <div className="mt-3 grid gap-2 text-xs sm:grid-cols-2 lg:grid-cols-4">
                     {[
                         { label: profile.order_id, value: order.id ?? '—' },
                         { label: profile.items, value: order.items_count ?? (order.items || []).length },
-                        { label: profile.subtotal, value: `${parseFloat(order.subtotal_amount || 0).toLocaleString()} SYP` },
+                        { label: profile.subtotal, value: formatCurrency(order.subtotal_amount || 0, locale) },
                         { label: profile.coupon, value: order.coupon ? order.coupon.code : '—' },
                     ].map((item) => (
                         <div key={item.label} className="storefront-spec-card">
@@ -154,7 +151,7 @@ function OrderCard({ order }) {
                 </div>
 
                 <div className="mt-3 flex items-center justify-between border-t border-border pt-3 text-sm">
-                    <p className="font-bold text-foreground">{profile.total}: {parseFloat(order.total_amount || 0).toLocaleString()} SYP</p>
+                    <p className="font-bold text-foreground">{profile.total}: {formatCurrency(order.total_amount || 0, locale)}</p>
                     <Link href={route('orders.show', order.id)} className="btn-secondary btn-xs inline-flex items-center gap-1">
                         {profile.view_details}
                         <ChevronRight className="size-3.5 rtl:-scale-x-100" />
@@ -166,7 +163,7 @@ function OrderCard({ order }) {
 }
 
 function OrderHistoryPanel() {
-    const { profile, pagination } = useI18n();
+    const { profile, common, nav } = useI18n();
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
     const [searchDraft, setSearchDraft] = useState('');
@@ -201,7 +198,7 @@ function OrderHistoryPanel() {
             <div className="mb-5 flex items-center justify-between">
                 <div>
                     <h3 className="text-base font-bold text-foreground">{profile.order_history}</h3>
-                    <p className="text-xs text-muted-foreground">{status === 'loading' ? 'Loading...' : `${meta?.total ?? rows.length} order${(meta?.total ?? rows.length) !== 1 ? 's' : ''}`}</p>
+                    <p className="text-xs text-muted-foreground">{status === 'loading' ? common.loading : profile.orders_count.replace(':count', String(meta?.total ?? rows.length))}</p>
                 </div>
                 <p className="rounded-full bg-muted px-3 py-1 text-[11px] font-semibold text-muted-foreground">{profile.payment_cash}</p>
             </div>
@@ -235,10 +232,10 @@ function OrderHistoryPanel() {
                     </div>
                     {meta && meta.last_page > 1 && (
                         <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
-                            <p className="text-xs text-muted-foreground">Page {meta.current_page} of {meta.last_page}</p>
+                            <p className="text-xs text-muted-foreground">{nav.page} {meta.current_page} {nav.of} {meta.last_page}</p>
                             <div className="flex gap-2">
-                                <button type="button" disabled={meta.current_page <= 1} onClick={() => setPage((p) => p - 1)} className="btn-secondary btn-xs">{pagination.previous}</button>
-                                <button type="button" disabled={meta.current_page >= meta.last_page} onClick={() => setPage((p) => p + 1)} className="btn-secondary btn-xs">{pagination.next}</button>
+                                <button type="button" disabled={meta.current_page <= 1} onClick={() => setPage((p) => p - 1)} className="btn-secondary btn-xs">{nav.prev}</button>
+                                <button type="button" disabled={meta.current_page >= meta.last_page} onClick={() => setPage((p) => p + 1)} className="btn-secondary btn-xs">{nav.next}</button>
                             </div>
                         </div>
                     )}
@@ -249,7 +246,8 @@ function OrderHistoryPanel() {
 }
 
 function ContactHistoryPanel() {
-    const { profile } = useI18n();
+    const { profile, common, nav } = useI18n();
+    const locale = useLocale();
     const [page, setPage] = useState(1);
     const [status, setStatus] = useState('loading');
     const [rows, setRows] = useState([]);
@@ -272,7 +270,7 @@ function ContactHistoryPanel() {
                 </div>
                 <div>
                     <h3 className="text-base font-bold text-foreground">{profile.contact_history}</h3>
-                    <p className="text-xs text-muted-foreground">{status === 'loading' ? 'Loading...' : `${meta?.total ?? rows.length} message${(meta?.total ?? rows.length) !== 1 ? 's' : ''}`}</p>
+                    <p className="text-xs text-muted-foreground">{status === 'loading' ? common.loading : profile.messages_count.replace(':count', String(meta?.total ?? rows.length))}</p>
                 </div>
             </div>
 
@@ -296,13 +294,13 @@ function ContactHistoryPanel() {
                         {rows.map((m) => (
                             <article key={m.id} className="rounded-lg border border-border bg-muted/30 p-4">
                                 <div className="flex flex-wrap items-center justify-between gap-2">
-                                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${m.status === 'replied' ? 'bg-[var(--color-success-soft)] text-[var(--color-success-strong)]' : 'bg-[var(--color-warning-soft)] text-[var(--color-warning-strong)]'}`}>{m.status}</span>
-                                    <span className="text-xs text-muted-foreground">{m.created_at ? new Date(m.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '—'}</span>
+                                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${m.status === 'replied' ? 'bg-[var(--color-success-soft)] text-[var(--color-success-strong)]' : 'bg-[var(--color-warning-soft)] text-[var(--color-warning-strong)]'}`}>{m.status === 'replied' ? profile.message_status_replied : profile.message_status_pending}</span>
+                                    <span className="text-xs text-muted-foreground">{m.created_at ? formatDate(m.created_at, locale) : '—'}</span>
                                 </div>
                                 <p className="mt-2 text-sm text-muted-foreground">{m.message}</p>
                                 {m.admin_reply && (
                                     <div className="mt-3 rounded-md border border-border bg-card p-3">
-                                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Admin reply{m.replied_at ? ` · ${new Date(m.replied_at).toLocaleDateString()}` : ''}</p>
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{profile.admin_reply_label}{m.replied_at ? ` · ${formatDate(m.replied_at, locale)}` : ''}</p>
                                         <p className="mt-1.5 text-sm text-foreground">{m.admin_reply}</p>
                                     </div>
                                 )}
@@ -311,10 +309,10 @@ function ContactHistoryPanel() {
                     </div>
                     {meta && meta.last_page > 1 && (
                         <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
-                            <p className="text-xs text-muted-foreground">Page {meta.current_page} of {meta.last_page}</p>
+                            <p className="text-xs text-muted-foreground">{nav.page} {meta.current_page} {nav.of} {meta.last_page}</p>
                             <div className="flex gap-2">
-                                <button type="button" disabled={meta.current_page <= 1} onClick={() => setPage((p) => p - 1)} className="btn-secondary btn-xs">Prev</button>
-                                <button type="button" disabled={meta.current_page >= meta.last_page} onClick={() => setPage((p) => p + 1)} className="btn-secondary btn-xs">Next</button>
+                                <button type="button" disabled={meta.current_page <= 1} onClick={() => setPage((p) => p - 1)} className="btn-secondary btn-xs">{nav.prev}</button>
+                                <button type="button" disabled={meta.current_page >= meta.last_page} onClick={() => setPage((p) => p + 1)} className="btn-secondary btn-xs">{nav.next}</button>
                             </div>
                         </div>
                     )}
@@ -326,6 +324,7 @@ function ContactHistoryPanel() {
 
 function ProfileForm({ user, onUpdated }) {
     const { profile } = useI18n();
+    const locale = useLocale();
     const [form, setForm] = useState({ name: user.name || '', email: user.email || '', phone_number: user.phone_number || '', timezone: user.timezone || '', preferred_product_type: user.preferred_product_type || '' });
     const [timezones, setTimezones] = useState([]);
     const [avatarFile, setAvatarFile] = useState(null);
@@ -468,11 +467,11 @@ function ProfileForm({ user, onUpdated }) {
                     <div className="info-grid rounded-lg border border-border bg-muted/40 p-4">
                         <div>
                             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{profile.account_type}</p>
-                            <p className="mt-0.5 text-sm font-bold text-foreground">{ROLE_LABEL[user.type] ?? 'Customer'}</p>
+                            <p className="mt-0.5 text-sm font-bold text-foreground">{{ 0: profile.role_customer, 1: profile.role_admin, 2: profile.role_business_account }[user.type] ?? profile.role_customer}</p>
                         </div>
                         <div>
                             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{profile.member_since}</p>
-                            <p className="mt-0.5 text-sm font-bold text-foreground">{user.created_at ? new Date(user.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : '—'}</p>
+                            <p className="mt-0.5 text-sm font-bold text-foreground">{user.created_at ? formatDate(user.created_at, locale, { dateStyle: undefined, year: 'numeric', month: 'long', day: 'numeric' }) : '—'}</p>
                         </div>
                     </div>
 

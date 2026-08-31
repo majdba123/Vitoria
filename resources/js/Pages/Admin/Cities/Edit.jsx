@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { router } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
+import { PageHeader } from '@/Components/shared/PageHeader';
 import { TextField } from '@/Components/admin/form/FormField';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Skeleton } from '@/Components/ui/skeleton';
@@ -32,7 +32,7 @@ export default function CitiesEdit({ cityId }) {
         try {
             const data = await submit('put', `/api/admin/cities/${cityId}`, { name });
             setVendorsCount(data.data?.vendors_count ?? vendorsCount);
-            setSuccessMessage(common.saved ?? 'City updated successfully.');
+            setSuccessMessage(admin.city_updated_success);
         } catch {
             // handled by hook
         }
@@ -40,15 +40,15 @@ export default function CitiesEdit({ cityId }) {
 
     if (status === 'loading') {
         return (
-            <AdminLayout title={common.loading ?? 'Loading...'}>
+            <AdminLayout title={common.loading}>
                 <Skeleton className="h-56 w-full max-w-xl" />
             </AdminLayout>
         );
     }
 
     return (
-        <AdminLayout title="Edit city">
-            <PageHeader breadcrumb={[{ label: admin.cities, href: route('admin.cities.index') }, { label: common.edit ?? 'Edit' }]} title="Edit city" />
+        <AdminLayout title={admin.edit_city_title}>
+            <PageHeader breadcrumb={[{ label: admin.cities, href: route('admin.cities.index') }, { label: common.edit }]} title={admin.edit_city_title} />
 
             <Card className="max-w-xl border-border/80 shadow-none">
                 <CardContent className="p-5 sm:p-6">
@@ -56,7 +56,7 @@ export default function CitiesEdit({ cityId }) {
                     {successMessage && <p className="mb-4 rounded-md border border-[var(--color-success-200)] bg-[var(--color-success-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-success-strong)]">{successMessage}</p>}
 
                     <form onSubmit={handleSubmit} className="space-y-5">
-                        <TextField id="name" label="City name" required value={name} onChange={(e) => setName(e.target.value)} error={errors.name} />
+                        <TextField id="name" label={admin.city_name_label} required value={name} onChange={(e) => setName(e.target.value)} error={errors.name} />
 
                         <div className="rounded-md border border-border bg-muted px-4 py-3 text-sm text-muted-foreground">
                             {admin.vendors_assigned_suffix}: <span className="font-semibold text-foreground">{vendorsCount}</span>
@@ -64,11 +64,11 @@ export default function CitiesEdit({ cityId }) {
 
                         <div className="flex gap-2 pt-2">
                             <Button type="button" variant="outline" className="flex-1" onClick={() => router.visit(route('admin.cities.index'))}>
-                                {common.cancel ?? 'Cancel'}
+                                {common.cancel}
                             </Button>
                             <Button type="submit" className="flex-1" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-                                {common.save_changes ?? 'Save changes'}
+                                {common.save_changes}
                             </Button>
                         </div>
                     </form>

@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'navigation_label' => 'Employee navigation',
     'workspace' => 'Employee Workspace',
     'open_sidebar' => 'Open sidebar',
     'workspace_label' => 'Employee workspace',

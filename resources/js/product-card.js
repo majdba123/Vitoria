@@ -9,6 +9,8 @@
  * card grammar instead of four independent near-copies.
  */
 
+import { formatNumber, formatPercent } from '@/lib/date-time';
+
 function escapeHtml(value) {
     if (value === null || value === undefined || value === '') return '';
     const el = document.createElement('div');
@@ -42,8 +44,9 @@ function renderProductCard(product, options = {}) {
     const inStock = Number(product.quantity || 0) > 0;
     const isFav = window._favIds && window._favIds.has(product.id);
     const reviewCount = parseInt(product.review_count, 10) || 0;
+    const locale = document.documentElement.lang || 'en';
     const unitPrice = product.has_active_discount ? product.discounted_price : product.price;
-    const displayPrice = parseFloat(unitPrice || 0).toLocaleString();
+    const displayPrice = formatNumber(unitPrice, locale);
     const reviewText = reviewCount && typeof reviewsLabel === 'function' ? reviewsLabel(reviewCount) : '';
 
     // Rank and discount both claim the media's top-start corner, so a card
@@ -52,7 +55,7 @@ function renderProductCard(product, options = {}) {
     const cornerBadge = rank !== null
         ? `<span class="product-card-rank">#${rank}</span>`
         : (product.has_active_discount
-            ? `<span class="product-card-badge">-${parseFloat(product.discount_percentage || 0).toFixed(0)}%</span>`
+            ? `<span class="product-card-badge">-${formatPercent(product.discount_percentage, locale, { maximumFractionDigits: 0 })}</span>`
             : '');
 
     return `<article class="product-card">
@@ -73,7 +76,7 @@ function renderProductCard(product, options = {}) {
             <div class="product-card-footer">
                 <div class="product-card-price-group" dir="auto">
                     <span class="product-card-price">${displayPrice} <span class="product-card-price-currency">SYP</span></span>
-                    ${product.has_active_discount ? `<span class="product-card-price-was">${parseFloat(product.price || 0).toLocaleString()} SYP</span>` : ''}
+                    ${product.has_active_discount ? `<span class="product-card-price-was">${formatNumber(product.price, locale)} SYP</span>` : ''}
                     <span class="product-card-stock ${inStock ? '' : 'is-out'}">${inStock ? escapeHtml(inStockLabel) : escapeHtml(soldOutLabel)}</span>
                 </div>
                 <button type="button" onclick="window.addToCart&&window.addToCart(${product.id},\`${escapeHtml(product.name)}\`,${unitPrice},\`${escapeHtml(photo)}\`)" class="product-card-cta" ${!inStock ? 'disabled' : ''} aria-label="${escapeHtml(addToCartLabel)}: ${escapeHtml(product.name)}">

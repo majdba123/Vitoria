@@ -67,7 +67,7 @@ class OrderController extends Controller
         $orders = $query->paginate(12);
 
         return response()->json([
-            'message' => 'Orders retrieved successfully.',
+            'message' => __('api.orders_retrieved'),
             'data' => $orders->items(),
             'meta' => [
                 'current_page' => $orders->currentPage(),
@@ -96,7 +96,7 @@ class OrderController extends Controller
             ->findOrFail($orderId);
 
         return response()->json([
-            'message' => 'Order retrieved successfully.',
+            'message' => __('api.order_retrieved'),
             'data' => $order,
         ]);
     }
@@ -115,7 +115,7 @@ class OrderController extends Controller
 
         if ($order->status === Order::STATUS_COMPLETED) {
             return response()->json([
-                'message' => 'Order is already completed.',
+                'message' => __('api.order_already_completed'),
             ]);
         }
 
@@ -131,7 +131,7 @@ class OrderController extends Controller
         }
 
         return response()->json([
-            'message' => 'Order marked as completed successfully.',
+            'message' => __('api.order_marked_completed'),
             'data' => [
                 'id' => $order->id,
                 'status' => $order->status,

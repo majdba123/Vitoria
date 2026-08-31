@@ -4,6 +4,7 @@ import { Dialog as DialogPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/Components/ui/button"
+import { useI18n } from "@/hooks/use-i18n"
 
 function Dialog({
   ...props
@@ -50,6 +51,8 @@ function DialogContent({
   showCloseButton = true,
   ...props
 }) {
+  const { common } = useI18n()
+
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
@@ -66,7 +69,7 @@ function DialogContent({
             data-slot="dialog-close"
             className="absolute top-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground ltr:right-4 rtl:left-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">
             <XIcon />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{common.close}</span>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>
@@ -92,6 +95,8 @@ function DialogFooter({
   children,
   ...props
 }) {
+  const { common } = useI18n()
+
   return (
     <div
       data-slot="dialog-footer"
@@ -100,7 +105,7 @@ function DialogFooter({
       {children}
       {showCloseButton && (
         <DialogPrimitive.Close asChild>
-          <Button variant="outline">Close</Button>
+          <Button variant="outline">{common.close}</Button>
         </DialogPrimitive.Close>
       )}
     </div>

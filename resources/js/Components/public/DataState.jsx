@@ -25,7 +25,7 @@ export function DataState({ status, onRetry, loadingSkeleton, isEmpty = false, e
                 {onRetry && (
                     <button type="button" onClick={onRetry} className="mx-auto mt-3 flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
                         <RefreshCw className="size-3.5" />
-                        {common.refresh ?? 'Retry'}
+                        {common.retry}
                     </button>
                 )}
             </div>

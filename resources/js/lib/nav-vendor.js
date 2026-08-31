@@ -2,7 +2,7 @@ import { LayoutGrid, Package, ShoppingBag, TrendingUp, Bell, User } from 'lucide
 
 /** Mirrors resources/views/components/vendor/sidebar.blade.php's link list. */
 export function getVendorNavGroups(t, common) {
-    return [
+    const raw = [
         {
             label: t.group_overview,
             items: [{ label: t.dashboard, route: 'vendor.dashboard', active: 'vendor.dashboard', icon: LayoutGrid }],
@@ -18,7 +18,18 @@ export function getVendorNavGroups(t, common) {
         },
         {
             label: t.group_account,
-            items: [{ label: common.profile ?? 'Profile', route: 'vendor.profile', active: 'vendor.profile', icon: User }],
+            items: [{ label: common.profile, route: 'vendor.profile', active: 'vendor.profile', icon: User }],
         },
     ];
+
+    return raw.map((group) => ({
+        label: group.label,
+        items: group.items.map((item) => ({
+            key: item.route,
+            label: item.label,
+            href: route(item.route),
+            active: route().current(item.active),
+            icon: item.icon,
+        })),
+    }));
 }

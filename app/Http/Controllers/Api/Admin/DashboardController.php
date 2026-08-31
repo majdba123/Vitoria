@@ -52,6 +52,18 @@ class DashboardController extends Controller
                     ])
                     ->values();
 
+                $vendorStatusDistribution = [
+                    'active' => Vendor::query()->where('status', Vendor::STATUS_ACTIVE)->count(),
+                    'pending' => Vendor::query()->where('status', Vendor::STATUS_PENDING)->count(),
+                    'inactive' => Vendor::query()->where('status', Vendor::STATUS_INACTIVE)->count(),
+                ];
+
+                $productStatusDistribution = [
+                    'approved' => Product::query()->where('status', Product::STATUS_APPROVED)->count(),
+                    'pending' => Product::query()->where('status', Product::STATUS_PENDING)->count(),
+                    'rejected' => Product::query()->where('status', Product::STATUS_REJECTED)->count(),
+                ];
+
                 $categoriesByType = collect(Category::typeLabels())
                     ->map(fn (string $label, string $type) => [
                         'type' => $type,
@@ -178,8 +190,10 @@ class DashboardController extends Controller
                 return [
                     'total_categories' => $totalCategories,
                     'total_vendors' => $totalVendors,
-                    'active_vendors' => Vendor::query()->where('is_active', true)->count(),
-                    'inactive_vendors' => Vendor::query()->where('is_active', false)->count(),
+                    'active_vendors' => $vendorStatusDistribution['active'],
+                    'inactive_vendors' => $vendorStatusDistribution['inactive'],
+                    'pending_vendors' => $vendorStatusDistribution['pending'],
+                    'vendor_status_distribution' => $vendorStatusDistribution,
                     'total_products' => $totalProducts,
                     'total_syndicates' => $totalSyndicates,
                     'active_syndicates' => Syndicate::query()->where('status', Syndicate::STATUS_ACTIVE)->count(),
@@ -209,6 +223,7 @@ class DashboardController extends Controller
                         ->values(),
                     'active_products' => Product::query()->where('is_active', true)->count(),
                     'inactive_products' => Product::query()->where('is_active', false)->count(),
+                    'product_status_distribution' => $productStatusDistribution,
                     'vendors_by_type' => $vendorsByType,
                     'categories_by_type' => $categoriesByType,
                     'most_selected_categories' => $categoryRows->take(5)->values(),
@@ -239,7 +254,7 @@ class DashboardController extends Controller
             }, ['dashboard']);
 
         return response()->json([
-            'message' => 'Dashboard overview statistics retrieved successfully.',
+            'message' => __('api.dashboard_overview_retrieved'),
             'data' => $data,
         ]);
     }
@@ -293,7 +308,7 @@ class DashboardController extends Controller
         }
 
         return response()->json([
-            'message' => 'Vendor category statistics retrieved successfully.',
+            'message' => __('api.vendor_category_statistics_retrieved'),
             'data' => $categories,
         ]);
     }

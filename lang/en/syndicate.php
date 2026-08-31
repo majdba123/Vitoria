@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'navigation_label' => 'Syndicate navigation',
     'workspace' => 'Syndicate Workspace',
     'workspace_label' => 'Syndicate hub',
     'open_sidebar' => 'Open sidebar',
@@ -77,6 +78,8 @@ return [
     'active_products' => 'Active products',
     'inactive_products' => 'Inactive products',
     'active_merchants' => 'Active vendors',
+    'vendor_status_title' => 'Vendor status',
+    'vendor_status_copy' => 'Active and inactive vendors in this syndicate domain.',
     'inactive_merchants' => 'Inactive vendors',
     'notifications' => 'Notifications',
     'currency_syp' => 'SYP',

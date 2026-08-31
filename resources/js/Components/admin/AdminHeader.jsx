@@ -26,14 +26,14 @@ export function AdminHeader({ title }) {
                 </div>
 
                 <div className="flex items-center gap-0.5">
-                    <Button asChild variant="ghost" size="icon" className="size-11" aria-label={nav.home ?? 'Home'} title={nav.home ?? 'Home'}>
+                    <Button asChild variant="ghost" size="icon" className="size-11" aria-label={nav.home} title={nav.home}>
                         <Link href={route('home')}>
                             <Home className="size-4" />
                         </Link>
                     </Button>
                     <LanguageSwitcher />
                     <NotificationBell viewAllRoute="admin.notifications.index" locale={props.locale} />
-                    <ThemeToggle label={admin.toggle_theme ?? 'Toggle theme'} />
+                    <ThemeToggle label={admin.toggle_theme} />
                     <LogoutButton />
                 </div>
             </div>

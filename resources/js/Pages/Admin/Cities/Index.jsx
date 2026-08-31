@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Plus, Building2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { DataTable } from '@/Components/admin/DataTable';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { DataTable } from '@/Components/shared/DataTable';
 import { CsvImportButton } from '@/Components/admin/CsvImportButton';
 import { DeleteConfirmDialog } from '@/Components/admin/DeleteConfirmDialog';
 import { Button } from '@/Components/ui/button';
@@ -51,13 +51,13 @@ export default function CitiesIndex() {
             render: (row) => (
                 <div className="inline-flex items-center gap-1.5">
                     <Button asChild variant="ghost" size="sm">
-                        <Link href={route('admin.cities.show', row.id)}>{common.view_details ?? 'View'}</Link>
+                        <Link href={route('admin.cities.show', row.id)}>{common.view_details}</Link>
                     </Button>
                     <Button asChild variant="outline" size="sm">
-                        <Link href={route('admin.cities.edit', row.id)}>{common.edit ?? 'Edit'}</Link>
+                        <Link href={route('admin.cities.edit', row.id)}>{common.edit}</Link>
                     </Button>
                     <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => setDeleteTarget(row)}>
-                        {common.delete ?? 'Delete'}
+                        {common.delete}
                     </Button>
                 </div>
             ),

@@ -36,14 +36,14 @@ class StoreCategoryRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Category name is required.',
-            'type.required' => 'Category type is required.',
-            'type.in' => 'Please select a valid category type.',
-            'logo.image' => 'The category image must be a valid image file.',
-            'logo.max' => 'The category image may not be greater than 4 MB.',
-            'commission.numeric' => 'Commission must be a valid number.',
-            'commission.min' => 'Commission cannot be less than 0%.',
-            'commission.max' => 'Commission cannot be greater than 100%.',
+            'name.required' => __('validation.application.category_name_required'),
+            'type.required' => __('validation.application.category_type_required'),
+            'type.in' => __('validation.application.category_type_invalid'),
+            'logo.image' => __('validation.application.category_image_invalid'),
+            'logo.max' => __('validation.application.category_image_max'),
+            'commission.numeric' => __('validation.application.commission_numeric'),
+            'commission.min' => __('validation.application.commission_min'),
+            'commission.max' => __('validation.application.commission_max'),
         ];
     }
 }

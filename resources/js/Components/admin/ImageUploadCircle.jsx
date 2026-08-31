@@ -1,11 +1,13 @@
 import { useRef } from 'react';
 import { Camera } from 'lucide-react';
+import { useI18n } from '@/hooks/use-i18n';
 
 /**
  * Hover-to-change circular image picker used for vendor avatar/store logo.
  * Renders an initial-letter fallback when there's no image yet.
  */
 export function ImageUploadCircle({ label, previewUrl, fallback, onChange, error }) {
+    const { common } = useI18n();
     const inputRef = useRef(null);
 
     return (
@@ -17,12 +19,12 @@ export function ImageUploadCircle({ label, previewUrl, fallback, onChange, error
                 <button
                     type="button"
                     onClick={() => inputRef.current?.click()}
-                    aria-label={`Change ${label}`}
+                    aria-label={`${common.change}: ${label}`}
                     className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/60"
                 >
                     <div className="text-center text-white">
                         <Camera className="mx-auto size-6" />
-                        <span className="mt-1 block text-[10px] font-medium text-white/80">Change</span>
+                        <span className="mt-1 block text-[10px] font-medium text-white/80">{common.change}</span>
                     </div>
                 </button>
                 <input

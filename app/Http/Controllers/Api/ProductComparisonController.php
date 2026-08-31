@@ -33,7 +33,7 @@ class ProductComparisonController extends Controller
         }
 
         return response()->json([
-            'message' => 'Products compared successfully.',
+            'message' => __('api.products_compared'),
             'data' => $result,
         ]);
     }

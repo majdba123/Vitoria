@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { router } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
+import { PageHeader } from '@/Components/shared/PageHeader';
 import { TextField, SelectField } from '@/Components/admin/form/FormField';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Skeleton } from '@/Components/ui/skeleton';
@@ -41,15 +41,15 @@ export default function SubcategoriesEdit({ subcategoryId }) {
 
     if (status === 'loading') {
         return (
-            <AdminLayout title={common.loading ?? 'Loading...'}>
+            <AdminLayout title={common.loading}>
                 <Skeleton className="h-64 w-full max-w-2xl" />
             </AdminLayout>
         );
     }
 
     return (
-        <AdminLayout title="Edit subcategory">
-            <PageHeader breadcrumb={[{ label: admin.subcategories_heading, href: route('admin.subcategories.index') }, { label: common.edit ?? 'Edit' }]} title="Edit subcategory" />
+        <AdminLayout title={admin.edit_subcategory_title}>
+            <PageHeader breadcrumb={[{ label: admin.subcategories_heading, href: route('admin.subcategories.index') }, { label: common.edit }]} title={admin.edit_subcategory_title} />
 
             <Card className="max-w-2xl border-border/80 shadow-none">
                 <CardContent className="p-5 sm:p-6">
@@ -62,19 +62,19 @@ export default function SubcategoriesEdit({ subcategoryId }) {
                             required
                             value={form.category_id}
                             onValueChange={(value) => setForm({ ...form, category_id: value })}
-                            options={categories.map((c) => ({ value: c.id, label: `${c.name} (${c.type})` }))}
+                            options={categories.map((c) => ({ value: c.id, label: `${c.name} (${c.type === 'veterinary' ? admin.type_veterinary : admin.type_agriculture})` }))}
                             error={errors.category_id}
                         />
-                        <TextField id="name_ar" label="Arabic name" required value={form.name_ar} onChange={(e) => setForm({ ...form, name_ar: e.target.value })} error={errors.name_ar} dir="rtl" />
-                        <TextField id="name_en" label="English name" required value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} error={errors.name_en} />
+                        <TextField id="name_ar" label={admin.arabic_name_label} required value={form.name_ar} onChange={(e) => setForm({ ...form, name_ar: e.target.value })} error={errors.name_ar} dir="rtl" />
+                        <TextField id="name_en" label={admin.english_name_label} required value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} error={errors.name_en} />
 
                         <div className="flex gap-2 pt-2">
                             <Button type="button" variant="outline" className="flex-1" onClick={() => router.visit(route('admin.subcategories.index'))}>
-                                {common.cancel ?? 'Cancel'}
+                                {common.cancel}
                             </Button>
                             <Button type="submit" className="flex-1" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-                                {common.save_changes ?? 'Save changes'}
+                                {common.save_changes}
                             </Button>
                         </div>
                     </form>

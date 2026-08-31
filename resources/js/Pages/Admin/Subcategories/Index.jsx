@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { DataTable } from '@/Components/admin/DataTable';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { DataTable } from '@/Components/shared/DataTable';
 import { CsvImportButton } from '@/Components/admin/CsvImportButton';
 import { DeleteConfirmDialog } from '@/Components/admin/DeleteConfirmDialog';
 import { Button } from '@/Components/ui/button';
@@ -61,7 +61,7 @@ export default function SubcategoriesIndex() {
             ),
         },
         { key: 'category', label: admin.parent_category_label, render: (row) => row.category?.name ?? '—' },
-        { key: 'type', label: admin.type_label, render: (row) => row.category?.type ?? '—' },
+        { key: 'type', label: admin.type_label, render: (row) => ({ agriculture: admin.type_agriculture, veterinary: admin.type_veterinary, both: admin.type_both })[row.category?.type] ?? common.not_available },
         { key: 'products_count', label: admin.products, align: 'end', render: (row) => row.products_count ?? 0 },
         {
             key: 'actions',
@@ -73,10 +73,10 @@ export default function SubcategoriesIndex() {
                         <Link href={route('admin.subcategories.show', row.id)}>{admin.view}</Link>
                     </Button>
                     <Button asChild variant="outline" size="sm">
-                        <Link href={route('admin.subcategories.edit', row.id)}>{common.edit ?? 'Edit'}</Link>
+                        <Link href={route('admin.subcategories.edit', row.id)}>{common.edit}</Link>
                     </Button>
                     <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => setDeleteTarget(row)}>
-                        {common.delete ?? 'Delete'}
+                        {common.delete}
                     </Button>
                 </div>
             ),
@@ -158,7 +158,7 @@ export default function SubcategoriesIndex() {
                 open={!!deleteTarget}
                 onOpenChange={(open) => !open && setDeleteTarget(null)}
                 title={admin.subcategories_heading}
-                description={`${common.confirm_delete ?? 'Are you sure you want to delete'} "${deleteTarget?.name_ar ?? deleteTarget?.name_en ?? ''}"?`}
+                description={`${common.confirm_delete} "${deleteTarget?.name_ar ?? deleteTarget?.name_en ?? ''}"?`}
                 isDeleting={isDeleting}
                 onConfirm={confirmDelete}
             />

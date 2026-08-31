@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
+import { PageHeader } from '@/Components/shared/PageHeader';
 import { TextField, SelectField, TextareaField } from '@/Components/admin/form/FormField';
 import { CategoryCheckboxGroup } from '@/Components/admin/CategoryCheckboxGroup';
 import { ImageUploadCircle } from '@/Components/admin/ImageUploadCircle';
@@ -14,7 +14,7 @@ import { useAdminForm } from '@/hooks/use-admin-form';
 import { useI18n } from '@/hooks/use-i18n';
 
 export default function VendorsEdit({ vendorId }) {
-    const { admin, common } = useI18n();
+    const { admin, common, vendor } = useI18n();
     const { submit, errors, generalError, isSubmitting } = useAdminForm();
     const [status, setStatus] = useState('loading');
     const [form, setForm] = useState({ name: '', phone_number: '', national_id: '', email: '', password: '', store_name: '', address: '', business_type: '', city_id: '', description: '', latitude: '', longitude: '' });
@@ -83,7 +83,7 @@ export default function VendorsEdit({ vendorId }) {
             setAvatarFile(null);
             setLogoFile(null);
             setForm((f) => ({ ...f, password: '' }));
-            setSuccessMessage('Vendor updated successfully.');
+            setSuccessMessage(admin.vendor_updated_success);
         } catch {
             // handled by hook
         }
@@ -91,18 +91,18 @@ export default function VendorsEdit({ vendorId }) {
 
     if (status === 'loading') {
         return (
-            <AdminLayout title={common.loading ?? 'Loading...'}>
+            <AdminLayout title={common.loading}>
                 <Skeleton className="h-96 w-full max-w-3xl" />
             </AdminLayout>
         );
     }
 
     return (
-        <AdminLayout title="Edit vendor">
+        <AdminLayout title={admin.edit_vendor_title}>
             <PageHeader
-                breadcrumb={[{ label: admin.vendors_breadcrumb, href: route('admin.vendors.index') }, { label: common.edit ?? 'Edit' }]}
-                title="Edit vendor"
-                copy="Update vendor account and store information."
+                breadcrumb={[{ label: admin.vendors_breadcrumb, href: route('admin.vendors.index') }, { label: common.edit }]}
+                title={admin.edit_vendor_title}
+                copy={admin.edit_vendor_copy}
                 actions={
                     <label className="flex items-center gap-2 text-sm font-medium">
                         <Switch checked={isActive} onCheckedChange={toggleActive} />
@@ -119,7 +119,7 @@ export default function VendorsEdit({ vendorId }) {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="flex flex-wrap items-center justify-center gap-10 py-2">
                             <ImageUploadCircle
-                                label="Profile photo"
+                                label={vendor.profile_photo_label}
                                 previewUrl={avatarPreview}
                                 fallback={(form.name || 'V').charAt(0).toUpperCase()}
                                 onChange={(file) => {
@@ -129,9 +129,9 @@ export default function VendorsEdit({ vendorId }) {
                                 error={errors.avatar}
                             />
                             <ImageUploadCircle
-                                label="Store logo"
+                                label={vendor.store_logo_label}
                                 previewUrl={logoPreview}
-                                fallback={<span className="text-xs text-muted-foreground">No logo</span>}
+                                fallback={<span className="text-xs text-muted-foreground">{vendor.no_logo}</span>}
                                 onChange={(file) => {
                                     setLogoFile(file);
                                     if (file) setLogoPreview(URL.createObjectURL(file));
@@ -145,12 +145,12 @@ export default function VendorsEdit({ vendorId }) {
                         <fieldset className="space-y-4">
                             <legend className="text-sm font-semibold text-foreground">{admin.vendors_user_account}</legend>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <TextField id="name" label="Full name" required value={form.name} onChange={(e) => set('name')(e.target.value)} error={errors.name} />
-                                <TextField id="phone_number" label="Phone number" type="tel" required value={form.phone_number} onChange={(e) => set('phone_number')(e.target.value)} error={errors.phone_number} />
-                                <TextField id="national_id" label="National ID" required value={form.national_id} onChange={(e) => set('national_id')(e.target.value)} error={errors.national_id} />
-                                <TextField id="email" label="Email" type="email" placeholder="(optional)" value={form.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
+                                <TextField id="name" label={vendor.full_name_label} required value={form.name} onChange={(e) => set('name')(e.target.value)} error={errors.name} />
+                                <TextField id="phone_number" label={vendor.phone_number_label} type="tel" required value={form.phone_number} onChange={(e) => set('phone_number')(e.target.value)} error={errors.phone_number} />
+                                <TextField id="national_id" label={vendor.national_id_label} required value={form.national_id} onChange={(e) => set('national_id')(e.target.value)} error={errors.national_id} />
+                                <TextField id="email" label={vendor.email_label} type="email" placeholder={vendor.optional_placeholder} value={form.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
                                 <div className="sm:col-span-2">
-                                    <TextField id="password" label="New password" type="password" placeholder="Leave blank to keep current" value={form.password} onChange={(e) => set('password')(e.target.value)} error={errors.password} />
+                                    <TextField id="password" label={admin.new_password_label} type="password" placeholder={admin.password_optional_hint} value={form.password} onChange={(e) => set('password')(e.target.value)} error={errors.password} />
                                 </div>
                             </div>
                         </fieldset>
@@ -158,10 +158,10 @@ export default function VendorsEdit({ vendorId }) {
                         <Separator />
 
                         <fieldset className="space-y-4">
-                            <legend className="text-sm font-semibold text-foreground">Store details</legend>
+                            <legend className="text-sm font-semibold text-foreground">{vendor.store_profile_title}</legend>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <TextField id="store_name" label="Store name" required value={form.store_name} onChange={(e) => set('store_name')(e.target.value)} error={errors.store_name} />
-                                <TextField id="address" label="Address" placeholder="(optional)" value={form.address} onChange={(e) => set('address')(e.target.value)} error={errors.address} />
+                                <TextField id="store_name" label={vendor.store_name_label} required value={form.store_name} onChange={(e) => set('store_name')(e.target.value)} error={errors.store_name} />
+                                <TextField id="address" label={vendor.address_label} placeholder={vendor.optional_placeholder} value={form.address} onChange={(e) => set('address')(e.target.value)} error={errors.address} />
                                 <div className="sm:col-span-2">
                                     <SelectField
                                         id="business_type"
@@ -174,25 +174,25 @@ export default function VendorsEdit({ vendorId }) {
                                     />
                                 </div>
                                 <div className="sm:col-span-2">
-                                    <SelectField id="city_id" label="City" required value={form.city_id} onValueChange={set('city_id')} options={cities.map((c) => ({ value: c.id, label: c.name }))} error={errors.city_id} />
+                                    <SelectField id="city_id" label={vendor.city_label} required value={form.city_id} onValueChange={set('city_id')} options={cities.map((c) => ({ value: c.id, label: c.name }))} error={errors.city_id} />
                                 </div>
                             </div>
-                            <TextareaField id="description" label="Description" rows={3} value={form.description} onChange={(e) => set('description')(e.target.value)} error={errors.description} />
+                            <TextareaField id="description" label={vendor.description_label} rows={3} value={form.description} onChange={(e) => set('description')(e.target.value)} error={errors.description} />
                         </fieldset>
 
                         <Separator />
 
                         <fieldset className="space-y-3">
-                            <legend className="text-sm font-semibold text-foreground">Allowed categories</legend>
+                            <legend className="text-sm font-semibold text-foreground">{vendor.allowed_categories_title}</legend>
                             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                <CategoryCheckboxGroup businessType={form.business_type} categories={categories} selectedIds={categoryIds} onToggle={toggleCategory} emptyHint="Select a business type first." />
+                                <CategoryCheckboxGroup businessType={form.business_type} categories={categories} selectedIds={categoryIds} onToggle={toggleCategory} emptyHint={admin.vendors_select_business_type_first} />
                             </div>
                         </fieldset>
 
                         <div className="flex justify-end gap-2 border-t border-border pt-5">
                             <Button type="submit" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-                                {common.save_changes ?? 'Save changes'}
+                                {common.save_changes}
                             </Button>
                         </div>
                     </form>

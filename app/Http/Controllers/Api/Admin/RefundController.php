@@ -41,7 +41,7 @@ class RefundController extends Controller
         $refunds = $query->paginate(12);
 
         return response()->json([
-            'message' => 'Refunds retrieved successfully.',
+            'message' => __('api.refunds_retrieved'),
             'data' => $refunds->items(),
             'meta' => [
                 'current_page' => $refunds->currentPage(),
@@ -58,7 +58,7 @@ class RefundController extends Controller
             ->with(['order:id,order_number,vendor_id', 'orderReturn:id,return_number', 'payment'])
             ->findOrFail($refundId);
 
-        return response()->json(['message' => 'Refund retrieved successfully.', 'data' => $refund]);
+        return response()->json(['message' => __('api.refund_retrieved'), 'data' => $refund]);
     }
 
     /**

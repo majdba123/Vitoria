@@ -24,7 +24,7 @@ class CommissionController extends Controller
     {
         $vendor = $request->user()?->managedVendor();
         if (! $vendor instanceof Vendor) {
-            abort(403, 'Vendor profile not found.');
+            abort(403, __('api.vendor_profile_not_found'));
         }
 
         // Every non-pending, non-cancelled status counts as "completed" here —
@@ -118,7 +118,7 @@ class CommissionController extends Controller
             ->all();
 
         return response()->json([
-            'message' => 'Commission statistics retrieved successfully.',
+            'message' => __('api.commission_statistics_retrieved'),
             'data' => [
                 'vendor' => [
                     'id' => $vendor->id,

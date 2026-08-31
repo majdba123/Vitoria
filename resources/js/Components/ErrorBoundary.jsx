@@ -1,4 +1,19 @@
 import { Component } from 'react';
+import { useI18n } from '@/hooks/use-i18n';
+
+function ErrorFallback() {
+    const { common } = useI18n();
+
+    return (
+        <div className="page-shell flex min-h-[60vh] flex-col items-center justify-center text-center">
+            <h1 className="commerce-title">{common.generic_error}</h1>
+            <p className="commerce-copy">{common.reload_page_hint}</p>
+            <button type="button" className="btn-primary mt-6" onClick={() => window.location.reload()}>
+                {common.reload_page}
+            </button>
+        </div>
+    );
+}
 
 export class ErrorBoundary extends Component {
     constructor(props) {
@@ -16,15 +31,7 @@ export class ErrorBoundary extends Component {
 
     render() {
         if (this.state.hasError) {
-            return (
-                <div className="page-shell flex min-h-[60vh] flex-col items-center justify-center text-center">
-                    <h1 className="commerce-title">Something went wrong</h1>
-                    <p className="commerce-copy">Please reload the page and try again.</p>
-                    <button type="button" className="btn-primary mt-6" onClick={() => window.location.reload()}>
-                        Reload page
-                    </button>
-                </div>
-            );
+            return <ErrorFallback />;
         }
 
         return this.props.children;

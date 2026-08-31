@@ -28,9 +28,9 @@ class StoreProductReviewRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'rating.required' => 'Please select a rating from 1 to 5 stars.',
-            'rating.min' => 'Rating must be between 1 and 5.',
-            'rating.max' => 'Rating must be between 1 and 5.',
+            'rating.required' => __('validation.application.review_rating_required'),
+            'rating.min' => __('validation.application.review_rating_range'),
+            'rating.max' => __('validation.application.review_rating_range'),
         ];
     }
 }

@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Pencil, Star, Store } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { SpecGrid } from '@/Components/products/SpecGrid';
 import { SHARED_LABELS, AGRICULTURAL_LABELS, VETERINARY_LABELS } from '@/lib/product-detail-labels';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
@@ -16,14 +16,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/Components/ui/select';
-import { useI18n } from '@/hooks/use-i18n';
-
-function formatCurrency(value) {
-    return `${Number(value || 0).toLocaleString()} SYP`;
-}
+import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { formatCurrency, formatDate, formatNumber, formatPercent } from '@/lib/date-time';
 
 export default function ProductsShow({ productId }) {
-    const { admin, common } = useI18n();
+    const { admin, common, products } = useI18n();
+    const locale = useLocale();
     const [status, setStatus] = useState('loading');
     const [product, setProduct] = useState(null);
     const [statusValue, setStatusValue] = useState('pending');
@@ -44,14 +42,14 @@ export default function ProductsShow({ productId }) {
         setIsSavingStatus(true);
         window.axios.patch(`/api/admin/products/${productId}/status`, { status: statusValue }, { silent: true }).then((res) => {
             setProduct(res.data.data);
-            setFlash('Status updated.');
+            setFlash(products.status_updated);
             setIsSavingStatus(false);
         }).catch(() => setIsSavingStatus(false));
     };
 
     if (status === 'loading') {
         return (
-            <AdminLayout title={common.loading ?? 'Loading...'}>
+            <AdminLayout title={common.loading}>
                 <Skeleton className="h-96 w-full" />
             </AdminLayout>
         );
@@ -60,7 +58,7 @@ export default function ProductsShow({ productId }) {
     if (status === 'error' || !product) {
         return (
             <AdminLayout title={admin.manage_products_title}>
-                <p className="text-sm font-medium text-[var(--color-danger-strong)]">Failed to load product.</p>
+                <p className="text-sm font-medium text-[var(--color-danger-strong)]">{products.load_failed}</p>
             </AdminLayout>
         );
     }
@@ -82,7 +80,7 @@ export default function ProductsShow({ productId }) {
                         <Button asChild size="sm">
                             <Link href={route('admin.products.edit', product.id)}>
                                 <Pencil className="size-4" />
-                                {common.edit ?? 'Edit'}
+                                {common.edit}
                             </Link>
                         </Button>
                     </>
@@ -105,10 +103,10 @@ export default function ProductsShow({ productId }) {
 
                         <div className="flex flex-wrap gap-y-2 border-t border-border pt-4">
                             {[
-                                { label: 'Price', value: formatCurrency(product.price) },
-                                { label: admin.qty_label, value: Number(product.quantity || 0).toLocaleString() },
-                                { label: 'Commission', value: product.category?.commission ? `${Number(product.category.commission).toFixed(2)}%` : '—' },
-                                { label: 'Created', value: product.created_at ? new Date(product.created_at).toLocaleDateString() : '—' },
+                                { label: products.fields.price, value: formatCurrency(product.price, locale) },
+                                { label: admin.qty_label, value: formatNumber(product.quantity, locale) },
+                                { label: products.fields.commission, value: product.category?.commission ? formatPercent(product.category.commission, locale) : '—' },
+                                { label: products.fields.created, value: product.created_at ? formatDate(product.created_at, locale) : '—' },
                             ].map((item, index) => (
                                 <div key={item.label} className={`flex flex-col gap-1 px-4 py-1 ${index === 0 ? 'ps-0' : 'border-s border-border'}`}>
                                     <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{item.label}</span>
@@ -119,7 +117,7 @@ export default function ProductsShow({ productId }) {
                     </div>
 
                     <div className="space-y-3 border-border lg:border-s lg:ps-6">
-                        <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-muted-foreground">Admin controls</p>
+                        <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-muted-foreground">{products.admin_controls_badge}</p>
                         <div className="rounded-md border border-border bg-muted/40 p-3">
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{admin.approval_status_label}</p>
                             <div className="mt-2 flex items-center gap-2">
@@ -134,18 +132,18 @@ export default function ProductsShow({ productId }) {
                                     </SelectContent>
                                 </Select>
                                 <Button type="button" size="sm" onClick={saveStatus} disabled={isSavingStatus || statusValue === product.status}>
-                                    {common.save ?? 'Save'}
+                                    {common.save}
                                 </Button>
                             </div>
                         </div>
 
                         <div className="grid gap-2.5 sm:grid-cols-2">
                             <div className="rounded-md border border-border bg-muted/40 p-3">
-                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Discount</p>
-                                <p className="mt-1 text-sm font-bold text-foreground">{product.has_active_discount ? `${product.discount_percentage}%` : '—'}</p>
+                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{products.fields.discount}</p>
+                                <p className="mt-1 text-sm font-bold text-foreground">{product.has_active_discount ? formatPercent(product.discount_percentage, locale) : '—'}</p>
                             </div>
                             <div className="rounded-md border border-border bg-muted/40 p-3">
-                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Vendor</p>
+                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{products.fields.vendor}</p>
                                 <p className="mt-1 truncate text-sm font-semibold text-foreground">{product.vendor?.store_name ?? '—'}</p>
                             </div>
                         </div>
@@ -154,7 +152,7 @@ export default function ProductsShow({ productId }) {
                             <Button asChild variant="outline" size="sm" className="w-full">
                                 <Link href={route('admin.vendors.show', product.vendor.id)}>
                                     <Store className="size-4" />
-                                    View vendor profile
+                                    {products.view_vendor_profile}
                                 </Link>
                             </Button>
                         )}
@@ -164,7 +162,7 @@ export default function ProductsShow({ productId }) {
 
             {product.status === 'rejected' && product.rejection_reason && (
                 <div className="rounded-md border border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] px-4 py-3 text-sm font-medium text-[var(--color-danger-strong)]">
-                    <p className="text-xs font-bold uppercase tracking-[0.2em]">Rejection reason</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.2em]">{products.rejection_badge}</p>
                     <p className="mt-1">{product.rejection_reason}</p>
                 </div>
             )}
@@ -173,11 +171,11 @@ export default function ProductsShow({ productId }) {
                 <div className="space-y-4">
                     <Card className="border-border/80 shadow-none">
                         <CardHeader className="border-b border-border/80">
-                            <CardTitle className="text-base font-bold">Gallery</CardTitle>
+                            <CardTitle className="text-base font-bold">{products.gallery_title}</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4 p-5">
                             <div className="flex aspect-[16/11] items-center justify-center overflow-hidden rounded-lg border border-border bg-muted">
-                                {primaryPhoto ? <img src={primaryPhoto.url} alt="" className="size-full object-contain" /> : <p className="text-sm text-muted-foreground">No primary photo.</p>}
+                                {primaryPhoto ? <img src={primaryPhoto.url} alt="" className="size-full object-contain" /> : <p className="text-sm text-muted-foreground">{products.no_primary_photo}</p>}
                             </div>
                             {galleryPhotos.length > 0 && (
                                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -193,16 +191,16 @@ export default function ProductsShow({ productId }) {
 
                     <Card className="border-border/80 shadow-none">
                         <CardHeader className="border-b border-border/80">
-                            <CardTitle className="text-base font-bold">Description</CardTitle>
+                            <CardTitle className="text-base font-bold">{products.description_badge}</CardTitle>
                         </CardHeader>
                         <CardContent className="p-5">
-                            <p className="whitespace-pre-wrap text-sm leading-7 text-muted-foreground">{product.description || 'No description provided.'}</p>
+                            <p className="whitespace-pre-wrap text-sm leading-7 text-muted-foreground">{product.description || products.no_description}</p>
                         </CardContent>
                     </Card>
 
                     <Card className="border-border/80 shadow-none">
                         <CardHeader className="border-b border-border/80">
-                            <CardTitle className="text-base font-bold">Shared parameters</CardTitle>
+                            <CardTitle className="text-base font-bold">{products.shared_title}</CardTitle>
                         </CardHeader>
                         <CardContent className="p-5">
                             <SpecGrid values={product.shared_detail} labels={SHARED_LABELS} />
@@ -212,7 +210,7 @@ export default function ProductsShow({ productId }) {
                     {product.category?.type === 'agriculture' && (
                         <Card className="border-border/80 shadow-none">
                             <CardHeader className="border-b border-border/80">
-                                <CardTitle className="text-base font-bold">Agricultural parameters</CardTitle>
+                                <CardTitle className="text-base font-bold">{products.agriculture_title}</CardTitle>
                             </CardHeader>
                             <CardContent className="p-5">
                                 <SpecGrid values={product.agricultural_detail} labels={AGRICULTURAL_LABELS} />
@@ -223,7 +221,7 @@ export default function ProductsShow({ productId }) {
                     {product.category?.type === 'veterinary' && (
                         <Card className="border-border/80 shadow-none">
                             <CardHeader className="border-b border-border/80">
-                                <CardTitle className="text-base font-bold">Veterinary parameters</CardTitle>
+                                <CardTitle className="text-base font-bold">{products.veterinary_title}</CardTitle>
                             </CardHeader>
                             <CardContent className="p-5">
                                 <SpecGrid values={product.veterinary_detail} labels={VETERINARY_LABELS} />
@@ -235,13 +233,13 @@ export default function ProductsShow({ productId }) {
                 <aside>
                     <Card className="border-border/80 shadow-none">
                         <CardHeader className="border-b border-border/80">
-                            <CardTitle className="text-base font-bold">Summary</CardTitle>
+                            <CardTitle className="text-base font-bold">{products.summary_title}</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3 p-5">
                             {[
-                                { label: 'Category', value: product.category?.name },
-                                { label: 'Subcategory', value: product.subcategory?.name_ar || product.subcategory?.name_en || 'None' },
-                                { label: 'Product type', value: product.agricultural_detail?.agricultural_product_type || '—' },
+                                { label: common.category, value: product.category?.name },
+                                { label: products.fields.subcategory, value: product.subcategory?.name_ar || product.subcategory?.name_en || products.no_subcategory },
+                                { label: products.fields.product_type, value: product.agricultural_detail?.agricultural_product_type || '—' },
                             ].map((item) => (
                                 <div key={item.label} className="rounded-md border border-border bg-muted/40 px-4 py-3">
                                     <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-muted-foreground">{item.label}</p>

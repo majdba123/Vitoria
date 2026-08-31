@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Plus, Loader2, Image as ImageIcon } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { DataTable } from '@/Components/admin/DataTable';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { DataTable } from '@/Components/shared/DataTable';
 import { DeleteConfirmDialog } from '@/Components/admin/DeleteConfirmDialog';
-import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { TextField, FileField } from '@/Components/admin/form/FormField';
 import { Button } from '@/Components/ui/button';
 import { Switch } from '@/Components/ui/switch';
@@ -87,7 +87,7 @@ export default function BannersIndex() {
 
         try {
             await submit(editingId ? 'put' : 'post', editingId ? `/api/admin/banners/${editingId}` : '/api/admin/banners', payload, { isMultipart: true });
-            showFlash(editingId ? 'Banner updated successfully.' : 'Banner created successfully.');
+            showFlash(editingId ? admin.banner_updated : admin.banner_created);
             setModalOpen(false);
             reload();
         } catch {
@@ -101,7 +101,7 @@ export default function BannersIndex() {
         window.axios.delete(`/api/admin/banners/${deleteTarget.id}`, { silent: true }).then(() => {
             setIsDeleting(false);
             setDeleteTarget(null);
-            showFlash('Banner deleted successfully.');
+            showFlash(admin.banner_deleted);
             reload();
         }).catch(() => setIsDeleting(false));
     };
@@ -109,24 +109,24 @@ export default function BannersIndex() {
     const columns = [
         {
             key: 'image',
-            label: 'Image',
+            label: admin.th_image,
             render: (row) => (
                 <span className="flex h-10 w-16 items-center justify-center overflow-hidden rounded-md bg-accent text-accent-foreground">
                     {row.image_path ? <img src={`/storage/${row.image_path}`} alt="" className="size-full object-cover" /> : <ImageIcon className="size-4" />}
                 </span>
             ),
         },
-        { key: 'title', label: 'Title', render: (row) => <span className="font-semibold text-foreground">{row.title_en || '—'}</span> },
-        { key: 'sort_order', label: 'Sort', render: (row) => row.sort_order ?? 0 },
-        { key: 'status', label: 'Status', render: (row) => <StatusBadge tone={row.is_active ? 'success' : 'warning'}>{row.is_active ? 'Active' : 'Inactive'}</StatusBadge> },
+        { key: 'title', label: admin.th_title, render: (row) => <span className="font-semibold text-foreground">{row.title_en || '—'}</span> },
+        { key: 'sort_order', label: admin.th_sort, render: (row) => row.sort_order ?? 0 },
+        { key: 'status', label: admin.th_status, render: (row) => <StatusBadge tone={row.is_active ? 'success' : 'warning'}>{row.is_active ? common.active : common.inactive}</StatusBadge> },
         {
             key: 'actions',
-            label: 'Actions',
+            label: admin.th_actions,
             align: 'end',
             render: (row) => (
                 <div className="inline-flex items-center gap-1.5">
-                    <Button variant="outline" size="sm" onClick={() => openEdit(row)}>Edit</Button>
-                    <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => setDeleteTarget(row)}>Delete</Button>
+                    <Button variant="outline" size="sm" onClick={() => openEdit(row)}>{common.edit}</Button>
+                    <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => setDeleteTarget(row)}>{common.delete}</Button>
                 </div>
             ),
         },
@@ -186,7 +186,7 @@ export default function BannersIndex() {
                     </form>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>{common.cancel ?? 'Cancel'}</Button>
+                        <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>{common.cancel}</Button>
                         <Button type="submit" form="banner-form" disabled={isSubmitting}>
                             {isSubmitting && <Loader2 className="size-4 animate-spin" />}
                             {admin.save_banner}

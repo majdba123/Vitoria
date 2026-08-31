@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
+import { PageHeader } from '@/Components/shared/PageHeader';
 import { TextField, TextareaField } from '@/Components/admin/form/FormField';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
@@ -46,7 +46,7 @@ export default function AboutUsEdit({ about_description, facebook_url, instagram
             <Card className="max-w-2xl border-border/80 shadow-none">
                 <CardContent className="p-5 sm:p-6">
                     <form onSubmit={handleSubmit} className="space-y-5">
-                        <TextareaField id="about_description" label={admin.about_description} rows={4} maxLength={2000} placeholder="Short description for the footer..." hint={admin.about_description_hint} value={form.about_description} onChange={(e) => set('about_description')(e.target.value)} error={errors.about_description} />
+                        <TextareaField id="about_description" label={admin.about_description} rows={4} maxLength={2000} placeholder={admin.about_description_placeholder} hint={admin.about_description_hint} value={form.about_description} onChange={(e) => set('about_description')(e.target.value)} error={errors.about_description} />
 
                         <Separator />
                         <h3 className="text-sm font-semibold text-foreground">{admin.about_social}</h3>
@@ -62,7 +62,7 @@ export default function AboutUsEdit({ about_description, facebook_url, instagram
                         </div>
 
                         <TextField id="contact_email" label={admin.about_contact_email} type="email" placeholder="support@vetora.test" value={form.contact_email} onChange={(e) => set('contact_email')(e.target.value)} error={errors.contact_email} />
-                        <TextField id="contact_address" label={admin.about_contact_address} placeholder="e.g. Damascus, Syria" hint={admin.about_max_500} value={form.contact_address} onChange={(e) => set('contact_address')(e.target.value)} error={errors.contact_address} />
+                        <TextField id="contact_address" label={admin.about_contact_address} placeholder={admin.contact_address_placeholder} hint={admin.about_max_500} value={form.contact_address} onChange={(e) => set('contact_address')(e.target.value)} error={errors.contact_address} />
 
                         {generalError && <p className="rounded-md border border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-danger-strong)]">{generalError}</p>}
                         {successMessage && <p className="rounded-md border border-[var(--color-success-200)] bg-[var(--color-success-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-success-strong)]">{successMessage}</p>}

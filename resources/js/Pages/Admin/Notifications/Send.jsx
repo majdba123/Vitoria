@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
+import { PageHeader } from '@/Components/shared/PageHeader';
 import { TextField, TextareaField } from '@/Components/admin/form/FormField';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
@@ -38,7 +38,7 @@ export default function NotificationsSend() {
 
         try {
             await submit('post', '/api/admin/notifications/send', payload);
-            setSuccessMessage(admin.notification_sent_success ?? 'Notification sent successfully.');
+            setSuccessMessage(admin.notification_sent_success);
             setForm((f) => ({ ...f, title: '', body: '' }));
             setSelectedUserIds([]);
         } catch {

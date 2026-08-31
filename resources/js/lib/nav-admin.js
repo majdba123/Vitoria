@@ -22,7 +22,7 @@ import {
  * icon list. Keep the two in sync until the Blade admin layout is retired.
  */
 export function getAdminNavGroups(t) {
-    return [
+    const raw = [
         {
             label: t.overview,
             items: [{ label: t.dashboard, route: 'admin.dashboard', active: 'admin.dashboard', icon: LayoutGrid }],
@@ -53,4 +53,15 @@ export function getAdminNavGroups(t) {
             ],
         },
     ];
+
+    return raw.map((group) => ({
+        label: group.label,
+        items: group.items.map((item) => ({
+            key: item.route,
+            label: item.label,
+            href: route(item.route),
+            active: route().current(item.active),
+            icon: item.icon,
+        })),
+    }));
 }

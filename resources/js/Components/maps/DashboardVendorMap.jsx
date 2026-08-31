@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Skeleton } from '@/Components/ui/skeleton';
-import { useLocale } from '@/hooks/use-i18n';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
 
 const REGION_SHAPES = {
     aleppo: '92,62 154,43 207,40 237,67 232,127 204,179 122,177 91,145 76,101', idlib: '54,86 91,62 91,145 73,180 54,174 42,143',
@@ -16,6 +16,7 @@ const REGION_SHAPES = {
 
 export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
     const locale = useLocale();
+    const { common } = useI18n();
     const containerRef = useRef(null);
     const [status, setStatus] = useState('loading');
     const [payload, setPayload] = useState({ domain: null, regions: [] });
@@ -34,11 +35,11 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
     const regionsByKey = useMemo(() => new Map(payload.regions.map((region) => [region.key, region])), [payload.regions]);
     const active = activeKey ? regionsByKey.get(activeKey) : null;
     const isArabic = locale === 'ar';
-    const title = isArabic ? 'توزع التجار حسب المنطقة' : 'Vendor distribution';
-    const agricultureLabel = isArabic ? 'الزراعة' : 'Agriculture';
-    const veterinaryLabel = isArabic ? 'البيطرة' : 'Veterinary';
-    const totalLabel = isArabic ? 'إجمالي التجار الفريدين' : 'Total unique vendors';
-    const scopedLabel = payload.domain === 'agriculture' ? (isArabic ? 'التجار الزراعيون' : 'Agricultural vendors') : (isArabic ? 'التجار البيطريون' : 'Veterinary vendors');
+    const title = common.map_distribution;
+    const agricultureLabel = common.map_agriculture;
+    const veterinaryLabel = common.map_veterinary;
+    const totalLabel = common.map_total_unique_vendors;
+    const scopedLabel = payload.domain === 'agriculture' ? common.map_agricultural_vendors : common.map_veterinary_vendors;
 
     const accessibleLabel = (region) => {
         const name = isArabic ? region?.name_ar : region?.name_en;
@@ -55,7 +56,7 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
             <CardHeader className="border-b border-border/80"><CardTitle className="text-base font-bold">{title}</CardTitle></CardHeader>
             <CardContent className="p-3 sm:p-5">
                 {status === 'loading' && <Skeleton className="aspect-[512/468] w-full" />}
-                {status === 'error' && <button type="button" onClick={load} className="mx-auto flex items-center gap-2 py-12 text-sm font-semibold text-primary"><RefreshCw className="size-4" />{isArabic ? 'إعادة المحاولة' : 'Retry'}</button>}
+                {status === 'error' && <button type="button" onClick={load} className="mx-auto flex items-center gap-2 py-12 text-sm font-semibold text-primary"><RefreshCw className="size-4" />{common.retry}</button>}
                 {status === 'ready' && (
                     <div ref={containerRef} className="relative isolate mx-auto w-full max-w-3xl overflow-hidden rounded-lg bg-black p-2 sm:p-4">
                         <div className="relative aspect-[512/468] w-full">
@@ -76,7 +77,7 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
                         {active && <div role="status" className="absolute inset-x-2 bottom-2 z-10 rounded-md border border-border bg-popover p-3 text-sm text-popover-foreground shadow-lg sm:inset-x-auto sm:end-4 sm:w-64">
                             <p className="font-bold">{isArabic ? active.name_ar : active.name_en}</p>
                             {payload.domain ? <p className="mt-1">{scopedLabel}: <b>{active.vendor_count}</b></p> : <div className="mt-1 space-y-0.5"><p>{agricultureLabel}: <b>{active.agriculture_count}</b></p><p>{veterinaryLabel}: <b>{active.veterinary_count}</b></p><p className="text-muted-foreground">{totalLabel}: <b>{active.unique_vendor_count}</b></p></div>}
-                            {adminDrilldown && <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => navigate(active.key)} className="mt-2 font-semibold text-primary underline">{isArabic ? 'عرض التجار' : 'View vendors'}</button>}
+                            {adminDrilldown && <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => navigate(active.key)} className="mt-2 font-semibold text-primary underline">{common.map_view_vendors}</button>}
                         </div>}
                     </div>
                 )}

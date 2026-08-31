@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Plus, Building2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { DataTable } from '@/Components/admin/DataTable';
-import { Pagination } from '@/Components/admin/Pagination';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { DataTable } from '@/Components/shared/DataTable';
+import { Pagination } from '@/Components/shared/Pagination';
 import { DeleteConfirmDialog } from '@/Components/admin/DeleteConfirmDialog';
-import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import {
@@ -47,7 +47,7 @@ export default function SyndicatesIndex() {
 
     const toggleActive = (row) => {
         window.axios.patch(`/api/admin/syndicates/${row.id}/toggle-active`, {}, { silent: true }).then(() => {
-            showFlash(admin.js_syndicate_status_updated ?? 'Status updated.');
+            showFlash(admin.js_syndicate_status_updated);
             reload();
         });
     };
@@ -106,13 +106,13 @@ export default function SyndicatesIndex() {
                         <Link href={route('admin.syndicates.show', row.id)}>{admin.view}</Link>
                     </Button>
                     <Button asChild variant="outline" size="sm">
-                        <Link href={route('admin.syndicates.edit', row.id)}>{common.edit ?? 'Edit'}</Link>
+                        <Link href={route('admin.syndicates.edit', row.id)}>{common.edit}</Link>
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => toggleActive(row)}>
                         {row.is_active ? admin.disable : admin.enable}
                     </Button>
                     <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => setDeleteTarget(row)}>
-                        {common.delete ?? 'Delete'}
+                        {common.delete}
                     </Button>
                 </div>
             ),
@@ -168,7 +168,7 @@ export default function SyndicatesIndex() {
             </Card>
 
             <div>
-                <DataTable columns={columns} rows={rows} status={status} errorMessage={errorMessage} onRetry={reload} emptyTitle={admin.js_no_syndicates_match_filters ?? 'No syndicates found'} />
+                <DataTable columns={columns} rows={rows} status={status} errorMessage={errorMessage} onRetry={reload} emptyTitle={admin.js_no_syndicates_match_filters} />
                 {status === 'ready' && rows.length > 0 && (
                     <div className="rounded-b-lg border border-t-0 border-border">
                         <Pagination meta={meta} onPrev={() => setPage((p) => p - 1)} onNext={() => setPage((p) => p + 1)} />
@@ -179,8 +179,8 @@ export default function SyndicatesIndex() {
             <DeleteConfirmDialog
                 open={!!deleteTarget}
                 onOpenChange={(open) => !open && setDeleteTarget(null)}
-                title={common.delete ?? 'Delete'}
-                description={admin.js_confirm_delete_syndicate ?? 'Are you sure you want to delete this syndicate?'}
+                title={common.delete}
+                description={admin.js_confirm_delete_syndicate}
                 isDeleting={isDeleting}
                 onConfirm={confirmDelete}
             />

@@ -37,9 +37,9 @@ class StoreSubcategoryRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'category_id.exists' => 'Please select a valid parent category.',
-            'name_ar.unique' => 'This Arabic name is already used in this category.',
-            'name_en.unique' => 'This English name is already used in this category.',
+            'category_id.exists' => __('validation.application.parent_category_invalid'),
+            'name_ar.unique' => __('validation.application.arabic_name_taken'),
+            'name_en.unique' => __('validation.application.english_name_taken'),
         ];
     }
 }

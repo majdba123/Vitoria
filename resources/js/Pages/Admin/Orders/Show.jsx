@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { DetailCard } from '@/Components/admin/DetailCard';
-import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { DetailCard } from '@/Components/shared/DetailCard';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { Button } from '@/Components/ui/button';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
-
-const STATUS_TONE = { pending: 'warning', confirmed: 'success', preparing: 'success', shipped: 'brand', out_for_delivery: 'brand', completed: 'brand', cancelled: 'danger' };
+import { formatCurrency, formatDate, formatPercent } from '@/lib/date-time';
+import { ORDER_STATUS_TONE as STATUS_TONE } from '@/lib/order-status';
+import { translatedEnum, translatedStatus } from '@/lib/translated-enum';
 
 export default function OrdersShow({ orderId }) {
     const { orders: copy, common } = useI18n();
@@ -18,7 +19,7 @@ export default function OrdersShow({ orderId }) {
     const [order, setOrder] = useState(null);
     const [isCompleting, setIsCompleting] = useState(false);
     const [actionMessage, setActionMessage] = useState(null);
-    const money = (value) => `${Number.parseFloat(value || 0).toLocaleString(locale === 'ar' ? 'ar-SY' : 'en-US')} ${copy.currency_syp}`;
+    const money = (value) => formatCurrency(value || 0, locale);
 
     const load = () => {
         window.axios.get(`/api/admin/orders/${orderId}`, { silent: true }).then((res) => {
@@ -32,11 +33,11 @@ export default function OrdersShow({ orderId }) {
     const markCompleted = () => {
         setIsCompleting(true);
         window.axios.patch(`/api/admin/orders/${orderId}/complete`, {}, { silent: true }).then((res) => {
-            setActionMessage({ tone: 'success', text: res.data?.message ?? 'Order marked as completed.' });
+            setActionMessage({ tone: 'success', text: res.data?.message ?? copy.order_marked_completed });
             setIsCompleting(false);
             load();
         }).catch((error) => {
-            setActionMessage({ tone: 'danger', text: error.response?.data?.message ?? 'Failed to update order status.' });
+            setActionMessage({ tone: 'danger', text: error.response?.data?.message ?? copy.status_update_failed });
             setIsCompleting(false);
         });
     };
@@ -58,14 +59,14 @@ export default function OrdersShow({ orderId }) {
     }
 
     return (
-        <AdminLayout title={order.order_number || `Order #${order.id}`}>
-            <PageHeader breadcrumb={[{ label: copy.orders, href: route('admin.orders.index') }, { label: copy.details }]} title={order.order_number || `${copy.order} #${order.id}`} copy={`${order.created_at ? new Date(order.created_at).toLocaleDateString(locale) : '—'} · ${copy.last_update}: ${order.updated_at ? new Date(order.updated_at).toLocaleDateString(locale) : '—'}`} />
+        <AdminLayout title={order.order_number || copy.order_number_fallback.replace(':id', String(order.id))}>
+            <PageHeader breadcrumb={[{ label: copy.orders, href: route('admin.orders.index') }, { label: copy.details }]} title={order.order_number || `${copy.order} #${order.id}`} copy={`${order.created_at ? formatDate(order.created_at, locale) : '—'} · ${copy.last_update}: ${order.updated_at ? formatDate(order.updated_at, locale) : '—'}`} />
 
             <Card className="border-border/80 shadow-none">
                 <CardContent className="space-y-4 p-5 sm:p-6">
                     <div className="flex flex-wrap items-center gap-2">
-                        <StatusBadge tone={STATUS_TONE[order.status] ?? 'warning'}>{copy.status?.[order.status] ?? order.status}</StatusBadge>
-                        <StatusBadge tone="brand">{copy[order.payment_way || 'cash'] ?? order.payment_way ?? copy.cash}</StatusBadge>
+                        <StatusBadge tone={STATUS_TONE[order.status] ?? 'warning'}>{translatedStatus(order.status, common)}</StatusBadge>
+                        <StatusBadge tone="brand">{translatedEnum(order.payment_way || 'cash', common.not_available, copy)}</StatusBadge>
                     </div>
 
                     {order.status === 'out_for_delivery' && (
@@ -85,7 +86,7 @@ export default function OrdersShow({ orderId }) {
                             { label: copy.order_number, value: order.order_number },
                             { label: copy.vendor, value: order.vendor?.store_name },
                             { label: copy.items_count, value: order.items_count ?? (order.items || []).length },
-                            { label: copy.payment_method, value: copy[order.payment_way || 'cash'] ?? order.payment_way ?? copy.cash },
+                            { label: copy.payment_method, value: translatedEnum(order.payment_way || 'cash', common.not_available, copy) },
                         ].map((item) => (
                             <div key={item.label} className="rounded-md border border-border bg-muted/40 p-3">
                                 <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{item.label}</p>
@@ -119,7 +120,7 @@ export default function OrdersShow({ orderId }) {
                             <div className="mt-3 grid gap-2 text-xs sm:grid-cols-2 lg:grid-cols-3">
                                 {[
                                     { label: copy.unit_price, value: money(item.original_unit_price ?? item.unit_price) },
-                                    item.has_discount ? { label: copy.discount, value: `${Number.parseFloat(item.applied_discount_percentage || 0).toLocaleString(locale)}%` } : null,
+                                    item.has_discount ? { label: copy.discount, value: formatPercent(item.applied_discount_percentage || 0, locale) } : null,
                                     item.has_discount && Number(item.original_unit_price) !== Number(item.unit_price) ? { label: copy.final_unit_price, value: money(item.unit_price) } : null,
                                     { label: copy.line_total, value: money(item.line_total) },
                                 ].filter(Boolean).map((param) => (

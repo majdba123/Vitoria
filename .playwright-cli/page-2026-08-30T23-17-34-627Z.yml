@@ -1,0 +1,182 @@
+- generic [ref=f54e3]:
+  - navigation "Admin navigation" [ref=f54e5]:
+    - generic [ref=f54e6]:
+      - list [ref=f54e8]:
+        - listitem [ref=f54e9]:
+          - link "Vetora المدير" [ref=f54e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/admin/dashboard
+            - generic [ref=f54e15]:
+              - generic [ref=f54e16]: Vetora
+              - generic [ref=f54e17]: المدير
+      - generic [ref=f54e18]:
+        - generic [ref=f54e19]:
+          - generic [ref=f54e20]: نظرة عامة
+          - list [ref=f54e22]:
+            - listitem [ref=f54e23]:
+              - link "لوحة التحكم" [ref=f54e24] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/dashboard
+        - generic [ref=f54e31]:
+          - generic [ref=f54e32]: الإدارة
+          - list [ref=f54e34]:
+            - listitem [ref=f54e35]:
+              - link "البائعون" [ref=f54e36] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors
+            - listitem [ref=f54e42]:
+              - link "النقابات" [ref=f54e43] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/syndicates
+            - listitem [ref=f54e50]:
+              - link "المنتجات" [ref=f54e51] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/products
+            - listitem [ref=f54e57]:
+              - link "الموظفون" [ref=f54e58] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/employees
+            - listitem [ref=f54e72]:
+              - link "الكوبونات" [ref=f54e73] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/coupons
+            - listitem [ref=f54e77]:
+              - link "الطلبات" [ref=f54e78] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/orders
+            - listitem [ref=f54e83]:
+              - link "المستخدمون" [ref=f54e84] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/users
+            - listitem [ref=f54e91]:
+              - link "الإشعارات" [ref=f54e92] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/notifications
+            - listitem [ref=f54e97]:
+              - link "رسائل التواصل" [ref=f54e98] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/contact-messages
+            - listitem [ref=f54e103]:
+              - link "من نحن" [ref=f54e104] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/about-us
+            - listitem [ref=f54e108]:
+              - link "الصفحات" [ref=f54e109] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/pages
+            - listitem [ref=f54e114]:
+              - link "اللافتات" [ref=f54e115] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/banners
+        - generic [ref=f54e121]:
+          - generic [ref=f54e122]: الكتالوج
+          - list [ref=f54e124]:
+            - listitem [ref=f54e125]:
+              - link "التصنيفات" [ref=f54e126] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/categories
+            - listitem [ref=f54e132]:
+              - link "التصنيفات الفرعية" [ref=f54e133] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/subcategories
+            - listitem [ref=f54e139]:
+              - link "المدن" [ref=f54e140] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/cities
+      - list [ref=f54e147]:
+        - listitem [ref=f54e148]:
+          - button "م مدير النظام المدير" [ref=f54e149]:
+            - generic [ref=f54e150]: م
+            - generic [ref=f54e152]:
+              - generic [ref=f54e153]: مدير النظام
+              - generic [ref=f54e154]: المدير
+  - main [ref=f54e158]:
+    - generic [ref=f54e160]:
+      - button "Toggle Sidebar" [ref=f54e161]
+      - generic [ref=f54e163]:
+        - paragraph [ref=f54e164]: المدير
+        - heading "الرؤية الشاملة للمورّد" [level=1] [ref=f54e165]
+      - generic [ref=f54e166]:
+        - link "الرئيسية" [ref=f54e167] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/
+        - button "اختر اللغة" [ref=f54e168]
+        - button "الإشعارات" [ref=f54e169]
+        - button "تبديل المظهر" [ref=f54e170]
+        - button "تسجيل الخروج" [ref=f54e171]
+    - generic [ref=f54e172]:
+      - generic [ref=f54e173]:
+        - generic [ref=f54e174]:
+          - navigation [ref=f54e175]:
+            - link "الرؤية الشاملة للمورّد" [ref=f54e177] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/admin/vendors
+          - heading "الشعار تاجر المستلزمات الزراعية نشط زراعي دمشق البذور الأسمدة أنظمة الري البيوت البلاستيكية المعدات الزراعية المبيدات الزراعية التربة والسماد العضوي أدوات الحصاد" [level=1] [ref=f54e178]:
+            - generic [ref=f54e179]:
+              - img "الشعار" [ref=f54e181]
+              - generic [ref=f54e182]:
+                - generic [ref=f54e183]: تاجر المستلزمات الزراعية
+                - generic [ref=f54e184]:
+                  - generic [ref=f54e185]: نشط
+                  - generic [ref=f54e186]: زراعي
+                  - generic [ref=f54e187]: دمشق
+                  - generic [ref=f54e188]: البذور
+                  - generic [ref=f54e189]: الأسمدة
+                  - generic [ref=f54e190]: أنظمة الري
+                  - generic [ref=f54e191]: البيوت البلاستيكية
+                  - generic [ref=f54e192]: المعدات الزراعية
+                  - generic [ref=f54e193]: المبيدات الزراعية
+                  - generic [ref=f54e194]: التربة والسماد العضوي
+                  - generic [ref=f54e195]: أدوات الحصاد
+          - paragraph [ref=f54e196]: تعتمد تحليلات الفترة على تاريخ إنشاء الطلب، ويظهر رصيد دفتر الأستاذ الكلي بشكل منفصل.
+        - generic [ref=f54e197]:
+          - button "استخراج تقرير PDF" [ref=f54e198]
+          - link "تعديل" [ref=f54e199] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/admin/vendors/1/edit
+      - generic [ref=f54e201]:
+        - generic [ref=f54e202]: تحليلات مبيعات الفترة
+        - combobox "تحليلات مبيعات الفترة" [ref=f54e205]:
+          - option "اليوم"
+          - option "7 أيام"
+          - option "30 يوماً" [selected]
+          - option "90 يوماً"
+          - option "هذه السنة"
+          - option "فترة مخصصة"
+          - option "كل المدة"
+      - generic [ref=f54e206]:
+        - region "الرؤية الشاملة للمورّد" [ref=f54e207]:
+          - tablist [ref=f54e208]:
+            - tab "المنتجات" [ref=f54e209]
+            - tab "الطلبات" [ref=f54e210]
+            - tab "المبيعات" [active] [selected] [ref=f54e211]
+        - tabpanel "المبيعات" [ref=f54e291]:
+          - generic [ref=f54e292]:
+            - region [ref=f54e293]:
+              - heading "رصيد دفتر الأستاذ لكامل المدة" [level=2] [ref=f54e294]
+              - generic [ref=f54e295]:
+                - generic [ref=f54e296]:
+                  - paragraph [ref=f54e297]: المبيعات المكتملة
+                  - paragraph [ref=f54e298]: 2,700 ل.س
+                - generic [ref=f54e299]:
+                  - paragraph [ref=f54e300]: عمولة المنصة
+                  - paragraph [ref=f54e301]: 121.5 ل.س
+                - generic [ref=f54e302]:
+                  - paragraph [ref=f54e303]: المبالغ المستردة المكتملة
+                  - paragraph [ref=f54e304]: 0 ل.س
+                - generic [ref=f54e305]:
+                  - paragraph [ref=f54e306]: تسويات دفتر الأستاذ
+                  - paragraph [ref=f54e307]: 0 ل.س
+                - generic [ref=f54e308]:
+                  - paragraph [ref=f54e309]: صافي مستحقات المورّد عبر المنصة
+                  - paragraph [ref=f54e310]: 2,578.5 ل.س
+                - generic [ref=f54e311]:
+                  - paragraph [ref=f54e312]: المبلغ المسوّى
+                  - paragraph [ref=f54e313]: 0 ل.س
+                - generic [ref=f54e314]:
+                  - paragraph [ref=f54e315]: المبلغ المستحق
+                  - paragraph [ref=f54e316]: 2,578.5 ل.س
+            - button "إضافة دفعة" [ref=f54e318]
+            - generic [ref=f54e319]:
+              - generic [ref=f54e320]:
+                - generic [ref=f54e321]: المبيعات
+                - link "CSV" [ref=f54e323] [cursor=pointer]:
+                  - /url: /api/admin/vendors/1/analytics/export-summary?range=30_days
+              - generic [ref=f54e325]:
+                - generic [ref=f54e326]:
+                  - generic [ref=f54e327]: عمولة
+                  - generic [ref=f54e328]: QA-ACCEPTANCE-001
+                  - generic [ref=f54e329]: مدين
+                  - generic [ref=f54e330]: 121.5 ل.س
+                  - generic [ref=f54e331]: 30‏/08‏/2026
+                - generic [ref=f54e332]:
+                  - generic [ref=f54e333]: بيع
+                  - generic [ref=f54e334]: QA-ACCEPTANCE-001
+                  - generic [ref=f54e335]: دائن
+                  - generic [ref=f54e336]: 2,700 ل.س
+                  - generic [ref=f54e337]: 30‏/08‏/2026
+              - generic [ref=f54e339]:
+                - paragraph [ref=f54e340]: صفحة 1 من 1 · 2
+                - generic [ref=f54e341]:
+                  - button "السابق" [disabled]
+                  - button "التالي" [disabled]

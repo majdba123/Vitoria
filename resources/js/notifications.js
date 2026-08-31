@@ -6,7 +6,7 @@ function showNotificationToast(title, body) {
     const container = document.getElementById('sz-notification-toast-container') || (() => {
         const el = document.createElement('div');
         el.id = 'sz-notification-toast-container';
-        el.className = 'fixed bottom-4 right-4 z-[100] flex max-w-sm flex-col gap-2';
+        el.className = 'fixed bottom-4 end-4 z-[100] flex max-w-sm flex-col gap-2';
         document.body.appendChild(el);
         return el;
     })();

@@ -25,14 +25,14 @@ export function VendorHeader({ title }) {
                 </div>
 
                 <div className="flex items-center gap-0.5">
-                    <Button asChild variant="ghost" size="icon" className="size-11" aria-label={nav.home ?? 'Home'} title={nav.home ?? 'Home'}>
+                    <Button asChild variant="ghost" size="icon" className="size-11" aria-label={nav.home} title={nav.home}>
                         <Link href={route('home')}>
                             <Home className="size-4" />
                         </Link>
                     </Button>
                     <LanguageSwitcher />
                     <NotificationBell viewAllRoute="vendor.notifications.index" locale={props.locale} group="vendor" />
-                    <ThemeToggle label={vendor.toggle_theme ?? 'Toggle theme'} />
+                    <ThemeToggle label={vendor.toggle_theme} />
                     <LogoutButton />
                 </div>
             </div>

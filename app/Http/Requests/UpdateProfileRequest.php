@@ -37,12 +37,12 @@ class UpdateProfileRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.string' => 'Please provide a valid name.',
-            'name.max' => 'Name may not be greater than 255 characters.',
-            'email.email' => 'Please provide a valid email address.',
-            'email.unique' => 'This email is already registered.',
-            'phone_number.regex' => 'Please provide a valid phone number.',
-            'phone_number.unique' => 'This phone number is already registered.',
+            'name.string' => __('validation.application.name_invalid'),
+            'name.max' => __('validation.application.name_max'),
+            'email.email' => __('validation.application.email_invalid'),
+            'email.unique' => __('validation.application.email_taken'),
+            'phone_number.regex' => __('validation.application.phone_invalid'),
+            'phone_number.unique' => __('validation.application.phone_taken'),
         ];
     }
 }

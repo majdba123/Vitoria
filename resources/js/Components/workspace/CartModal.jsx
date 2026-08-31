@@ -3,12 +3,12 @@ import { Minus, Plus, X, ShoppingBag } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { useCart } from '@/hooks/use-cart';
-import { useI18n } from '@/hooks/use-i18n';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
+import { formatNumber } from '@/lib/date-time';
 
 function formatMoney(amount, currency, locale) {
-    const value = Number(amount) || 0;
-    return `${value.toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ${currency}`;
+    return `${formatNumber(amount, locale, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ${currency}`;
 }
 
 export function CartModal() {
@@ -17,6 +17,7 @@ export function CartModal() {
         isOpen, closeCart, items, itemsCount, total, currency, message,
         updateQty, removeFromCart, applyCoupon, isBusy,
     } = useCart();
+    const locale = useLocale();
     const [couponCode, setCouponCode] = useState('');
     const panelRef = useRef(null);
 
@@ -24,7 +25,6 @@ export function CartModal() {
 
     if (!isOpen) return null;
 
-    const locale = document.documentElement.lang || 'en';
     const itemsLabel = itemsCount === 1 ? (cart.items_count ?? '').replace(':count', itemsCount) : (cart.items_count_plural ?? '').replace(':count', itemsCount);
 
     const checkout = () => {
@@ -45,7 +45,7 @@ export function CartModal() {
                         <h2 className="text-lg font-bold text-foreground">{cart.shopping_cart}</h2>
                         <p className="mt-0.5 text-xs text-muted-foreground">{itemsLabel}</p>
                     </div>
-                    <button type="button" onClick={closeCart} className="rounded-md p-2 text-muted-foreground hover:bg-accent" aria-label={common.close ?? 'Close'}>
+                    <button type="button" onClick={closeCart} className="rounded-md p-2 text-muted-foreground hover:bg-accent" aria-label={common.close}>
                         <X className="size-5" />
                     </button>
                 </div>
@@ -88,11 +88,11 @@ export function CartModal() {
                                     </div>
                                     <div className="flex flex-col items-end gap-2">
                                         <div className="flex items-center rounded-md border border-border bg-muted">
-                                            <button type="button" onClick={() => updateQty(item.product_id, item.quantity - 1)} className="flex size-7 items-center justify-center text-muted-foreground hover:text-primary" aria-label="-">
+                                            <button type="button" onClick={() => updateQty(item.product_id, item.quantity - 1)} className="flex size-7 items-center justify-center text-muted-foreground hover:text-primary" aria-label={common.decrease_quantity}>
                                                 <Minus className="size-3" />
                                             </button>
                                             <span className="w-6 text-center text-xs font-bold tabular-nums text-foreground">{item.quantity}</span>
-                                            <button type="button" onClick={() => updateQty(item.product_id, item.quantity + 1)} disabled={atCeiling} className="flex size-7 items-center justify-center text-muted-foreground hover:text-primary disabled:cursor-not-allowed disabled:opacity-40" aria-label="+">
+                                            <button type="button" onClick={() => updateQty(item.product_id, item.quantity + 1)} disabled={atCeiling} className="flex size-7 items-center justify-center text-muted-foreground hover:text-primary disabled:cursor-not-allowed disabled:opacity-40" aria-label={common.increase_quantity}>
                                                 <Plus className="size-3" />
                                             </button>
                                         </div>

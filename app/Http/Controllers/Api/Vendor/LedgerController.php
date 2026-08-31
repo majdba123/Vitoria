@@ -21,7 +21,7 @@ class LedgerController extends Controller
     {
         $vendor = $request->user()?->managedVendor();
         if (! $vendor) {
-            abort(403, 'Vendor profile not found.');
+            abort(403, __('api.vendor_profile_not_found'));
         }
         if (! $request->user()->hasVendorPermission($vendor, 'ledger.view')) {
             abort(403, __('You are not allowed to view this vendor\'s ledger.'));
@@ -34,7 +34,7 @@ class LedgerController extends Controller
             ->paginate(20);
 
         return response()->json([
-            'message' => 'Ledger entries retrieved successfully.',
+            'message' => __('api.ledger_entries_retrieved'),
             'data' => $entries->getCollection()->map(fn (VendorLedgerEntry $entry) => $this->present($entry))->values(),
             'meta' => [
                 'current_page' => $entries->currentPage(),
@@ -49,14 +49,14 @@ class LedgerController extends Controller
     {
         $vendor = $request->user()?->managedVendor();
         if (! $vendor) {
-            abort(403, 'Vendor profile not found.');
+            abort(403, __('api.vendor_profile_not_found'));
         }
         if (! $request->user()->hasVendorPermission($vendor, 'ledger.view')) {
             abort(403, __('You are not allowed to view this vendor\'s ledger.'));
         }
 
         return response()->json([
-            'message' => 'Ledger summary retrieved successfully.',
+            'message' => __('api.ledger_summary_retrieved'),
             'data' => $this->vendorLedgerService->summary($vendor),
         ]);
     }

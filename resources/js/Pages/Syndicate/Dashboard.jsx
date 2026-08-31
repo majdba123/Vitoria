@@ -1,28 +1,28 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import SyndicateLayout from '@/Layouts/SyndicateLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { DataTable } from '@/Components/admin/DataTable';
-import { Pagination } from '@/Components/admin/Pagination';
-import { StatCard } from '@/Components/admin/dashboard/StatCard';
-import { InsightPanel } from '@/Components/admin/dashboard/InsightPanel';
-import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { DataTable } from '@/Components/shared/DataTable';
+import { Pagination } from '@/Components/shared/Pagination';
+import { StatCard } from '@/Components/shared/dashboard/StatCard';
+import { InsightPanel } from '@/Components/shared/dashboard/InsightPanel';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import { DashboardVendorMap } from '@/Components/maps/DashboardVendorMap';
 import { BarChart3, Eye, FileChartColumn, FileText, Package, ShoppingBag, Store } from 'lucide-react';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
-import { GrowthChart } from '@/Components/admin/dashboard/GrowthChart';
+import { formatCurrency as money, formatDate } from '@/lib/date-time';
+import { ORDER_STATUS_TONE as STATUS_TONE } from '@/lib/order-status';
+import { translatedStatus } from '@/lib/translated-enum';
+import { GrowthChart } from '@/Components/shared/dashboard/GrowthChart';
+import { HorizontalRankingChart } from '@/Components/shared/dashboard/HorizontalRankingChart';
+import { DonutChart } from '@/Components/shared/dashboard/DonutChart';
 import { Input } from '@/Components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
 
 const TABLE_SECTIONS = ['categories', 'vendors', 'products', 'orders'];
 const TYPE_LABEL_KEY = { agriculture: 'type_agriculture', veterinary: 'type_veterinary' };
-const STATUS_TONE = { pending: 'warning', confirmed: 'success', preparing: 'success', shipped: 'brand', out_for_delivery: 'brand', completed: 'brand', cancelled: 'danger' };
-
-function money(v, locale, currency) {
-    return `${Number(v || 0).toLocaleString(locale === 'ar' ? 'ar-SY' : 'en-US')} ${currency}`;
-}
 
 function ReportCard({ title, rows }) {
     return (
@@ -43,7 +43,7 @@ function ReportCard({ title, rows }) {
 }
 
 export default function SyndicateDashboard({ section = 'dashboard' }) {
-    const { syndicate, common, admin } = useI18n();
+    const { syndicate, common, admin, lang } = useI18n();
     const locale = useLocale();
     const isTableSection = TABLE_SECTIONS.includes(section);
     const isPodcasts = section === 'podcasts';
@@ -103,6 +103,7 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
     const orderStats = overview.order_stats ?? {};
     const merchantStats = overview.merchant_stats ?? {};
     const topRows = (overview.top_merchants_by_sales || overview.top_selling_categories || []).slice(0, 6);
+    const topPerformanceRows = topRows.map((row) => ({ name: row.store_name || row.name || '—', value: row.sales_total ?? row.products_count ?? row.count ?? 0 }));
     const monthlyOrderGrowth = overview.monthly_order_growth || [];
 
     return (
@@ -149,8 +150,6 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                 </div>
             )}
 
-            {isOverview && <DashboardVendorMap endpoint="/api/syndicate/vendors/map" />}
-
             {isTableSection && (
                 <Card className="gap-0 border-border/80 py-0 shadow-none">
                     <CardHeader className="flex-row items-center justify-between border-b border-border/80 py-4">
@@ -190,9 +189,9 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                     {reportsStatus === 'ready' && reports && (
                         <>
                             <ReportCard title={syndicate.reports_sales_title} rows={[
-                                [syndicate.total_sales, money(reports.sales?.total_sales, locale, syndicate.currency_syp)],
-                                [syndicate.completed_sales, money(reports.sales?.completed_sales, locale, syndicate.currency_syp)],
-                                [syndicate.average_order_value, money(reports.sales?.average_order_value, locale, syndicate.currency_syp)],
+                                [syndicate.total_sales, money(reports.sales?.total_sales, locale)],
+                                [syndicate.completed_sales, money(reports.sales?.completed_sales, locale)],
+                                [syndicate.average_order_value, money(reports.sales?.average_order_value, locale)],
                             ]} />
                             <ReportCard title={syndicate.reports_orders_title} rows={[
                                 [syndicate.total_orders, reports.orders?.total_orders || 0],
@@ -223,49 +222,25 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
             {isOverview && (
                 <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
                     <div className="xl:col-span-2">
+                        <DashboardVendorMap endpoint="/api/syndicate/vendors/map" />
+                    </div>
+                    <div>
                         <InsightPanel
                             title={syndicate.top_performance}
                             copy={syndicate.top_performance_copy}
                             status={overviewStatus}
-                            isEmpty={topRows.length === 0}
+                            isEmpty={topPerformanceRows.length === 0}
                             emptyMessage={syndicate.noData}
                             onRetry={loadOverview}
                         >
-                            <div className="space-y-2">
-                                {topRows.map((row, index) => (
-                                    <div key={index} className="flex items-center justify-between gap-3 rounded-md border border-border bg-muted/40 px-4 py-3">
-                                        <div className="min-w-0">
-                                            <p className="truncate text-sm font-semibold text-foreground">{row.store_name || row.name || '—'}</p>
-                                            {row.orders_count != null && <p className="mt-0.5 text-xs text-muted-foreground">{row.orders_count} {syndicate.total_orders?.toLowerCase()}</p>}
-                                        </div>
-                                        <StatusBadge tone="brand">{row.sales_total != null ? money(row.sales_total, locale, syndicate.currency_syp) : (row.products_count || row.count || 0)}</StatusBadge>
-                                    </div>
-                                ))}
-                            </div>
+                            <HorizontalRankingChart rows={topPerformanceRows} valueKey="value" valueLabel={syndicate.completed_sales} formatValue={(value) => money(value, locale)} />
                         </InsightPanel>
                     </div>
-
-                    <Card className="border-border/80 shadow-none">
-                        <CardHeader className="border-b border-border/80">
-                            <CardTitle className="text-base font-bold">{syndicate.quick_summary}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-2 p-5">
-                            {[
-                                [syndicate.categories, overview.total_categories || 0],
-                                [syndicate.vendors, overview.total_merchants || 0],
-                                [syndicate.products, overview.total_products || 0],
-                            ].map(([label, value]) => (
-                                <div key={label} className="flex items-center justify-between rounded-md border border-border bg-muted/40 px-4 py-3">
-                                    <span className="text-sm font-semibold text-foreground">{label}</span>
-                                    <StatusBadge tone="brand">{value}</StatusBadge>
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
                 </div>
             )}
 
             {isOverview && (
+                <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
                 <InsightPanel
                     title={syndicate.monthly_order_growth_title}
                     copy={syndicate.monthly_order_growth_copy}
@@ -276,9 +251,16 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                 >
                     <GrowthChart rows={monthlyOrderGrowth} totalLabel={syndicate.total_orders} />
                 </InsightPanel>
+                <InsightPanel title={syndicate.vendor_status_title} copy={syndicate.vendor_status_copy} status={overviewStatus} isEmpty={(overview.total_merchants ?? 0) === 0} emptyMessage={syndicate.noData} onRetry={loadOverview}>
+                    <DonutChart rows={[
+                        { key: 'active', label: syndicate.active, value: merchantStats.active_merchants, color: 'var(--color-success-500)' },
+                        { key: 'inactive', label: syndicate.inactive, value: merchantStats.inactive_merchants, color: 'var(--color-danger-500)' },
+                    ]} total={overview.total_merchants} totalLabel={syndicate.vendors} />
+                </InsightPanel>
+                </div>
             )}
-            <Dialog open={!!reportTarget} onOpenChange={(open) => { if (!open) setReportTarget(null); }}><DialogContent><DialogHeader><DialogTitle>{syndicate.vendor_report}</DialogTitle><DialogDescription>{reportTarget?.store_name}</DialogDescription></DialogHeader><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1.5 text-sm font-medium">{syndicate.from}<Input type="date" value={reportForm.date_from} onChange={(e) => setReportForm({ ...reportForm, date_from: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium">{syndicate.to}<Input type="date" value={reportForm.date_to} onChange={(e) => setReportForm({ ...reportForm, date_to: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{syndicate.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={reportForm.locale} onChange={(e) => setReportForm({ ...reportForm, locale: e.target.value })}><option value="ar">العربية</option><option value="en">English</option></select></label></div><DialogFooter><Button type="button" disabled={!reportForm.date_from || !reportForm.date_to || reportForm.date_from > reportForm.date_to} onClick={generateVendorReport}><FileText className="size-4" />{syndicate.generate_report}</Button></DialogFooter></DialogContent></Dialog>
-            <Dialog open={generalReportOpen} onOpenChange={setGeneralReportOpen}><DialogContent><DialogHeader><DialogTitle>{syndicate.general_report}</DialogTitle><DialogDescription>{syndicate.general_report_copy}</DialogDescription></DialogHeader><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1.5 text-sm font-medium">{syndicate.from}<Input type="date" value={reportForm.date_from} onChange={(e) => setReportForm({ ...reportForm, date_from: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium">{syndicate.to}<Input type="date" value={reportForm.date_to} onChange={(e) => setReportForm({ ...reportForm, date_to: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{syndicate.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={reportForm.locale} onChange={(e) => setReportForm({ ...reportForm, locale: e.target.value })}><option value="ar">العربية</option><option value="en">English</option></select></label></div><DialogFooter><Button type="button" disabled={!reportForm.date_from || !reportForm.date_to || reportForm.date_from > reportForm.date_to} onClick={generateGeneralReport}><FileChartColumn className="size-4" />{syndicate.generate_report}</Button></DialogFooter></DialogContent></Dialog>
+            <Dialog open={!!reportTarget} onOpenChange={(open) => { if (!open) setReportTarget(null); }}><DialogContent><DialogHeader><DialogTitle>{syndicate.vendor_report}</DialogTitle><DialogDescription>{reportTarget?.store_name}</DialogDescription></DialogHeader><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1.5 text-sm font-medium">{syndicate.from}<Input type="date" value={reportForm.date_from} onChange={(e) => setReportForm({ ...reportForm, date_from: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium">{syndicate.to}<Input type="date" value={reportForm.date_to} onChange={(e) => setReportForm({ ...reportForm, date_to: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{syndicate.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={reportForm.locale} onChange={(e) => setReportForm({ ...reportForm, locale: e.target.value })}><option value="ar">{lang.arabic}</option><option value="en">{lang.english}</option></select></label></div><DialogFooter><Button type="button" disabled={!reportForm.date_from || !reportForm.date_to || reportForm.date_from > reportForm.date_to} onClick={generateVendorReport}><FileText className="size-4" />{syndicate.generate_report}</Button></DialogFooter></DialogContent></Dialog>
+            <Dialog open={generalReportOpen} onOpenChange={setGeneralReportOpen}><DialogContent><DialogHeader><DialogTitle>{syndicate.general_report}</DialogTitle><DialogDescription>{syndicate.general_report_copy}</DialogDescription></DialogHeader><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1.5 text-sm font-medium">{syndicate.from}<Input type="date" value={reportForm.date_from} onChange={(e) => setReportForm({ ...reportForm, date_from: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium">{syndicate.to}<Input type="date" value={reportForm.date_to} onChange={(e) => setReportForm({ ...reportForm, date_to: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{syndicate.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={reportForm.locale} onChange={(e) => setReportForm({ ...reportForm, locale: e.target.value })}><option value="ar">{lang.arabic}</option><option value="en">{lang.english}</option></select></label></div><DialogFooter><Button type="button" disabled={!reportForm.date_from || !reportForm.date_to || reportForm.date_from > reportForm.date_to} onClick={generateGeneralReport}><FileChartColumn className="size-4" />{syndicate.generate_report}</Button></DialogFooter></DialogContent></Dialog>
         </SyndicateLayout>
     );
 }
@@ -318,11 +300,11 @@ function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, co
         vendors: [
             { key: 'store_name', label: i18n.th_store, render: (r) => <span className="font-semibold text-foreground">{r.store_name}</span> },
             { key: 'business_type', label: i18n.th_type, render: (r) => typeLabel(r.business_type, i18n) },
-            { key: 'city', label: i18n.th_city ?? 'City', render: (r) => r.city?.name || '—' },
+            { key: 'city', label: i18n.th_city, render: (r) => r.city?.name || '—' },
             { key: 'products_count', label: i18n.th_products, align: 'end', render: (r) => Number(r.products_count || 0) },
             { key: 'completed_orders_count', label: i18n.completed_orders, align: 'end', render: (r) => Number(r.completed_orders_count || 0) },
-            { key: 'domain_sales', label: i18n.completed_sales, align: 'end', render: (r) => money(r.domain_sales, locale, i18n.currency_syp) },
-            { key: 'last_activity_at', label: i18n.last_activity ?? 'Last activity', render: (r) => r.last_activity_at ? new Date(r.last_activity_at).toLocaleDateString(locale) : '—' },
+            { key: 'domain_sales', label: i18n.completed_sales, align: 'end', render: (r) => money(r.domain_sales, locale) },
+            { key: 'last_activity_at', label: i18n.last_activity, render: (r) => r.last_activity_at ? formatDate(r.last_activity_at, locale) : '—' },
             { key: 'status', label: i18n.th_status, render: (r) => <StatusBadge tone={r.is_active ? 'success' : 'danger'}>{r.is_active ? common.active : common.inactive}</StatusBadge> },
             { key: 'actions', label: i18n.th_actions, render: (r) => <div className="flex items-center justify-center gap-1"><Button asChild size="sm" variant="ghost"><Link href={route('syndicate.vendors.show', r.id)}><Eye className="size-4" />{common.view_details}</Link></Button><Button type="button" size="sm" variant="outline" onClick={() => onReport(r)}><FileText className="size-4" />{i18n.report}</Button></div> },
         ],
@@ -336,8 +318,8 @@ function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, co
             { key: 'order', label: i18n.th_order, render: (r) => <span className="font-semibold text-foreground">{r.order_number || `#${r.id}`}</span> },
             { key: 'customer', label: i18n.th_customer, render: (r) => r.user?.name || '—' },
             { key: 'store', label: i18n.th_store, render: (r) => r.vendor?.store_name || '—' },
-            { key: 'total', label: i18n.th_total, align: 'end', render: (r) => money(r.total_amount, locale, i18n.currency_syp) },
-            { key: 'status', label: i18n.th_status, render: (r) => <StatusBadge tone={STATUS_TONE[r.status] ?? 'warning'}>{i18n[`status_${r.status}`] ?? r.status}</StatusBadge> },
+            { key: 'total', label: i18n.th_total, align: 'end', render: (r) => money(r.total_amount, locale) },
+            { key: 'status', label: i18n.th_status, render: (r) => <StatusBadge tone={STATUS_TONE[r.status] ?? 'warning'}>{i18n[`status_${r.status}`] ?? translatedStatus(r.status, common)}</StatusBadge> },
         ],
     };
 
@@ -349,7 +331,7 @@ function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, co
             errorMessage={errorMessage}
             onRetry={onRetry}
             rowHref={section === 'vendors' ? (row) => route('syndicate.vendors.show', row.id) : undefined}
-            emptyTitle={common.no_data ?? 'No data available.'}
+            emptyTitle={common.no_data}
         />
     );
 }

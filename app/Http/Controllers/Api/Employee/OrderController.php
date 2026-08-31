@@ -34,7 +34,7 @@ class OrderController extends Controller
         $orders = $query->paginate(15);
 
         return response()->json([
-            'message' => 'Orders retrieved successfully.',
+            'message' => __('api.orders_retrieved'),
             'data' => $orders->items(),
             'meta' => [
                 'current_page' => $orders->currentPage(),
@@ -58,7 +58,7 @@ class OrderController extends Controller
             ->findOrFail($orderId);
 
         return response()->json([
-            'message' => 'Order retrieved successfully.',
+            'message' => __('api.order_retrieved'),
             'data' => $order,
         ]);
     }

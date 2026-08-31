@@ -3,13 +3,16 @@ import { Link } from '@inertiajs/react';
 import { Building2, Plus, Store, Package, Users, ArrowRight } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Button } from '@/Components/ui/button';
-import { StatCard } from '@/Components/admin/dashboard/StatCard';
-import { InsightPanel, ViewAllLink } from '@/Components/admin/dashboard/InsightPanel';
-import { ListRow, StatusBadge } from '@/Components/admin/dashboard/ListRow';
-import { MetricTileGrid } from '@/Components/admin/dashboard/MetricTileGrid';
-import { GrowthChart } from '@/Components/admin/dashboard/GrowthChart';
-import { CategoryCoverage } from '@/Components/admin/dashboard/CategoryCoverage';
+import { StatCard } from '@/Components/shared/dashboard/StatCard';
+import { InsightPanel, ViewAllLink } from '@/Components/shared/dashboard/InsightPanel';
+import { ListRow, StatusBadge } from '@/Components/shared/dashboard/ListRow';
+import { MetricTileGrid } from '@/Components/shared/dashboard/MetricTileGrid';
+import { GrowthChart } from '@/Components/shared/dashboard/GrowthChart';
+import { CategoryCoverage } from '@/Components/shared/dashboard/CategoryCoverage';
+import { HorizontalRankingChart } from '@/Components/shared/dashboard/HorizontalRankingChart';
+import { DonutChart } from '@/Components/shared/dashboard/DonutChart';
 import { DashboardVendorMap } from '@/Components/maps/DashboardVendorMap';
+import { Tabs, TabsList, TabsTrigger } from '@/Components/ui/tabs';
 import { useAdminDashboard } from '@/hooks/use-admin-dashboard';
 import { useI18n } from '@/hooks/use-i18n';
 
@@ -31,6 +34,7 @@ export default function Dashboard() {
     const { admin } = useI18n();
     const { overview, categoryStats, users, vendors, products } = useAdminDashboard();
     const [rangeMonths, setRangeMonths] = useState(12);
+    const [distributionTab, setDistributionTab] = useState('vendors');
 
     const changeRange = (months) => {
         setRangeMonths(months);
@@ -44,6 +48,7 @@ export default function Dashboard() {
     const vendorsTotal = overviewData?.total_vendors ?? vendorsData?.meta?.total ?? 0;
     const activeVendors = overviewData?.active_vendors ?? (vendorsData?.data ?? []).filter((v) => v.is_active).length;
     const inactiveVendors = overviewData?.inactive_vendors ?? Math.max(0, vendorsTotal - activeVendors);
+    const pendingVendors = overviewData?.pending_vendors ?? 0;
     const productsTotal = overviewData?.total_products ?? productsData?.meta?.total ?? 0;
     const recentProducts = overviewData?.recent_products ?? productsData?.data ?? [];
     const activeProducts = overviewData?.active_products ?? recentProducts.filter((p) => p.is_active).length;
@@ -61,6 +66,13 @@ export default function Dashboard() {
     };
 
     const withLabels = (rows, admin) => (rows ?? []).map((r) => ({ ...r, label: typeLabel(admin, r.type, r.label) }));
+    const distributionOptions = [
+        { key: 'vendors', title: admin.vendors_by_type_title, copy: admin.vendors_by_type_copy, rows: overviewData?.vendors_by_type, hrefFor: metricUrl.vendor, columns: 3 },
+        { key: 'categories', title: admin.categories_by_type_title, copy: admin.categories_by_type_copy, rows: overviewData?.categories_by_type, hrefFor: metricUrl.category, columns: 2 },
+        { key: 'syndicates', title: admin.syndicates_by_type_title, copy: admin.syndicates_by_type_copy, rows: overviewData?.syndicates_by_type, hrefFor: metricUrl.syndicate, columns: 2 },
+        { key: 'products', title: admin.products_by_type_title, copy: admin.products_by_type_copy, rows: overviewData?.products_by_category_type, hrefFor: metricUrl.product, columns: 2 },
+    ];
+    const activeDistribution = distributionOptions.find((option) => option.key === distributionTab) ?? distributionOptions[0];
 
     return (
         <AdminLayout title={admin.dashboard}>
@@ -104,6 +116,7 @@ export default function Dashboard() {
                 <div className="flex flex-wrap gap-y-3 border-t border-border/70 pt-4">
                     {[
                         { label: admin.active_vendors, value: activeVendors, tone: 'success' },
+                        { label: admin.pending_vendors, value: pendingVendors, tone: 'warning' },
                         { label: admin.inactive_vendors, value: inactiveVendors, tone: 'danger' },
                         { label: admin.active_products, value: activeProducts, tone: 'success' },
                     ].map((item, index) => (
@@ -128,68 +141,44 @@ export default function Dashboard() {
 
                 <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
                     <InsightPanel
-                        title={admin.vendors_by_type_title}
-                        copy={admin.vendors_by_type_copy}
+                        title={activeDistribution.title}
+                        copy={activeDistribution.copy}
                         status={overview.status}
-                        isEmpty={!(overviewData?.vendors_by_type ?? []).length}
+                        isEmpty={!(activeDistribution.rows ?? []).length}
                         emptyMessage={admin.no_metric_data}
                         onRetry={overview.refetch}
                     >
-                        <MetricTileGrid rows={withLabels(overviewData?.vendors_by_type, admin)} hrefFor={metricUrl.vendor} />
+                        <Tabs value={distributionTab} onValueChange={setDistributionTab}>
+                            <div className="max-w-full overflow-x-auto" role="region" aria-label={admin.insights_section_title} tabIndex={0}>
+                                <TabsList variant="line" className="min-w-max">
+                                    {distributionOptions.map((option) => <TabsTrigger key={option.key} value={option.key}>{option.title}</TabsTrigger>)}
+                                </TabsList>
+                            </div>
+                            {distributionTab === 'vendors' ? (
+                                <DonutChart rows={withLabels(activeDistribution.rows, admin).map((row, index) => ({ key: row.type, label: row.label, value: row.total, color: ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)'][index] }))} total={vendorsTotal} totalLabel={admin.total_vendors} />
+                            ) : distributionTab === 'products' ? (
+                                <DonutChart rows={[
+                                    { key: 'approved', label: admin.status_approved, value: overviewData?.product_status_distribution?.approved ?? 0, color: 'var(--color-success-500)' },
+                                    { key: 'pending', label: admin.status_pending, value: overviewData?.product_status_distribution?.pending ?? 0, color: 'var(--color-warning-500)' },
+                                    { key: 'rejected', label: admin.status_rejected, value: overviewData?.product_status_distribution?.rejected ?? 0, color: 'var(--color-danger-500)' },
+                                ]} total={productsTotal} totalLabel={admin.total_products} />
+                            ) : <MetricTileGrid rows={withLabels(activeDistribution.rows, admin)} hrefFor={activeDistribution.hrefFor} columns={activeDistribution.columns} />}
+                        </Tabs>
                     </InsightPanel>
 
                     <InsightPanel
-                        title={admin.categories_by_type_title}
-                        copy={admin.categories_by_type_copy}
+                        title={admin.vendor_status_title}
+                        copy={admin.vendor_status_copy}
                         status={overview.status}
-                        isEmpty={!(overviewData?.categories_by_type ?? []).length}
+                        isEmpty={vendorsTotal === 0}
                         emptyMessage={admin.no_metric_data}
                         onRetry={overview.refetch}
                     >
-                        <MetricTileGrid rows={withLabels(overviewData?.categories_by_type, admin)} hrefFor={metricUrl.category} columns={2} />
-                    </InsightPanel>
-
-                    <InsightPanel
-                        title={admin.syndicates_by_type_title}
-                        copy={admin.syndicates_by_type_copy}
-                        status={overview.status}
-                        isEmpty={!(overviewData?.syndicates_by_type ?? []).length}
-                        emptyMessage={admin.no_metric_data}
-                        onRetry={overview.refetch}
-                    >
-                        <MetricTileGrid rows={withLabels(overviewData?.syndicates_by_type, admin)} hrefFor={metricUrl.syndicate} columns={2} />
-                    </InsightPanel>
-
-                    <InsightPanel
-                        title={admin.recent_syndicate_agents_title}
-                        copy={admin.recent_syndicate_agents_copy}
-                        status={overview.status}
-                        isEmpty={!(overviewData?.recent_syndicate_agents ?? []).length}
-                        emptyMessage={admin.no_syndicate_agents_yet}
-                        onRetry={overview.refetch}
-                    >
-                        <div className="space-y-2">
-                            {(overviewData?.recent_syndicate_agents ?? []).map((syndicate) => (
-                                <ListRow
-                                    key={syndicate.id}
-                                    href={route('admin.syndicates.show', syndicate.id)}
-                                    title={syndicate.name}
-                                    subtitle={`${syndicate.user?.email ?? ''} · ${typeLabel(admin, syndicate.type, syndicate.type_label)}`}
-                                    trailing={<StatusBadge tone={syndicate.status === 'active' ? 'success' : 'danger'}>{syndicate.status === 'active' ? admin.status_active : admin.status_inactive}</StatusBadge>}
-                                />
-                            ))}
-                        </div>
-                    </InsightPanel>
-
-                    <InsightPanel
-                        title={admin.products_by_type_title}
-                        copy={admin.products_by_type_copy}
-                        status={overview.status}
-                        isEmpty={!(overviewData?.products_by_category_type ?? []).length}
-                        emptyMessage={admin.no_metric_data}
-                        onRetry={overview.refetch}
-                    >
-                        <MetricTileGrid rows={withLabels(overviewData?.products_by_category_type, admin)} hrefFor={metricUrl.product} columns={2} />
+                        <DonutChart rows={[
+                            { key: 'active', label: admin.status_active, value: overviewData?.vendor_status_distribution?.active ?? 0, color: 'var(--color-success-500)' },
+                            { key: 'pending', label: admin.status_pending, value: overviewData?.vendor_status_distribution?.pending ?? 0, color: 'var(--color-warning-500)' },
+                            { key: 'inactive', label: admin.status_inactive, value: overviewData?.vendor_status_distribution?.inactive ?? 0, color: 'var(--color-danger-500)' },
+                        ]} total={vendorsTotal} totalLabel={admin.total_vendors} />
                     </InsightPanel>
 
                     <InsightPanel
@@ -201,7 +190,7 @@ export default function Dashboard() {
                         onRetry={() => overview.refetch({ range_months: rangeMonths })}
                         rows={1}
                     >
-                        <div className="mb-3 flex items-center justify-end gap-1.5" role="group" aria-label="Chart period">
+                        <div className="mb-3 flex items-center justify-end gap-1.5" role="group" aria-label={admin.chart_period_aria_label}>
                             {[3, 6, 12].map((months) => (
                                 <button
                                     key={months}
@@ -222,51 +211,25 @@ export default function Dashboard() {
                     <InsightPanel
                         title={admin.top_vendors_title}
                         copy={admin.top_vendors_copy}
+                        action={<ViewAllLink href={route('admin.vendors.index')}>{admin.view_vendors}</ViewAllLink>}
                         status={overview.status}
                         isEmpty={!(overviewData?.top_vendors_by_product_count ?? []).length}
                         emptyMessage={admin.no_top_vendors_yet}
                         onRetry={overview.refetch}
                     >
-                        <div className="space-y-2">
-                            {(overviewData?.top_vendors_by_product_count ?? []).map((vendor) => (
-                                <ListRow
-                                    key={vendor.id}
-                                    href={route('admin.vendors.show', vendor.id)}
-                                    title={vendor.store_name}
-                                    subtitle={typeLabel(admin, vendor.business_type, vendor.business_type_label)}
-                                    trailing={
-                                        <StatusBadge tone="brand">
-                                            {(admin.products_count_label ?? ':count products').replace(':count', String(vendor.products_count ?? 0))}
-                                        </StatusBadge>
-                                    }
-                                />
-                            ))}
-                        </div>
+                        <HorizontalRankingChart rows={overviewData?.top_vendors_by_product_count ?? []} labelKey="store_name" valueKey="products_count" valueLabel={admin.total_products} />
                     </InsightPanel>
 
                     <InsightPanel
                         title={admin.most_selected_categories_title}
                         copy={admin.most_selected_categories_copy}
+                        action={<ViewAllLink href={route('admin.categories.index')}>{admin.show_all}</ViewAllLink>}
                         status={overview.status}
                         isEmpty={!(overviewData?.most_selected_categories ?? []).length}
                         emptyMessage={admin.no_category_preferences_yet}
                         onRetry={overview.refetch}
                     >
-                        <div className="space-y-2">
-                            {(overviewData?.most_selected_categories ?? []).map((category) => (
-                                <ListRow
-                                    key={category.id}
-                                    href={route('admin.vendors.index', { category_id: category.id })}
-                                    title={category.name}
-                                    subtitle={typeLabel(admin, category.type, category.type_label)}
-                                    trailing={
-                                        <StatusBadge tone="brand">
-                                            {(admin.vendors_count_label ?? ':count vendors').replace(':count', String(category.vendors_count ?? 0))}
-                                        </StatusBadge>
-                                    }
-                                />
-                            ))}
-                        </div>
+                        <HorizontalRankingChart rows={overviewData?.most_selected_categories ?? []} valueKey="vendors_count" valueLabel={admin.total_vendors} />
                     </InsightPanel>
 
                     <InsightPanel

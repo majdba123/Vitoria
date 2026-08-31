@@ -50,7 +50,7 @@ export function CsvImportButton({ label, templateUrl, importUrl, onImported }) {
             })
             .catch((error) => {
                 setStatus('error');
-                setMessage(error.response?.data?.message ?? 'Import failed.');
+                setMessage(error.response?.data?.message ?? common.import_failed);
             });
     };
 
@@ -71,14 +71,14 @@ export function CsvImportButton({ label, templateUrl, importUrl, onImported }) {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{common.import_title ?? `Import ${label}`}</DialogTitle>
-                    <DialogDescription>{common.import_copy ?? 'Download the template, fill it in, then upload it here.'}</DialogDescription>
+                    <DialogDescription>{common.import_copy}</DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4">
                     <Button asChild variant="secondary" size="sm">
                         <a href={templateUrl} download>
                             <Download className="size-4" />
-                            {common.download_template ?? 'Download template'}
+                            {common.download_template}
                         </a>
                     </Button>
 
@@ -96,12 +96,12 @@ export function CsvImportButton({ label, templateUrl, importUrl, onImported }) {
                 <DialogFooter>
                     <DialogClose asChild>
                         <Button type="button" variant="outline">
-                            {common.cancel ?? 'Cancel'}
+                            {common.cancel}
                         </Button>
                     </DialogClose>
                     <Button type="button" onClick={upload} disabled={!file || status === 'uploading'}>
                         {status === 'uploading' && <Loader2 className="size-4 animate-spin" />}
-                        {common.upload ?? 'Upload'}
+                        {common.upload}
                     </Button>
                 </DialogFooter>
             </DialogContent>

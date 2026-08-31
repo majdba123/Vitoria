@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { router } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import VendorLayout from '@/Layouts/VendorLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
+import { PageHeader } from '@/Components/shared/PageHeader';
 import { TextField, SelectField, TextareaField } from '@/Components/admin/form/FormField';
 import { ProductDetailFields } from '@/Components/products/ProductDetailFields';
 import { PhotoUpload } from '@/Components/products/PhotoUpload';
@@ -121,7 +121,7 @@ export default function VendorProductsEdit({ productId }) {
 
         try {
             await submit('post', `/api/vendor/products/${productId}`, formData, { isMultipart: 'raw' });
-            setSuccessMessage('Product updated successfully.');
+            setSuccessMessage(products.form.product_updated_success);
         } catch {
             // handled by hook
         }
@@ -152,11 +152,11 @@ export default function VendorProductsEdit({ productId }) {
                 setPrimaryPhotoId(null);
                 setPhotoEdits({});
                 setNewPhotos([]);
-                setPhotoMessage({ tone: 'success', text: 'Photo changes saved successfully!' });
+                setPhotoMessage({ tone: 'success', text: products.form.photo_changes_saved });
                 setIsSavingPhotos(false);
             })
             .catch((error) => {
-                setPhotoMessage({ tone: 'danger', text: error.response?.data?.message ?? 'Failed to save photo changes.' });
+                setPhotoMessage({ tone: 'danger', text: error.response?.data?.message ?? products.form.photo_changes_failed });
                 setIsSavingPhotos(false);
             });
     };
@@ -165,7 +165,7 @@ export default function VendorProductsEdit({ productId }) {
 
     if (status === 'loading') {
         return (
-            <VendorLayout title={common.loading ?? 'Loading...'}>
+            <VendorLayout title={common.loading}>
                 <Skeleton className="h-96 w-full max-w-3xl" />
             </VendorLayout>
         );
@@ -174,14 +174,14 @@ export default function VendorProductsEdit({ productId }) {
     if (status === 'error') {
         return (
             <VendorLayout title={vendor.products}>
-                <p className="text-sm font-medium text-[var(--color-danger-strong)]">Failed to load product.</p>
+                <p className="text-sm font-medium text-[var(--color-danger-strong)]">{products.load_failed}</p>
             </VendorLayout>
         );
     }
 
     return (
-        <VendorLayout title="Edit product">
-            <PageHeader breadcrumb={[{ label: vendor.products, href: route('vendor.products.index') }, { label: common.edit ?? 'Edit' }]} title="Edit product" />
+        <VendorLayout title={products.form.edit_product_title}>
+            <PageHeader breadcrumb={[{ label: vendor.products, href: route('vendor.products.index') }, { label: common.edit }]} title={products.form.edit_product_title} />
 
             {generalError && <p className="rounded-md border border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-danger-strong)]">{generalError}</p>}
             {successMessage && <p className="rounded-md border border-[var(--color-success-200)] bg-[var(--color-success-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-success-strong)]">{successMessage}</p>}
@@ -189,28 +189,28 @@ export default function VendorProductsEdit({ productId }) {
             <form onSubmit={handleSubmit} className="space-y-4">
                 <Card className="border-border/80 shadow-none">
                     <CardContent className="space-y-5 p-5 sm:p-6">
-                        <h2 className="text-base font-bold text-foreground">Product details</h2>
+                        <h2 className="text-base font-bold text-foreground">{products.form.product_details_heading}</h2>
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <SelectField id="category_id" label="Category" required value={categoryId} onValueChange={setCategoryId} options={categories.map((c) => ({ value: c.id, label: c.name }))} error={errors.category_id} />
+                            <SelectField id="category_id" label={products.fields.category} required value={categoryId} onValueChange={setCategoryId} options={categories.map((c) => ({ value: c.id, label: c.name }))} error={errors.category_id} />
                             {subcategories.length > 0 && (
-                                <SelectField id="subcategory_id" label="Subcategory" value={subcategoryId} onValueChange={setSubcategoryId} options={subcategories.map((s) => ({ value: s.id, label: s.name_ar || s.name_en }))} error={errors.subcategory_id} />
+                                <SelectField id="subcategory_id" label={products.fields.subcategory} value={subcategoryId} onValueChange={setSubcategoryId} options={subcategories.map((s) => ({ value: s.id, label: s.name_ar || s.name_en }))} error={errors.subcategory_id} />
                             )}
-                            <TextField id="name_ar" label="Arabic name" required dir="rtl" value={core.name_ar} onChange={(e) => setField('name_ar')(e.target.value)} error={errors.name_ar} />
-                            <TextField id="name_en" label="English name" required value={core.name_en} onChange={(e) => setField('name_en')(e.target.value)} error={errors.name_en} />
-                            <TextField id="price" label="Price (SYP)" type="number" step="0.01" required value={core.price} onChange={(e) => setField('price')(e.target.value)} error={errors.price} />
-                            <TextField id="discount_percentage" label="Discount (%)" type="number" step="0.01" min="0" max="100" value={core.discount_percentage} onChange={(e) => setField('discount_percentage')(e.target.value)} error={errors.discount_percentage} />
-                            <TextField id="quantity" label="Quantity" type="number" required value={core.quantity} onChange={(e) => setField('quantity')(e.target.value)} error={errors.quantity} />
-                            <TextField id="minimum_order_quantity" label="Minimum order quantity" type="number" min="1" value={core.minimum_order_quantity} onChange={(e) => setField('minimum_order_quantity')(e.target.value)} error={errors.minimum_order_quantity} />
-                            <TextField id="discount_starts_at" label={products.fields?.discount_starts ?? 'Discount start'} type="date" value={core.discount_starts_at} onChange={(e) => setField('discount_starts_at')(e.target.value)} error={errors.discount_starts_at} />
-                            <TextField id="discount_ends_at" label={products.fields?.discount_ends ?? 'Discount end'} type="date" value={core.discount_ends_at} onChange={(e) => setField('discount_ends_at')(e.target.value)} error={errors.discount_ends_at} />
+                            <TextField id="name_ar" label={products.form.name_ar_label} required dir="rtl" value={core.name_ar} onChange={(e) => setField('name_ar')(e.target.value)} error={errors.name_ar} />
+                            <TextField id="name_en" label={products.form.name_en_label} required value={core.name_en} onChange={(e) => setField('name_en')(e.target.value)} error={errors.name_en} />
+                            <TextField id="price" label={products.form.price_syp_label} type="number" step="0.01" required value={core.price} onChange={(e) => setField('price')(e.target.value)} error={errors.price} />
+                            <TextField id="discount_percentage" label={products.form.discount_percent_label} type="number" step="0.01" min="0" max="100" value={core.discount_percentage} onChange={(e) => setField('discount_percentage')(e.target.value)} error={errors.discount_percentage} />
+                            <TextField id="quantity" label={products.fields.quantity} type="number" required value={core.quantity} onChange={(e) => setField('quantity')(e.target.value)} error={errors.quantity} />
+                            <TextField id="minimum_order_quantity" label={products.fields.minimum_order_quantity} type="number" min="1" value={core.minimum_order_quantity} onChange={(e) => setField('minimum_order_quantity')(e.target.value)} error={errors.minimum_order_quantity} />
+                            <TextField id="discount_starts_at" label={products.fields.discount_starts} type="date" value={core.discount_starts_at} onChange={(e) => setField('discount_starts_at')(e.target.value)} error={errors.discount_starts_at} />
+                            <TextField id="discount_ends_at" label={products.fields.discount_ends} type="date" value={core.discount_ends_at} onChange={(e) => setField('discount_ends_at')(e.target.value)} error={errors.discount_ends_at} />
                         </div>
-                        <TextareaField id="description" label="Description" rows={4} value={core.description} onChange={(e) => setField('description')(e.target.value)} error={errors.description} />
+                        <TextareaField id="description" label={products.description_badge} rows={4} value={core.description} onChange={(e) => setField('description')(e.target.value)} error={errors.description} />
                         <div className="flex items-center justify-between rounded-md bg-muted px-4 py-3">
                             <div>
-                                <p className="text-sm font-medium text-foreground">Active status</p>
-                                <p className="text-xs text-muted-foreground">The product becomes visible to customers when active.</p>
+                                <p className="text-sm font-medium text-foreground">{products.form.active_status_label}</p>
+                                <p className="text-xs text-muted-foreground">{products.form.active_status_hint}</p>
                             </div>
-                            <Switch checked={isActive} onCheckedChange={setIsActive} aria-label={common.active ?? 'Active status'} />
+                            <Switch checked={isActive} onCheckedChange={setIsActive} aria-label={products.form.active_status_label} />
                         </div>
                     </CardContent>
                 </Card>
@@ -220,16 +220,16 @@ export default function VendorProductsEdit({ productId }) {
                         <CardContent className="p-5 sm:p-6">
                             <SelectField
                                 id="product_type_proxy"
-                                label="Agricultural product type"
+                                label={products.form.agricultural_product_type_label}
                                 value={agriculturalProductType}
                                 onValueChange={setAgriculturalProductType}
                                 options={[
-                                    { value: 'pesticide', label: 'Pesticide' },
-                                    { value: 'fertilizer', label: 'Fertilizer' },
-                                    { value: 'seed', label: 'Seed' },
-                                    { value: 'soil_amendment', label: 'Soil amendment' },
-                                    { value: 'growth_regulator', label: 'Growth regulator' },
-                                    { value: 'other', label: 'Other' },
+                                    { value: 'pesticide', label: products.form.type_pesticide },
+                                    { value: 'fertilizer', label: products.form.type_fertilizer },
+                                    { value: 'seed', label: products.form.type_seed },
+                                    { value: 'soil_amendment', label: products.form.type_soil_amendment },
+                                    { value: 'growth_regulator', label: products.form.type_growth_regulator },
+                                    { value: 'other', label: products.form.type_other },
                                 ]}
                             />
                         </CardContent>
@@ -251,11 +251,11 @@ export default function VendorProductsEdit({ productId }) {
 
                 <div className="flex justify-end gap-2 pt-2">
                     <Button type="button" variant="outline" onClick={() => router.visit(route('vendor.products.index'))}>
-                        {common.cancel ?? 'Cancel'}
+                        {common.cancel}
                     </Button>
                     <Button type="submit" disabled={isSubmitting}>
                         {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-                        {common.save_changes ?? 'Save changes'}
+                        {common.save_changes}
                     </Button>
                 </div>
             </form>
@@ -263,8 +263,8 @@ export default function VendorProductsEdit({ productId }) {
             <Card className="border-border/80 shadow-none">
                 <CardContent className="space-y-4 p-5 sm:p-6">
                     <div>
-                        <h2 className="text-base font-bold text-foreground">Product photos</h2>
-                        <p className="text-sm text-muted-foreground">Update image type, order, primary image, and add more photos from here.</p>
+                        <h2 className="text-base font-bold text-foreground">{products.form.product_photos_heading}</h2>
+                        <p className="text-sm text-muted-foreground">{products.form.product_photos_hint}</p>
                     </div>
 
                     {photoMessage && (
@@ -284,14 +284,14 @@ export default function VendorProductsEdit({ productId }) {
                     />
 
                     <div className="border-t border-border pt-4">
-                        <p className="mb-2 text-sm font-medium text-foreground">Add more photos</p>
+                        <p className="mb-2 text-sm font-medium text-foreground">{products.form.add_more_photos_label}</p>
                         <PhotoUpload photos={newPhotos} onChange={setNewPhotos} />
                     </div>
 
                     <div className="flex justify-end border-t border-border pt-4">
                         <Button type="button" onClick={savePhotos} disabled={!hasPhotoChanges || isSavingPhotos}>
                             {isSavingPhotos && <Loader2 className="size-4 animate-spin" />}
-                            Save photo changes
+                            {products.form.save_photo_changes_btn}
                         </Button>
                     </div>
                 </CardContent>

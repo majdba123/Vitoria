@@ -50,10 +50,10 @@ class StoreUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'phone_number.unique' => 'This phone number is already registered.',
-            'national_id.unique' => 'This national ID is already registered.',
-            'membership_number.unique' => 'This membership number is already registered.',
-            'email.unique' => 'This email is already registered.',
+            'phone_number.unique' => __('validation.application.phone_taken'),
+            'national_id.unique' => __('validation.application.national_id_taken'),
+            'membership_number.unique' => __('validation.application.membership_number_taken'),
+            'email.unique' => __('validation.application.email_taken'),
         ];
     }
 }

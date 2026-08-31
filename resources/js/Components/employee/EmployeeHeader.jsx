@@ -25,14 +25,14 @@ export function EmployeeHeader({ title }) {
                 </div>
 
                 <div className="flex items-center gap-0.5">
-                    <Button asChild variant="ghost" size="icon" className="size-11" aria-label={nav.home ?? 'Home'} title={nav.home ?? 'Home'}>
+                    <Button asChild variant="ghost" size="icon" className="size-11" aria-label={nav.home} title={nav.home}>
                         <Link href={route('home')}>
                             <Home className="size-4" />
                         </Link>
                     </Button>
                     <LanguageSwitcher />
                     <NotificationBell viewAllRoute="employee.notifications.index" locale={props.locale} group="employee" />
-                    <ThemeToggle label={nav.toggle_theme_aria ?? 'Toggle theme'} />
+                    <ThemeToggle label={nav.toggle_theme_aria} />
                     <LogoutButton />
                 </div>
             </div>

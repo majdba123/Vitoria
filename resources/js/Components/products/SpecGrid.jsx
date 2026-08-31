@@ -1,4 +1,5 @@
 import { formatDetailValue } from '@/lib/product-detail-labels';
+import { useI18n } from '@/hooks/use-i18n';
 
 /**
  * Read-only label/value grid for a product detail bucket (shared /
@@ -7,16 +8,17 @@ import { formatDetailValue } from '@/lib/product-detail-labels';
  * dashes.
  */
 export function SpecGrid({ values, labels }) {
+    const { products } = useI18n();
     const entries = Object.entries(values ?? {})
         // Only render keys the schema actually knows about - the API
         // returns the full detail row (id, foreign keys, timestamps
         // included), and those aren't meaningful to show here.
         .filter(([key]) => key in labels)
-        .map(([key, value]) => [labels[key], formatDetailValue(value)])
+        .map(([key, value]) => [products?.detail_labels?.[key] ?? labels[key], formatDetailValue(value)])
         .filter(([, value]) => value !== null && value !== undefined && value !== '');
 
     if (entries.length === 0) {
-        return <p className="text-sm text-muted-foreground">Nothing recorded yet.</p>;
+        return <p className="text-sm text-muted-foreground">{products.nothing_recorded_yet}</p>;
     }
 
     return (

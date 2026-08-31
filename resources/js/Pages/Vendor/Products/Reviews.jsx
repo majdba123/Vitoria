@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Star } from 'lucide-react';
 import VendorLayout from '@/Layouts/VendorLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
+import { PageHeader } from '@/Components/shared/PageHeader';
 import { DeleteConfirmDialog } from '@/Components/admin/DeleteConfirmDialog';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
-import { Pagination } from '@/Components/admin/Pagination';
+import { Pagination } from '@/Components/shared/Pagination';
 import { Button } from '@/Components/ui/button';
 import { useI18n } from '@/hooks/use-i18n';
 
@@ -46,15 +46,15 @@ export default function VendorProductReviews({ product, reviews }) {
                     { label: product.name, href: route('vendor.products.show', product.id) },
                     { label: vendor.reviews },
                 ]}
-                title={`${vendor.all_reviews_for ?? 'All reviews for'} ${product.name}`}
+                title={`${vendor.all_reviews_for} ${product.name}`}
                 copy={`${reviews.total} ${reviews.total === 1 ? vendor.review_singular ?? 'review' : vendor.review_plural ?? 'reviews'} ${vendor.total_suffix ?? 'total'}`}
                 actions={
                     <>
                         <Button asChild variant="outline" size="sm">
-                            <Link href={route('vendor.products.show', product.id)}>{vendor.view_product ?? 'View product'}</Link>
+                            <Link href={route('vendor.products.show', product.id)}>{vendor.view_product}</Link>
                         </Button>
                         <Button asChild variant="outline" size="sm">
-                            <Link href={route('vendor.products.index')}>{vendor.back_to_products ?? 'Back to products'}</Link>
+                            <Link href={route('vendor.products.index')}>{vendor.back_to_products}</Link>
                         </Button>
                     </>
                 }
@@ -67,9 +67,9 @@ export default function VendorProductReviews({ product, reviews }) {
             <Card className="gap-0 border-border/80 py-0 shadow-none">
                 {reviews.data.length === 0 ? (
                     <CardContent className="py-14 text-center">
-                        <p className="text-sm font-medium text-foreground">{vendor.no_reviews_yet ?? 'No reviews yet.'}</p>
+                        <p className="text-sm font-medium text-foreground">{vendor.no_reviews_yet}</p>
                         <Button asChild variant="outline" size="sm" className="mt-4">
-                            <Link href={route('vendor.products.index')}>{vendor.back_to_products ?? 'Back to products'}</Link>
+                            <Link href={route('vendor.products.index')}>{vendor.back_to_products}</Link>
                         </Button>
                     </CardContent>
                 ) : (
@@ -93,7 +93,7 @@ export default function VendorProductReviews({ product, reviews }) {
                                         <TableCell className="text-muted-foreground">{review.created_at ? new Date(review.created_at).toLocaleDateString() : '—'}</TableCell>
                                         <TableCell className="text-end">
                                             <button type="button" onClick={() => setDeleteTarget(review)} className="text-xs font-medium text-[var(--color-danger-strong)] hover:underline">
-                                                {common.delete ?? 'Delete'}
+                                                {common.delete}
                                             </button>
                                         </TableCell>
                                     </TableRow>
@@ -112,8 +112,8 @@ export default function VendorProductReviews({ product, reviews }) {
             <DeleteConfirmDialog
                 open={!!deleteTarget}
                 onOpenChange={(open) => !open && setDeleteTarget(null)}
-                title={common.delete ?? 'Delete review'}
-                description={vendor.confirm_delete_review ?? 'Are you sure you want to delete this review?'}
+                title={common.delete}
+                description={vendor.confirm_delete_review}
                 isDeleting={isDeleting}
                 onConfirm={confirmDelete}
             />

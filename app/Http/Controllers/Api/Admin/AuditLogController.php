@@ -45,7 +45,7 @@ class AuditLogController extends Controller
         $logs = $query->paginate(30);
 
         return response()->json([
-            'message' => 'Audit log retrieved successfully.',
+            'message' => __('api.audit_log_retrieved'),
             'data' => $logs->getCollection()->map(fn (AuditLog $log) => [
                 'id' => $log->id,
                 'actor' => $log->actor ? ['id' => $log->actor->id, 'name' => $log->actor->name] : null,

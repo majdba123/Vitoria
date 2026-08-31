@@ -27,7 +27,7 @@ class OrderController extends Controller
     {
         $vendor = $request->user()?->managedVendor();
         if (! $vendor) {
-            abort(403, 'Vendor profile not found.');
+            abort(403, __('api.vendor_profile_not_found'));
         }
 
         $query = Order::query()
@@ -68,7 +68,7 @@ class OrderController extends Controller
         $orders = $query->paginate(12);
 
         return response()->json([
-            'message' => 'Orders retrieved successfully.',
+            'message' => __('api.orders_retrieved'),
             'data' => $orders->items(),
             'meta' => [
                 'current_page' => $orders->currentPage(),
@@ -86,7 +86,7 @@ class OrderController extends Controller
     {
         $vendor = $request->user()?->managedVendor();
         if (! $vendor) {
-            abort(403, 'Vendor profile not found.');
+            abort(403, __('api.vendor_profile_not_found'));
         }
 
         $order = Order::query()
@@ -103,7 +103,7 @@ class OrderController extends Controller
             ->findOrFail($orderId);
 
         return response()->json([
-            'message' => 'Order retrieved successfully.',
+            'message' => __('api.order_retrieved'),
             'data' => $order,
         ]);
     }

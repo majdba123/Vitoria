@@ -25,7 +25,7 @@ class ShipmentController extends Controller
     {
         $vendor = $request->user()?->managedVendor();
         if (! $vendor) {
-            abort(403, 'Vendor profile not found.');
+            abort(403, __('api.vendor_profile_not_found'));
         }
 
         $query = Shipment::query()
@@ -40,7 +40,7 @@ class ShipmentController extends Controller
         $shipments = $query->paginate(12);
 
         return response()->json([
-            'message' => 'Shipments retrieved successfully.',
+            'message' => __('api.shipments_retrieved'),
             'data' => $shipments->items(),
             'meta' => [
                 'current_page' => $shipments->currentPage(),
@@ -56,7 +56,7 @@ class ShipmentController extends Controller
         $shipment = Shipment::query()->with(['order:id,order_number,vendor_id', 'method', 'zone', 'events'])->findOrFail($shipmentId);
         $this->authorize('view', $shipment);
 
-        return response()->json(['message' => 'Shipment retrieved successfully.', 'data' => $shipment]);
+        return response()->json(['message' => __('api.shipment_retrieved'), 'data' => $shipment]);
     }
 
     public function updateTracking(Request $request, int $shipmentId): JsonResponse
@@ -76,7 +76,7 @@ class ShipmentController extends Controller
         );
 
         return response()->json([
-            'message' => 'Tracking updated.',
+            'message' => __('api.tracking_updated'),
             'data' => ['id' => $shipment->id, 'tracking_number' => $shipment->tracking_number, 'carrier_name' => $shipment->carrier_name],
         ]);
     }

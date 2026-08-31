@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { RefreshCw, Package, PackageCheck, Hourglass, CircleCheck, CircleX, PackageX } from 'lucide-react';
 import EmployeeLayout from '@/Layouts/EmployeeLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { StatCard } from '@/Components/admin/dashboard/StatCard';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { StatCard } from '@/Components/shared/dashboard/StatCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import { useI18n } from '@/hooks/use-i18n';
-import { GrowthChart } from '@/Components/admin/dashboard/GrowthChart';
-import { InsightPanel } from '@/Components/admin/dashboard/InsightPanel';
+import { GrowthChart } from '@/Components/shared/dashboard/GrowthChart';
+import { InsightPanel } from '@/Components/shared/dashboard/InsightPanel';
 
 /**
  * Built from the same `allProducts` list already fetched for the category/type
@@ -78,9 +78,9 @@ export default function EmployeeDashboard() {
             const categoryCounts = new Map();
             const typeCounts = new Map();
             allProducts.forEach((p) => {
-                const categoryName = p?.category?.name || common.not_found || 'Not found';
+                const categoryName = p?.category?.name || common.not_found;
                 categoryCounts.set(categoryName, (categoryCounts.get(categoryName) || 0) + 1);
-                const typeName = p?.category?.type_label || p?.category?.type || common.not_found || 'Not found';
+                const typeName = p?.category?.type_label || common.not_found;
                 typeCounts.set(typeName, (typeCounts.get(typeName) || 0) + 1);
             });
             setCategoryRows([...categoryCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6));

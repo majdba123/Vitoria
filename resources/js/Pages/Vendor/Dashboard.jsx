@@ -3,15 +3,13 @@ import { Link } from '@inertiajs/react';
 import { BarChart3, CheckCircle2, Package, PackageCheck, Plus, ReceiptText, ShoppingBag } from 'lucide-react';
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 import VendorLayout from '@/Layouts/VendorLayout';
-import { StatCard } from '@/Components/admin/dashboard/StatCard';
-import { ListRow, StatusBadge } from '@/Components/admin/dashboard/ListRow';
-import { InsightPanel } from '@/Components/admin/dashboard/InsightPanel';
+import { StatCard } from '@/Components/shared/dashboard/StatCard';
+import { ListRow, StatusBadge } from '@/Components/shared/dashboard/ListRow';
+import { InsightPanel } from '@/Components/shared/dashboard/InsightPanel';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/Components/ui/chart';
 import { useI18n } from '@/hooks/use-i18n';
-
-const ORDERS_CHART_CONFIG = { count: { label: 'Confirmed + completed orders', color: 'var(--chart-1)' } };
 
 export default function VendorDashboard() {
     const { vendor, common } = useI18n();
@@ -46,6 +44,7 @@ export default function VendorDashboard() {
     useEffect(load, []);
 
     const storeName = profile?.vendor?.store_name || vendor.dashboard_heading;
+    const ordersChartConfig = { count: { label: vendor.confirmed_completed_orders, color: 'var(--chart-1)' } };
 
     return (
         <VendorLayout title={vendor.dashboard}>
@@ -88,7 +87,7 @@ export default function VendorDashboard() {
                                 key={product.id}
                                 href={route('vendor.products.show', product.id)}
                                 title={product.name}
-                                subtitle={product.category?.name || product.status || ''}
+                                subtitle={product.category?.name || common[product.status] || common.not_available}
                                 trailing={<StatusBadge tone={product.is_active ? 'success' : 'warning'}>{product.is_active ? common.active : common.inactive}</StatusBadge>}
                             />
                         ))}
@@ -114,14 +113,14 @@ export default function VendorDashboard() {
             </div>
 
             <InsightPanel
-                title="Orders, last 7 days"
-                copy="Real order counts for your store (confirmed + completed), updated daily."
+                title={vendor.orders_last_7_days_title}
+                copy={vendor.orders_last_7_days_copy}
                 status={status}
                 isEmpty={orderTrend.every((row) => row.count === 0)}
-                emptyMessage="No orders in the last 7 days."
+                emptyMessage={vendor.orders_last_7_days_empty}
                 onRetry={load}
             >
-                <ChartContainer config={ORDERS_CHART_CONFIG} className="aspect-auto h-48 w-full">
+                <ChartContainer config={ordersChartConfig} className="aspect-auto h-48 w-full">
                     <AreaChart data={orderTrend} margin={{ left: 0, right: 8, top: 8 }}>
                         <CartesianGrid vertical={false} strokeDasharray="3 3" />
                         <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value?.slice?.(5) ?? value} />
@@ -130,7 +129,7 @@ export default function VendorDashboard() {
                     </AreaChart>
                 </ChartContainer>
                 <p className="sr-only">
-                    {orderTrend.map((row) => `${row.date}: ${row.count} orders.`).join(' ')}
+                    {orderTrend.map((row) => vendor.orders_count_accessibility.replace(':date', row.date).replace(':count', String(row.count))).join(' ')}
                 </p>
             </InsightPanel>
 

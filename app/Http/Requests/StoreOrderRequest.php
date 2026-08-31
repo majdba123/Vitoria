@@ -36,11 +36,11 @@ class StoreOrderRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'items.required' => 'Your cart is empty.',
-            'items.min' => 'Your cart is empty.',
-            'items.max' => 'You cannot checkout with more than 50 items at once.',
-            'items.*.quantity.max' => 'Quantity per item cannot exceed 100.',
-            'items.*.product_id.distinct' => 'Duplicate products are not allowed in checkout payload.',
+            'items.required' => __('validation.application.cart_empty'),
+            'items.min' => __('validation.application.cart_empty'),
+            'items.max' => __('validation.application.checkout_items_max'),
+            'items.*.quantity.max' => __('validation.application.item_quantity_max'),
+            'items.*.product_id.distinct' => __('validation.application.duplicate_products'),
         ];
     }
 }

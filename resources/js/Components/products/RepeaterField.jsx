@@ -1,12 +1,14 @@
 import { Plus, X } from 'lucide-react';
 import { Input } from '@/Components/ui/input';
 import { Button } from '@/Components/ui/button';
+import { useI18n } from '@/hooks/use-i18n';
 
 /**
  * data-array-list equivalent: an ordered list of free-text strings
  * (barcodes, active ingredients, warnings, ...) with add/remove rows.
  */
 export function RepeaterField({ label, hint, button, placeholder, values, onChange, error }) {
+    const { products } = useI18n();
     const set = (index, value) => {
         const next = [...values];
         next[index] = value;
@@ -24,7 +26,7 @@ export function RepeaterField({ label, hint, button, placeholder, values, onChan
                 {values.map((value, index) => (
                     <div key={index} className="flex items-center gap-2">
                         <Input value={value} placeholder={placeholder} onChange={(e) => set(index, e.target.value)} />
-                        <Button type="button" variant="outline" size="icon" className="shrink-0 text-[var(--color-danger-strong)]" onClick={() => remove(index)} aria-label="Remove">
+                        <Button type="button" variant="outline" size="icon" className="shrink-0 text-[var(--color-danger-strong)]" onClick={() => remove(index)} aria-label={products.form.remove_aria_label}>
                             <X className="size-4" />
                         </Button>
                     </div>

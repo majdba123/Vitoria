@@ -91,6 +91,7 @@ class HandleInertiaRequests extends Middleware
                 'profile' => trans('profile'),
                 'authPage' => trans('auth'),
                 'preferences' => trans('preferences'),
+                'notificationPreferences' => trans('notification_preferences'),
                 'addresses' => trans('addresses'),
                 'pagination' => trans('pagination'),
                 'vendors' => trans('vendors'),

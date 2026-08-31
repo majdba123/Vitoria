@@ -29,10 +29,10 @@ class StoreContactMessageRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.required' => 'Please enter your email address.',
-            'email.email' => 'Please enter a valid email address.',
-            'message.required' => 'Please enter your message.',
-            'message.max' => 'Your message may not exceed 5000 characters.',
+            'email.required' => __('validation.application.contact_email_required'),
+            'email.email' => __('validation.application.contact_email_invalid'),
+            'message.required' => __('validation.application.contact_message_required'),
+            'message.max' => __('validation.application.contact_message_max'),
         ];
     }
 }

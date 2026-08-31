@@ -34,7 +34,7 @@ class VendorStaffController extends Controller
         $owner = $vendor->user()->select('id', 'name', 'email', 'phone_number')->first();
 
         return response()->json([
-            'message' => 'Staff retrieved successfully.',
+            'message' => __('api.staff_retrieved'),
             'data' => [
                 'owner' => $owner ? [
                     'id' => $owner->id,

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { router } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
+import { PageHeader } from '@/Components/shared/PageHeader';
 import { TextField, SelectField, FileField } from '@/Components/admin/form/FormField';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
@@ -49,7 +49,7 @@ export default function CategoriesCreate() {
                             required
                             value={form.type}
                             onValueChange={(value) => setForm({ ...form, type: value })}
-                            placeholder={common.select ?? 'Select...'}
+                            placeholder={common.select}
                             options={[
                                 { value: 'agriculture', label: admin.type_agriculture },
                                 { value: 'veterinary', label: admin.type_veterinary },
@@ -64,7 +64,7 @@ export default function CategoriesCreate() {
                             min="0"
                             max="100"
                             label={admin.category_commission}
-                            hint="Percentage commission charged on products in this category (0–100)."
+                            hint={admin.category_commission_hint}
                             value={form.commission}
                             onChange={(e) => setForm({ ...form, commission: e.target.value })}
                             error={errors.commission}
@@ -72,8 +72,8 @@ export default function CategoriesCreate() {
 
                         <FileField
                             id="logo"
-                            label="Category image"
-                            hint="Upload one image that will be used everywhere for this category. Max size: 4MB."
+                            label={admin.category_image_label}
+                            hint={admin.category_image_hint}
                             preview={preview}
                             onChange={(e) => {
                                 const file = e.target.files?.[0] ?? null;
@@ -85,7 +85,7 @@ export default function CategoriesCreate() {
 
                         <div className="flex gap-2 pt-2">
                             <Button type="button" variant="outline" className="flex-1" onClick={() => router.visit(route('admin.categories.index'))}>
-                                {common.cancel ?? 'Cancel'}
+                                {common.cancel}
                             </Button>
                             <Button type="submit" className="flex-1" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="size-4 animate-spin" />}

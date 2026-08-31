@@ -39,8 +39,8 @@ class SendNotificationRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'type.in' => 'Admin notifications must be sent to selected users.',
-            'user_ids.required' => 'Please select at least one notification recipient.',
+            'type.in' => __('validation.application.notification_type_invalid'),
+            'user_ids.required' => __('validation.application.notification_recipients_required'),
         ];
     }
 }

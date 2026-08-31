@@ -41,6 +41,18 @@ export function formatCurrency(value, locale = 'en', currency = 'SYP') {
     }).format(Number(value ?? 0));
 }
 
+export function formatPercent(value, locale = 'en', options = {}) {
+    const number = Number(value ?? 0);
+    if (!Number.isFinite(number)) return '';
+
+    return new Intl.NumberFormat(resolveLocale(locale), {
+        style: 'percent',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+        ...options,
+    }).format(number / 100);
+}
+
 function resolveLocale(locale) {
     return locale === 'ar' ? 'ar-SY-u-nu-latn' : 'en-US';
 }

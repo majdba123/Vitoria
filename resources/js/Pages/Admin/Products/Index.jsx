@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Eye, MessageSquareText, Package, Pencil, Plus, Trash2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { DataTable } from '@/Components/admin/DataTable';
-import { Pagination } from '@/Components/admin/Pagination';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { DataTable } from '@/Components/shared/DataTable';
+import { Pagination } from '@/Components/shared/Pagination';
 import { CsvImportButton } from '@/Components/admin/CsvImportButton';
 import { DeleteConfirmDialog } from '@/Components/admin/DeleteConfirmDialog';
-import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Button } from '@/Components/ui/button';
 import {
     Select,
@@ -18,10 +18,12 @@ import {
 } from '@/Components/ui/select';
 import { Card, CardContent } from '@/Components/ui/card';
 import { useAdminList } from '@/hooks/use-admin-list';
-import { useI18n } from '@/hooks/use-i18n';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { formatCurrency, formatPercent } from '@/lib/date-time';
 
 export default function ProductsIndex({ discountOnly = false }) {
     const { admin, common } = useI18n();
+    const locale = useLocale();
     const [page, setPage] = useState(1);
     const [vendorId, setVendorId] = useState('all');
     const [productStatus, setProductStatus] = useState('all');
@@ -67,7 +69,7 @@ export default function ProductsIndex({ discountOnly = false }) {
 
     const changeStatus = (product, value) => {
         window.axios.patch(`/api/admin/products/${product.id}/status`, { status: value }, { silent: true }).then((res) => {
-            showFlash(res.data.message ?? 'Status updated.');
+            showFlash(res.data.message ?? admin.js_product_status_updated);
             reload();
         }).catch(() => reload());
     };
@@ -100,19 +102,19 @@ export default function ProductsIndex({ discountOnly = false }) {
         },
         {
             key: 'price',
-            label: common.price ?? 'Price',
+            label: common.price,
             align: 'end',
             render: (row) =>
                 row.has_active_discount ? (
                     <span className="flex flex-col items-end">
                         <span className="flex items-center gap-1.5">
-                            <StatusBadge tone="danger">-{parseFloat(row.discount_percentage || 0).toFixed(0)}%</StatusBadge>
-                            <span className="font-semibold text-[var(--color-danger-strong)]">{Number(row.discounted_price || row.price || 0).toLocaleString()} SYP</span>
+                            <StatusBadge tone="danger">-{formatPercent(row.discount_percentage || 0, locale, { maximumFractionDigits: 0 })}</StatusBadge>
+                            <span className="font-semibold text-[var(--color-danger-strong)]">{formatCurrency(row.discounted_price || row.price || 0, locale)}</span>
                         </span>
-                        <span className="text-xs text-muted-foreground line-through">{Number(row.price || 0).toLocaleString()} SYP</span>
+                        <span className="text-xs text-muted-foreground line-through">{formatCurrency(row.price || 0, locale)}</span>
                     </span>
                 ) : (
-                    <span className="font-semibold text-foreground">{Number(row.price || 0).toLocaleString()} SYP</span>
+                    <span className="font-semibold text-foreground">{formatCurrency(row.price || 0, locale)}</span>
                 ),
         },
         { key: 'quantity', label: admin.qty_label, align: 'end', render: (row) => row.quantity },
@@ -154,7 +156,7 @@ export default function ProductsIndex({ discountOnly = false }) {
                         <Link href={route('admin.products.reviews', row.id)}><MessageSquareText className="size-4" aria-hidden="true" />{admin.reviews}</Link>
                     </Button>
                     <Button asChild variant="outline" size="sm">
-                        <Link href={route('admin.products.edit', row.id)}><Pencil className="size-4" aria-hidden="true" />{common.edit ?? 'Edit'}</Link>
+                        <Link href={route('admin.products.edit', row.id)}><Pencil className="size-4" aria-hidden="true" />{common.edit}</Link>
                     </Button>
                     <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => setDeleteTarget(row)}>
                         <Trash2 className="size-4" aria-hidden="true" />{admin.remove}

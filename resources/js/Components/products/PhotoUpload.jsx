@@ -10,6 +10,7 @@ import {
 } from '@/Components/ui/select';
 import { Input } from '@/Components/ui/input';
 import { Button } from '@/Components/ui/button';
+import { useI18n } from '@/hooks/use-i18n';
 
 /**
  * Multi-photo picker ported from components/products/photo-upload.blade.php
@@ -19,6 +20,7 @@ import { Button } from '@/Components/ui/button';
  * handler appends as photos[]/photo_types[]/photo_sort_orders[].
  */
 export function PhotoUpload({ photos, onChange, error }) {
+    const { products } = useI18n();
     const inputRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
     const [lightbox, setLightbox] = useState(null);
@@ -26,7 +28,7 @@ export function PhotoUpload({ photos, onChange, error }) {
     const addFiles = (files) => {
         const imageFiles = files.filter((f) => f.type.startsWith('image/'));
         if (photos.length + imageFiles.length > 10) {
-            window.alert('Maximum 10 photos allowed.');
+            window.alert(products.form.photo_max_alert);
             return;
         }
 
@@ -51,8 +53,8 @@ export function PhotoUpload({ photos, onChange, error }) {
         <Card className="border-border/80 shadow-none">
             <CardHeader className="flex-row items-start justify-between gap-3 border-b border-border/80">
                 <div>
-                    <CardTitle className="text-base font-bold">Product photos</CardTitle>
-                    <p className="text-sm text-muted-foreground">Upload up to 10 images. Choose each image's display side and sort order.</p>
+                    <CardTitle className="text-base font-bold">{products.form.photo_upload_heading}</CardTitle>
+                    <p className="text-sm text-muted-foreground">{products.form.photo_upload_hint}</p>
                 </div>
             </CardHeader>
             <CardContent className="space-y-4 p-5 sm:p-6">
@@ -72,9 +74,9 @@ export function PhotoUpload({ photos, onChange, error }) {
                         <UploadCloud className="size-6" />
                     </span>
                     <p className="text-sm font-medium text-foreground">
-                        Drag &amp; drop images here, or <span className="text-primary underline">browse</span>
+                        {products.form.drag_drop_prefix} <span className="text-primary underline">{products.form.browse_link}</span>
                     </p>
-                    <p className="mt-1 text-xs text-muted-foreground">JPEG, PNG, GIF, WebP · Max 5 MB each</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{products.form.photo_format_hint}</p>
                     <input
                         ref={inputRef}
                         type="file"
@@ -92,20 +94,20 @@ export function PhotoUpload({ photos, onChange, error }) {
 
                 {photos.length > 0 && (
                     <>
-                        <p className="text-xs font-medium text-muted-foreground">{photos.length} of 10 photos selected</p>
+                        <p className="text-xs font-medium text-muted-foreground">{products.form.photos_selected_label.replace(':count', String(photos.length))}</p>
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                             {photos.map((photo, index) => (
                                 <div key={index} className="overflow-hidden rounded-lg border border-border bg-card">
                                     <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                                         <img src={photo.previewUrl} alt="" className="size-full object-cover" />
                                         <span className="absolute start-3 top-3 rounded-full bg-background/95 px-2.5 py-1 text-[11px] font-semibold text-foreground shadow-sm">
-                                            {photo.image_type === 'primary' ? 'Primary' : photo.image_type === 'front' ? 'Front' : 'Back'} · #{photo.sort_order}
+                                            {photo.image_type === 'primary' ? products.form.image_type_primary : photo.image_type === 'front' ? products.form.image_type_front : products.form.image_type_back} · #{photo.sort_order}
                                         </span>
                                         <div className="absolute end-2 top-2 flex gap-1.5">
-                                            <button type="button" onClick={() => setLightbox(photo.previewUrl)} className="flex size-8 items-center justify-center rounded-md border border-border bg-background/95 text-foreground hover:bg-accent" aria-label="View">
+                                            <button type="button" onClick={() => setLightbox(photo.previewUrl)} className="flex size-8 items-center justify-center rounded-md border border-border bg-background/95 text-foreground hover:bg-accent" aria-label={products.form.view_aria_label}>
                                                 <Eye className="size-4" />
                                             </button>
-                                            <button type="button" onClick={() => removeAt(index)} className="flex size-8 items-center justify-center rounded-md border border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] text-[var(--color-danger-strong)]" aria-label="Remove">
+                                            <button type="button" onClick={() => removeAt(index)} className="flex size-8 items-center justify-center rounded-md border border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] text-[var(--color-danger-strong)]" aria-label={products.form.remove_aria_label}>
                                                 <X className="size-4" />
                                             </button>
                                         </div>
@@ -118,9 +120,9 @@ export function PhotoUpload({ photos, onChange, error }) {
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="primary">Primary</SelectItem>
-                                                    <SelectItem value="front">Front</SelectItem>
-                                                    <SelectItem value="back">Back</SelectItem>
+                                                    <SelectItem value="primary">{products.form.image_type_primary}</SelectItem>
+                                                    <SelectItem value="front">{products.form.image_type_front}</SelectItem>
+                                                    <SelectItem value="back">{products.form.image_type_back}</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <Input

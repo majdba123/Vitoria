@@ -44,7 +44,7 @@ class UpdateProfileRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'phone_number.regex' => 'Please provide a valid phone number.',
+            'phone_number.regex' => __('validation.application.phone_invalid'),
         ];
     }
 }

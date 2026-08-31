@@ -1,10 +1,10 @@
-import { usePage } from '@inertiajs/react';
 import SyndicateLayout from '@/Layouts/SyndicateLayout';
 import { NotificationCenter } from '@/Components/workspace/NotificationCenter';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
 
 export default function SyndicateNotificationsIndex() {
-    const { props } = usePage();
-    const title = props.locale === 'ar' ? 'الإشعارات' : 'Notifications';
+    const { notificationPreferences } = useI18n();
+    const locale = useLocale();
 
-    return <SyndicateLayout title={title}><NotificationCenter role="syndicate" locale={props.locale} /></SyndicateLayout>;
+    return <SyndicateLayout title={notificationPreferences.title}><NotificationCenter role="syndicate" locale={locale} /></SyndicateLayout>;
 }

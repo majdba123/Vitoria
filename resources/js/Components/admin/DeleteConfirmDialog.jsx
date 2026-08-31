@@ -27,7 +27,7 @@ export function DeleteConfirmDialog({ open, onOpenChange, title, description, is
                     <AlertDialogDescription>{description}</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>{common.cancel ?? 'Cancel'}</AlertDialogCancel>
+                    <AlertDialogCancel>{common.cancel}</AlertDialogCancel>
                     <AlertDialogAction
                         onClick={(event) => {
                             event.preventDefault();
@@ -37,7 +37,7 @@ export function DeleteConfirmDialog({ open, onOpenChange, title, description, is
                         className="bg-[var(--color-danger-500)] text-white hover:bg-[var(--color-danger-600)] focus-visible:ring-[var(--color-danger-500)]/40"
                     >
                         {isDeleting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Trash2 className="size-4" aria-hidden="true" />}
-                        {common.delete ?? 'Delete'}
+                        {common.delete}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

@@ -116,7 +116,7 @@ class VendorCommissionController extends Controller
             ->all();
 
         return response()->json([
-            'message' => 'Vendor commission statistics retrieved successfully.',
+            'message' => __('api.vendor_commission_statistics_retrieved'),
             'data' => [
                 'vendor' => [
                     'id' => $vendor->id,
@@ -197,7 +197,7 @@ class VendorCommissionController extends Controller
         $summary = $this->vendorLedgerService->summary($vendor);
 
         return response()->json([
-            'message' => 'Vendor paid amount updated successfully.',
+            'message' => __('api.vendor_paid_amount_updated'),
             'data' => [
                 'id' => $vendor->id,
                 'paid_amount' => $summary['settled'],

@@ -2,18 +2,16 @@ import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Pencil, Building2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { DetailCard } from '@/Components/admin/DetailCard';
-import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { DetailCard } from '@/Components/shared/DetailCard';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Button } from '@/Components/ui/button';
-import { useI18n } from '@/hooks/use-i18n';
-
-function formatMoney(value) {
-    return `${Number(value || 0).toLocaleString()} SYP`;
-}
+import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { formatCurrency, formatDate } from '@/lib/date-time';
 
 export default function SyndicatesShow({ syndicateId }) {
     const { admin, common } = useI18n();
+    const locale = useLocale();
     const [status, setStatus] = useState('loading');
     const [syndicate, setSyndicate] = useState(null);
 
@@ -50,37 +48,37 @@ export default function SyndicatesShow({ syndicateId }) {
                         <Button asChild size="sm">
                             <Link href={route('admin.syndicates.edit', syndicate.id)}>
                                 <Pencil className="size-4" />
-                                {common.edit ?? 'Edit'}
+                                {common.edit}
                             </Link>
                         </Button>
                     )
                 }
             />
 
-            {status === 'error' && <p className="text-sm font-medium text-[var(--color-danger-strong)]">Failed to load syndicate.</p>}
+            {status === 'error' && <p className="text-sm font-medium text-[var(--color-danger-strong)]">{admin.failed_load_syndicate}</p>}
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <DetailCard isLoading={status === 'loading'} fields={[{ label: 'Categories', value: syndicate?.categories_count ?? 0 }]} />
-                <DetailCard isLoading={status === 'loading'} fields={[{ label: 'Vendors', value: syndicate?.vendors_count ?? 0 }]} />
-                <DetailCard isLoading={status === 'loading'} fields={[{ label: 'Products', value: syndicate?.products_count ?? 0 }]} />
-                <DetailCard isLoading={status === 'loading'} fields={[{ label: 'Completed orders', value: syndicate?.completed_orders_count ?? 0 }]} />
+                <DetailCard isLoading={status === 'loading'} fields={[{ label: admin.categories, value: syndicate?.categories_count ?? 0 }]} />
+                <DetailCard isLoading={status === 'loading'} fields={[{ label: admin.vendors, value: syndicate?.vendors_count ?? 0 }]} />
+                <DetailCard isLoading={status === 'loading'} fields={[{ label: admin.products, value: syndicate?.products_count ?? 0 }]} />
+                <DetailCard isLoading={status === 'loading'} fields={[{ label: admin.completed_orders_label, value: syndicate?.completed_orders_count ?? 0 }]} />
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <DetailCard isLoading={status === 'loading'} fields={[{ label: 'Total sales', value: syndicate ? formatMoney(syndicate.total_sales) : null }]} />
-                <DetailCard isLoading={status === 'loading'} fields={[{ label: 'All orders', value: syndicate?.orders_count ?? 0 }]} />
-                <DetailCard isLoading={status === 'loading'} fields={[{ label: 'Created at', value: syndicate ? new Date(syndicate.created_at).toLocaleDateString() : null }]} />
-                <DetailCard isLoading={status === 'loading'} fields={[{ label: 'Updated at', value: syndicate ? new Date(syndicate.updated_at).toLocaleDateString() : null }]} />
+                <DetailCard isLoading={status === 'loading'} fields={[{ label: admin.total_sales_label, value: syndicate ? formatCurrency(syndicate.total_sales, locale) : null }]} />
+                <DetailCard isLoading={status === 'loading'} fields={[{ label: admin.all_orders_label, value: syndicate?.orders_count ?? 0 }]} />
+                <DetailCard isLoading={status === 'loading'} fields={[{ label: admin.category_created_label, value: syndicate ? formatDate(syndicate.created_at, locale) : null }]} />
+                <DetailCard isLoading={status === 'loading'} fields={[{ label: admin.category_updated_label, value: syndicate ? formatDate(syndicate.updated_at, locale) : null }]} />
             </div>
 
             <DetailCard
-                title="Linked user account"
+                title={admin.linked_user_account}
                 isLoading={status === 'loading'}
                 columns={2}
                 fields={[
-                    { label: 'Name', value: syndicate?.user?.name },
-                    { label: 'Email', value: syndicate?.user?.email || syndicate?.email },
-                    { label: 'Phone', value: syndicate?.user?.phone_number || syndicate?.phone },
+                    { label: admin.name_label, value: syndicate?.user?.name },
+                    { label: admin.email_label, value: syndicate?.user?.email || syndicate?.email },
+                    { label: admin.th_phone, value: syndicate?.user?.phone_number || syndicate?.phone },
                 ]}
             />
         </AdminLayout>

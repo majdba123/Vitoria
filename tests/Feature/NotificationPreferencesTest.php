@@ -127,3 +127,30 @@ it('stops a vendor from receiving a document-review notification once they opt o
             ->exists()
     )->toBeFalse();
 });
+
+it('snapshots system notifications in each recipients preferred language', function () {
+    $vendor = Vendor::factory()->create(['is_active' => true, 'status' => Vendor::STATUS_ACTIVE]);
+    $product = Product::factory()->for($vendor)->create([
+        'name_ar' => 'منتج عربي',
+        'name_en' => 'English product',
+    ]);
+    $arabicUser = User::factory()->create(['locale' => 'ar']);
+    $englishUser = User::factory()->create(['locale' => 'en']);
+
+    app(NotificationService::class)->notifyNewProductApproved($product);
+
+    $arabicNotification = AdminNotification::query()
+        ->whereHas('recipients', fn ($query) => $query->where('users.id', $arabicUser->id))
+        ->latest('id')
+        ->firstOrFail();
+    $englishNotification = AdminNotification::query()
+        ->whereHas('recipients', fn ($query) => $query->where('users.id', $englishUser->id))
+        ->latest('id')
+        ->firstOrFail();
+
+    expect($arabicNotification->title)->toBe('منتج جديد')
+        ->and($arabicNotification->body)->toContain('منتج عربي')
+        ->and($englishNotification->title)->toBe('New product')
+        ->and($englishNotification->body)->toContain('English product')
+        ->and($arabicNotification->id)->not->toBe($englishNotification->id);
+});

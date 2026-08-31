@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { DetailFieldGroup } from '@/Components/products/DetailFieldGroup';
+import { useI18n } from '@/hooks/use-i18n';
 import {
     AGRICULTURAL_TYPE_OPTIONS,
     SHARED_FIELDS,
@@ -41,16 +42,21 @@ export function ProductDetailFields({
     onVeterinaryChange,
     errors,
 }) {
+    const { products } = useI18n();
     const isPesticide = PESTICIDE_SUBTYPES.includes(agriculturalProductType);
     const isFertilizer = FERTILIZER_SUBTYPES.includes(agriculturalProductType);
     const isSeed = SEED_SUBTYPES.includes(agriculturalProductType);
+    const translatedAgriTypeOptions = AGRICULTURAL_TYPE_OPTIONS.map((option) => ({
+        ...option,
+        label: products?.form?.[`type_${option.value}`] ?? option.label,
+    }));
 
     return (
         <>
             <Card className="border-border/80 shadow-none">
                 <CardHeader className="border-b border-border/80">
-                    <CardTitle className="text-base font-bold">Shared parameters</CardTitle>
-                    <p className="text-sm text-muted-foreground">These fields apply to every product regardless of type.</p>
+                    <CardTitle className="text-base font-bold">{products.shared_title}</CardTitle>
+                    <p className="text-sm text-muted-foreground">{products.form.shared_fields_copy}</p>
                 </CardHeader>
                 <CardContent className="space-y-6 p-5 sm:p-6">
                     <DetailFieldGroup
@@ -69,20 +75,20 @@ export function ProductDetailFields({
             {categoryType === 'agriculture' && (
                 <Card className="border-border/80 shadow-none">
                     <CardHeader className="border-b border-border/80">
-                        <CardTitle className="text-base font-bold">Agricultural parameters</CardTitle>
-                        <p className="text-sm text-muted-foreground">Select the agricultural product type to reveal only the relevant fields.</p>
+                        <CardTitle className="text-base font-bold">{products.agriculture_title}</CardTitle>
+                        <p className="text-sm text-muted-foreground">{products.form.agricultural_fields_copy}</p>
                     </CardHeader>
                     <CardContent className="space-y-6 p-5 sm:p-6">
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div>
-                                <label className="mb-1.5 block text-sm font-medium">Agricultural product type</label>
+                                <label className="mb-1.5 block text-sm font-medium">{products.form.agricultural_product_type_label}</label>
                                 <select
                                     className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                                     value={agriculturalProductType}
                                     onChange={(e) => onAgriculturalProductTypeChange(e.target.value)}
                                 >
-                                    <option value="">Select agricultural type</option>
-                                    {AGRICULTURAL_TYPE_OPTIONS.map((option) => (
+                                    <option value="">{products.form.select_product_type_placeholder}</option>
+                                    {translatedAgriTypeOptions.map((option) => (
                                         <option key={option.value} value={option.value}>{option.label}</option>
                                     ))}
                                 </select>
@@ -95,8 +101,8 @@ export function ProductDetailFields({
                         {isPesticide && (
                             <div className="space-y-6 rounded-lg border border-[var(--color-success-200)] bg-[var(--color-success-soft)]/40 p-4">
                                 <div>
-                                    <h3 className="text-sm font-bold text-foreground">Pesticide fields</h3>
-                                    <p className="text-xs text-muted-foreground">Visible when the agricultural product type is pesticide.</p>
+                                    <h3 className="text-sm font-bold text-foreground">{products.form.pesticide_fields_title}</h3>
+                                    <p className="text-xs text-muted-foreground">{products.form.pesticide_fields_copy}</p>
                                 </div>
                                 <DetailFieldGroup fields={PESTICIDE_FIELDS} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
                                 <DetailFieldGroup repeaters={PESTICIDE_REPEATERS} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
@@ -107,8 +113,8 @@ export function ProductDetailFields({
                         {isFertilizer && (
                             <div className="space-y-6 rounded-lg border border-[var(--color-info-200)] bg-[var(--color-info-soft)]/40 p-4">
                                 <div>
-                                    <h3 className="text-sm font-bold text-foreground">Fertilizer and soil fields</h3>
-                                    <p className="text-xs text-muted-foreground">Used for fertilizers, soil amendments, and growth regulators.</p>
+                                    <h3 className="text-sm font-bold text-foreground">{products.form.fertilizer_fields_title}</h3>
+                                    <p className="text-xs text-muted-foreground">{products.form.fertilizer_fields_copy}</p>
                                 </div>
                                 <DetailFieldGroup fields={FERTILIZER_FIELDS} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
                                 <DetailFieldGroup repeaters={FERTILIZER_REPEATERS} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
@@ -118,8 +124,8 @@ export function ProductDetailFields({
                         {isSeed && (
                             <div className="space-y-6 rounded-lg border border-[var(--color-warning-200)] bg-[var(--color-warning-soft)]/40 p-4">
                                 <div>
-                                    <h3 className="text-sm font-bold text-foreground">Seed fields</h3>
-                                    <p className="text-xs text-muted-foreground">Visible when the agricultural product type is seeds.</p>
+                                    <h3 className="text-sm font-bold text-foreground">{products.form.seed_fields_title}</h3>
+                                    <p className="text-xs text-muted-foreground">{products.form.seed_fields_copy}</p>
                                 </div>
                                 <DetailFieldGroup fields={SEED_FIELDS} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
                                 <DetailFieldGroup repeaters={SEED_REPEATERS} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
@@ -132,8 +138,8 @@ export function ProductDetailFields({
             {categoryType === 'veterinary' && (
                 <Card className="border-border/80 shadow-none">
                     <CardHeader className="border-b border-border/80">
-                        <CardTitle className="text-base font-bold">Veterinary parameters</CardTitle>
-                        <p className="text-sm text-muted-foreground">Organized fields for medicines, vaccines, and veterinary supplies.</p>
+                        <CardTitle className="text-base font-bold">{products.veterinary_title}</CardTitle>
+                        <p className="text-sm text-muted-foreground">{products.form.veterinary_fields_copy}</p>
                     </CardHeader>
                     <CardContent className="space-y-6 p-5 sm:p-6">
                         <DetailFieldGroup fields={VETERINARY_FIELDS} values={veterinaryDetail} onChange={onVeterinaryChange} errors={errors} prefix="veterinary_detail" />

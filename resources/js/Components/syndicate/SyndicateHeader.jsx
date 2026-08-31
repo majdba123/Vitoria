@@ -7,7 +7,7 @@ import { ThemeToggle } from '@/Components/workspace/ThemeToggle';
 import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
 import { NotificationBell } from '@/Components/workspace/NotificationBell';
 import { LogoutButton } from '@/Components/workspace/LogoutButton';
-import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { useI18n, useAuthUser } from '@/hooks/use-i18n';
 
 const TYPE_LABEL_KEY = { agriculture: 'type_agriculture', veterinary: 'type_veterinary' };
@@ -31,14 +31,14 @@ export function SyndicateHeader({ title }) {
 
                 <div className="flex items-center gap-1.5">
                     <span className="hidden lg:inline-flex"><StatusBadge tone="brand">{syndicate[typeKey]}</StatusBadge></span>
-                    <Button asChild variant="ghost" size="icon" className="hidden size-11 sm:inline-flex" aria-label={nav.home ?? 'Home'} title={nav.home ?? 'Home'}>
+                    <Button asChild variant="ghost" size="icon" className="hidden size-11 sm:inline-flex" aria-label={nav.home} title={nav.home}>
                         <Link href={route('home')}>
                             <Home className="size-4" />
                         </Link>
                     </Button>
                     <LanguageSwitcher />
                     <NotificationBell viewAllRoute="syndicate.notifications.index" locale={props.locale} group="syndicate" />
-                    <ThemeToggle label={nav.toggle_theme_aria ?? 'Toggle theme'} />
+                    <ThemeToggle label={nav.toggle_theme_aria} />
                     <LogoutButton />
                 </div>
             </div>

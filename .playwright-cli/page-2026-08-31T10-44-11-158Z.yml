@@ -1,0 +1,143 @@
+- generic [ref=f7e3]:
+  - navigation "Vendor navigation" [ref=f7e5]:
+    - generic [ref=f7e6]:
+      - list [ref=f7e8]:
+        - listitem [ref=f7e9]:
+          - link "Vetora بائع" [ref=f7e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/vendor/dashboard
+            - generic [ref=f7e16]:
+              - generic [ref=f7e17]: Vetora
+              - generic [ref=f7e18]: بائع
+      - generic [ref=f7e19]:
+        - generic [ref=f7e20]:
+          - generic [ref=f7e21]: نظرة عامة
+          - list [ref=f7e23]:
+            - listitem [ref=f7e24]:
+              - link "لوحة التحكم" [ref=f7e25] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/dashboard
+        - generic [ref=f7e32]:
+          - generic [ref=f7e33]: متجري
+          - list [ref=f7e35]:
+            - listitem [ref=f7e36]:
+              - link "المنتجات" [ref=f7e37] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/products
+            - listitem [ref=f7e43]:
+              - link "الطلبات" [ref=f7e44] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/orders
+            - listitem [ref=f7e49]:
+              - link "المبيعات" [ref=f7e50] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/sales
+            - listitem [ref=f7e55]:
+              - link "الإشعارات" [ref=f7e56] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/notifications
+        - generic [ref=f7e61]:
+          - generic [ref=f7e62]: الحساب
+          - list [ref=f7e64]:
+            - listitem [ref=f7e65]:
+              - link "الملف الشخصي" [ref=f7e66] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/profile
+        - generic [ref=f7e71]:
+          - generic [ref=f7e72]: التصنيفات
+          - generic [ref=f7e73]:
+            - generic [ref=f7e74]:
+              - button "البذور 5%" [ref=f7e75]:
+                - generic [ref=f7e81]: البذور
+                - generic [ref=f7e82]: 5%
+              - paragraph [ref=f7e85]: الفئات الزراعية
+            - generic [ref=f7e86]:
+              - button "الأسمدة 5%" [ref=f7e87]:
+                - generic [ref=f7e93]: الأسمدة
+                - generic [ref=f7e94]: 5%
+              - paragraph [ref=f7e97]: الفئات الزراعية
+            - generic [ref=f7e98]:
+              - button "أنظمة الري 6%" [ref=f7e99]:
+                - generic [ref=f7e105]: أنظمة الري
+                - generic [ref=f7e106]: 6%
+              - paragraph [ref=f7e109]: الفئات الزراعية
+            - generic [ref=f7e110]:
+              - button "البيوت البلاستيكية 6%" [ref=f7e111]:
+                - generic [ref=f7e117]: البيوت البلاستيكية
+                - generic [ref=f7e118]: 6%
+              - paragraph [ref=f7e121]: الفئات الزراعية
+            - generic [ref=f7e122]:
+              - button "المعدات الزراعية 7%" [ref=f7e123]:
+                - generic [ref=f7e129]: المعدات الزراعية
+                - generic [ref=f7e130]: 7%
+              - paragraph [ref=f7e133]: الفئات الزراعية
+            - generic [ref=f7e134]:
+              - button "المبيدات الزراعية 5%" [ref=f7e135]:
+                - generic [ref=f7e141]: المبيدات الزراعية
+                - generic [ref=f7e142]: 5%
+              - paragraph [ref=f7e145]: الفئات الزراعية
+            - generic [ref=f7e146]:
+              - button "التربة والسماد العضوي 5%" [ref=f7e147]:
+                - generic [ref=f7e153]: التربة والسماد العضوي
+                - generic [ref=f7e154]: 5%
+              - paragraph [ref=f7e157]: الفئات الزراعية
+            - generic [ref=f7e158]:
+              - button "أدوات الحصاد 6%" [ref=f7e159]:
+                - generic [ref=f7e165]: أدوات الحصاد
+                - generic [ref=f7e166]: 6%
+              - paragraph [ref=f7e169]: الفئات الزراعية
+      - list [ref=f7e171]:
+        - listitem [ref=f7e172]:
+          - button "ت تاجر المستلزمات الزراعية بائع" [ref=f7e173]:
+            - generic [ref=f7e174]: ت
+            - generic [ref=f7e176]:
+              - generic [ref=f7e177]: تاجر المستلزمات الزراعية
+              - generic [ref=f7e178]: بائع
+  - main [ref=f7e182]:
+    - generic [ref=f7e184]:
+      - button "Toggle Sidebar" [ref=f7e185]
+      - generic [ref=f7e187]:
+        - paragraph [ref=f7e188]: بائع
+        - heading "لوحة التحكم" [level=1] [ref=f7e189]
+      - generic [ref=f7e190]:
+        - link "الرئيسية" [ref=f7e191] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/
+        - button "اختر اللغة" [ref=f7e192]
+        - button "الإشعارات" [ref=f7e193]
+        - button "تبديل المظهر" [ref=f7e194]
+        - button "تسجيل الخروج" [ref=f7e195]
+    - generic [ref=f7e196]:
+      - generic [ref=f7e197]:
+        - generic [ref=f7e198]:
+          - paragraph [ref=f7e199]: مساحة البائع
+          - heading "نظرة عامة على المتجر" [level=2] [ref=f7e200]
+          - paragraph [ref=f7e201]: تابع حالة المتجر وأحدث المنتجات والإجراءات الأساسية من مساحة عمل مختصرة وواضحة.
+        - generic [ref=f7e202]:
+          - link "إضافة منتج" [ref=f7e203] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/vendor/products/create
+          - link "الطلبات" [ref=f7e204] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/vendor/orders
+      - generic [ref=f7e205]:
+        - paragraph [ref=f7e209]: حالة المتجر
+        - paragraph [ref=f7e218]: إجمالي المنتجات
+        - paragraph [ref=f7e228]: المنتجات النشطة
+        - paragraph [ref=f7e239]: الطلبات
+      - generic [ref=f7e245]:
+        - generic [ref=f7e247]:
+          - generic [ref=f7e248]:
+            - heading "أحدث المنتجات" [level=3] [ref=f7e249]
+            - paragraph [ref=f7e250]: أحدث منتجاتك وحالتها الحالية في الواجهة.
+          - link "عرض الكل" [ref=f7e251] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/vendor/products
+        - generic [ref=f7e258]:
+          - generic [ref=f7e259]:
+            - generic [ref=f7e260]: إجراءات سريعة
+            - paragraph [ref=f7e261]: انتقل بسرعة بين أكثر المهام استخدامًا.
+          - generic [ref=f7e262]:
+            - link "إضافة منتج" [ref=f7e263] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/vendor/products/create
+            - link "المنتجات" [ref=f7e265] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/vendor/products
+            - link "الطلبات" [ref=f7e270] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/vendor/orders
+            - link "المبيعات" [ref=f7e273] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/vendor/sales
+      - generic [ref=f7e278]:
+        - heading "Orders, last 7 days" [level=3] [ref=f7e279]
+        - paragraph [ref=f7e280]: Real order counts for your store (confirmed + completed), updated daily.
+      - generic [ref=f7e289]:
+        - heading "معلومات المتجر" [level=3] [ref=f7e290]
+        - paragraph [ref=f7e291]: عرض مختصر لأهم بيانات الحساب والمتجر.

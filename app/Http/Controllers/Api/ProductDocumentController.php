@@ -33,7 +33,7 @@ class ProductDocumentController extends Controller
             ])
             ->values();
 
-        return response()->json(['message' => 'Documents retrieved successfully.', 'data' => $documents]);
+        return response()->json(['message' => __('api.documents_retrieved'), 'data' => $documents]);
     }
 
     public function download(Product $product, int $documentId)

@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Plus, Check, Copy, Eye, FileText, Pencil, Trash2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { DataTable } from '@/Components/admin/DataTable';
-import { Pagination } from '@/Components/admin/Pagination';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { DataTable } from '@/Components/shared/DataTable';
+import { Pagination } from '@/Components/shared/Pagination';
 import { DeleteConfirmDialog } from '@/Components/admin/DeleteConfirmDialog';
-import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import {
@@ -20,9 +20,10 @@ import { Card, CardContent } from '@/Components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
 import { useAdminList } from '@/hooks/use-admin-list';
 import { useI18n } from '@/hooks/use-i18n';
+import { translatedEnum } from '@/lib/translated-enum';
 
 export default function VendorsIndex() {
-    const { admin, common } = useI18n();
+    const { admin, common, lang } = useI18n();
     const initialQuery = new URLSearchParams(typeof window === 'undefined' ? '' : window.location.search);
     const [page, setPage] = useState(1);
     const [status, setStatusFilter] = useState('all');
@@ -85,11 +86,11 @@ export default function VendorsIndex() {
         window.axios.delete(`/api/admin/vendors/${deleteTarget.id}`, { silent: true }).then((response) => {
             setIsDeleting(false);
             setDeleteTarget(null);
-            showFlash(response.data?.message ?? admin.vendor_deleted_successfully ?? 'Vendor deleted successfully.');
+            showFlash(response.data?.message ?? admin.vendor_deleted_successfully);
             reload();
         }).catch((error) => {
             setIsDeleting(false);
-            setDeleteError(error.response?.data?.message ?? common.error ?? 'Unable to delete vendor.');
+            setDeleteError(error.response?.data?.message ?? admin.vendor_delete_failed);
         });
     };
 
@@ -147,14 +148,14 @@ export default function VendorsIndex() {
         {
             key: 'type',
             label: admin.th_type,
-            render: (row) => <StatusBadge tone="brand">{row.business_type_label ?? row.business_type ?? admin.both}</StatusBadge>,
+            render: (row) => <StatusBadge tone="brand">{translatedEnum(row.business_type, common.not_available, { agriculture: admin.type_agriculture, veterinary: admin.type_veterinary, both: admin.both })}</StatusBadge>,
         },
         {
             key: 'status',
             label: admin.th_status,
             render: (row) =>
                 row.status === 'pending' ? (
-                    <StatusBadge tone="warning">{common.pending ?? 'Pending'}</StatusBadge>
+                    <StatusBadge tone="warning">{common.pending}</StatusBadge>
                 ) : (
                     <button type="button" onClick={() => toggleActive(row)} title={admin.title_click_to_toggle}>
                         <StatusBadge tone={row.is_active ? 'success' : 'danger'}>{row.is_active ? common.active : common.inactive}</StatusBadge>
@@ -170,21 +171,21 @@ export default function VendorsIndex() {
                     {row.status === 'pending' && (
                         <Button size="sm" onClick={() => approve(row)} title={admin.title_approve_vendor}>
                             <Check className="size-3.5" />
-                            {common.approve ?? 'Approve'}
+                            {common.approve}
                         </Button>
                     )}
                     <Button asChild variant="ghost" size="sm">
-                        <Link href={route('admin.vendors.show', row.id)}><Eye className="size-3.5" aria-hidden="true" />{common.view_details ?? 'View'}</Link>
+                        <Link href={route('admin.vendors.show', row.id)}><Eye className="size-3.5" aria-hidden="true" />{common.view_details}</Link>
                     </Button>
                     <Button asChild variant="outline" size="sm">
-                        <Link href={route('admin.vendors.edit', row.id)}><Pencil className="size-3.5" aria-hidden="true" />{common.edit ?? 'Edit'}</Link>
+                        <Link href={route('admin.vendors.edit', row.id)}><Pencil className="size-3.5" aria-hidden="true" />{common.edit}</Link>
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => setReportTarget(row)}>
                         <FileText className="size-3.5" aria-hidden="true" />
                         {admin.report}
                     </Button>
                     <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => { setDeleteError(null); setDeleteTarget(row); }}>
-                        <Trash2 className="size-3.5" aria-hidden="true" />{common.delete ?? 'Delete'}
+                        <Trash2 className="size-3.5" aria-hidden="true" />{common.delete}
                     </Button>
                 </div>
             ),
@@ -209,7 +210,7 @@ export default function VendorsIndex() {
             {flash && <p className="rounded-md border border-[var(--color-success-200)] bg-[var(--color-success-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-success-strong)]">{flash}</p>}
 
             {(cityId !== 'all' || governorate !== 'all') && (
-                <div className="flex flex-wrap items-center gap-2" aria-label={admin.active_filters ?? 'Active filters'}>
+                <div className="flex flex-wrap items-center gap-2" aria-label={admin.active_filters}>
                     {cityId !== 'all' && <FilterChip label={`City: ${cities.find((city) => String(city.id) === cityId)?.name ?? cityId}`} onRemove={() => { setCityId('all'); setPage(1); clearUrlFilter('city_id'); }} />}
                     {governorate !== 'all' && <FilterChip label={`Region: ${governorate.replaceAll('_', ' ')}`} onRemove={() => { setGovernorate('all'); setPage(1); clearUrlFilter('governorate'); }} />}
                 </div>
@@ -263,7 +264,7 @@ export default function VendorsIndex() {
                     <div className="grid gap-4 sm:grid-cols-2">
                         <label className="grid gap-1.5 text-sm font-medium">{admin.from}<Input type="date" value={reportForm.date_from} onChange={(e) => setReportForm({ ...reportForm, date_from: e.target.value })} /></label>
                         <label className="grid gap-1.5 text-sm font-medium">{admin.to}<Input type="date" value={reportForm.date_to} onChange={(e) => setReportForm({ ...reportForm, date_to: e.target.value })} /></label>
-                        <label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{admin.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={reportForm.locale} onChange={(e) => setReportForm({ ...reportForm, locale: e.target.value })}><option value="ar">العربية</option><option value="en">English</option></select></label>
+                        <label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{admin.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={reportForm.locale} onChange={(e) => setReportForm({ ...reportForm, locale: e.target.value })}><option value="ar">{lang.arabic}</option><option value="en">{lang.english}</option></select></label>
                     </div>
                     <DialogFooter><Button type="button" disabled={!reportForm.date_from || !reportForm.date_to || reportForm.date_from > reportForm.date_to} onClick={generateReport}><FileText className="size-4" />{admin.generate_report}</Button></DialogFooter>
                 </DialogContent>

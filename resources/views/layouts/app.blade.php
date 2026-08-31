@@ -44,6 +44,8 @@
             'checkout_ok' => __('cart.checkout_success_fallback'),
             'processing' => __('cart.processing_checkout'),
             'cart_remove' => __('cart.remove_line'),
+            'decrease_quantity' => __('common.decrease_quantity'),
+            'increase_quantity' => __('common.increase_quantity'),
             'generic_error' => __('common.generic_error'),
         ];
     @endphp

@@ -27,8 +27,8 @@ class ReplyContactMessageRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'admin_reply.required' => 'Please enter your reply.',
-            'admin_reply.max' => 'The reply may not exceed 5000 characters.',
+            'admin_reply.required' => __('validation.application.reply_required'),
+            'admin_reply.max' => __('validation.application.reply_max'),
         ];
     }
 }

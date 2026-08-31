@@ -28,7 +28,7 @@ class ShipmentController extends Controller
         $shipments = $query->paginate(12);
 
         return response()->json([
-            'message' => 'Shipments retrieved successfully.',
+            'message' => __('api.shipments_retrieved'),
             'data' => $shipments->items(),
             'meta' => [
                 'current_page' => $shipments->currentPage(),
@@ -43,7 +43,7 @@ class ShipmentController extends Controller
     {
         $shipment = Shipment::query()->with(['order:id,order_number,vendor_id', 'method', 'zone', 'events'])->findOrFail($shipmentId);
 
-        return response()->json(['message' => 'Shipment retrieved successfully.', 'data' => $shipment]);
+        return response()->json(['message' => __('api.shipment_retrieved'), 'data' => $shipment]);
     }
 
     public function markFailed(Request $request, int $shipmentId): JsonResponse

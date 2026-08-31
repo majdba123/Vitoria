@@ -77,7 +77,7 @@ export default function Register() {
                         </Link>
                         <div className="flex items-center gap-1">
                             <LanguageSwitcher />
-                            <ThemeToggle label={admin.toggle_theme ?? 'Toggle theme'} />
+                            <ThemeToggle label={admin.toggle_theme} />
                         </div>
                     </header>
 

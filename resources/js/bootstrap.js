@@ -12,7 +12,7 @@ window.axios.defaults.withXSRFToken = true;
  * Backend error parsing utilities.
  */
 window.ApiErrors = {
-    fallbackMessage: window.__appStrings?.generic_error || (document.documentElement.lang === 'ar' ? 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.' : 'Something went wrong. Please try again.'),
+    fallbackMessage: window.__appStrings?.generic_error ?? '',
 
     parse(error) {
         const responseData = error?.response?.data ?? error?.data ?? error;
@@ -121,7 +121,7 @@ window.AppToast = {
             info: 'border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-200',
         };
 
-        toast.className = `fixed right-4 top-4 z-[120] max-w-sm rounded-xl border px-4 py-3 text-sm font-semibold shadow-xl backdrop-blur ${palette[type] || palette.error}`;
+        toast.className = `fixed end-4 top-4 z-[120] max-w-sm rounded-xl border px-4 py-3 text-sm font-semibold shadow-xl backdrop-blur ${palette[type] || palette.error}`;
         toast.setAttribute('role', 'alert');
         toast.textContent = safeMessage;
         document.body.appendChild(toast);

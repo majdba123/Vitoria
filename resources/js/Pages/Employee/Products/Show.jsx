@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import EmployeeLayout from '@/Layouts/EmployeeLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
+import { PageHeader } from '@/Components/shared/PageHeader';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { useI18n } from '@/hooks/use-i18n';
+import { translatedStatus } from '@/lib/translated-enum';
 
 export default function EmployeeProductsShow({ productId }) {
     const { employee, common } = useI18n();
@@ -21,7 +22,7 @@ export default function EmployeeProductsShow({ productId }) {
 
     if (status === 'loading') {
         return (
-            <EmployeeLayout title={common.loading ?? 'Loading...'}>
+            <EmployeeLayout title={common.loading}>
                 <Skeleton className="h-96 w-full max-w-5xl" />
             </EmployeeLayout>
         );
@@ -29,8 +30,8 @@ export default function EmployeeProductsShow({ productId }) {
 
     if (status === 'error' || !product) {
         return (
-            <EmployeeLayout title="Product Review">
-                <p className="text-sm font-medium text-[var(--color-danger-strong)]">{common.unexpected_error ?? 'An unexpected error occurred.'}</p>
+            <EmployeeLayout title={employee.review_product}>
+                <p className="text-sm font-medium text-[var(--color-danger-strong)]">{common.unexpected_error}</p>
             </EmployeeLayout>
         );
     }
@@ -59,7 +60,7 @@ export default function EmployeeProductsShow({ productId }) {
                         </div>
                         <div className="rounded-md bg-muted p-4">
                             <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{employee.current_status}</p>
-                            <p className="mt-2 text-sm font-semibold text-foreground">{product.status}</p>
+                            <p className="mt-2 text-sm font-semibold text-foreground">{translatedStatus(product.status, common)}</p>
                         </div>
                         <div className="rounded-md bg-muted p-4">
                             <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{employee.vendor_reason}</p>

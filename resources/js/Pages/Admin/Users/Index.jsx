@@ -2,18 +2,19 @@ import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { DataTable } from '@/Components/admin/DataTable';
-import { Pagination } from '@/Components/admin/Pagination';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { DataTable } from '@/Components/shared/DataTable';
+import { Pagination } from '@/Components/shared/Pagination';
 import { DeleteConfirmDialog } from '@/Components/admin/DeleteConfirmDialog';
-import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Button } from '@/Components/ui/button';
 import { useAdminList } from '@/hooks/use-admin-list';
+import { useI18n } from '@/hooks/use-i18n';
 
-const TYPE_LABELS = { 0: 'User', 1: 'Admin', 2: 'Vendor', 3: 'Syndicate', 4: 'Employee' };
 const TYPE_TONES = { 0: 'brand', 1: 'warning', 2: 'brand', 3: 'warning', 4: 'success' };
 
 export default function UsersIndex() {
+    const { admin, common } = useI18n();
     const filterType = new URLSearchParams(window.location.search).get('type') || '';
     const isEmployeeView = filterType === '4';
     const [page, setPage] = useState(1);
@@ -33,12 +34,12 @@ export default function UsersIndex() {
     };
 
     const createHref = isEmployeeView ? route('admin.users.create', { type: 4 }) : route('admin.users.create');
-    const addLabel = isEmployeeView ? 'Add Employee' : 'Add User';
+    const addLabel = isEmployeeView ? admin.add_employee : admin.add_user;
 
     const columns = [
         {
             key: 'user',
-            label: 'User',
+            label: admin.name_label,
             render: (row) => (
                 <div className="flex items-center gap-3">
                     <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
@@ -51,23 +52,23 @@ export default function UsersIndex() {
                 </div>
             ),
         },
-        { key: 'phone', label: 'Phone', render: (row) => <span className="font-mono text-sm">{row.phone_number || '-'}</span> },
-        { key: 'national_id', label: 'National ID', render: (row) => <span className="font-mono text-xs text-muted-foreground">{row.national_id || '-'}</span> },
-        { key: 'type', label: 'Type', render: (row) => <StatusBadge tone={TYPE_TONES[row.type] ?? 'brand'}>{TYPE_LABELS[row.type] ?? 'User'}</StatusBadge> },
+        { key: 'phone', label: admin.th_phone, render: (row) => <span className="font-mono text-sm">{row.phone_number || '-'}</span> },
+        { key: 'national_id', label: admin.th_national_id, render: (row) => <span className="font-mono text-xs text-muted-foreground">{row.national_id || '-'}</span> },
+        { key: 'type', label: admin.type_label, render: (row) => <StatusBadge tone={TYPE_TONES[row.type] ?? 'brand'}>{admin.user_type_labels?.[row.type] ?? admin.user_type_labels?.[0]}</StatusBadge> },
         {
             key: 'actions',
-            label: 'Actions',
+            label: admin.actions,
             align: 'end',
             render: (row) => (
                 <div className="inline-flex items-center gap-1.5">
                     <Button asChild variant="ghost" size="sm">
-                        <Link href={route('admin.users.show', row.id)}>View</Link>
+                        <Link href={route('admin.users.show', row.id)}>{admin.view}</Link>
                     </Button>
                     <Button asChild variant="outline" size="sm">
-                        <Link href={route('admin.users.edit', row.id)}>Edit</Link>
+                        <Link href={route('admin.users.edit', row.id)}>{common.edit}</Link>
                     </Button>
                     <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => setDeleteTarget(row)}>
-                        Delete
+                        {common.delete}
                     </Button>
                 </div>
             ),
@@ -75,10 +76,10 @@ export default function UsersIndex() {
     ];
 
     return (
-        <AdminLayout title={isEmployeeView ? 'Employees' : 'Users'}>
+        <AdminLayout title={isEmployeeView ? admin.employees : admin.users}>
             <PageHeader
-                title={isEmployeeView ? 'Manage employee accounts' : 'Manage all user accounts'}
-                copy={isEmployeeView ? 'Create, review, and update employee access.' : 'Manage all user accounts.'}
+                title={isEmployeeView ? admin.manage_employees_title : admin.manage_users_title}
+                copy={isEmployeeView ? admin.manage_employees_copy : admin.manage_users_copy}
                 actions={
                     <Button asChild size="sm">
                         <Link href={createHref}>
@@ -96,8 +97,8 @@ export default function UsersIndex() {
                     status={status}
                     errorMessage={errorMessage}
                     onRetry={reload}
-                    emptyTitle={isEmployeeView ? 'No employees yet' : 'No users yet'}
-                    emptyHint={isEmployeeView ? 'Create an employee account to get started.' : 'Get started by creating a new user.'}
+                    emptyTitle={isEmployeeView ? admin.no_employees_yet : admin.no_users_yet}
+                    emptyHint={isEmployeeView ? admin.create_employee_hint : admin.create_user_hint}
                 />
                 {status === 'ready' && rows.length > 0 && (
                     <div className="rounded-b-lg border border-t-0 border-border">
@@ -109,8 +110,8 @@ export default function UsersIndex() {
             <DeleteConfirmDialog
                 open={!!deleteTarget}
                 onOpenChange={(open) => !open && setDeleteTarget(null)}
-                title="Delete user"
-                description="This will permanently delete this user account and all their tokens."
+                title={admin.delete_user_title}
+                description={admin.delete_user_warning}
                 isDeleting={isDeleting}
                 onConfirm={confirmDelete}
             />

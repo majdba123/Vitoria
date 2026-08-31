@@ -23,7 +23,7 @@ class NotificationPreferenceController extends Controller
     public function index(Request $request): JsonResponse
     {
         return response()->json([
-            'message' => 'Notification preferences retrieved successfully.',
+            'message' => __('api.notification_preferences_retrieved'),
             'data' => $this->preferenceService->listForUser($request->user()),
         ]);
     }

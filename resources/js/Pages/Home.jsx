@@ -16,9 +16,9 @@ const TYPE_META = {
 };
 
 const PARTNER_LOGOS = [
-    { src: '/images/partners/syrian-veterinarians-syndicate.png', altEn: 'Syrian Veterinarians Syndicate', altAr: 'نقابة الأطباء البيطريين في الجمهورية العربية السورية' },
-    { src: '/images/partners/pharmacists-agricultural-syndicate.png', altEn: 'Agricultural syndicate partner', altAr: 'نقابة زراعية شريكة' },
-    { src: '/images/partners/cli-tool.png', altEn: 'Technology partner', altAr: 'شريك تقني' },
+    { src: '/images/partners/syrian-veterinarians-syndicate.png', altKey: 'partner_veterinarians_alt' },
+    { src: '/images/partners/pharmacists-agricultural-syndicate.png', altKey: 'partner_agriculture_alt' },
+    { src: '/images/partners/cli-tool.png', altKey: 'partner_technology_alt' },
 ];
 
 function subLabel(sub, locale) {
@@ -29,7 +29,8 @@ function subLabel(sub, locale) {
 // list is duplicated only once - the minimum needed for the seamless-scroll technique
 // (animate exactly one list-width so the loop point is invisible) - without ever showing
 // two full passes of the (short) list side by side, at any viewport width.
-function PartnerLogoMarquee({ locale, reducedMotion }) {
+function PartnerLogoMarquee({ reducedMotion }) {
+    const { home } = useI18n();
     const logos = [...PARTNER_LOGOS, ...PARTNER_LOGOS];
 
     return (
@@ -39,7 +40,7 @@ function PartnerLogoMarquee({ locale, reducedMotion }) {
                     <img
                         key={`${logo.src}-${index}`}
                         src={logo.src}
-                        alt={locale === 'ar' ? logo.altAr : logo.altEn}
+                        alt={home[logo.altKey]}
                         loading="lazy"
                         className="h-16 w-auto shrink-0 object-contain opacity-90 transition duration-300 hover:opacity-100 sm:h-20"
                     />
@@ -522,7 +523,7 @@ export default function Home({ selectedType }) {
 
                     <section className="storefront-section border-t border-border/60 bg-muted/20">
                         <div className="page-shell py-0" aria-label={home.partners_title}>
-                            <PartnerLogoMarquee locale={locale} reducedMotion={reducedMotion} />
+                            <PartnerLogoMarquee reducedMotion={reducedMotion} />
                         </div>
                     </section>
                 </>

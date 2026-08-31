@@ -21,8 +21,8 @@ export function LanguageSwitcher() {
                     type="button"
                     variant="ghost"
                     size="icon"
-                    aria-label={lang?.choose_language ?? 'Choose language'}
-                    title={lang?.choose_language ?? 'Choose language'}
+                    aria-label={lang?.choose_language}
+                    title={lang?.choose_language}
                 >
                     <Languages className="size-4" />
                 </Button>
@@ -30,13 +30,13 @@ export function LanguageSwitcher() {
             <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
                     <a href={route('locale.switch', { locale: 'ar' })} className="flex items-center justify-between gap-3">
-                        {lang?.arabic ?? 'العربية'}
+                        {lang?.arabic}
                         {current === 'ar' && <Check className="size-4 text-primary" />}
                     </a>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                     <a href={route('locale.switch', { locale: 'en' })} className="flex items-center justify-between gap-3">
-                        {lang?.english ?? 'English'}
+                        {lang?.english}
                         {current === 'en' && <Check className="size-4 text-primary" />}
                     </a>
                 </DropdownMenuItem>

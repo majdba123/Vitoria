@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import VendorLayout from '@/Layouts/VendorLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { DetailCard } from '@/Components/admin/DetailCard';
-import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { DetailCard } from '@/Components/shared/DetailCard';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { Button } from '@/Components/ui/button';
@@ -15,9 +15,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/Components/ui/select';
-import { useI18n } from '@/hooks/use-i18n';
-
-const STATUS_TONE = { pending: 'warning', confirmed: 'success', preparing: 'success', shipped: 'brand', out_for_delivery: 'brand', completed: 'brand', cancelled: 'danger' };
+import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { formatCurrency, formatDateTime, formatPercent } from '@/lib/date-time';
+import { ORDER_STATUS_TONE as STATUS_TONE } from '@/lib/order-status';
+import { translatedEnum, translatedStatus } from '@/lib/translated-enum';
 
 const TRANSITIONS = {
     pending: ['confirmed', 'cancelled'],
@@ -31,12 +32,10 @@ const TRANSITIONS = {
 const CANCELLABLE_STATUSES = ['pending', 'confirmed', 'preparing'];
 const CANCEL_REASONS = ['customer_changed_mind', 'wrong_order', 'unavailable_product', 'vendor_issue', 'delivery_issue', 'payment_issue', 'duplicate_order', 'other'];
 
-function money(v) {
-    return `${Number.parseFloat(v || 0).toLocaleString()} SYP`;
-}
-
 export default function VendorOrdersShow({ orderId }) {
-    const { vendor, common } = useI18n();
+    const { vendor, common, orders } = useI18n();
+    const locale = useLocale();
+    const money = (v) => formatCurrency(v, locale, 'SYP');
     const [status, setStatus] = useState('loading');
     const [order, setOrder] = useState(null);
     const [nextStatus, setNextStatus] = useState('');
@@ -61,35 +60,37 @@ export default function VendorOrdersShow({ orderId }) {
         setIsUpdating(true);
         setMessage(null);
         window.axios.patch(`/api/vendor/orders/${orderId}/status`, { status: nextStatus }, { silent: true }).then(() => {
-            setMessage({ tone: 'success', text: 'Order status updated.' });
+            setMessage({ tone: 'success', text: orders.transition_success });
             setIsUpdating(false);
             load();
         }).catch((error) => {
-            setMessage({ tone: 'danger', text: error.response?.data?.message ?? 'Failed to update order status.' });
+            setMessage({ tone: 'danger', text: error.response?.data?.message ?? orders.update_status_failed });
             setIsUpdating(false);
         });
     };
 
     const cancelOrder = () => {
-        const reason = window.prompt(`Cancellation reason (${CANCEL_REASONS.join(', ')}):`, CANCEL_REASONS[0]);
+        const reasonLabels = CANCEL_REASONS.map((r) => orders.cancel_reason?.[r] ?? r);
+        const reason = window.prompt(`${orders.cancellation_reason_prompt} (${reasonLabels.join(', ')}):`, reasonLabels[0]);
         if (reason === null) return;
-        const matchedReason = CANCEL_REASONS.includes(reason) ? reason : 'other';
+        const matchedIndex = reasonLabels.indexOf(reason);
+        const matchedReason = matchedIndex >= 0 ? CANCEL_REASONS[matchedIndex] : 'other';
 
         setIsCancelling(true);
         setMessage(null);
         window.axios.patch(`/api/vendor/orders/${orderId}/cancel`, { reason: matchedReason }, { silent: true }).then(() => {
-            setMessage({ tone: 'success', text: 'Order cancelled.' });
+            setMessage({ tone: 'success', text: orders.cancelled_success });
             setIsCancelling(false);
             load();
         }).catch((error) => {
-            setMessage({ tone: 'danger', text: error.response?.data?.message ?? 'Failed to cancel order.' });
+            setMessage({ tone: 'danger', text: error.response?.data?.message ?? orders.cancel_failed });
             setIsCancelling(false);
         });
     };
 
     if (status === 'loading') {
         return (
-            <VendorLayout title="Order details">
+            <VendorLayout title={orders.details}>
                 <Skeleton className="h-96 w-full" />
             </VendorLayout>
         );
@@ -97,8 +98,8 @@ export default function VendorOrdersShow({ orderId }) {
 
     if (status === 'error' || !order) {
         return (
-            <VendorLayout title="Order details">
-                <p className="text-sm font-medium text-[var(--color-danger-strong)]">Failed to load order details.</p>
+            <VendorLayout title={orders.details}>
+                <p className="text-sm font-medium text-[var(--color-danger-strong)]">{orders.load_failed}</p>
             </VendorLayout>
         );
     }
@@ -116,12 +117,12 @@ export default function VendorOrdersShow({ orderId }) {
     return (
         <VendorLayout title={order.order_number || `Order #${order.id}`}>
             <PageHeader
-                breadcrumb={[{ label: vendor.orders, href: route('vendor.orders.index') }, { label: 'Details' }]}
+                breadcrumb={[{ label: vendor.orders, href: route('vendor.orders.index') }, { label: orders.details }]}
                 title={order.order_number || `Order #${order.id}`}
-                copy={order.created_at ? new Date(order.created_at).toLocaleString() : ''}
+                copy={order.created_at ? formatDateTime(order.created_at, locale) : ''}
                 actions={
                     <Button asChild variant="outline" size="sm">
-                        <Link href={route('vendor.orders.index')}>{common.back ?? 'Back'}</Link>
+                        <Link href={route('vendor.orders.index')}>{common.back}</Link>
                     </Button>
                 }
             />
@@ -129,7 +130,7 @@ export default function VendorOrdersShow({ orderId }) {
             <Card className="border-border/80 shadow-none">
                 <CardContent className="space-y-4 p-5 sm:p-6">
                     <div className="flex flex-wrap items-center gap-2">
-                        <StatusBadge tone={STATUS_TONE[order.status] ?? 'warning'}>{order.status}</StatusBadge>
+                        <StatusBadge tone={STATUS_TONE[order.status] ?? 'warning'}>{translatedStatus(order.status, common)}</StatusBadge>
                     </div>
 
                     {message && (
@@ -143,19 +144,19 @@ export default function VendorOrdersShow({ orderId }) {
                                     <Select value={nextStatus} onValueChange={setNextStatus}>
                                         <SelectTrigger size="sm" className="w-40"><SelectValue /></SelectTrigger>
                                         <SelectContent>
-                                            {nextOptions.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                                            {nextOptions.map((s) => <SelectItem key={s} value={s}>{translatedStatus(s, common)}</SelectItem>)}
                                         </SelectContent>
                                     </Select>
                                     <Button size="sm" onClick={updateStatus} disabled={isUpdating}>
                                         {isUpdating && <Loader2 className="size-4 animate-spin" />}
-                                        Update status
+                                        {orders.update_status_btn}
                                     </Button>
                                 </>
                             )}
                             {canCancel && (
                                 <Button size="sm" variant="destructive" onClick={cancelOrder} disabled={isCancelling}>
                                     {isCancelling && <Loader2 className="size-4 animate-spin" />}
-                                    Cancel order
+                                    {orders.cancel_order_btn}
                                 </Button>
                             )}
                         </div>
@@ -164,33 +165,33 @@ export default function VendorOrdersShow({ orderId }) {
             </Card>
 
             <div className="grid gap-4 lg:grid-cols-2">
-                <DetailCard title="Customer" fields={[{ label: 'Name', value: order.user?.name || 'Unknown customer' }, { label: 'Email', value: order.user?.email }]} />
+                <DetailCard title={orders.customer} fields={[{ label: orders.name, value: order.user?.name || orders.unknown_customer }, { label: orders.email, value: order.user?.email }]} />
                 <Card className="border-border/80 shadow-none">
                     <CardHeader className="border-b border-border/80">
-                        <CardTitle className="text-base font-bold">Shipping address</CardTitle>
+                        <CardTitle className="text-base font-bold">{orders.shipping_address}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-1 p-5 text-sm text-muted-foreground">
-                        {shippingLines.length ? shippingLines.map((line, i) => <p key={i}>{line}</p>) : <p>No shipping address on file.</p>}
+                        {shippingLines.length ? shippingLines.map((line, i) => <p key={i}>{line}</p>) : <p>{orders.no_shipping_address}</p>}
                     </CardContent>
                 </Card>
             </div>
 
             <Card className="border-border/80 shadow-none">
                 <CardHeader className="border-b border-border/80">
-                    <CardTitle className="text-base font-bold">Items</CardTitle>
+                    <CardTitle className="text-base font-bold">{orders.items_details}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3 p-5">
                     {(order.items || []).map((item, index) => (
                         <div key={item.id ?? index} className="rounded-md border border-border p-4">
-                            <p className="text-sm font-bold text-foreground">{item.product_name || 'Product'}</p>
+                            <p className="text-sm font-bold text-foreground">{item.product_name || orders.product}</p>
                             <div className="mt-3 grid gap-2 text-xs sm:grid-cols-2 lg:grid-cols-3">
                                 {[
-                                    { label: 'Category', value: item.product?.category?.name || '—' },
-                                    { label: 'Original unit price', value: money(item.original_unit_price) },
-                                    { label: 'Applied unit price', value: money(item.unit_price) },
-                                    { label: 'Discount %', value: item.has_discount ? `${Number.parseFloat(item.applied_discount_percentage || 0).toLocaleString()}%` : '—' },
-                                    { label: 'Saved amount', value: item.has_discount ? money(item.discount_amount) : '0 SYP' },
-                                    { label: 'Line total', value: money(item.line_total) },
+                                    { label: common.category, value: item.product?.category?.name || '—' },
+                                    { label: orders.original_unit_price, value: money(item.original_unit_price) },
+                                    { label: orders.applied_unit_price, value: money(item.unit_price) },
+                                    { label: orders.discount_percent, value: item.has_discount ? formatPercent(item.applied_discount_percentage, locale) : '—' },
+                                    { label: orders.saved_amount, value: item.has_discount ? money(item.discount_amount) : money(0) },
+                                    { label: orders.line_total, value: money(item.line_total) },
                                 ].map((param) => (
                                     <div key={param.label} className="rounded-md border border-border bg-muted/40 px-2.5 py-2">
                                         <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{param.label}</p>
@@ -205,15 +206,15 @@ export default function VendorOrdersShow({ orderId }) {
 
             <Card className="border-border/80 shadow-none">
                 <CardHeader className="border-b border-border/80">
-                    <CardTitle className="text-base font-bold">Payment & totals</CardTitle>
+                    <CardTitle className="text-base font-bold">{orders.payment_and_totals}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-2 p-5 text-sm sm:grid-cols-2">
                     {[
-                        { label: 'Subtotal', value: money(order.subtotal_amount) },
-                        { label: 'Coupon discount', value: order.coupon_discount_amount > 0 ? `- ${money(order.coupon_discount_amount)}` : null },
-                        { label: 'Shipping', value: money(order.shipping_total) },
-                        { label: 'Tax', value: order.tax_total > 0 ? money(order.tax_total) : null },
-                        { label: 'Payment method', value: order.payment_way },
+                        { label: orders.products_subtotal, value: money(order.subtotal_amount) },
+                        { label: orders.coupon_discount, value: order.coupon_discount_amount > 0 ? `- ${money(order.coupon_discount_amount)}` : null },
+                        { label: orders.shipping, value: money(order.shipping_total) },
+                        { label: orders.tax, value: order.tax_total > 0 ? money(order.tax_total) : null },
+                        { label: orders.payment_method, value: translatedEnum(order.payment_way || 'cash', common.not_available, orders) },
                     ].filter((row) => row.value !== null && row.value !== undefined).map((row) => (
                         <div key={row.label} className="flex items-center justify-between rounded-md bg-muted px-3 py-2">
                             <span className="text-muted-foreground">{row.label}</span>
@@ -221,7 +222,7 @@ export default function VendorOrdersShow({ orderId }) {
                         </div>
                     ))}
                     <div className="flex items-center justify-between rounded-md border border-primary/30 bg-accent px-3 py-2 font-bold text-accent-foreground sm:col-span-2">
-                        <span>Grand total</span>
+                        <span>{orders.grand_total}</span>
                         <span>{money(order.grand_total)}</span>
                     </div>
                 </CardContent>

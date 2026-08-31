@@ -27,14 +27,14 @@ class ShippingConfigController extends Controller
             ->orderByDesc('is_default')
             ->get();
 
-        return response()->json(['message' => 'Shipping zones retrieved successfully.', 'data' => $zones]);
+        return response()->json(['message' => __('api.shipping_zones_retrieved'), 'data' => $zones]);
     }
 
     public function methods(): JsonResponse
     {
         $methods = ShippingMethod::query()->orderBy('sort_order')->get();
 
-        return response()->json(['message' => 'Shipping methods retrieved successfully.', 'data' => $methods]);
+        return response()->json(['message' => __('api.shipping_methods_retrieved'), 'data' => $methods]);
     }
 
     public function updateRate(Request $request, int $rateId): JsonResponse
@@ -52,6 +52,6 @@ class ShippingConfigController extends Controller
             'is_active' => $validated['is_active'] ?? $rate->is_active,
         ]);
 
-        return response()->json(['message' => 'Shipping rate updated.', 'data' => $rate->refresh()]);
+        return response()->json(['message' => __('api.shipping_rate_updated'), 'data' => $rate->refresh()]);
     }
 }

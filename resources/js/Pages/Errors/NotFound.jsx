@@ -1,35 +1,12 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, Home, Search } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
 import { ThemeToggle } from '@/Components/workspace/ThemeToggle';
-
-const COPY = {
-    en: {
-        title: 'Page not found',
-        eyebrow: 'Error 404',
-        heading: 'This page is off the map.',
-        description: 'The address may be incorrect, or the page may have moved. You can return home or continue browsing the marketplace.',
-        home: 'Return home',
-        browse: 'Browse products',
-        back: 'Go back',
-        theme: 'Toggle theme',
-    },
-    ar: {
-        title: 'الصفحة غير موجودة',
-        eyebrow: 'خطأ 404',
-        heading: 'هذه الصفحة خارج الخريطة.',
-        description: 'قد يكون العنوان غير صحيح أو ربما نُقلت الصفحة. يمكنك العودة إلى الرئيسية أو متابعة تصفح السوق.',
-        home: 'العودة إلى الرئيسية',
-        browse: 'تصفح المنتجات',
-        back: 'العودة للخلف',
-        theme: 'تبديل المظهر',
-    },
-};
+import { useI18n } from '@/hooks/use-i18n';
 
 export default function NotFound() {
-    const { props } = usePage();
-    const copy = COPY[props.locale === 'ar' ? 'ar' : 'en'];
+    const { common } = useI18n();
 
     const goBack = () => {
         if (window.history.length > 1) {
@@ -42,7 +19,7 @@ export default function NotFound() {
 
     return (
         <>
-            <Head title={copy.title}>
+            <Head title={common.not_found_title}>
                 <meta name="robots" content="noindex, nofollow" />
             </Head>
             <main className="relative flex min-h-svh flex-col overflow-hidden bg-background">
@@ -58,26 +35,26 @@ export default function NotFound() {
                     </Link>
                     <div className="flex items-center gap-1">
                         <LanguageSwitcher />
-                        <ThemeToggle label={copy.theme} />
+                        <ThemeToggle label={common.toggle_theme} />
                     </div>
                 </header>
 
                 <section className="relative z-10 flex flex-1 items-center px-5 py-12 sm:px-8 lg:px-12">
                     <div className="mx-auto grid w-full max-w-6xl gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.72fr)] lg:items-center">
                         <div className="max-w-2xl">
-                            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-primary rtl:normal-case rtl:tracking-normal">{copy.eyebrow}</p>
-                            <h1 className="mt-5 max-w-xl font-display text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-6xl">{copy.heading}</h1>
-                            <p className="mt-5 max-w-[60ch] text-base leading-7 text-muted-foreground sm:text-lg">{copy.description}</p>
+                            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-primary rtl:normal-case rtl:tracking-normal">{common.not_found_eyebrow}</p>
+                            <h1 className="mt-5 max-w-xl font-display text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-6xl">{common.not_found_heading}</h1>
+                            <p className="mt-5 max-w-[60ch] text-base leading-7 text-muted-foreground sm:text-lg">{common.not_found_description}</p>
 
                             <div className="mt-8 flex flex-wrap gap-3">
                                 <Button asChild size="lg" className="min-h-11">
-                                    <Link href={route('home')}><Home className="size-4" />{copy.home}</Link>
+                                    <Link href={route('home')}><Home className="size-4" />{common.return_home}</Link>
                                 </Button>
                                 <Button asChild variant="outline" size="lg" className="min-h-11">
-                                    <Link href={route('products.index')}><Search className="size-4" />{copy.browse}</Link>
+                                    <Link href={route('products.index')}><Search className="size-4" />{common.browse_products}</Link>
                                 </Button>
                                 <Button type="button" variant="ghost" size="lg" className="min-h-11" onClick={goBack}>
-                                    <ArrowLeft className="size-4 rtl:rotate-180" />{copy.back}
+                                    <ArrowLeft className="size-4 rtl:rotate-180" />{common.go_back}
                                 </Button>
                             </div>
                         </div>

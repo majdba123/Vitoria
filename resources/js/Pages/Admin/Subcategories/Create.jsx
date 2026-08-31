@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { router } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
+import { PageHeader } from '@/Components/shared/PageHeader';
 import { TextField, SelectField } from '@/Components/admin/form/FormField';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
@@ -44,16 +44,16 @@ export default function SubcategoriesCreate() {
                             required
                             value={form.category_id}
                             onValueChange={(value) => setForm({ ...form, category_id: value })}
-                            placeholder={common.select ?? 'Select...'}
-                            options={categories.map((c) => ({ value: c.id, label: `${c.name} (${c.type})` }))}
+                            placeholder={common.select}
+                            options={categories.map((c) => ({ value: c.id, label: `${c.name} (${c.type === 'veterinary' ? admin.type_veterinary : admin.type_agriculture})` }))}
                             error={errors.category_id}
                         />
-                        <TextField id="name_ar" label="Arabic name" required value={form.name_ar} onChange={(e) => setForm({ ...form, name_ar: e.target.value })} error={errors.name_ar} dir="rtl" />
-                        <TextField id="name_en" label="English name" required value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} error={errors.name_en} />
+                        <TextField id="name_ar" label={admin.arabic_name_label} required value={form.name_ar} onChange={(e) => setForm({ ...form, name_ar: e.target.value })} error={errors.name_ar} dir="rtl" />
+                        <TextField id="name_en" label={admin.english_name_label} required value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} error={errors.name_en} />
 
                         <div className="flex gap-2 pt-2">
                             <Button type="button" variant="outline" className="flex-1" onClick={() => router.visit(route('admin.subcategories.index'))}>
-                                {common.cancel ?? 'Cancel'}
+                                {common.cancel}
                             </Button>
                             <Button type="submit" className="flex-1" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="size-4 animate-spin" />}

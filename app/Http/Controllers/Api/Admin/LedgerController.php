@@ -25,7 +25,7 @@ class LedgerController extends Controller
             ->paginate(20);
 
         return response()->json([
-            'message' => 'Ledger entries retrieved successfully.',
+            'message' => __('api.ledger_entries_retrieved'),
             'data' => $entries->items(),
             'meta' => [
                 'current_page' => $entries->currentPage(),
@@ -39,7 +39,7 @@ class LedgerController extends Controller
     public function summary(Vendor $vendor): JsonResponse
     {
         return response()->json([
-            'message' => 'Ledger summary retrieved successfully.',
+            'message' => __('api.ledger_summary_retrieved'),
             'data' => $this->vendorLedgerService->summary($vendor),
         ]);
     }

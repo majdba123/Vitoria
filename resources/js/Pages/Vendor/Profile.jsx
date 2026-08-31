@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import VendorLayout from '@/Layouts/VendorLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
+import { PageHeader } from '@/Components/shared/PageHeader';
 import { TextField, TextareaField } from '@/Components/admin/form/FormField';
 import { ImageUploadCircle } from '@/Components/admin/ImageUploadCircle';
-import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
 import { Button } from '@/Components/ui/button';
@@ -14,11 +14,11 @@ import { useAdminForm } from '@/hooks/use-admin-form';
 import { useI18n } from '@/hooks/use-i18n';
 
 export default function VendorProfile() {
-    const { common } = useI18n();
+    const { common, vendor } = useI18n();
     const { submit, errors, generalError, isSubmitting, setGeneralError } = useAdminForm();
     const [status, setStatus] = useState('loading');
     const [form, setForm] = useState({ name: '', phone_number: '', national_id: '', email: '', password: '', current_password: '', store_name: '', address: '', description: '', latitude: '', longitude: '' });
-    const [businessTypeLabel, setBusinessTypeLabel] = useState('Both');
+    const [businessTypeLabel, setBusinessTypeLabel] = useState(vendor.both_business_type);
     const [categories, setCategories] = useState([]);
     const [isActive, setIsActive] = useState(true);
     const [avatarFile, setAvatarFile] = useState(null);
@@ -29,7 +29,7 @@ export default function VendorProfile() {
 
     useEffect(() => {
         window.axios.get('/api/vendor/profile', { silent: true }).then((res) => {
-            const { user, vendor } = res.data.data;
+            const { user, vendor: vendorData } = res.data.data;
             setForm({
                 name: user.name ?? '',
                 phone_number: user.phone_number ?? '',
@@ -37,17 +37,17 @@ export default function VendorProfile() {
                 email: user.email ?? '',
                 password: '',
                 current_password: '',
-                store_name: vendor?.store_name ?? '',
-                address: vendor?.address ?? '',
-                description: vendor?.description ?? '',
-                latitude: vendor?.latitude ?? '',
-                longitude: vendor?.longitude ?? '',
+                store_name: vendorData?.store_name ?? '',
+                address: vendorData?.address ?? '',
+                description: vendorData?.description ?? '',
+                latitude: vendorData?.latitude ?? '',
+                longitude: vendorData?.longitude ?? '',
             });
-            setBusinessTypeLabel(vendor?.business_type_label || 'Both');
-            setCategories(vendor?.categories ?? []);
-            setIsActive(!!vendor?.is_active);
+            setBusinessTypeLabel(vendorData?.business_type_label || vendor.both_business_type);
+            setCategories(vendorData?.categories ?? []);
+            setIsActive(!!vendorData?.is_active);
             setAvatarPreview(user.avatar_url ?? null);
-            setLogoPreview(vendor?.logo_url ?? null);
+            setLogoPreview(vendorData?.logo_url ?? null);
             setStatus('ready');
         }).catch(() => setStatus('error'));
     }, []);
@@ -58,7 +58,7 @@ export default function VendorProfile() {
         event.preventDefault();
         setSuccessMessage(null);
         if (form.password && !form.current_password) {
-            setGeneralError('Enter your current password to set a new one.');
+            setGeneralError(vendor.current_password_required);
             return;
         }
 
@@ -90,7 +90,7 @@ export default function VendorProfile() {
             setAvatarFile(null);
             setLogoFile(null);
             setForm((f) => ({ ...f, password: '', current_password: '' }));
-            setSuccessMessage('Profile updated successfully!');
+            setSuccessMessage(vendor.profile_updated_success);
         } catch {
             // handled by hook
         }
@@ -98,7 +98,7 @@ export default function VendorProfile() {
 
     if (status === 'loading') {
         return (
-            <VendorLayout title="My Profile">
+            <VendorLayout title={vendor.my_profile}>
                 <Skeleton className="h-96 w-full max-w-3xl" />
             </VendorLayout>
         );
@@ -106,18 +106,18 @@ export default function VendorProfile() {
 
     if (status === 'error') {
         return (
-            <VendorLayout title="My Profile">
-                <p className="text-sm font-medium text-[var(--color-danger-strong)]">Failed to load profile.</p>
+            <VendorLayout title={vendor.my_profile}>
+                <p className="text-sm font-medium text-[var(--color-danger-strong)]">{vendor.failed_load_profile}</p>
             </VendorLayout>
         );
     }
 
     return (
-        <VendorLayout title="My Profile">
+        <VendorLayout title={vendor.my_profile}>
             <PageHeader
-                title={form.name || 'My Profile'}
+                title={form.name || vendor.my_profile}
                 copy={form.store_name}
-                actions={<StatusBadge tone={isActive ? 'success' : 'danger'}>{isActive ? 'Active Store' : 'Inactive Store'}</StatusBadge>}
+                actions={<StatusBadge tone={isActive ? 'success' : 'danger'}>{isActive ? vendor.active_store : vendor.inactive_store}</StatusBadge>}
             />
 
             {generalError && <p className="max-w-3xl rounded-md border border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-danger-strong)]">{generalError}</p>}
@@ -128,7 +128,7 @@ export default function VendorProfile() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="flex flex-wrap items-center justify-center gap-10 py-2">
                             <ImageUploadCircle
-                                label="Profile photo"
+                                label={vendor.profile_photo_label}
                                 previewUrl={avatarPreview}
                                 fallback={(form.name || 'V').charAt(0).toUpperCase()}
                                 onChange={(file) => {
@@ -138,9 +138,9 @@ export default function VendorProfile() {
                                 error={errors.avatar}
                             />
                             <ImageUploadCircle
-                                label="Store logo"
+                                label={vendor.store_logo_label}
                                 previewUrl={logoPreview}
-                                fallback={<span className="text-xs text-muted-foreground">No logo</span>}
+                                fallback={<span className="text-xs text-muted-foreground">{vendor.no_logo}</span>}
                                 onChange={(file) => {
                                     setLogoFile(file);
                                     if (file) setLogoPreview(URL.createObjectURL(file));
@@ -152,42 +152,42 @@ export default function VendorProfile() {
                         <Separator />
 
                         <fieldset className="space-y-4">
-                            <legend className="text-sm font-semibold text-foreground">Personal information</legend>
-                            <p className="mb-2 text-xs text-muted-foreground">Your account details and login credentials.</p>
+                            <legend className="text-sm font-semibold text-foreground">{vendor.personal_information_title}</legend>
+                            <p className="mb-2 text-xs text-muted-foreground">{vendor.personal_information_copy}</p>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <TextField id="name" label="Full name" required value={form.name} onChange={(e) => set('name')(e.target.value)} error={errors.name} />
-                                <TextField id="phone_number" label="Phone number" type="tel" required value={form.phone_number} onChange={(e) => set('phone_number')(e.target.value)} error={errors.phone_number} />
-                                <TextField id="national_id" label="National ID" required value={form.national_id} onChange={(e) => set('national_id')(e.target.value)} error={errors.national_id} />
-                                <TextField id="email" label="Email" type="email" placeholder="(optional)" value={form.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
-                                <TextField id="password" label="New password" type="password" placeholder="Leave blank to keep current" value={form.password} onChange={(e) => set('password')(e.target.value)} error={errors.password} />
-                                <TextField id="current_password" label="Current password" type="password" placeholder="Required to set a new password" value={form.current_password} onChange={(e) => set('current_password')(e.target.value)} error={errors.current_password} />
+                                <TextField id="name" label={vendor.full_name_label} required value={form.name} onChange={(e) => set('name')(e.target.value)} error={errors.name} />
+                                <TextField id="phone_number" label={vendor.phone_number_label} type="tel" required value={form.phone_number} onChange={(e) => set('phone_number')(e.target.value)} error={errors.phone_number} />
+                                <TextField id="national_id" label={vendor.national_id_label} required value={form.national_id} onChange={(e) => set('national_id')(e.target.value)} error={errors.national_id} />
+                                <TextField id="email" label={vendor.email_label} type="email" placeholder={vendor.optional_placeholder} value={form.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
+                                <TextField id="password" label={vendor.new_password_label} type="password" placeholder={vendor.password_leave_blank_hint} value={form.password} onChange={(e) => set('password')(e.target.value)} error={errors.password} />
+                                <TextField id="current_password" label={vendor.current_password_label} type="password" placeholder={vendor.current_password_placeholder} value={form.current_password} onChange={(e) => set('current_password')(e.target.value)} error={errors.current_password} />
                             </div>
                         </fieldset>
 
                         <Separator />
 
                         <fieldset className="space-y-4">
-                            <legend className="text-sm font-semibold text-foreground">Store information</legend>
-                            <p className="mb-2 text-xs text-muted-foreground">Your store profile visible to customers.</p>
+                            <legend className="text-sm font-semibold text-foreground">{vendor.store_profile_title}</legend>
+                            <p className="mb-2 text-xs text-muted-foreground">{vendor.store_profile_copy}</p>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <TextField id="store_name" label="Store name" required value={form.store_name} onChange={(e) => set('store_name')(e.target.value)} error={errors.store_name} />
-                                <TextField id="address" label="Address" placeholder="(optional)" value={form.address} onChange={(e) => set('address')(e.target.value)} error={errors.address} />
+                                <TextField id="store_name" label={vendor.store_name_label} required value={form.store_name} onChange={(e) => set('store_name')(e.target.value)} error={errors.store_name} />
+                                <TextField id="address" label={vendor.address_label} placeholder={vendor.optional_placeholder} value={form.address} onChange={(e) => set('address')(e.target.value)} error={errors.address} />
                             </div>
                             <div className="rounded-md border border-border bg-muted/40 px-4 py-3">
-                                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Business type</p>
+                                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{vendor.business_type_label}</p>
                                 <p className="mt-1 text-sm font-semibold text-foreground">{businessTypeLabel}</p>
                             </div>
-                            <TextareaField id="description" label="Description" rows={3} placeholder="Tell customers about your store..." value={form.description} onChange={(e) => set('description')(e.target.value)} error={errors.description} />
+                            <TextareaField id="description" label={vendor.description_label} rows={3} placeholder={vendor.store_description_placeholder} value={form.description} onChange={(e) => set('description')(e.target.value)} error={errors.description} />
                         </fieldset>
 
                         <Separator />
 
                         <fieldset className="space-y-3">
-                            <legend className="text-sm font-semibold text-foreground">Allowed categories</legend>
-                            <p className="mb-2 text-xs text-muted-foreground">Categories assigned by admin. Contact admin to change.</p>
+                            <legend className="text-sm font-semibold text-foreground">{vendor.allowed_categories_title}</legend>
+                            <p className="mb-2 text-xs text-muted-foreground">{vendor.allowed_categories_copy}</p>
                             <div className="flex flex-wrap gap-2">
                                 {categories.length === 0 ? (
-                                    <span className="text-sm italic text-muted-foreground">No categories assigned</span>
+                                    <span className="text-sm italic text-muted-foreground">{vendor.no_categories_assigned}</span>
                                 ) : (
                                     categories.map((c) => (
                                         <StatusBadge key={c.id} tone={c.type === 'veterinary' ? 'brand' : 'success'}>
@@ -200,11 +200,11 @@ export default function VendorProfile() {
 
                         <div className="flex justify-end gap-2 border-t border-border pt-5">
                             <Button type="button" variant="outline" asChild>
-                                <Link href={route('vendor.dashboard')}>{common.cancel ?? 'Cancel'}</Link>
+                                <Link href={route('vendor.dashboard')}>{common.cancel}</Link>
                             </Button>
                             <Button type="submit" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-                                {common.save_changes ?? 'Save changes'}
+                                {common.save_changes}
                             </Button>
                         </div>
                     </form>

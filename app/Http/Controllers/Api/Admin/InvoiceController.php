@@ -22,7 +22,7 @@ class InvoiceController extends Controller
         $invoices = $query->paginate(12);
 
         return response()->json([
-            'message' => 'Invoices retrieved successfully.',
+            'message' => __('api.invoices_retrieved'),
             'data' => $invoices->items(),
             'meta' => [
                 'current_page' => $invoices->currentPage(),
@@ -37,6 +37,6 @@ class InvoiceController extends Controller
     {
         $invoice = Invoice::query()->with(['order:id,order_number', 'vendor:id,store_name'])->findOrFail($invoiceId);
 
-        return response()->json(['message' => 'Invoice retrieved successfully.', 'data' => $invoice]);
+        return response()->json(['message' => __('api.invoice_retrieved'), 'data' => $invoice]);
     }
 }

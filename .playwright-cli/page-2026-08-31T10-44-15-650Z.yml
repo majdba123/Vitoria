@@ -1,0 +1,121 @@
+- generic [ref=f8e3]:
+  - navigation "Vendor navigation" [ref=f8e5]:
+    - generic [ref=f8e6]:
+      - list [ref=f8e8]:
+        - listitem [ref=f8e9]:
+          - link "Vetora بائع" [ref=f8e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/vendor/dashboard
+            - generic [ref=f8e16]:
+              - generic [ref=f8e17]: Vetora
+              - generic [ref=f8e18]: بائع
+      - generic [ref=f8e19]:
+        - generic [ref=f8e20]:
+          - generic [ref=f8e21]: نظرة عامة
+          - list [ref=f8e23]:
+            - listitem [ref=f8e24]:
+              - link "لوحة التحكم" [ref=f8e25] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/dashboard
+        - generic [ref=f8e32]:
+          - generic [ref=f8e33]: متجري
+          - list [ref=f8e35]:
+            - listitem [ref=f8e36]:
+              - link "المنتجات" [ref=f8e37] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/products
+            - listitem [ref=f8e43]:
+              - link "الطلبات" [ref=f8e44] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/orders
+            - listitem [ref=f8e49]:
+              - link "المبيعات" [ref=f8e50] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/sales
+            - listitem [ref=f8e55]:
+              - link "الإشعارات" [ref=f8e56] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/notifications
+        - generic [ref=f8e61]:
+          - generic [ref=f8e62]: الحساب
+          - list [ref=f8e64]:
+            - listitem [ref=f8e65]:
+              - link "الملف الشخصي" [ref=f8e66] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/vendor/profile
+        - generic [ref=f8e71]: التصنيفات
+      - list [ref=f8e76]:
+        - listitem [ref=f8e77]:
+          - button "ت تاجر المستلزمات الزراعية بائع" [ref=f8e78]:
+            - generic [ref=f8e79]: ت
+            - generic [ref=f8e81]:
+              - generic [ref=f8e82]: تاجر المستلزمات الزراعية
+              - generic [ref=f8e83]: بائع
+  - main [ref=f8e87]:
+    - generic [ref=f8e89]:
+      - button "Toggle Sidebar" [ref=f8e90]
+      - generic [ref=f8e92]:
+        - paragraph [ref=f8e93]: بائع
+        - heading "المبيعات" [level=1] [ref=f8e94]
+      - generic [ref=f8e95]:
+        - link "الرئيسية" [ref=f8e96] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/
+        - button "اختر اللغة" [ref=f8e97]
+        - button "الإشعارات" [ref=f8e98]
+        - button "تبديل المظهر" [ref=f8e99]
+        - button "تسجيل الخروج" [ref=f8e100]
+    - generic [ref=f8e101]:
+      - generic [ref=f8e103]:
+        - heading "المبيعات والتسويات" [level=1] [ref=f8e104]
+        - paragraph [ref=f8e105]: راجع المبيعات المكتملة وعمولة المنصة وصافي المستحقات والدفعات والرصيد المستحق.
+      - generic [ref=f8e106]:
+        - paragraph [ref=f8e110]: إجمالي المبيعات
+        - paragraph [ref=f8e118]: مكتمل
+        - paragraph [ref=f8e127]: صافي مستحقات التاجر
+        - paragraph [ref=f8e136]: إجمالي العمولة
+        - paragraph [ref=f8e145]: المدفوع لك
+        - paragraph [ref=f8e157]: المتبقي
+      - generic [ref=f8e163]:
+        - generic [ref=f8e164]:
+          - generic [ref=f8e165]: إحصائيات حالة الطلبات
+          - generic [ref=f8e167]:
+            - generic [ref=f8e169]:
+              - generic [ref=f8e170]: قيد الانتظار
+              - generic [ref=f8e171]: 0 (0%)
+            - generic [ref=f8e174]:
+              - generic [ref=f8e175]: مكتمل
+              - generic [ref=f8e176]: 0 (0%)
+            - generic [ref=f8e179]:
+              - generic [ref=f8e180]: ملغى
+              - generic [ref=f8e181]: 0 (0%)
+        - generic [ref=f8e183]:
+          - generic [ref=f8e184]: ملخص الدفع
+          - generic [ref=f8e186]:
+            - paragraph [ref=f8e187]: تُدار هذه القيم من قبل تسوية الإدارة.
+            - generic [ref=f8e188]:
+              - paragraph [ref=f8e189]: المبلغ المدفوع
+              - paragraph [ref=f8e190]: ٠ ل.س
+            - generic [ref=f8e191]:
+              - paragraph [ref=f8e192]: المبلغ المتبقي
+              - paragraph [ref=f8e193]: ٠ ل.س
+      - generic [ref=f8e194]:
+        - generic [ref=f8e195]: سجل الحركات المالية
+        - table [ref=f8e199]:
+          - rowgroup [ref=f8e200]:
+            - row [ref=f8e201]:
+              - columnheader "التاريخ" [ref=f8e202]
+              - columnheader "النوع" [ref=f8e203]
+              - columnheader "القيد" [ref=f8e204]
+              - columnheader "المبلغ" [ref=f8e205]
+              - columnheader "البيان" [ref=f8e206]
+          - rowgroup [ref=f8e207]:
+            - row [ref=f8e208]:
+              - cell "لا توجد حركات مالية حتى الآن." [ref=f8e209]
+      - generic [ref=f8e210]:
+        - generic [ref=f8e211]: العمولة حسب التصنيف
+        - table [ref=f8e215]:
+          - rowgroup [ref=f8e216]:
+            - row [ref=f8e217]:
+              - columnheader "التصنيف" [ref=f8e218]
+              - columnheader "نسبة العمولة %" [ref=f8e219]
+              - columnheader "إجمالي المبيعات" [ref=f8e220]
+              - columnheader "مبلغ العمولة" [ref=f8e221]
+          - rowgroup [ref=f8e222]:
+            - row [ref=f8e223]:
+              - cell "لا توجد طلبات مكتملة." [ref=f8e224]
+      - generic [ref=f8e225]:
+        - generic [ref=f8e226]: الطلبات خلال آخر 7 أيام
+        - paragraph [ref=f8e229]: لا توجد بيانات اتجاه متاحة.

@@ -8,6 +8,7 @@
  */
 
 import '../bootstrap';
+import { formatNumber } from '@/lib/date-time';
 
 const el = (id) => document.getElementById(id);
 const strings = () => window.__checkoutStrings || {};
@@ -25,8 +26,7 @@ function escapeHtml(value) {
 
 function money(amount, currency) {
     const locale = document.documentElement.lang || 'en';
-    const value = Number(amount) || 0;
-    return `${value.toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ${currency || ''}`.trim();
+    return `${formatNumber(amount, locale, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ${currency || ''}`.trim();
 }
 
 function showError(message) {

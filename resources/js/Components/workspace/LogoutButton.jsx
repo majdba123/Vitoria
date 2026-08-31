@@ -11,7 +11,7 @@ import { useI18n } from '@/hooks/use-i18n';
  */
 export function LogoutButton() {
     const { nav } = useI18n();
-    const label = nav.sign_out ?? 'Sign out';
+    const label = nav.sign_out;
 
     const handleLogout = async () => {
         // The operator workspaces (admin/vendor/syndicate/employee) render

@@ -24,7 +24,7 @@ class ShippingController extends Controller
         $quotes = $this->shippingService->availableMethods($governorate, $subtotal);
 
         return response()->json([
-            'message' => 'Shipping methods retrieved successfully.',
+            'message' => __('api.shipping_methods_retrieved'),
             'data' => collect($quotes)->map(fn (array $quote) => [
                 'code' => $quote['method']->code,
                 'name' => __("shipping.method.{$quote['method']->code}"),

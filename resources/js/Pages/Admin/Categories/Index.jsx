@@ -1,8 +1,8 @@
 import { Link } from '@inertiajs/react';
 import { Plus, Layers } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { DataTable } from '@/Components/admin/DataTable';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { DataTable } from '@/Components/shared/DataTable';
 import { CsvImportButton } from '@/Components/admin/CsvImportButton';
 import { Button } from '@/Components/ui/button';
 import { useAdminList } from '@/hooks/use-admin-list';
@@ -25,7 +25,7 @@ export default function CategoriesIndex() {
                 </span>
             ),
         },
-        { key: 'type', label: admin.type_label, render: (row) => row.type ?? '—' },
+        { key: 'type', label: admin.type_label, render: (row) => ({ agriculture: admin.type_agriculture, veterinary: admin.type_veterinary, both: admin.type_both })[row.type] ?? common.not_available },
         { key: 'commission', label: admin.category_commission, render: (row) => `${row.commission || 0}%` },
         { key: 'products_count', label: admin.products, align: 'end', render: (row) => row.products_count ?? 0 },
         {
@@ -35,10 +35,10 @@ export default function CategoriesIndex() {
             render: (row) => (
                 <div className="inline-flex items-center gap-1.5">
                     <Button asChild variant="ghost" size="sm">
-                        <Link href={route('admin.categories.show', row.id)}>{common.view_details ?? 'View'}</Link>
+                        <Link href={route('admin.categories.show', row.id)}>{common.view_details}</Link>
                     </Button>
                     <Button asChild variant="outline" size="sm">
-                        <Link href={route('admin.categories.edit', row.id)}>{common.edit ?? 'Edit'}</Link>
+                        <Link href={route('admin.categories.edit', row.id)}>{common.edit}</Link>
                     </Button>
                 </div>
             ),

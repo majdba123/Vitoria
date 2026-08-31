@@ -2,8 +2,9 @@ import { Link } from '@inertiajs/react';
 import { Star, Heart, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/hooks/use-cart';
 import { useFavourites } from '@/hooks/use-favourites';
-import { useAuthUser, useI18n } from '@/hooks/use-i18n';
+import { useAuthUser, useI18n, useLocale } from '@/hooks/use-i18n';
 import { canPurchase } from '@/lib/purchase';
+import { formatNumber, formatPercent } from '@/lib/date-time';
 
 function StarRating({ rating }) {
     const resolved = Math.min(5, Math.max(0, Math.round(parseFloat(rating) || 0)));
@@ -17,7 +18,8 @@ function StarRating({ rating }) {
 }
 
 export function ProductCard({ product, href, context = '', rank = null }) {
-    const { products, nav, purchase } = useI18n();
+    const { products, nav, purchase, common } = useI18n();
+    const locale = useLocale();
     const { addToCart } = useCart();
     const { ids: favIds, toggle: toggleFav } = useFavourites();
     const user = useAuthUser();
@@ -28,7 +30,7 @@ export function ProductCard({ product, href, context = '', rank = null }) {
     const isFav = favIds.has(product.id);
     const reviewCount = parseInt(product.review_count, 10) || 0;
     const unitPrice = product.has_active_discount ? product.discounted_price : product.price;
-    const displayPrice = parseFloat(unitPrice || 0).toLocaleString();
+    const displayPrice = formatNumber(unitPrice, locale);
     const linkHref = href ?? `/products/${product.id}`;
     const reviewText = reviewCount ? (nav.reviews_count ?? '').replace(':count', String(reviewCount)) : '';
 
@@ -50,12 +52,12 @@ export function ProductCard({ product, href, context = '', rank = null }) {
                 {rank !== null ? (
                     <span className="product-card-rank">#{rank}</span>
                 ) : product.has_active_discount ? (
-                    <span className="product-card-badge">-{parseFloat(product.discount_percentage || 0).toFixed(0)}%</span>
+                    <span className="product-card-badge">-{formatPercent(product.discount_percentage, locale, { maximumFractionDigits: 0 })}</span>
                 ) : null}
                 <button
                     type="button"
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFav(product.id); }}
-                    aria-label={product.name}
+                    aria-label={`${isFav ? common.remove_from_favourites : common.add_to_favourites}: ${product.name}`}
                     aria-pressed={isFav}
                     className={`product-card-fav ${isFav ? 'is-active' : ''}`}
                 >
@@ -74,9 +76,9 @@ export function ProductCard({ product, href, context = '', rank = null }) {
                 )}
                 <div className="product-card-footer">
                     <div className="product-card-price-group" dir="auto">
-                        <span className="product-card-price">{displayPrice} <span className="product-card-price-currency">SYP</span></span>
+                        <span className="product-card-price"><bdi>{displayPrice}</bdi> <span className="product-card-price-currency">{common.currency_syp}</span></span>
                         {product.has_active_discount && (
-                            <span className="product-card-price-was">{parseFloat(product.price || 0).toLocaleString()} SYP</span>
+                            <span className="product-card-price-was"><bdi>{formatNumber(product.price, locale)}</bdi> {common.currency_syp}</span>
                         )}
                         <span className={`product-card-stock ${inStock ? '' : 'is-out'}`}>{inStock ? products.in_stock ?? '' : nav.sold_out}</span>
                     </div>

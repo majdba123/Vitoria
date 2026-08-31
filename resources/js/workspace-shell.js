@@ -185,7 +185,7 @@
 
         function load(page) {
             page = typeof page === 'number' && page >= 1 ? page : 1;
-            listEl.innerHTML = '<p class="px-4 py-10 text-center text-[13px] text-gray-400 dark:text-gray-500">' + esc(strings.loading || 'Loading...') + '</p>';
+            listEl.innerHTML = '<p class="px-4 py-10 text-center text-[13px] text-gray-400 dark:text-gray-500">' + esc(strings.loading) + '</p>';
             emptyEl?.classList.add('hidden');
             paginationEl?.classList.add('hidden');
             window.Auth?.applyToken?.();
@@ -234,12 +234,12 @@
                         '<div class="min-w-0 flex-1 px-4 py-3.5 ' + (isUnread ? 'ps-3.5' : 'ps-4') + '">' +
                         '<p class="text-[14px] leading-relaxed text-gray-800 dark:text-gray-100">' + body + '</p>' +
                         '<p class="mt-1.5 text-[11px] text-gray-400 dark:text-gray-500">' + time + (sender ? ' – ' + sender : '') + '</p>' +
-                        (isUnread ? '<button type="button" class="ws-notif-mark-one mt-2 text-[11px] font-medium text-brand-600 hover:underline dark:text-brand-400" data-id="' + id + '">' + esc(strings.markOneRead || 'Mark as read') + '</button>' : '') +
+                        (isUnread ? '<button type="button" class="ws-notif-mark-one mt-2 text-[11px] font-medium text-brand-600 hover:underline dark:text-brand-400" data-id="' + id + '">' + esc(strings.markOneRead) + '</button>' : '') +
                         '</div></div>';
                 }).join('');
 
                 if (lastPage > 1 && paginationEl && pageInfoEl && prevBtn && nextBtn) {
-                    pageInfoEl.textContent = esc(strings.page || 'Page') + ' ' + currentPage + ' ' + esc(strings.of || 'of') + ' ' + lastPage + (total ? ' (' + total + ')' : '');
+                    pageInfoEl.textContent = esc(strings.page) + ' ' + currentPage + ' ' + esc(strings.of) + ' ' + lastPage + (total ? ' (' + total + ')' : '');
                     setPaginationDisabled(false, lastPage);
                     prevBtn.onclick = function () { if (currentPage > 1) load(currentPage - 1); };
                     nextBtn.onclick = function () { if (currentPage < lastPage) load(currentPage + 1); };
@@ -273,8 +273,8 @@
                 });
             }).catch(function (error) {
                 const message = (error.response && error.response.status === 401)
-                    ? (strings.signInAgain || 'Please sign in again.')
-                    : (error.response?.data?.message || strings.failed || 'Failed to load.');
+                    ? strings.signInAgain
+                    : (error.response?.data?.message || strings.failed);
                 listEl.innerHTML = '<p class="px-4 py-6 text-center text-sm text-red-500">' + esc(message) + '</p>';
             }).finally(function () {
                 setPaginationDisabled(false);

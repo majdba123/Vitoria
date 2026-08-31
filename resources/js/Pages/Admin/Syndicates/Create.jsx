@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { router } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
+import { PageHeader } from '@/Components/shared/PageHeader';
 import { TextField, SelectField, FileField } from '@/Components/admin/form/FormField';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
@@ -38,16 +38,16 @@ export default function SyndicatesCreate() {
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <TextField id="name" label={admin.name_label} required value={form.name} onChange={(e) => set('name')(e.target.value)} error={errors.name} />
-                            <TextField id="email" label="Email" type="email" required value={form.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
-                            <TextField id="phone" label="Phone" required value={form.phone} onChange={(e) => set('phone')(e.target.value)} error={errors.phone} />
+                            <TextField id="email" label={admin.email_label} type="email" required value={form.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
+                            <TextField id="phone" label={admin.phone_label} required value={form.phone} onChange={(e) => set('phone')(e.target.value)} error={errors.phone} />
                             <SelectField id="type" label={admin.type_label} required value={form.type} onValueChange={set('type')} options={[{ value: 'agriculture', label: admin.type_agriculture }, { value: 'veterinary', label: admin.type_veterinary }]} error={errors.type} />
-                            <TextField id="password" label="Password" type="password" required autoComplete="new-password" value={form.password} onChange={(e) => set('password')(e.target.value)} error={errors.password} />
-                            <TextField id="password_confirmation" label="Confirm password" type="password" required autoComplete="new-password" value={form.password_confirmation} onChange={(e) => set('password_confirmation')(e.target.value)} error={errors.password_confirmation} />
+                            <TextField id="password" label={admin.password_label} type="password" required autoComplete="new-password" value={form.password} onChange={(e) => set('password')(e.target.value)} error={errors.password} />
+                            <TextField id="password_confirmation" label={admin.confirm_password_label} type="password" required autoComplete="new-password" value={form.password_confirmation} onChange={(e) => set('password_confirmation')(e.target.value)} error={errors.password_confirmation} />
                             <SelectField id="status" label={admin.status_label} required value={form.status} onValueChange={set('status')} options={[{ value: 'active', label: common.active }, { value: 'inactive', label: common.inactive }]} error={errors.status} />
                             <FileField
                                 id="logo"
-                                label="Image (optional)"
-                                hint="Upload one image for this syndicate. Max size: 4MB."
+                                label={admin.image_optional_label}
+                                hint={admin.syndicate_image_hint}
                                 preview={preview}
                                 onChange={(e) => {
                                     const file = e.target.files?.[0] ?? null;
@@ -60,7 +60,7 @@ export default function SyndicatesCreate() {
 
                         <div className="flex gap-2 border-t border-border pt-5">
                             <Button type="button" variant="outline" className="flex-1" onClick={() => router.visit(route('admin.syndicates.index'))}>
-                                {common.cancel ?? 'Cancel'}
+                                {common.cancel}
                             </Button>
                             <Button type="submit" className="flex-1" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="size-4 animate-spin" />}

@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
 import VendorLayout from '@/Layouts/VendorLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { StatCard } from '@/Components/admin/dashboard/StatCard';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { StatCard } from '@/Components/shared/dashboard/StatCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 import { Button } from '@/Components/ui/button';
 import { Wallet, DollarSign, HandCoins, TrendingDown, ShoppingBag } from 'lucide-react';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
-
-function formatMoney(amount, locale, currency) {
-    return `${new Intl.NumberFormat(locale === 'ar' ? 'ar-SY' : 'en-US', { maximumFractionDigits: 2 }).format(Number(amount || 0))} ${currency}`;
-}
+import { OrderTrendChart } from '@/Components/shared/dashboard/OrderTrendChart';
+import { DonutChart } from '@/Components/shared/dashboard/DonutChart';
+import { formatCurrency, formatDate, formatNumber, formatPercent } from '@/lib/date-time';
 
 const SUMMARY_METRICS = [
     { key: 'gross_sales', labelKey: 'gross_sales', icon: DollarSign },
@@ -53,7 +52,6 @@ export default function VendorCommission() {
     const total = Number(orders.total || 0);
     const categoryBreakdown = data?.category_breakdown ?? [];
     const trend = data?.recent_orders_last_7_days ?? [];
-    const trendMax = Math.max(...trend.map((p) => Number(p.count || 0)), 1);
 
     if (status === 'error') {
         return (
@@ -81,7 +79,7 @@ export default function VendorCommission() {
                     <StatCard
                         key={key}
                         label={vendor[labelKey]}
-                        value={count ? Number(statusCounts.completed || 0).toLocaleString(locale) : formatMoney(ledgerSummary[key], locale, vendor.currency_syp)}
+                        value={count ? formatNumber(statusCounts.completed, locale) : formatCurrency(ledgerSummary[key], locale)}
                         icon={icon}
                         status={status}
                         tone={tone}
@@ -94,27 +92,11 @@ export default function VendorCommission() {
                     <CardHeader className="border-b border-border/80">
                         <CardTitle className="text-base font-bold">{vendor.order_status_statistics}</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4 p-5">
-                        {[
-                            { key: 'pending', label: vendor.status_pending, color: 'var(--color-warning-500)' },
-                            { key: 'completed', label: vendor.status_completed, color: 'var(--color-success-500)' },
-                            { key: 'cancelled', label: vendor.status_cancelled, color: 'var(--color-danger-500)' },
-                        ].map((row) => {
-                            const value = Number(statusCounts[row.key] || 0);
-                            const pct = total > 0 ? Math.round((value / total) * 100) : 0;
-                            return (
-                                <div key={row.key}>
-                                    <div className="mb-1 flex items-center justify-between text-xs">
-                                        <span className="font-semibold text-foreground">{row.label}</span>
-                                        <span className="font-bold" style={{ color: row.color }}>{value} ({pct}%)</span>
-                                    </div>
-                                    <div className="h-2.5 overflow-hidden rounded-full bg-muted">
-                                        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: row.color }} />
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </CardContent>
+                    <CardContent className="p-5"><DonutChart rows={[
+                        { key: 'completed', label: vendor.status_completed, value: statusCounts.completed, color: 'var(--color-success-500)' },
+                        { key: 'pending', label: vendor.status_pending, value: statusCounts.pending, color: 'var(--color-warning-500)' },
+                        { key: 'cancelled', label: vendor.status_cancelled, value: statusCounts.cancelled, color: 'var(--color-danger-500)' },
+                    ]} total={total} totalLabel={vendor.orders} formatValue={(value) => formatNumber(value, locale)} /></CardContent>
                 </Card>
 
                 <Card className="border-border/80 shadow-none">
@@ -125,11 +107,11 @@ export default function VendorCommission() {
                         <p className="text-xs text-muted-foreground">{vendor.payment_summary_copy}</p>
                         <div className="rounded-md border border-border bg-muted/40 p-3">
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{vendor.paid_amount_label}</p>
-                            <p className="mt-1 text-lg font-bold text-[var(--color-success-strong)]">{formatMoney(ledgerSummary.settled, locale, vendor.currency_syp)}</p>
+                            <p className="mt-1 text-lg font-bold text-[var(--color-success-strong)]">{formatCurrency(ledgerSummary.settled, locale)}</p>
                         </div>
                         <div className="rounded-md border border-border bg-muted/40 p-3">
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{vendor.remaining_amount_label}</p>
-                            <p className="mt-1 text-lg font-bold text-[var(--color-danger-strong)]">{formatMoney(ledgerSummary.outstanding, locale, vendor.currency_syp)}</p>
+                            <p className="mt-1 text-lg font-bold text-[var(--color-danger-strong)]">{formatCurrency(ledgerSummary.outstanding, locale)}</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -155,10 +137,10 @@ export default function VendorCommission() {
                                 <TableRow><TableCell colSpan={5} className="py-8 text-center text-muted-foreground">{vendor.no_financial_movements}</TableCell></TableRow>
                             ) : ledgerEntries.map((entry) => (
                                 <TableRow key={entry.id}>
-                                    <TableCell>{new Date(entry.created_at).toLocaleDateString(locale)}</TableCell>
+                                    <TableCell>{formatDate(entry.created_at, locale)}</TableCell>
                                     <TableCell className="font-medium">{entry.type_name}</TableCell>
                                     <TableCell><span className={entry.direction === 'credit' ? 'text-[var(--color-success-strong)]' : 'text-[var(--color-danger-strong)]'}>{entry.direction === 'credit' ? vendor.credit : vendor.debit}</span></TableCell>
-                                    <TableCell className="tabular-nums">{formatMoney(entry.amount, locale, vendor.currency_syp)}</TableCell>
+                                    <TableCell className="tabular-nums">{formatCurrency(entry.amount, locale)}</TableCell>
                                     <TableCell className="whitespace-normal text-muted-foreground">{entry.description}</TableCell>
                                 </TableRow>
                             ))}
@@ -190,9 +172,9 @@ export default function VendorCommission() {
                                 categoryBreakdown.map((row, index) => (
                                     <TableRow key={index}>
                                         <TableCell className="font-semibold">{row.category_name ?? vendor.js_unknown_category}</TableCell>
-                                        <TableCell>{Number(row.commission_rate || 0).toFixed(2)}%</TableCell>
-                                        <TableCell className="font-semibold">{formatMoney(row.sales_total, locale, vendor.currency_syp)}</TableCell>
-                                        <TableCell className="font-semibold text-primary">{formatMoney(row.commission_amount, locale, vendor.currency_syp)}</TableCell>
+                                        <TableCell>{formatPercent(row.commission_rate, locale)}</TableCell>
+                                        <TableCell className="font-semibold">{formatCurrency(row.sales_total, locale)}</TableCell>
+                                        <TableCell className="font-semibold text-primary">{formatCurrency(row.commission_amount, locale)}</TableCell>
                                     </TableRow>
                                 ))
                             )}
@@ -205,25 +187,11 @@ export default function VendorCommission() {
                 <CardHeader className="border-b border-border/80">
                     <CardTitle className="text-base font-bold">{vendor.last_7_days_completed_orders}</CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-7 gap-2 p-5">
+                <CardContent className="p-5">
                     {trend.length === 0 ? (
-                        <p className="col-span-7 text-sm text-muted-foreground">{vendor.js_no_trend_data}</p>
+                        <p className="text-sm text-muted-foreground">{vendor.js_no_trend_data}</p>
                     ) : (
-                        trend.map((point, index) => {
-                            const value = Number(point.count || 0);
-                            const date = new Date(point.date);
-                            const label = Number.isNaN(date.getTime()) ? point.date : date.toLocaleDateString(locale, { weekday: 'short' });
-                            const height = Math.max(Math.round((value / trendMax) * 88), 10);
-                            return (
-                                <div key={index} className="flex flex-col items-center gap-2 rounded-md border border-border bg-muted p-2">
-                                    <div className="flex h-24 items-end">
-                                        <div className="w-5 rounded-t bg-primary/90" style={{ height }} />
-                                    </div>
-                                    <p className="text-[11px] font-bold text-foreground">{label}</p>
-                                    <p className="text-[11px] font-semibold text-muted-foreground">{value}</p>
-                                </div>
-                            );
-                        })
+                        <OrderTrendChart rows={trend} label={vendor.completed_orders} locale={locale} />
                     )}
                 </CardContent>
             </Card>

@@ -26,7 +26,7 @@ class DocumentController extends Controller
     {
         $vendor = $request->user()?->managedVendor();
         if (! $vendor) {
-            abort(403, 'Vendor profile not found.');
+            abort(403, __('api.vendor_profile_not_found'));
         }
 
         $documents = VendorDocument::query()
@@ -36,7 +36,7 @@ class DocumentController extends Controller
             ->values();
 
         return response()->json([
-            'message' => 'Documents retrieved successfully.',
+            'message' => __('api.documents_retrieved'),
             'data' => $documents,
         ]);
     }
@@ -46,7 +46,7 @@ class DocumentController extends Controller
         $user = $request->user();
         $vendor = $user?->managedVendor();
         if (! $vendor) {
-            abort(403, 'Vendor profile not found.');
+            abort(403, __('api.vendor_profile_not_found'));
         }
         if (! $user->hasVendorPermission($vendor, 'documents.manage')) {
             abort(403, __('You are not allowed to manage documents for this vendor.'));
@@ -84,7 +84,7 @@ class DocumentController extends Controller
         $document = VendorDocument::query()->findOrFail($documentId);
         $this->authorize('view', $document);
 
-        return response()->json(['message' => 'Document retrieved successfully.', 'data' => $this->present($document)]);
+        return response()->json(['message' => __('api.document_retrieved'), 'data' => $this->present($document)]);
     }
 
     public function download(Request $request, int $documentId)

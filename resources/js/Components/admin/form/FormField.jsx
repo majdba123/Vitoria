@@ -11,7 +11,7 @@ import {
     SelectValue,
 } from '@/Components/ui/select';
 import { cn } from '@/lib/utils';
-import { useLocale } from '@/hooks/use-i18n';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
 
 function FieldShell({ id, label, required, error, hint, descriptionId, children }) {
     return (
@@ -29,8 +29,9 @@ function FieldShell({ id, label, required, error, hint, descriptionId, children 
 
 export function TextField({ id, label, required, error, hint, className, type, ...props }) {
     const locale = useLocale();
+    const { common } = useI18n();
     const isDateControl = ['date', 'time', 'datetime-local'].includes(type);
-    const dateHint = type === 'date' ? (locale === 'ar' ? 'يوم / شهر / سنة' : 'Day / Month / Year') : undefined;
+    const dateHint = type === 'date' ? common.date_format_hint : undefined;
     const effectiveHint = hint ?? dateHint;
     const descriptionId = (error || effectiveHint) ? `${id}-description` : undefined;
     const [visible, setVisible] = useState(false);
@@ -52,7 +53,7 @@ export function TextField({ id, label, required, error, hint, className, type, .
                     <button
                         type="button"
                         onClick={() => setVisible((v) => !v)}
-                        aria-label={visible ? 'Hide password' : 'Show password'}
+                        aria-label={visible ? common.hide_password : common.show_password}
                         aria-pressed={visible}
                         className="absolute inset-y-0 flex w-10 items-center justify-center text-muted-foreground transition-colors hover:text-foreground ltr:right-0 rtl:left-0"
                     >
@@ -90,7 +91,7 @@ export function TextField({ id, label, required, error, hint, className, type, .
                     />
                     {showArabicDateFormat && (
                         <span aria-hidden="true" className="pointer-events-none absolute inset-y-px start-3 end-10 flex items-center bg-background text-sm text-muted-foreground">
-                            يوم / شهر / سنة
+                            {common.date_format_hint}
                         </span>
                     )}
                 </div>

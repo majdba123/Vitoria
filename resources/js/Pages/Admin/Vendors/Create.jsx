@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { router } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
+import { PageHeader } from '@/Components/shared/PageHeader';
 import { TextField, SelectField, TextareaField } from '@/Components/admin/form/FormField';
 import { CategoryCheckboxGroup } from '@/Components/admin/CategoryCheckboxGroup';
 import { Card, CardContent } from '@/Components/ui/card';
@@ -46,7 +46,7 @@ export default function VendorsCreate() {
 
     return (
         <AdminLayout title={admin.vendors_create}>
-            <PageHeader breadcrumb={[{ label: admin.vendors_breadcrumb, href: route('admin.vendors.index') }, { label: admin.create ?? 'Create' }]} title={admin.vendors_create_new} copy={admin.vendors_create_desc} />
+            <PageHeader breadcrumb={[{ label: admin.vendors_breadcrumb, href: route('admin.vendors.index') }, { label: admin.create }]} title={admin.vendors_create_new} copy={admin.vendors_create_desc} />
 
             <Card className="max-w-3xl border-border/80 shadow-none">
                 <CardContent className="p-5 sm:p-6">
@@ -59,12 +59,12 @@ export default function VendorsCreate() {
                                 <p className="mt-0.5 text-xs text-muted-foreground">{admin.vendors_credentials}</p>
                             </div>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <TextField id="name" label="Full name" required value={form.name} onChange={(e) => set('name')(e.target.value)} error={errors.name} />
-                                <TextField id="phone_number" label="Phone number" type="tel" required placeholder="09XXXXXXXX" value={form.phone_number} onChange={(e) => set('phone_number')(e.target.value)} error={errors.phone_number} />
-                                <TextField id="national_id" label="National ID" required value={form.national_id} onChange={(e) => set('national_id')(e.target.value)} error={errors.national_id} />
-                                <TextField id="email" label="Email" type="email" placeholder="(optional)" value={form.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
+                                <TextField id="name" label={admin.full_name_label} required value={form.name} onChange={(e) => set('name')(e.target.value)} error={errors.name} />
+                                <TextField id="phone_number" label={admin.phone_number_label} type="tel" required placeholder="09XXXXXXXX" value={form.phone_number} onChange={(e) => set('phone_number')(e.target.value)} error={errors.phone_number} />
+                                <TextField id="national_id" label={admin.th_national_id} required value={form.national_id} onChange={(e) => set('national_id')(e.target.value)} error={errors.national_id} />
+                                <TextField id="email" label={admin.email_label} type="email" placeholder={admin.email_optional_placeholder} value={form.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
                                 <div className="sm:col-span-2">
-                                    <TextField id="password" label="Password" type="password" required placeholder="Min 6 characters" value={form.password} onChange={(e) => set('password')(e.target.value)} error={errors.password} />
+                                    <TextField id="password" label={admin.password_label} type="password" required placeholder={admin.min_characters_placeholder} value={form.password} onChange={(e) => set('password')(e.target.value)} error={errors.password} />
                                 </div>
                             </div>
                         </fieldset>
@@ -73,12 +73,12 @@ export default function VendorsCreate() {
 
                         <fieldset className="space-y-4">
                             <div>
-                                <legend className="text-sm font-semibold text-foreground">Store details</legend>
-                                <p className="mt-0.5 text-xs text-muted-foreground">Information about the vendor's store.</p>
+                                <legend className="text-sm font-semibold text-foreground">{admin.vendors_store_details}</legend>
+                                <p className="mt-0.5 text-xs text-muted-foreground">{admin.vendors_store_info}</p>
                             </div>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <TextField id="store_name" label="Store name" required value={form.store_name} onChange={(e) => set('store_name')(e.target.value)} error={errors.store_name} />
-                                <TextField id="address" label="Address" placeholder="(optional)" value={form.address} onChange={(e) => set('address')(e.target.value)} error={errors.address} />
+                                <TextField id="store_name" label={admin.vendors_store_name} required value={form.store_name} onChange={(e) => set('store_name')(e.target.value)} error={errors.store_name} />
+                                <TextField id="address" label={admin.vendors_address} placeholder={admin.email_optional_placeholder} value={form.address} onChange={(e) => set('address')(e.target.value)} error={errors.address} />
                                 <div className="sm:col-span-2">
                                     <SelectField
                                         id="business_type"
@@ -86,7 +86,7 @@ export default function VendorsCreate() {
                                         required
                                         value={form.business_type}
                                         onValueChange={set('business_type')}
-                                        placeholder={common.select ?? 'Select...'}
+                                        placeholder={common.select}
                                         options={[{ value: 'agriculture', label: admin.type_agriculture }, { value: 'veterinary', label: admin.type_veterinary }, { value: 'both', label: admin.both }]}
                                         error={errors.business_type}
                                     />
@@ -94,35 +94,35 @@ export default function VendorsCreate() {
                                 <div className="sm:col-span-2">
                                     <SelectField
                                         id="city_id"
-                                        label="City"
+                                        label={admin.vendors_city}
                                         required
                                         value={form.city_id}
                                         onValueChange={set('city_id')}
-                                        placeholder="Select store city"
+                                        placeholder={admin.vendors_select_city}
                                         options={cities.map((c) => ({ value: c.id, label: c.name }))}
                                         error={errors.city_id}
                                     />
                                 </div>
                             </div>
-                            <TextareaField id="description" label={admin.vendors_description} rows={3} placeholder="(optional)" value={form.description} onChange={(e) => set('description')(e.target.value)} error={errors.description} />
+                            <TextareaField id="description" label={admin.vendors_description} rows={3} placeholder={admin.email_optional_placeholder} value={form.description} onChange={(e) => set('description')(e.target.value)} error={errors.description} />
                         </fieldset>
 
                         <Separator />
 
                         <fieldset className="space-y-3">
                             <div>
-                                <legend className="text-sm font-semibold text-foreground">Allowed categories</legend>
-                                <p className="mt-0.5 text-xs text-muted-foreground">Select which categories this vendor is allowed to sell products in.</p>
+                                <legend className="text-sm font-semibold text-foreground">{admin.vendors_allowed_categories}</legend>
+                                <p className="mt-0.5 text-xs text-muted-foreground">{admin.vendors_allowed_hint}</p>
                             </div>
                             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                <CategoryCheckboxGroup businessType={form.business_type} categories={categories} selectedIds={categoryIds} onToggle={toggleCategory} emptyHint="Select a business type first." />
+                                <CategoryCheckboxGroup businessType={form.business_type} categories={categories} selectedIds={categoryIds} onToggle={toggleCategory} emptyHint={admin.vendors_select_business_type_first} />
                             </div>
                             {errors.category_ids && <p className="text-xs font-medium text-[var(--color-danger-strong)]">{errors.category_ids}</p>}
                         </fieldset>
 
                         <div className="flex gap-2 border-t border-border pt-5">
                             <Button type="button" variant="outline" className="flex-1" onClick={() => router.visit(route('admin.vendors.index'))}>
-                                {common.cancel ?? 'Cancel'}
+                                {common.cancel}
                             </Button>
                             <Button type="submit" className="flex-1" disabled={isSubmitting}>
                                 {isSubmitting && <Loader2 className="size-4 animate-spin" />}

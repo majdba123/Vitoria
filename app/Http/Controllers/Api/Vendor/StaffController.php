@@ -27,7 +27,7 @@ class StaffController extends Controller
         $user = $request->user();
         $vendor = $user->managedVendor();
         if (! $vendor) {
-            abort(403, 'Vendor profile not found.');
+            abort(403, __('api.vendor_profile_not_found'));
         }
 
         $members = VendorMember::query()
@@ -41,7 +41,7 @@ class StaffController extends Controller
         $owner = $vendor->user()->select('id', 'name', 'email', 'phone_number')->first();
 
         return response()->json([
-            'message' => 'Staff retrieved successfully.',
+            'message' => __('api.staff_retrieved'),
             'data' => [
                 'owner' => $owner ? [
                     'id' => $owner->id,
@@ -61,7 +61,7 @@ class StaffController extends Controller
         $user = $request->user();
         $vendor = $user->managedVendor();
         if (! $vendor) {
-            abort(403, 'Vendor profile not found.');
+            abort(403, __('api.vendor_profile_not_found'));
         }
         if (! $user->hasVendorPermission($vendor, 'staff.manage')) {
             abort(403, __('You are not allowed to manage staff for this vendor.'));
@@ -89,7 +89,7 @@ class StaffController extends Controller
         $user = $request->user();
         $vendor = $user->managedVendor();
         if (! $vendor) {
-            abort(403, 'Vendor profile not found.');
+            abort(403, __('api.vendor_profile_not_found'));
         }
         if (! $user->hasVendorPermission($vendor, 'staff.manage')) {
             abort(403, __('You are not allowed to manage staff for this vendor.'));
@@ -118,7 +118,7 @@ class StaffController extends Controller
         $user = $request->user();
         $vendor = $user->managedVendor();
         if (! $vendor) {
-            abort(403, 'Vendor profile not found.');
+            abort(403, __('api.vendor_profile_not_found'));
         }
         if (! $user->hasVendorPermission($vendor, 'staff.manage')) {
             abort(403, __('You are not allowed to manage staff for this vendor.'));

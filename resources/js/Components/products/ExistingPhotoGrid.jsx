@@ -8,6 +8,7 @@ import {
 } from '@/Components/ui/select';
 import { Input } from '@/Components/ui/input';
 import { useState } from 'react';
+import { useI18n } from '@/hooks/use-i18n';
 
 /**
  * Existing-photo manager for the product edit page: mark a photo for
@@ -16,10 +17,11 @@ import { useState } from 'react';
  * data-existing-photo-* grid in admin/products/edit.blade.php.
  */
 export function ExistingPhotoGrid({ photos, removedIds, onToggleRemove, primaryId, onTogglePrimary, edits, onEditChange }) {
+    const { products } = useI18n();
     const [lightbox, setLightbox] = useState(null);
 
     if (photos.length === 0) {
-        return <p className="text-sm text-muted-foreground">No photos yet.</p>;
+        return <p className="text-sm text-muted-foreground">{products.form.no_photos_yet}</p>;
     }
 
     return (
@@ -41,21 +43,21 @@ export function ExistingPhotoGrid({ photos, removedIds, onToggleRemove, primaryI
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="primary">Primary</SelectItem>
-                                        <SelectItem value="front">Front</SelectItem>
-                                        <SelectItem value="back">Back</SelectItem>
+                                        <SelectItem value="primary">{products.form.image_type_primary}</SelectItem>
+                                        <SelectItem value="front">{products.form.image_type_front}</SelectItem>
+                                        <SelectItem value="back">{products.form.image_type_back}</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <Input type="number" min="1" value={edit.sort_order} onChange={(e) => onEditChange(photo.id, { ...edit, sort_order: Number(e.target.value) || 1 })} />
                             </div>
                             <div className="flex items-center justify-center gap-1.5">
-                                <button type="button" onClick={() => onToggleRemove(photo.id)} className={`flex size-9 items-center justify-center rounded-md border ${isRemoved ? 'border-[var(--color-danger-400)] bg-[var(--color-danger-soft)] text-[var(--color-danger-strong)]' : 'border-border text-muted-foreground hover:bg-accent'}`} aria-label="Remove">
+                                <button type="button" onClick={() => onToggleRemove(photo.id)} className={`flex size-9 items-center justify-center rounded-md border ${isRemoved ? 'border-[var(--color-danger-400)] bg-[var(--color-danger-soft)] text-[var(--color-danger-strong)]' : 'border-border text-muted-foreground hover:bg-accent'}`} aria-label={products.form.remove_aria_label}>
                                     <Trash2 className="size-4" />
                                 </button>
-                                <button type="button" onClick={() => setLightbox(photo.url)} className="flex size-9 items-center justify-center rounded-md border border-border text-muted-foreground hover:bg-accent" aria-label="View">
+                                <button type="button" onClick={() => setLightbox(photo.url)} className="flex size-9 items-center justify-center rounded-md border border-border text-muted-foreground hover:bg-accent" aria-label={products.form.view_aria_label}>
                                     <Eye className="size-4" />
                                 </button>
-                                <button type="button" onClick={() => onTogglePrimary(photo.id)} className={`flex size-9 items-center justify-center rounded-md border ${isPrimary ? 'border-[var(--color-success-400)] bg-[var(--color-success-soft)] text-[var(--color-success-strong)]' : 'border-border text-muted-foreground hover:bg-accent'}`} aria-label="Mark primary">
+                                <button type="button" onClick={() => onTogglePrimary(photo.id)} className={`flex size-9 items-center justify-center rounded-md border ${isPrimary ? 'border-[var(--color-success-400)] bg-[var(--color-success-soft)] text-[var(--color-success-strong)]' : 'border-border text-muted-foreground hover:bg-accent'}`} aria-label={products.form.mark_primary_aria_label}>
                                     <Star className="size-4" />
                                 </button>
                             </div>

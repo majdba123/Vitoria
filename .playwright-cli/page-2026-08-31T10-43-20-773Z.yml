@@ -1,0 +1,79 @@
+- generic [ref=f5e3]:
+  - navigation "Syndicate navigation" [ref=f5e5]:
+    - generic [ref=f5e6]:
+      - list [ref=f5e8]:
+        - listitem [ref=f5e9]:
+          - link "Vetora مركز النقابة" [ref=f5e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/syndicate/dashboard
+            - generic [ref=f5e17]:
+              - generic [ref=f5e18]: Vetora
+              - generic [ref=f5e19]: مركز النقابة
+      - generic [ref=f5e21]:
+        - generic [ref=f5e22]: مساحة النقابة
+        - list [ref=f5e24]:
+          - listitem [ref=f5e25]:
+            - link "نظرة عامة" [ref=f5e26] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/dashboard
+          - listitem [ref=f5e33]:
+            - link "التصنيفات" [ref=f5e34] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/categories
+          - listitem [ref=f5e40]:
+            - link "التجار" [ref=f5e41] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/vendors
+          - listitem [ref=f5e47]:
+            - link "المنتجات" [ref=f5e48] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/products
+          - listitem [ref=f5e54]:
+            - link "البودكاست" [ref=f5e55] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/podcasts
+          - listitem [ref=f5e60]:
+            - link "الطلبات" [ref=f5e61] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/orders
+          - listitem [ref=f5e66]:
+            - link "المبيعات" [ref=f5e67] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/sales
+          - listitem [ref=f5e72]:
+            - link "التقارير" [ref=f5e73] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/reports
+          - listitem [ref=f5e77]:
+            - link "الإشعارات" [ref=f5e78] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/syndicate/notifications
+      - paragraph [ref=f5e84]: مساحة النقابة
+  - main [ref=f5e85]:
+    - generic [ref=f5e87]:
+      - button "Toggle Sidebar" [ref=f5e88]
+      - generic [ref=f5e90]:
+        - paragraph [ref=f5e91]: مركز النقابة
+        - heading "نظرة عامة" [level=1] [ref=f5e92]
+      - generic [ref=f5e93]:
+        - generic [ref=f5e94]: زراعي
+        - link "الرئيسية" [ref=f5e96] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/
+        - button "اختر اللغة" [ref=f5e97]
+        - button "الإشعارات" [ref=f5e98]
+        - button "تبديل الوضع الفاتح أو الداكن" [ref=f5e99]
+        - button "تسجيل الخروج" [ref=f5e100]
+    - generic [ref=f5e101]:
+      - generic [ref=f5e102]:
+        - generic [ref=f5e103]:
+          - heading "جارٍ تحميل البيانات..." [level=1] [ref=f5e104]
+          - paragraph [ref=f5e105]: اعرض فقط السجلات المرتبطة بنوع النقابة الحالي ضمن واجهة مختصرة ومهنية.
+        - generic [ref=f5e106]:
+          - generic [ref=f5e107]: نشط
+          - link "المبيعات" [ref=f5e108] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/syndicate/sales
+          - link "التقارير" [ref=f5e109] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/syndicate/reports
+      - heading "نظرة عامة" [level=2] [ref=f5e110]
+      - generic [ref=f5e111]:
+        - paragraph [ref=f5e115]: التجار
+        - paragraph [ref=f5e125]: المنتجات
+        - paragraph [ref=f5e135]: إجمالي الطلبات
+      - generic [ref=f5e141]:
+        - generic [ref=f5e142]: توزع التجار حسب المنطقة
+        - generic [ref=f5e151]:
+          - heading "الأعلى أداءً" [level=3] [ref=f5e152]
+          - paragraph [ref=f5e153]: أفضل التصنيفات والمنتجات والتجار حسب حركة المبيعات.
+      - generic [ref=f5e162]:
+        - heading "الطلبات شهريًا (آخر 12 شهرًا)" [level=3] [ref=f5e163]
+        - paragraph [ref=f5e164]: أعداد حقيقية للطلبات عبر تصنيفات نقابتك.

@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Plus, Package } from 'lucide-react';
 import VendorLayout from '@/Layouts/VendorLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { Pagination } from '@/Components/admin/Pagination';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { Pagination } from '@/Components/shared/Pagination';
 import { CsvImportButton } from '@/Components/admin/CsvImportButton';
-import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Button } from '@/Components/ui/button';
 import {
     Select,
@@ -17,10 +17,12 @@ import {
 import { Card, CardContent } from '@/Components/ui/card';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { useAdminList } from '@/hooks/use-admin-list';
-import { useI18n } from '@/hooks/use-i18n';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { formatCurrency, formatNumber } from '@/lib/date-time';
 
 export default function VendorProductsIndex({ discountOnly = false }) {
     const { vendor, common, nav } = useI18n();
+    const locale = useLocale();
     const [page, setPage] = useState(1);
     const [categoryId, setCategoryId] = useState('all');
     const [activeFilter, setActiveFilter] = useState('all');
@@ -131,11 +133,11 @@ export default function VendorProductsIndex({ discountOnly = false }) {
                                         <div className="mt-2 flex items-center justify-between gap-2">
                                             {product.has_active_discount ? (
                                                 <span>
-                                                    <span className="text-lg font-bold text-foreground">{Number(product.discounted_price || 0).toLocaleString()} SYP</span>{' '}
-                                                    <span className="text-xs text-muted-foreground line-through">{Number(product.price || 0).toLocaleString()}</span>
+                                                    <span className="text-lg font-bold text-foreground">{formatCurrency(product.discounted_price || 0, locale)}</span>{' '}
+                                                    <span className="text-xs text-muted-foreground line-through">{formatNumber(product.price || 0, locale)}</span>
                                                 </span>
                                             ) : (
-                                                <span className="text-lg font-bold text-foreground">{Number(product.price || 0).toLocaleString()} SYP</span>
+                                                <span className="text-lg font-bold text-foreground">{formatCurrency(product.price || 0, locale)}</span>
                                             )}
                                             <StatusBadge tone={product.is_active ? 'success' : 'danger'}>{product.is_active ? common.active : common.inactive}</StatusBadge>
                                         </div>

@@ -33,7 +33,7 @@ class OrderReturnController extends Controller
             ->paginate(10);
 
         return response()->json([
-            'message' => 'Returns retrieved successfully.',
+            'message' => __('api.returns_retrieved'),
             'data' => $returns->getCollection()->map(fn (OrderReturn $return) => $this->presentReturn($return))->values(),
             'meta' => [
                 'current_page' => $returns->currentPage(),
@@ -84,7 +84,7 @@ class OrderReturnController extends Controller
         $this->authorize('view', $return);
 
         return response()->json([
-            'message' => 'Return retrieved successfully.',
+            'message' => __('api.return_retrieved'),
             'data' => $this->presentReturn($return),
         ]);
     }

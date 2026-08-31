@@ -35,7 +35,7 @@ class LoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'phone_number.required' => 'Phone number is required.',
+            'phone_number.required' => __('validation.application.phone_required'),
         ];
     }
 }

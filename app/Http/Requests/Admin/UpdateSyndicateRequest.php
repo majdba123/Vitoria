@@ -39,8 +39,8 @@ class UpdateSyndicateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'logo.image' => 'The syndicate image must be a valid image file.',
-            'logo.max' => 'The syndicate image may not be greater than 4 MB.',
+            'logo.image' => __('validation.application.syndicate_image_invalid'),
+            'logo.max' => __('validation.application.syndicate_image_max'),
         ];
     }
 }

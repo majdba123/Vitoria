@@ -70,9 +70,9 @@ class StoreVendorRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.unique' => 'This email is already registered.',
-            'phone_number.unique' => 'This phone number is already registered.',
-            'national_id.unique' => 'This national ID is already registered.',
+            'email.unique' => __('validation.application.email_taken'),
+            'phone_number.unique' => __('validation.application.phone_taken'),
+            'national_id.unique' => __('validation.application.national_id_taken'),
         ];
     }
 }

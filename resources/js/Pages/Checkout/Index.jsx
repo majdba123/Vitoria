@@ -4,12 +4,12 @@ import { ChevronRight, Loader2 } from 'lucide-react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { formatNumber } from '@/lib/date-time';
 
 const ADDRESS_LABELS = ['home', 'work', 'farm', 'clinic', 'pharmacy', 'other'];
 
 function money(amount, currency, locale) {
-    const value = Number(amount) || 0;
-    return `${value.toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ${currency || ''}`.trim();
+    return `${formatNumber(amount, locale, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ${currency || ''}`.trim();
 }
 
 export default function CheckoutIndex() {

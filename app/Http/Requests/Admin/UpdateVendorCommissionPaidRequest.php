@@ -32,9 +32,9 @@ class UpdateVendorCommissionPaidRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'paid_amount.required' => 'Paid amount is required.',
-            'paid_amount.numeric' => 'Paid amount must be a valid number.',
-            'paid_amount.min' => 'Paid amount must be zero or greater.',
+            'paid_amount.required' => __('validation.application.paid_amount_required'),
+            'paid_amount.numeric' => __('validation.application.paid_amount_numeric'),
+            'paid_amount.min' => __('validation.application.paid_amount_min'),
         ];
     }
 }

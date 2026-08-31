@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import EmployeeLayout from '@/Layouts/EmployeeLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
+import { PageHeader } from '@/Components/shared/PageHeader';
 import { TextareaField, SelectField } from '@/Components/admin/form/FormField';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
@@ -41,7 +41,7 @@ export default function EmployeeProductsEdit({ productId }) {
         try {
             const data = await submit('put', `/api/employee/products/${productId}`, payload, { isMultipart: true });
             setProduct(data.data);
-            setSuccessMessage(data.message ?? common.save ?? 'Saved.');
+            setSuccessMessage(data.message ?? common.saved);
         } catch {
             // handled by hook
         }
@@ -49,7 +49,7 @@ export default function EmployeeProductsEdit({ productId }) {
 
     if (status === 'loading') {
         return (
-            <EmployeeLayout title="Product Review">
+            <EmployeeLayout title={employee.review_product}>
                 <Skeleton className="h-96 w-full max-w-4xl" />
             </EmployeeLayout>
         );
@@ -57,14 +57,14 @@ export default function EmployeeProductsEdit({ productId }) {
 
     if (status === 'error' || !product) {
         return (
-            <EmployeeLayout title="Product Review">
-                <p className="text-sm font-medium text-[var(--color-danger-strong)]">{common.unexpected_error ?? 'An unexpected error occurred.'}</p>
+            <EmployeeLayout title={employee.review_product}>
+                <p className="text-sm font-medium text-[var(--color-danger-strong)]">{common.unexpected_error}</p>
             </EmployeeLayout>
         );
     }
 
     return (
-        <EmployeeLayout title="Product Review">
+        <EmployeeLayout title={employee.review_product}>
             <PageHeader title={employee.review_product} copy={employee.review_product_copy} />
 
             <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
@@ -80,7 +80,7 @@ export default function EmployeeProductsEdit({ productId }) {
                         <div className="grid grid-cols-2 gap-3 text-sm">
                             <div className="rounded-md bg-muted p-4">
                                 <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{employee.current_status}</p>
-                                <p className="mt-2 font-semibold text-foreground">{product.status}</p>
+                                <p className="mt-2 font-semibold text-foreground">{{ pending: employee.pending, approved: employee.approved, rejected: employee.rejected }[product.status] ?? common.not_available}</p>
                             </div>
                             <div className="rounded-md bg-muted p-4">
                                 <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{employee.vendor_reason}</p>

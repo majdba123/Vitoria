@@ -4,6 +4,8 @@
  * labelled groups when business_type is "both".
  */
 export function CategoryCheckboxGroup({ businessType, categories, selectedIds, onToggle, emptyHint }) {
+    const { admin } = useI18n();
+
     if (!businessType) {
         return <p className="rounded-md border border-dashed border-border px-3 py-3 text-sm text-muted-foreground sm:col-span-2">{emptyHint}</p>;
     }
@@ -26,7 +28,7 @@ export function CategoryCheckboxGroup({ businessType, categories, selectedIds, o
                         <div className="min-w-0 flex-1">
                             <span className="text-sm font-medium text-foreground">{category.name}</span>
                             <span className={`ms-2 text-xs font-semibold ${category.type === 'veterinary' ? 'text-[var(--color-info-strong)]' : 'text-[var(--color-success-strong)]'}`}>
-                                {category.type === 'veterinary' ? 'Veterinary' : 'Agriculture'}
+                                {category.type === 'veterinary' ? admin.type_veterinary : admin.type_agriculture}
                             </span>
                         </div>
                     </label>
@@ -38,11 +40,12 @@ export function CategoryCheckboxGroup({ businessType, categories, selectedIds, o
     if (businessType === 'both') {
         return (
             <>
-                {renderGroup('Agriculture categories', categories.filter((c) => c.type === 'agriculture'))}
-                {renderGroup('Veterinary categories', categories.filter((c) => c.type === 'veterinary'))}
+                {renderGroup(admin.group_agriculture, categories.filter((c) => c.type === 'agriculture'))}
+                {renderGroup(admin.group_veterinary, categories.filter((c) => c.type === 'veterinary'))}
             </>
         );
     }
 
     return renderGroup(null, categories.filter((c) => c.type === businessType));
 }
+import { useI18n } from '@/hooks/use-i18n';

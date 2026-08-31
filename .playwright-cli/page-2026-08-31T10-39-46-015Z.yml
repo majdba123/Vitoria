@@ -1,0 +1,201 @@
+- generic [ref=f2e3]:
+  - navigation "Admin navigation" [ref=f2e5]:
+    - generic [ref=f2e6]:
+      - list [ref=f2e8]:
+        - listitem [ref=f2e9]:
+          - link "Vetora المدير" [ref=f2e10] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/admin/dashboard
+            - generic [ref=f2e15]:
+              - generic [ref=f2e16]: Vetora
+              - generic [ref=f2e17]: المدير
+      - generic [ref=f2e18]:
+        - generic [ref=f2e19]:
+          - generic [ref=f2e20]: نظرة عامة
+          - list [ref=f2e22]:
+            - listitem [ref=f2e23]:
+              - link "لوحة التحكم" [ref=f2e24] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/dashboard
+        - generic [ref=f2e31]:
+          - generic [ref=f2e32]: الإدارة
+          - list [ref=f2e34]:
+            - listitem [ref=f2e35]:
+              - link "البائعون" [ref=f2e36] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/vendors
+            - listitem [ref=f2e42]:
+              - link "النقابات" [ref=f2e43] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/syndicates
+            - listitem [ref=f2e50]:
+              - link "المنتجات" [ref=f2e51] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/products
+            - listitem [ref=f2e57]:
+              - link "الموظفون" [ref=f2e58] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/employees
+            - listitem [ref=f2e72]:
+              - link "الكوبونات" [ref=f2e73] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/coupons
+            - listitem [ref=f2e77]:
+              - link "الطلبات" [ref=f2e78] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/orders
+            - listitem [ref=f2e83]:
+              - link "المستخدمون" [ref=f2e84] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/users
+            - listitem [ref=f2e91]:
+              - link "الإشعارات" [ref=f2e92] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/notifications
+            - listitem [ref=f2e97]:
+              - link "رسائل التواصل" [ref=f2e98] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/contact-messages
+            - listitem [ref=f2e103]:
+              - link "من نحن" [ref=f2e104] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/about-us
+            - listitem [ref=f2e108]:
+              - link "الصفحات" [ref=f2e109] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/pages
+            - listitem [ref=f2e114]:
+              - link "اللافتات" [ref=f2e115] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/banners
+        - generic [ref=f2e121]:
+          - generic [ref=f2e122]: الكتالوج
+          - list [ref=f2e124]:
+            - listitem [ref=f2e125]:
+              - link "التصنيفات" [ref=f2e126] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/categories
+            - listitem [ref=f2e132]:
+              - link "التصنيفات الفرعية" [ref=f2e133] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/subcategories
+            - listitem [ref=f2e139]:
+              - link "المدن" [ref=f2e140] [cursor=pointer]:
+                - /url: http://127.0.0.1:8000/admin/cities
+      - list [ref=f2e147]:
+        - listitem [ref=f2e148]:
+          - button "م مدير النظام المدير" [ref=f2e149]:
+            - generic [ref=f2e150]: م
+            - generic [ref=f2e152]:
+              - generic [ref=f2e153]: مدير النظام
+              - generic [ref=f2e154]: المدير
+  - main [ref=f2e158]:
+    - generic [ref=f2e160]:
+      - button "Toggle Sidebar" [ref=f2e161]
+      - generic [ref=f2e163]:
+        - paragraph [ref=f2e164]: المدير
+        - heading "لوحة التحكم" [level=1] [ref=f2e165]
+      - generic [ref=f2e166]:
+        - link "الرئيسية" [ref=f2e167] [cursor=pointer]:
+          - /url: http://127.0.0.1:8000/
+        - button "اختر اللغة" [ref=f2e168]
+        - button "الإشعارات" [ref=f2e169]
+        - button "تبديل المظهر" [ref=f2e170]
+        - button "تسجيل الخروج" [ref=f2e171]
+    - generic [ref=f2e172]:
+      - generic [ref=f2e173]:
+        - generic [ref=f2e174]:
+          - paragraph [ref=f2e175]: المدير
+          - heading "مركز التحكم" [level=2] [ref=f2e176]
+          - paragraph [ref=f2e177]: تابع صحة المنصة، وراجع مؤشرات النمو، وانتقل بسرعة إلى أهم مهام الإدارة.
+        - generic [ref=f2e178]:
+          - link "إضافة بائع" [ref=f2e179] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/admin/vendors/create
+          - link "إضافة مستخدم" [ref=f2e180] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/admin/users/create
+      - generic [ref=f2e181]:
+        - generic [ref=f2e182]:
+          - heading "ملخص المنصة" [level=3] [ref=f2e183]
+          - paragraph [ref=f2e184]: إحصاءات مباشرة للمستخدمين والبائعين والنقابات والمنتجات.
+        - generic [ref=f2e185]:
+          - paragraph [ref=f2e189]: إجمالي البائعين
+          - paragraph [ref=f2e199]: إجمالي المنتجات
+          - paragraph [ref=f2e209]: إجمالي المستخدمين
+          - paragraph [ref=f2e220]: إجمالي النقابات
+        - generic [ref=f2e227]:
+          - generic [ref=f2e228]:
+            - generic [ref=f2e229]: البائعون النشطون
+            - generic [ref=f2e230]: "0"
+          - generic [ref=f2e231]:
+            - generic [ref=f2e232]: البائعون غير النشطين
+            - generic [ref=f2e233]: "0"
+          - generic [ref=f2e234]:
+            - generic [ref=f2e235]: المنتجات النشطة
+            - generic [ref=f2e236]: "0"
+      - generic [ref=f2e237]:
+        - generic [ref=f2e238]:
+          - heading "رؤى العمل" [level=3] [ref=f2e239]
+          - paragraph [ref=f2e240]: توزيع الأداء والنمو والفجوات التي تحتاج متابعة.
+        - generic [ref=f2e241]:
+          - generic [ref=f2e244]:
+            - heading "البائعون حسب النوع" [level=3] [ref=f2e245]
+            - paragraph [ref=f2e246]: زراعي أو بيطري أو كلاهما.
+          - generic [ref=f2e255]:
+            - heading "التصنيفات حسب النوع" [level=3] [ref=f2e256]
+            - paragraph [ref=f2e257]: توزيع الكتالوج حسب خط العمل.
+          - generic [ref=f2e266]:
+            - heading "النقابات حسب النوع" [level=3] [ref=f2e267]
+            - paragraph [ref=f2e268]: تغطية الوكلاء حسب خط العمل.
+          - generic [ref=f2e277]:
+            - heading "أحدث وكلاء النقابات" [level=3] [ref=f2e278]
+            - paragraph [ref=f2e279]: أحدث حسابات الوكلاء الزراعيين والبيطريين.
+          - generic [ref=f2e288]:
+            - heading "المنتجات حسب النوع" [level=3] [ref=f2e289]
+            - paragraph [ref=f2e290]: حجم المنتجات موزعًا حسب نوع الكتالوج.
+          - generic [ref=f2e299]:
+            - heading "النمو الشهري للمنتجات" [level=3] [ref=f2e300]
+            - paragraph [ref=f2e301]: المنتجات الجديدة خلال آخر 12 شهرًا.
+        - generic [ref=f2e305]:
+          - generic [ref=f2e307]:
+            - generic [ref=f2e308]:
+              - heading "أفضل البائعين" [level=3] [ref=f2e309]
+              - paragraph [ref=f2e310]: ترتيب حسب عدد المنتجات المنشورة.
+            - link "عرض البائعين" [ref=f2e311] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/admin/vendors
+          - generic [ref=f2e319]:
+            - generic [ref=f2e320]:
+              - heading "أكثر التصنيفات اختيارًا" [level=3] [ref=f2e321]
+              - paragraph [ref=f2e322]: التصنيفات الأكثر ربطًا مع البائعين.
+            - link "عرض الكل" [ref=f2e323] [cursor=pointer]:
+              - /url: http://127.0.0.1:8000/admin/categories
+          - generic [ref=f2e332]:
+            - heading "تصنيفات بلا منتجات" [level=3] [ref=f2e333]
+            - paragraph [ref=f2e334]: فجوات في الكتالوج تحتاج تغطية منتجات.
+          - generic [ref=f2e343]:
+            - heading "تصنيفات بلا بائعين" [level=3] [ref=f2e344]
+            - paragraph [ref=f2e345]: خطوط عمل لا يوجد لها بائعون مرتبطون.
+      - generic [ref=f2e352]: توزع التجار حسب المنطقة
+      - generic [ref=f2e358]:
+        - generic [ref=f2e360]:
+          - generic [ref=f2e361]:
+            - heading "البائعون حسب التصنيف" [level=3] [ref=f2e362]
+            - paragraph [ref=f2e363]: توزيع البائعين على التصنيفات المرتبطة.
+          - link "عرض البائعين" [ref=f2e364] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/admin/vendors
+        - generic [ref=f2e372]:
+          - generic [ref=f2e373]:
+            - heading "أحدث المنتجات" [level=3] [ref=f2e374]
+            - paragraph [ref=f2e375]: آخر المنتجات المضافة إلى المنصة.
+          - link "عرض الكل" [ref=f2e376] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/admin/products
+      - generic [ref=f2e383]:
+        - generic [ref=f2e384]:
+          - heading "النشاط الأخير" [level=3] [ref=f2e385]
+          - paragraph [ref=f2e386]: أحدث المنتجات والحسابات التي قد تحتاج مراجعة.
+        - generic [ref=f2e389]:
+          - heading "أحدث البائعين" [level=3] [ref=f2e390]
+          - paragraph [ref=f2e391]: آخر حسابات البائعين المضافة إلى المنصة.
+      - generic [ref=f2e398]:
+        - generic [ref=f2e399]:
+          - heading "إجراءات سريعة" [level=3] [ref=f2e400]
+          - paragraph [ref=f2e401]: اختصارات لأكثر تدفقات الإدارة استخدامًا.
+        - generic [ref=f2e402]:
+          - link [ref=f2e403] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/admin/vendors
+            - generic [ref=f2e410]:
+              - paragraph [ref=f2e411]: إدارة البائعين
+              - paragraph [ref=f2e412]: استعراض حسابات البائعين وتعديلها وتفعيلها.
+          - link [ref=f2e415] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/admin/users
+            - generic [ref=f2e423]:
+              - paragraph [ref=f2e424]: إدارة المستخدمين
+              - paragraph [ref=f2e425]: استعراض حسابات المستخدمين وإدارتها.
+          - link [ref=f2e428] [cursor=pointer]:
+            - /url: http://127.0.0.1:8000/admin/products
+            - generic [ref=f2e435]:
+              - paragraph [ref=f2e436]: إدارة المنتجات
+              - paragraph [ref=f2e437]: مراجعة سجلات المنتجات وحالة نشرها.

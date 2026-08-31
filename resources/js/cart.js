@@ -8,6 +8,8 @@
  * survives device changes and login.
  */
 
+import { formatNumber } from '@/lib/date-time';
+
 const state = {
     items: [],
     itemsCount: 0,
@@ -41,12 +43,8 @@ function escapeHtml(value) {
  */
 function formatMoney(amount) {
     const locale = document.documentElement.lang || 'en';
-    const value = Number(amount) || 0;
 
-    return `${value.toLocaleString(locale, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2,
-    })} <span class="text-sm font-normal text-gray-400">${escapeHtml(state.currency)}</span>`;
+    return `${formatNumber(amount, locale, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} <span class="text-sm font-normal text-gray-400">${escapeHtml(state.currency)}</span>`;
 }
 
 function applyPayload(payload) {
@@ -111,7 +109,9 @@ function updateBadge(animate = false) {
 
 function renderLine(item) {
     const s = strings();
-    const removeLabel = escapeHtml(s.cart_remove || 'Remove');
+    const removeLabel = escapeHtml(s.cart_remove);
+    const decreaseQuantityLabel = escapeHtml(s.decrease_quantity);
+    const increaseQuantityLabel = escapeHtml(s.increase_quantity);
     const atStockCeiling = item.quantity >= item.available_quantity;
 
     return `
@@ -130,13 +130,13 @@ function renderLine(item) {
             <div class="flex flex-col items-end gap-2">
                 <div class="flex items-center rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
                     <button type="button" data-cart-action="decrement" data-product-id="${item.product_id}" data-quantity="${item.quantity - 1}"
-                        class="flex h-7 w-7 items-center justify-center text-gray-500 hover:text-brand-600" aria-label="-">
+                        class="flex h-7 w-7 items-center justify-center text-gray-500 hover:text-brand-600" aria-label="${decreaseQuantityLabel}">
                         <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" d="M19.5 12h-15"/></svg>
                     </button>
                     <span class="w-6 text-center text-xs font-bold tabular-nums dark:text-white">${item.quantity}</span>
                     <button type="button" data-cart-action="increment" data-product-id="${item.product_id}" data-quantity="${item.quantity + 1}"
                         class="flex h-7 w-7 items-center justify-center text-gray-500 hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-40"
-                        ${atStockCeiling ? 'disabled' : ''} aria-label="+">
+                        ${atStockCeiling ? 'disabled' : ''} aria-label="${increaseQuantityLabel}">
                         <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                     </button>
                 </div>

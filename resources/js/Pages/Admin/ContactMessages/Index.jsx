@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { PageHeader } from '@/Components/admin/PageHeader';
-import { Pagination } from '@/Components/admin/Pagination';
-import { StatusBadge } from '@/Components/admin/dashboard/ListRow';
+import { PageHeader } from '@/Components/shared/PageHeader';
+import { Pagination } from '@/Components/shared/Pagination';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Card } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import {
@@ -47,7 +47,7 @@ export default function ContactMessagesIndex() {
 
     const sendReply = () => {
         if (!replyText.trim()) {
-            setReplyError(admin.js_please_enter_reply ?? 'Please enter a reply.');
+            setReplyError(admin.js_please_enter_reply);
             return;
         }
         setIsSending(true);
@@ -57,7 +57,7 @@ export default function ContactMessagesIndex() {
             reload();
         }).catch((error) => {
             setIsSending(false);
-            setReplyError(error.response?.data?.errors?.admin_reply?.[0] ?? error.response?.data?.message ?? admin.js_failed_send_reply ?? 'Failed to send reply.');
+            setReplyError(error.response?.data?.errors?.admin_reply?.[0] ?? error.response?.data?.message ?? admin.js_failed_send_reply);
         });
     };
 
@@ -79,7 +79,7 @@ export default function ContactMessagesIndex() {
             />
 
             {status === 'loading' && <p className="py-14 text-center text-sm text-muted-foreground">{common.loading}</p>}
-            {status === 'error' && <p className="py-14 text-center text-sm font-medium text-[var(--color-danger-strong)]">{errorMessage ?? 'Failed to load.'}</p>}
+            {status === 'error' && <p className="py-14 text-center text-sm font-medium text-[var(--color-danger-strong)]">{errorMessage ?? admin.dashboard_load_failed}</p>}
             {status === 'ready' && rows.length === 0 && <p className="py-14 text-center text-sm font-medium text-muted-foreground">{admin.no_contact_messages_yet}</p>}
 
             {status === 'ready' && rows.length > 0 && (
@@ -124,7 +124,7 @@ export default function ContactMessagesIndex() {
                     )}
                     <TextareaField id="admin_reply" label={admin.your_reply} rows={4} required maxLength={5000} placeholder={admin.type_your_reply} value={replyText} onChange={(e) => setReplyText(e.target.value)} error={replyError} />
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setReplyTarget(null)}>{common.cancel ?? 'Cancel'}</Button>
+                        <Button type="button" variant="outline" onClick={() => setReplyTarget(null)}>{common.cancel}</Button>
                         <Button type="button" onClick={sendReply} disabled={isSending}>
                             {isSending && <Loader2 className="size-4 animate-spin" />}
                             {admin.send_reply}

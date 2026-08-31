@@ -26,7 +26,7 @@ class SettlementController extends Controller
             ->paginate(20);
 
         return response()->json([
-            'message' => 'Settlements retrieved successfully.',
+            'message' => __('api.settlements_retrieved'),
             'data' => $settlements->items(),
             'meta' => [
                 'current_page' => $settlements->currentPage(),

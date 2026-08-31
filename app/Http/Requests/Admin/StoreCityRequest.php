@@ -35,7 +35,7 @@ class StoreCityRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.unique' => 'This city name is already registered.',
+            'name.unique' => __('validation.application.city_name_taken'),
         ];
     }
 }

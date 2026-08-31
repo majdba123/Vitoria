@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useI18n } from '@/hooks/use-i18n';
 
 /**
  * Generic replacement for every admin create/edit form's submit handler:
@@ -7,6 +8,7 @@ import { useState } from 'react';
  * exact error contract resources/js/bootstrap.js's ApiErrors already parses.
  */
 export function useAdminForm() {
+    const { common } = useI18n();
     const [errors, setErrors] = useState({});
     const [generalError, setGeneralError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,7 +60,7 @@ export function useAdminForm() {
                 setErrors(fieldErrors);
                 setGeneralError(error.response.data?.message ?? null);
             } else {
-                setGeneralError(error.response?.data?.message ?? 'Something went wrong.');
+                setGeneralError(error.response?.data?.message ?? common.generic_error);
             }
             throw error;
         }
