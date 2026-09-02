@@ -383,8 +383,7 @@ class NotificationService
         string $actionType,
         int $actionId,
         array|callable $replacements = [],
-    ): void
-    {
+    ): void {
         $recipientIds = $this->preferenceService->filterEnabled(
             User::query()->pluck('id')->all(),
             NotificationPreference::CATEGORY_MARKETING,
