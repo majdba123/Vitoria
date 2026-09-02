@@ -19,7 +19,7 @@ export function StatCard({ label, value, icon: Icon, status = 'ready', onRetry, 
         <Card className="border-border/80 shadow-none">
             <CardContent className="flex items-start justify-between gap-5 px-5 py-5 lg:px-6">
                 <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-muted-foreground">{label}</p>
+                    <p className="break-words text-sm font-semibold leading-snug text-muted-foreground">{label}</p>
                     {status === 'loading' && <Skeleton className="mt-3 h-7 w-16" />}
                     {status === 'error' && (
                         <button type="button" onClick={onRetry} className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-[var(--color-danger-strong)]">

@@ -476,7 +476,7 @@ function ProductDetail({ product, productId }) {
  * can't.
  */
 export default function ProductsShow({ productId, product }) {
-    const { products } = useI18n();
+    const { nav, products } = useI18n();
     const locale = useLocale();
 
     if (!product) {
@@ -542,8 +542,8 @@ export default function ProductsShow({ productId, product }) {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Home', item: route('home') },
-            { '@type': 'ListItem', position: 2, name: 'Products', item: route('products.index') },
+            { '@type': 'ListItem', position: 1, name: nav.home, item: route('home') },
+            { '@type': 'ListItem', position: 2, name: nav.products, item: route('products.index') },
             { '@type': 'ListItem', position: 3, name: product.name, item: route('products.show', product.id) },
         ],
     };

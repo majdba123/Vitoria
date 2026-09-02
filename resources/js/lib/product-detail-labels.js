@@ -7,14 +7,14 @@ import {
 
 function toMap(...groups) {
     const map = {};
-    groups.flat().forEach((item) => { map[item.key] = item.label; });
+    groups.flat().forEach((item) => { map[item.key] = true; });
     return map;
 }
 
-export const SHARED_LABELS = toMap(SHARED_FIELDS, SHARED_REPEATERS, SHARED_TEXTAREAS, [{ key: 'registration_status', label: 'Registration status' }]);
+export const SHARED_LABELS = toMap(SHARED_FIELDS, SHARED_REPEATERS, SHARED_TEXTAREAS, [{ key: 'registration_status' }]);
 
 export const AGRICULTURAL_LABELS = toMap(
-    [{ key: 'formulation', label: 'Formulation / formula' }, { key: 'agricultural_product_type', label: 'Agricultural product type' }],
+    [{ key: 'formulation' }, { key: 'agricultural_product_type' }],
     AGRI_COMMON_REPEATERS,
     PESTICIDE_FIELDS, PESTICIDE_REPEATERS, PESTICIDE_TEXTAREAS,
     FERTILIZER_FIELDS, FERTILIZER_REPEATERS,

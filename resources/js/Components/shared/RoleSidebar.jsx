@@ -39,7 +39,7 @@ export function RoleSidebar({ brandIcon: BrandIcon, homeHref, workspaceLabel, na
                                 </span>
                                 <div className="grid flex-1 text-start leading-tight">
                                     <span className="font-display text-base font-extrabold text-sidebar-foreground">Vetora</span>
-                                    <span className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-sidebar-primary">{workspaceLabel}</span>
+                                    <span className="!overflow-visible !whitespace-normal !text-clip break-words text-[10px] font-extrabold uppercase leading-snug tracking-[0.12em] text-sidebar-primary">{workspaceLabel}</span>
                                 </div>
                             </Link>
                         </SidebarMenuButton>
@@ -55,10 +55,10 @@ export function RoleSidebar({ brandIcon: BrandIcon, homeHref, workspaceLabel, na
                             <SidebarMenu>
                                 {group.items.map((item) => (
                                     <SidebarMenuItem key={item.key}>
-                                        <SidebarMenuButton asChild isActive={item.active} tooltip={item.label}>
+                                        <SidebarMenuButton asChild isActive={item.active} tooltip={item.label} className="h-auto min-h-8 items-start py-2">
                                             <Link href={item.href}>
                                                 <item.icon />
-                                                <span>{item.label}</span>
+                                                <span className="!overflow-visible !whitespace-normal !text-clip break-words leading-snug">{item.label}</span>
                                             </Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>

@@ -14,14 +14,14 @@ export function EmployeeHeader({ title }) {
     const { props } = usePage();
 
     return (
-        <header className="dashboard-topbar sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur-sm">
+        <header className="dashboard-topbar sticky top-0 z-30 flex min-h-16 shrink-0 items-center gap-2 border-b bg-background/95 py-2 backdrop-blur-sm">
             <div className="dashboard-topbar-inner flex w-full items-center gap-2 px-3 sm:gap-3 sm:px-4 lg:px-6">
                 <SidebarTrigger className="-ms-1 size-11" />
                 <Separator orientation="vertical" className="h-5" />
 
                 <div className="min-w-0 flex-1">
                     <p className="dashboard-eyebrow text-[11px] font-extrabold uppercase tracking-[0.16em] text-primary">{employee.workspace_label}</p>
-                    <h1 className="truncate text-base font-bold text-foreground sm:text-lg">{title}</h1>
+                    <h1 className="break-words text-base font-bold leading-tight text-foreground sm:text-lg">{title}</h1>
                 </div>
 
                 <div className="flex items-center gap-0.5">

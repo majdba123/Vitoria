@@ -14,7 +14,7 @@ export function SpecGrid({ values, labels }) {
         // returns the full detail row (id, foreign keys, timestamps
         // included), and those aren't meaningful to show here.
         .filter(([key]) => key in labels)
-        .map(([key, value]) => [products?.detail_labels?.[key] ?? labels[key], formatDetailValue(value)])
+        .map(([key, value]) => [products.detail_labels[key], formatDetailValue(value)])
         .filter(([, value]) => value !== null && value !== undefined && value !== '');
 
     if (entries.length === 0) {

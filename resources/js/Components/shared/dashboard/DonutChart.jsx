@@ -31,7 +31,7 @@ export function DonutChart({ rows, total, totalLabel, formatValue }) {
                     const value = Number(row.value || 0);
                     const percentage = safeTotal ? Math.round((value / safeTotal) * 100) : 0;
 
-                    return <li key={row.key} className="flex items-center justify-between gap-3 text-sm"><span className="flex min-w-0 items-center gap-2 text-muted-foreground"><span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: row.color }} /><span className="truncate">{row.label}</span></span><span className="shrink-0 font-semibold tabular-nums text-foreground">{resolvedFormatValue(value)} <span className="text-muted-foreground">({percentage}%)</span></span></li>;
+                    return <li key={row.key} className="flex items-start justify-between gap-3 text-sm"><span className="flex min-w-0 items-start gap-2 text-muted-foreground"><span className="mt-1 size-2.5 shrink-0 rounded-full" style={{ backgroundColor: row.color }} /><span className="break-words leading-snug">{row.label}</span></span><span className="shrink-0 font-semibold tabular-nums text-foreground">{resolvedFormatValue(value)} <span className="text-muted-foreground">({percentage}%)</span></span></li>;
                 })}
             </ul>
             <p className="sr-only">{rows.map((row) => `${row.label}: ${resolvedFormatValue(row.value)}, ${safeTotal ? Math.round((Number(row.value || 0) / safeTotal) * 100) : 0}%.`).join(' ')}</p>

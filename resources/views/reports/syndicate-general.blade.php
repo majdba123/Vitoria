@@ -13,7 +13,7 @@
         .table { page-break-inside:auto; }
         .table thead { display:table-header-group; }
         .table tr { page-break-inside:avoid; }
-        .table th { background:#173f35; color:#fff; padding:6px; text-align:{{ $isArabic ? 'right' : 'left' }}; }
+        .table th { background:#173f35; color:#fff; padding:6px; text-align:center; }
         .table td { border-bottom:1px solid #e5eaf0; padding:6px; vertical-align:top; }
         .number { direction:ltr; text-align:right; white-space:nowrap; }
         .dynamic { unicode-bidi:plaintext; }
@@ -22,15 +22,13 @@
 </head>
 <body>
 @php
-    $l = $isArabic ? [
-        'title'=>'التقرير العام لمبيعات النقابة','period'=>'فترة التقرير','generated'=>'تاريخ الإنشاء','vendors'=>'التجار ضمن النطاق','active'=>'التجار النشطون','orders'=>'الطلبات المكتملة','units'=>'الوحدات المباعة','sales'=>'إجمالي المبيعات المكتملة','refunds'=>'المبالغ المستردة','top_vendors'=>'أعلى التجار مبيعاً','top_products'=>'أفضل المنتجات','categories'=>'أداء التصنيفات','trend'=>'اتجاه المبيعات','geography'=>'التوزيع الجغرافي','vendor_table'=>'أداء التجار','vendor'=>'التاجر','city'=>'المدينة','product'=>'المنتج','category'=>'التصنيف','date'=>'التاريخ','not_available'=>'غير محدد',
-    ] : [
-        'title'=>'General Syndicate Sales Report','period'=>'Report period','generated'=>'Generated at','vendors'=>'Relevant Vendors','active'=>'Active Vendors','orders'=>'Completed orders','units'=>'Units sold','sales'=>'Gross completed sales','refunds'=>'Refunds','top_vendors'=>'Top Vendors by sales','top_products'=>'Top products','categories'=>'Category performance','trend'=>'Sales trend','geography'=>'Geographic distribution','vendor_table'=>'Vendor performance','vendor'=>'Vendor','city'=>'City','product'=>'Product','category'=>'Category','date'=>'Date','not_available'=>'Not specified',
-    ];
-    $money = fn ($value) => number_format((float) $value, 2).' '.($isArabic ? 'ل.س' : 'SYP');
+    $locale = $isArabic ? 'ar' : 'en';
+    $l = trans('reports.general.labels', [], $locale);
+    $values = trans('reports.values', [], $locale);
+    $money = fn ($value) => number_format((float) $value, 2).' '.trans('reports.currency', [], $locale);
     $period = $data['period'];
 @endphp
-<table class="header"><tr><td width="22%"><img src="{{ public_path('images/vetora-logo-transparent.png') }}" style="width:88px" alt="Vetora"></td><td width="78%"><h1>{{ $l['title'] }}</h1><div class="muted dynamic" dir="auto">{{ $syndicate->name }} — {{ $isArabic ? ($data['scope']['domain'] === 'veterinary' ? 'بيطري' : 'زراعي') : ucfirst($data['scope']['domain']) }}</div></td></tr></table>
+<table class="header"><tr><td width="22%"><img src="{{ public_path('images/vetora-logo-transparent.png') }}" style="width:88px" alt="Vetora"></td><td width="78%"><h1>{{ $l['title'] }}</h1><div class="muted dynamic" dir="auto">{{ $syndicate->name }} — {{ $values[$data['scope']['domain']] ?? $l['not_available'] }}</div></td></tr></table>
 <p><strong>{{ $l['period'] }}:</strong> {{ $period['from'] ?? $l['not_available'] }} — {{ $period['to'] ?? $l['not_available'] }} &nbsp; <strong>{{ $l['generated'] }}:</strong> {{ $data['generated_at']->format('Y-m-d H:i') }}</p>
 <table class="kpis"><tr><td>{{ $l['vendors'] }}<br><strong>{{ $data['kpis']['vendors'] }}</strong></td><td>{{ $l['active'] }}<br><strong>{{ $data['kpis']['active_vendors'] }}</strong></td><td>{{ $l['orders'] }}<br><strong>{{ $data['kpis']['completed_orders'] }}</strong></td></tr><tr><td>{{ $l['units'] }}<br><strong>{{ $data['kpis']['units_sold'] }}</strong></td><td>{{ $l['sales'] }}<br><strong>{{ $money($data['kpis']['gross_sales']) }}</strong></td><td>{{ $l['refunds'] }}<br><strong>{{ $money($data['kpis']['refunds']) }}</strong></td></tr></table>
 

@@ -36,7 +36,7 @@ export function formatCurrency(value, locale = 'en', currency = 'SYP') {
     return new Intl.NumberFormat(resolveLocale(locale), {
         style: 'currency',
         currency,
-        currencyDisplay: 'code',
+        currencyDisplay: locale === 'ar' ? 'symbol' : 'code',
         maximumFractionDigits: 2,
     }).format(Number(value ?? 0));
 }

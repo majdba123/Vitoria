@@ -43,12 +43,25 @@ export function ProductDetailFields({
     errors,
 }) {
     const { products } = useI18n();
+    const localizeFields = (definitions) => definitions.map((definition) => ({
+        ...definition,
+        label: products.detail_labels[definition.key],
+    }));
+    const localizeRepeaters = (definitions) => definitions.map((definition) => ({
+        ...definition,
+        label: products.detail_labels[definition.key],
+        ...products.repeater_fields[definition.key],
+    }));
+    const localizeRegistrationOptions = (options) => options.map((option) => ({
+        ...option,
+        label: products.registration_status_options[option.value],
+    }));
     const isPesticide = PESTICIDE_SUBTYPES.includes(agriculturalProductType);
     const isFertilizer = FERTILIZER_SUBTYPES.includes(agriculturalProductType);
     const isSeed = SEED_SUBTYPES.includes(agriculturalProductType);
     const translatedAgriTypeOptions = AGRICULTURAL_TYPE_OPTIONS.map((option) => ({
         ...option,
-        label: products?.form?.[`type_${option.value}`] ?? option.label,
+        label: products.form[`type_${option.value}`],
     }));
 
     return (
@@ -60,15 +73,15 @@ export function ProductDetailFields({
                 </CardHeader>
                 <CardContent className="space-y-6 p-5 sm:p-6">
                     <DetailFieldGroup
-                        fields={SHARED_FIELDS}
-                        selects={[{ key: 'registration_status', label: 'Registration status', options: SHARED_REGISTRATION_STATUS_OPTIONS }]}
+                        fields={localizeFields(SHARED_FIELDS)}
+                        selects={[{ key: 'registration_status', label: products.detail_labels.registration_status, options: localizeRegistrationOptions(SHARED_REGISTRATION_STATUS_OPTIONS) }]}
                         values={sharedDetail}
                         onChange={onSharedChange}
                         errors={errors}
                         prefix="shared_detail"
                     />
-                    <DetailFieldGroup repeaters={SHARED_REPEATERS} values={sharedDetail} onChange={onSharedChange} errors={errors} prefix="shared_detail" />
-                    <DetailFieldGroup textareas={SHARED_TEXTAREAS} values={sharedDetail} onChange={onSharedChange} errors={errors} prefix="shared_detail" />
+                    <DetailFieldGroup repeaters={localizeRepeaters(SHARED_REPEATERS)} values={sharedDetail} onChange={onSharedChange} errors={errors} prefix="shared_detail" />
+                    <DetailFieldGroup textareas={localizeFields(SHARED_TEXTAREAS)} values={sharedDetail} onChange={onSharedChange} errors={errors} prefix="shared_detail" />
                 </CardContent>
             </Card>
 
@@ -93,10 +106,10 @@ export function ProductDetailFields({
                                     ))}
                                 </select>
                             </div>
-                            <DetailFieldGroup fields={[{ key: 'formulation', label: 'Formulation / formula' }]} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
+                            <DetailFieldGroup fields={localizeFields([{ key: 'formulation' }])} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
                         </div>
 
-                        <DetailFieldGroup repeaters={AGRI_COMMON_REPEATERS} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
+                        <DetailFieldGroup repeaters={localizeRepeaters(AGRI_COMMON_REPEATERS)} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
 
                         {isPesticide && (
                             <div className="space-y-6 rounded-lg border border-[var(--color-success-200)] bg-[var(--color-success-soft)]/40 p-4">
@@ -104,9 +117,9 @@ export function ProductDetailFields({
                                     <h3 className="text-sm font-bold text-foreground">{products.form.pesticide_fields_title}</h3>
                                     <p className="text-xs text-muted-foreground">{products.form.pesticide_fields_copy}</p>
                                 </div>
-                                <DetailFieldGroup fields={PESTICIDE_FIELDS} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
-                                <DetailFieldGroup repeaters={PESTICIDE_REPEATERS} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
-                                <DetailFieldGroup textareas={PESTICIDE_TEXTAREAS} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
+                                <DetailFieldGroup fields={localizeFields(PESTICIDE_FIELDS)} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
+                                <DetailFieldGroup repeaters={localizeRepeaters(PESTICIDE_REPEATERS)} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
+                                <DetailFieldGroup textareas={localizeFields(PESTICIDE_TEXTAREAS)} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
                             </div>
                         )}
 
@@ -116,8 +129,8 @@ export function ProductDetailFields({
                                     <h3 className="text-sm font-bold text-foreground">{products.form.fertilizer_fields_title}</h3>
                                     <p className="text-xs text-muted-foreground">{products.form.fertilizer_fields_copy}</p>
                                 </div>
-                                <DetailFieldGroup fields={FERTILIZER_FIELDS} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
-                                <DetailFieldGroup repeaters={FERTILIZER_REPEATERS} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
+                                <DetailFieldGroup fields={localizeFields(FERTILIZER_FIELDS)} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
+                                <DetailFieldGroup repeaters={localizeRepeaters(FERTILIZER_REPEATERS)} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
                             </div>
                         )}
 
@@ -127,8 +140,8 @@ export function ProductDetailFields({
                                     <h3 className="text-sm font-bold text-foreground">{products.form.seed_fields_title}</h3>
                                     <p className="text-xs text-muted-foreground">{products.form.seed_fields_copy}</p>
                                 </div>
-                                <DetailFieldGroup fields={SEED_FIELDS} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
-                                <DetailFieldGroup repeaters={SEED_REPEATERS} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
+                                <DetailFieldGroup fields={localizeFields(SEED_FIELDS)} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
+                                <DetailFieldGroup repeaters={localizeRepeaters(SEED_REPEATERS)} values={agriculturalDetail} onChange={onAgriculturalChange} errors={errors} prefix="agricultural_detail" />
                             </div>
                         )}
                     </CardContent>
@@ -142,9 +155,9 @@ export function ProductDetailFields({
                         <p className="text-sm text-muted-foreground">{products.form.veterinary_fields_copy}</p>
                     </CardHeader>
                     <CardContent className="space-y-6 p-5 sm:p-6">
-                        <DetailFieldGroup fields={VETERINARY_FIELDS} values={veterinaryDetail} onChange={onVeterinaryChange} errors={errors} prefix="veterinary_detail" />
-                        <DetailFieldGroup repeaters={VETERINARY_REPEATERS} values={veterinaryDetail} onChange={onVeterinaryChange} errors={errors} prefix="veterinary_detail" />
-                        <DetailFieldGroup textareas={VETERINARY_TEXTAREAS} values={veterinaryDetail} onChange={onVeterinaryChange} errors={errors} prefix="veterinary_detail" />
+                        <DetailFieldGroup fields={localizeFields(VETERINARY_FIELDS)} values={veterinaryDetail} onChange={onVeterinaryChange} errors={errors} prefix="veterinary_detail" />
+                        <DetailFieldGroup repeaters={localizeRepeaters(VETERINARY_REPEATERS)} values={veterinaryDetail} onChange={onVeterinaryChange} errors={errors} prefix="veterinary_detail" />
+                        <DetailFieldGroup textareas={localizeFields(VETERINARY_TEXTAREAS)} values={veterinaryDetail} onChange={onVeterinaryChange} errors={errors} prefix="veterinary_detail" />
                     </CardContent>
                 </Card>
             )}

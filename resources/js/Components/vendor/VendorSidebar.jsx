@@ -17,12 +17,12 @@ function CategoryDisclosure({ category, groupLabel }) {
             <button
                 type="button"
                 onClick={() => setOpen((v) => !v)}
-                className="mb-1 flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-start text-sm font-semibold text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                className="mb-1 flex w-full items-start gap-3 rounded-md px-3 py-2.5 text-start text-sm font-semibold text-sidebar-foreground/75 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
             >
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-sidebar-accent text-sidebar-primary">
                     <Layers className="size-4" />
                 </span>
-                <span className="flex-1 truncate">{category.name}</span>
+                <span className="min-w-0 flex-1 break-words leading-snug">{category.name}</span>
                 <span className="rounded-full bg-sidebar-primary/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.18em] text-sidebar-primary">
                     {formatPercent(category.commission || 0, locale, { maximumFractionDigits: 0 })}
                 </span>
@@ -34,7 +34,7 @@ function CategoryDisclosure({ category, groupLabel }) {
                     {subcategories.map((sub) => (
                         <div key={sub.id} className="flex items-center gap-2 rounded-md px-2 py-2 text-xs text-sidebar-foreground/55 hover:bg-sidebar-accent hover:text-sidebar-foreground/80">
                             <span className="size-1.5 rounded-full bg-sidebar-primary/70" />
-                            <span className="truncate">{sub.name}</span>
+                            <span className="min-w-0 break-words leading-snug">{sub.name}</span>
                         </div>
                     ))}
                 </div>

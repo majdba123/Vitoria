@@ -35,11 +35,11 @@ export function ProfileMenu() {
 
     return (
         <div className="relative" ref={ref}>
-            <button type="button" onClick={() => setOpen((v) => !v)} aria-haspopup="menu" aria-expanded={open} className="flex items-center gap-2.5 rounded-lg border border-transparent px-2 py-1.5 hover:bg-accent/50">
+            <button type="button" onClick={() => setOpen((v) => !v)} aria-label={`${user.name} — ${roleLabel}`} aria-haspopup="menu" aria-expanded={open} className="flex items-center gap-2.5 rounded-lg border border-transparent px-2 py-1.5 hover:bg-accent/50">
                 <div className="flex size-8 items-center justify-center overflow-hidden rounded-full bg-primary">
                     {user.avatar_url ? <img src={user.avatar_url} alt="" className="size-full object-cover" /> : <span className="text-sm font-bold text-primary-foreground">{initial}</span>}
                 </div>
-                <div className="hidden text-start sm:block">
+                <div className="hidden max-w-40 min-w-0 text-start xl:block">
                     <p className="text-sm font-semibold leading-tight text-foreground">{user.name}</p>
                     <p className="text-[10px] font-medium text-muted-foreground">{roleLabel}</p>
                 </div>

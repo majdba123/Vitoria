@@ -20,7 +20,7 @@ import { useI18n } from '@/hooks/use-i18n';
  * handler appends as photos[]/photo_types[]/photo_sort_orders[].
  */
 export function PhotoUpload({ photos, onChange, error }) {
-    const { products } = useI18n();
+    const { common, products } = useI18n();
     const inputRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
     const [lightbox, setLightbox] = useState(null);
@@ -141,10 +141,10 @@ export function PhotoUpload({ photos, onChange, error }) {
             </CardContent>
 
             {lightbox && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={() => setLightbox(null)}>
+                <div role="dialog" aria-modal="true" aria-label={products.photo} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={() => setLightbox(null)}>
                     <div className="relative max-h-[90vh] max-w-[90vw]">
                         <img src={lightbox} alt="" className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain" />
-                        <Button type="button" variant="secondary" size="icon" className="absolute end-2 top-2" onClick={() => setLightbox(null)}>
+                        <Button type="button" variant="secondary" size="icon" className="absolute end-2 top-2" aria-label={common.close} title={common.close} onClick={() => setLightbox(null)}>
                             <X className="size-4" />
                         </Button>
                     </div>

@@ -13,7 +13,7 @@ export function MetricTileGrid({ rows, hrefFor, columns = 3 }) {
                     href={hrefFor(row.type)}
                     className="rounded-md border border-border/70 bg-card px-4 py-4 transition-colors hover:border-primary/50 hover:bg-accent/40"
                 >
-                    <p className="truncate text-sm font-semibold text-muted-foreground">{row.label}</p>
+                    <p className="break-words text-sm font-semibold leading-snug text-muted-foreground">{row.label}</p>
                     <p className="mt-2 text-2xl font-bold tabular-nums text-foreground">{Number(row.total || 0)}</p>
                 </Link>
             ))}

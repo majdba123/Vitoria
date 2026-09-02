@@ -14,7 +14,7 @@
         .report-table { page-break-inside: auto; }
         .report-table thead { display: table-header-group; }
         .report-table tr { page-break-inside: avoid; }
-        .report-table th { background: #173f35; color: #fff; padding: 6px; text-align: {{ $isArabic ? 'right' : 'left' }}; }
+        .report-table th { background: #173f35; color: #fff; padding: 6px; text-align: center; }
         .report-table td { border-bottom: 1px solid #e5eaf0; padding: 6px; vertical-align: top; }
         .number { direction: ltr; text-align: right; white-space: nowrap; }
         .dynamic { unicode-bidi: plaintext; }
@@ -23,44 +23,25 @@
 </head>
 <body>
 @php
-    $labels = $isArabic ? [
-        'title' => 'تقرير أداء التاجر', 'identity' => 'بيانات التاجر', 'period' => 'فترة التقرير', 'from' => 'من تاريخ', 'to' => 'إلى تاريخ',
-        'generated' => 'تاريخ الإنشاء', 'store' => 'المتجر', 'owner' => 'اسم المالك/النشاط', 'type' => 'نوع النشاط', 'city' => 'المدينة',
-        'status' => 'الحالة', 'joined' => 'تاريخ التسجيل', 'domain' => 'نطاق النقابة', 'categories' => 'التصنيفات', 'kpis' => 'ملخص المؤشرات',
-        'products' => 'المنتجات التابعة للنطاق', 'active_products' => 'المنتجات النشطة', 'orders' => 'الطلبات المكتملة', 'units' => 'الوحدات المباعة',
-        'sales' => 'إجمالي المبيعات المكتملة', 'refunds' => 'المبالغ المستردة', 'net' => 'صافي مستحقات التاجر', 'average' => 'متوسط قيمة الطلب المكتمل',
-        'last_sale' => 'تاريخ آخر عملية بيع', 'sales_summary' => 'ملخص المبيعات', 'product_performance' => 'أداء المنتجات', 'product' => 'المنتج',
-        'category' => 'التصنيف', 'order_count' => 'عدد الطلبات', 'gross' => 'إجمالي المبيعات', 'orders_summary' => 'ملخص الطلبات',
-        'order' => 'الطلب', 'date' => 'التاريخ', 'items' => 'المنتجات / العناصر التابعة للنطاق', 'amount' => 'المبلغ المكتمل', 'returns' => 'المرتجعات والمبالغ المستردة',
-        'return_status' => 'الحالة', 'category_performance' => 'الأداء حسب التصنيف', 'products_count' => 'عدد المنتجات', 'not_available' => 'غير متاح',
-        'attribution_notice' => 'لا يمكن احتساب صافي أرباح هذا النطاق بدقة بسبب وجود طلبات مختلطة النطاق؛ لذلك لم يتم عرض قيمة تقديرية.',
-    ] : [
-        'title' => 'Vendor Performance Report', 'identity' => 'Vendor identity', 'period' => 'Report period', 'from' => 'From', 'to' => 'To',
-        'generated' => 'Generated at', 'store' => 'Store', 'owner' => 'Owner/business name', 'type' => 'Business type', 'city' => 'City', 'status' => 'Status',
-        'joined' => 'Registration date', 'domain' => 'Syndicate scope', 'categories' => 'Categories', 'kpis' => 'KPI summary', 'products' => 'Relevant products',
-        'active_products' => 'Active products', 'orders' => 'Completed orders', 'units' => 'Units sold', 'sales' => 'Gross completed sales', 'refunds' => 'Refunds',
-        'net' => 'Net Vendor Earnings', 'average' => 'Average completed order value', 'last_sale' => 'Last sale date', 'sales_summary' => 'Sales summary',
-        'product_performance' => 'Product performance', 'product' => 'Product', 'category' => 'Category', 'order_count' => 'Completed orders', 'gross' => 'Gross sales',
-        'orders_summary' => 'Orders summary', 'order' => 'Order', 'date' => 'Date', 'items' => 'Relevant products/items', 'amount' => 'Completed amount',
-        'returns' => 'Returns and refunds', 'return_status' => 'Status', 'category_performance' => 'Category performance', 'products_count' => 'Products count',
-        'not_available' => 'Not available', 'attribution_notice' => 'Net earnings cannot be attributed accurately because the period contains mixed-domain orders, so no estimate is shown.',
-    ];
-    $values = $isArabic ? ['both' => 'زراعي وبيطري', 'agriculture' => 'زراعي', 'veterinary' => 'بيطري', 'active' => 'نشط', 'inactive' => 'غير نشط', 'completed' => 'مكتمل', 'cancelled' => 'ملغي', 'refunded' => 'مسترد', 'pending' => 'قيد الانتظار'] : [];
-    $translatedValue = fn ($value) => $values[$value] ?? $value;
-    $money = fn ($value) => $value === null ? $labels['not_available'] : number_format((float) $value, 2).' '.($isArabic ? 'ل.س' : 'SYP');
+    $locale = $isArabic ? 'ar' : 'en';
+    $labels = trans('reports.vendor.labels', [], $locale);
+    $values = trans('reports.values', [], $locale);
+    $scope = trans('reports.scope', [], $locale);
+    $translatedValue = fn ($value) => $values[$value] ?? $labels['not_available'];
+    $money = fn ($value) => $value === null ? $labels['not_available'] : number_format((float) $value, 2).' '.trans('reports.currency', [], $locale);
     $date = fn ($value) => $value ? \Carbon\Carbon::parse($value)->format('Y-m-d') : '—';
     $period = $data['scope']['period'];
 @endphp
 
 <h1>{{ $labels['title'] }}</h1>
-<div class="muted dynamic" dir="auto">{{ $data['vendor']['store_name'] }} — {{ $syndicate ? ($isArabic ? 'النقابة '.$translatedValue($data['scope']['domain']) : $syndicate->name) : ($isArabic ? 'نطاق الإدارة' : 'Admin scope') }}</div>
+<div class="muted dynamic" dir="auto">{{ $data['vendor']['store_name'] }} — {{ $syndicate ? str_replace(':domain', $translatedValue($data['scope']['domain']), $scope['syndicate']) : $scope['admin'] }}</div>
 
 <h2>{{ $labels['identity'] }}</h2>
 <table class="meta">
     <tr><td><strong>{{ $labels['store'] }}:</strong> <span class="dynamic" dir="auto">{{ $data['vendor']['store_name'] }}</span></td><td><strong>{{ $labels['city'] }}:</strong> <span class="dynamic" dir="auto">{{ $data['vendor']['city']['name'] ?? '—' }}</span></td></tr>
     <tr><td><strong>{{ $labels['type'] }}:</strong> {{ $translatedValue($data['vendor']['business_type']) }}</td><td></td></tr>
     <tr><td><strong>{{ $labels['status'] }}:</strong> {{ $translatedValue($data['vendor']['status']) }}</td><td><strong>{{ $labels['joined'] }}:</strong> {{ $date($data['vendor']['joined_at']) }}</td></tr>
-    <tr><td><strong>{{ $labels['domain'] }}:</strong> {{ $data['scope']['domain'] ? $translatedValue($data['scope']['domain']) : ($isArabic ? 'كامل نشاط التاجر' : 'All vendor activity') }}</td><td><strong>{{ $labels['categories'] }}:</strong> <span class="dynamic" dir="auto">{{ collect($data['vendor']['categories'])->pluck('name')->join(', ') ?: '—' }}</span></td></tr>
+    <tr><td><strong>{{ $labels['domain'] }}:</strong> {{ $data['scope']['domain'] ? $translatedValue($data['scope']['domain']) : $scope['all_vendor_activity'] }}</td><td><strong>{{ $labels['categories'] }}:</strong> <span class="dynamic" dir="auto">{{ collect($data['vendor']['categories'])->pluck('name')->join(', ') ?: '—' }}</span></td></tr>
 </table>
 
 <h2>{{ $labels['period'] }}</h2>

@@ -65,6 +65,13 @@ export default function ProductsShow({ productId }) {
 
     const primaryPhoto = product.photos?.find((p) => p.is_primary) ?? product.photos?.[0];
     const galleryPhotos = (product.photos ?? []).filter((p) => p.id !== primaryPhoto?.id);
+    const localizedSubcategory = locale === 'ar'
+        ? (product.subcategory?.name_ar || product.subcategory?.name_en)
+        : (product.subcategory?.name_en || product.subcategory?.name_ar);
+    const agriculturalProductType = product.agricultural_detail?.agricultural_product_type;
+    const localizedAgriculturalProductType = agriculturalProductType
+        ? (products.form[`type_${agriculturalProductType}`] ?? common.not_available)
+        : common.not_available;
 
     return (
         <AdminLayout title={product.name}>
@@ -94,7 +101,7 @@ export default function ProductsShow({ productId }) {
                     <div className="space-y-4">
                         <div className="flex flex-wrap items-center gap-2">
                             <StatusBadge tone="brand">{product.category?.name ?? admin.not_assigned}</StatusBadge>
-                            {product.subcategory && <StatusBadge tone="brand">{product.subcategory.name_ar || product.subcategory.name_en}</StatusBadge>}
+                            {product.subcategory && <StatusBadge tone="brand">{localizedSubcategory}</StatusBadge>}
                             <StatusBadge tone={product.status === 'approved' ? 'success' : product.status === 'rejected' ? 'danger' : 'warning'}>
                                 {product.status === 'approved' ? admin.status_approved : product.status === 'rejected' ? admin.status_rejected : admin.status_pending}
                             </StatusBadge>
@@ -238,8 +245,8 @@ export default function ProductsShow({ productId }) {
                         <CardContent className="space-y-3 p-5">
                             {[
                                 { label: common.category, value: product.category?.name },
-                                { label: products.fields.subcategory, value: product.subcategory?.name_ar || product.subcategory?.name_en || products.no_subcategory },
-                                { label: products.fields.product_type, value: product.agricultural_detail?.agricultural_product_type || '—' },
+                                { label: products.fields.subcategory, value: localizedSubcategory || products.no_subcategory },
+                                { label: products.fields.product_type, value: localizedAgriculturalProductType },
                             ].map((item) => (
                                 <div key={item.label} className="rounded-md border border-border bg-muted/40 px-4 py-3">
                                     <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-muted-foreground">{item.label}</p>

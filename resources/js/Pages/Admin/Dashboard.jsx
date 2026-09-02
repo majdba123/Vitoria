@@ -27,7 +27,7 @@ function typeLabel(admin, type, fallback) {
     if (type === 'veterinary') return admin.type_veterinary ?? fallback ?? type;
     if (type === 'both') return admin.type_both ?? fallback ?? type;
 
-    return fallback ?? type ?? '';
+    return fallback ?? admin.not_assigned ?? '';
 }
 
 export default function Dashboard() {
@@ -309,7 +309,7 @@ export default function Dashboard() {
                                 key={product.id}
                                 href={route('admin.products.show', product.id)}
                                 title={product.name}
-                                subtitle={product.category?.name || product.status || ''}
+                                subtitle={product.category?.name || admin[`status_${product.status}`] || admin.not_assigned}
                                 trailing={<StatusBadge tone={product.is_active ? 'success' : 'danger'}>{product.is_active ? admin.status_active : admin.status_inactive}</StatusBadge>}
                             />
                         ))}

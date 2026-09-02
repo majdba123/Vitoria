@@ -63,8 +63,9 @@ function renderAddresses() {
 
     container.innerHTML = addresses.map((address) => {
         const checked = address.id === selectedAddressId;
+        const separator = (document.documentElement.lang || 'en') === 'ar' ? '، ' : ', ';
         const line = [address.street, address.district, address.city, address.governorate]
-            .filter(Boolean).map(escapeHtml).join('، ');
+            .filter(Boolean).map(escapeHtml).join(separator);
 
         return `
             <label class="flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${

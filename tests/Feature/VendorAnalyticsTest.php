@@ -250,12 +250,24 @@ test('general syndicate PDF aggregates only the authenticated domain and selecte
         ->assertHeader('x-vetora-report-domain', Category::TYPE_AGRICULTURE);
     expect(strlen($response->getContent()))->toBeGreaterThan(1000);
 
+    $englishResponse = $this->get('/api/syndicate/reports.pdf?range=30_days&locale=en');
+    $englishResponse->assertOk()->assertHeader('content-type', 'application/pdf')
+        ->assertHeader('x-vetora-report-domain', Category::TYPE_AGRICULTURE);
+    expect(strlen($englishResponse->getContent()))->toBeGreaterThan(1000);
+
     $period = ['key' => '30_days', 'from' => CarbonImmutable::today()->subDays(29)->startOfDay(), 'to' => CarbonImmutable::today()->endOfDay()];
     $report = app(SyndicateReportService::class)->data($syndicate, $period);
+    $arabicHtml = view('reports.syndicate-general', ['data' => $report, 'syndicate' => $syndicate, 'isArabic' => true])->render();
+    $englishHtml = view('reports.syndicate-general', ['data' => $report, 'syndicate' => $syndicate, 'isArabic' => false])->render();
+
     expect($report['kpis']['gross_sales'])->toBe(200.0)
         ->and($report['kpis']['completed_orders'])->toBe(1)
         ->and(collect($report['top_products'])->pluck('id'))->toContain($data['agProduct']->id)->not->toContain($data['vetProduct']->id, $data['otherProduct']->id)
-        ->and(collect($report['vendor_performance'])->pluck('id'))->toContain($data['both']->id)->not->toContain($data['other']->id);
+        ->and(collect($report['vendor_performance'])->pluck('id'))->toContain($data['both']->id)->not->toContain($data['other']->id)
+        ->and($arabicHtml)->toContain('dir="rtl"', 'التقرير العام لمبيعات النقابة', 'زراعي', '200.00 ل.س')
+        ->not->toContain('General Syndicate Sales Report')
+        ->and($englishHtml)->toContain('dir="ltr"', 'General Syndicate Sales Report', 'Agriculture', '200.00 SYP')
+        ->not->toContain('التقرير العام لمبيعات النقابة');
 });
 
 test('syndicate pdf source data reconciles with dashboard and excludes the other domain', function (string $domain, int $units, float $sales, string $includedProduct, string $excludedProduct) {
@@ -321,7 +333,7 @@ test('syndicate report supports explicit Arabic and English presentation from id
     $arabicHtml = view('reports.syndicate-vendor', ['data' => $report, 'syndicate' => $syndicate, 'isArabic' => true])->render();
     $englishHtml = view('reports.syndicate-vendor', ['data' => $report, 'syndicate' => $syndicate, 'isArabic' => false])->render();
 
-    expect($arabicHtml)->toContain('dir="rtl"', 'تقرير أداء التاجر', 'زراعي وبيطري', 'نشط', 'مكتمل', '600.00 ل.س')
+    expect($arabicHtml)->toContain('dir="rtl"', 'تقرير أداء البائع', 'زراعي وبيطري', 'نشط', 'مكتمل', '600.00 ل.س')
         ->not->toContain('Vendor Performance Report')
         ->and($englishHtml)->toContain('dir="ltr"', 'Vendor Performance Report', '600.00 SYP')
         ->and($report['kpis']['gross_sales'])->toBe(600.0);

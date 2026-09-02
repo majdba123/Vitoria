@@ -84,12 +84,56 @@ test('arabic validation uses translated messages and attribute names', function 
     $validator = Validator::make([], [
         'phone_number' => ['required'],
         'email' => ['required'],
+        'date_from' => ['required'],
+        'paid_amount' => ['required'],
+        'items.0.quantity' => ['required'],
     ]);
 
     expect($validator->errors()->first('phone_number'))->toContain('رقم الهاتف')
         ->not->toContain('required')
         ->and($validator->errors()->first('email'))->toContain('البريد الإلكتروني')
-        ->not->toContain('required');
+        ->not->toContain('required')
+        ->and($validator->errors()->first('date_from'))->toContain('تاريخ البداية')
+        ->not->toContain('date_from')
+        ->and($validator->errors()->first('paid_amount'))->toContain('المبلغ المدفوع')
+        ->not->toContain('paid_amount')
+        ->and($validator->errors()->first('items.0.quantity'))->toContain('كمية المنتج')
+        ->not->toContain('items.0.quantity');
+});
+
+test('frontend source does not introduce obvious static interface copy', function () {
+    $allowedTextNodes = ['CSV', 'SYP', 'Vetora'];
+    $allowedLiteralAttributes = ['Vetora'];
+    $findings = [];
+
+    foreach (File::allFiles(resource_path('js')) as $file) {
+        if (! in_array($file->getExtension(), ['js', 'jsx'], true)) {
+            continue;
+        }
+
+        $source = File::get($file->getPathname());
+        $path = str_replace('\\', '/', $file->getRelativePathname());
+
+        preg_match_all('/>\s*([A-Za-z][A-Za-z0-9 ,.!?&\/+:\-]{1,80})\s*</', $source, $textMatches);
+
+        foreach ($textMatches[1] as $copy) {
+            $copy = trim($copy);
+
+            if (! in_array($copy, $allowedTextNodes, true)) {
+                $findings[] = "STATIC_TEXT {$path}: {$copy}";
+            }
+        }
+
+        preg_match_all('/\b(?:aria-label|title|alt|emptyTitle|emptyMessage)="([A-Za-z][^"]+)"/', $source, $attributeMatches);
+
+        foreach ($attributeMatches[1] as $copy) {
+            if (! in_array($copy, $allowedLiteralAttributes, true)) {
+                $findings[] = "STATIC_ATTRIBUTE {$path}: {$copy}";
+            }
+        }
+    }
+
+    expect($findings)->toBe([]);
 });
 
 /**

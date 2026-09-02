@@ -75,7 +75,7 @@ function TableHead({
     <th
       data-slot="table-head"
       className={cn(
-        "h-11 px-4 text-center align-middle text-[0.8125rem] font-semibold whitespace-nowrap text-foreground lg:h-12 lg:text-sm [&:has([role=checkbox])]:px-2 [&>[role=checkbox]]:translate-y-[2px]",
+        "min-w-24 px-4 py-3 text-center align-middle text-[0.8125rem] font-semibold whitespace-normal break-words leading-snug text-foreground lg:text-sm [&:has([role=checkbox])]:px-2 [&>[role=checkbox]]:translate-y-[2px]",
         className
       )}
       {...props} />

@@ -53,7 +53,7 @@ test('map ownership is limited to the two dashboards and admin drilldown initial
     $adminVendors = file_get_contents(resource_path('js/Pages/Admin/Vendors/Index.jsx'));
 
     expect($adminDashboard)->toContain('<DashboardVendorMap')
-        ->and($syndicateDashboard)->toContain('isOverview && <DashboardVendorMap')
+        ->and($syndicateDashboard)->toContain('{isOverview && (', '<DashboardVendorMap endpoint="/api/syndicate/vendors/map"')
         ->and($adminVendors)->not->toContain('DashboardVendorMap')
         ->not->toContain('ViewSwitch')
         ->toContain("initialQuery.get('governorate')")
@@ -67,6 +67,22 @@ test('locale formatters use one explicit western-digit locale for Arabic screens
         ->toContain('ar-SY-u-nu-latn')
         ->toContain('Intl.DateTimeFormat')
         ->toContain('Intl.NumberFormat');
+});
+
+test('vendor map keeps its raster and SVG in one explicit physical coordinate system', function () {
+    $source = file_get_contents(resource_path('js/Components/maps/DashboardVendorMap.jsx'));
+
+    expect($source)
+        ->toContain("MAP_VIEWBOX = '0 0 512 468'")
+        ->toContain("MAP_ASSET = '/images/syria-governorates-map.jpg'")
+        ->toContain('viewBox={MAP_VIEWBOX}')
+        ->toContain('preserveAspectRatio="none"')
+        ->toContain('dir="ltr"')
+        ->toContain('object-contain')
+        ->toContain('className="absolute inset-0 size-full"');
+
+    expect(getimagesize(public_path('images/syria-governorates-map.jpg')))
+        ->toMatchArray([0 => 512, 1 => 468]);
 });
 
 test('homepage partner presentation is logos only and banners preserve their image ratio', function () {

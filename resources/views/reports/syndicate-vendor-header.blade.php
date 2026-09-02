@@ -2,8 +2,15 @@
     <tr>
         <td width="22%"><img src="{{ public_path('images/vetora-logo-transparent.png') }}" style="width:88px" alt="Vetora"></td>
         <td width="78%" style="text-align:{{ $isArabic ? 'right' : 'left' }}">
-            <strong style="font-size:13px">{{ $isArabic ? 'تقرير أداء التاجر' : 'Vendor Performance Report' }}</strong><br>
-            <span dir="auto" style="font-size:9px;color:#64748b">{{ $data['vendor']['store_name'] }} — {{ $syndicate ? ($isArabic ? 'النقابة '.($data['scope']['domain'] === 'veterinary' ? 'البيطرية' : 'الزراعية') : $syndicate->name) : ($isArabic ? 'نطاق الإدارة' : 'Admin scope') }}</span>
+            @php
+                $locale = $isArabic ? 'ar' : 'en';
+                $domain = trans('reports.values.'.($data['scope']['domain'] ?? 'both'), [], $locale);
+                $scope = $syndicate
+                    ? str_replace(':domain', $domain, trans('reports.scope.syndicate', [], $locale))
+                    : trans('reports.scope.admin', [], $locale);
+            @endphp
+            <strong style="font-size:13px">{{ trans('reports.vendor.labels.title', [], $locale) }}</strong><br>
+            <span dir="auto" style="font-size:9px;color:#64748b">{{ $data['vendor']['store_name'] }} — {{ $scope }}</span>
         </td>
     </tr>
 </table>

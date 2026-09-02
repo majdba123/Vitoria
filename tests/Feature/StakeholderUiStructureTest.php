@@ -17,7 +17,7 @@ test('stakeholder UI structure removes duplicated navigation and keeps shared he
     $routes = file_get_contents(base_path('routes/web.php'));
 
     expect($home)->not->toContain('commerce-section-header border-t-2 border-foreground pt-7')
-        ->and($table)->toContain('[&_th]:text-center', 'h-11 px-4 text-center')
+        ->and($table)->toContain('[&_th]:text-center', 'px-4 py-3 text-center')
         ->and($vendorNavigation)->not->toContain('vendor.discounts.index', 't.discounts')
         ->and($vendorNavigation)->toContain("route: 'vendor.sales'")
         ->and($legacyVendorNavigation)->not->toContain('vendor.discounts.index', 'vendor.commission')
@@ -43,8 +43,8 @@ test('shared desktop primitives use the approved bounded readable scale', functi
     $select = file_get_contents(resource_path('js/Components/ui/select.jsx'));
     $table = file_get_contents(resource_path('js/Components/ui/table.jsx'));
     $dialog = file_get_contents(resource_path('js/Components/ui/dialog.jsx'));
-    $statCard = file_get_contents(resource_path('js/Components/admin/dashboard/StatCard.jsx'));
-    $metricGrid = file_get_contents(resource_path('js/Components/admin/dashboard/MetricTileGrid.jsx'));
+    $statCard = file_get_contents(resource_path('js/Components/shared/dashboard/StatCard.jsx'));
+    $metricGrid = file_get_contents(resource_path('js/Components/shared/dashboard/MetricTileGrid.jsx'));
     $syndicateHeader = file_get_contents(resource_path('js/Components/syndicate/SyndicateHeader.jsx'));
 
     expect($styles)
@@ -54,7 +54,7 @@ test('shared desktop primitives use the approved bounded readable scale', functi
         ->and($button)->toContain('default: "h-11', 'sm: "h-10', 'icon: "size-11"')
         ->and($input)->toContain('"h-11', 'text-base')->not->toContain('md:text-sm')
         ->and($select)->toContain('data-[size=default]:h-11', 'data-[size=sm]:h-10')
-        ->and($table)->toContain('lg:text-[0.9375rem]', 'lg:h-12 lg:text-sm', 'px-4 py-3')
+        ->and($table)->toContain('lg:text-[0.9375rem]', 'whitespace-normal break-words', 'px-4 py-3')
         ->and($dialog)->toContain('sm:max-w-xl sm:p-7')
         ->and($statCard)->toContain('text-sm font-semibold', 'lg:text-3xl', 'size-12')
         ->and($metricGrid)->toContain('text-sm font-semibold', 'text-2xl font-bold');
@@ -75,14 +75,14 @@ test('Vendor 360 and report templates keep accounting and PDF labels separated a
 
     expect($vendor360)
         ->not->toContain('Credit / دائن', 'Debit / مدين', '<span>From</span>', '<span>To</span>', '} orders</p>')
-        ->toContain('labels.credit : labels.debit', 'labels[`ledger_${row.type}`]', "locale.startsWith('ar') ? 'ل.س' : 'SYP'", 'alt={row.name}')
+        ->toContain('labels.credit : labels.debit', 'labels[`ledger_${row.type}`]', "formatCurrency(value, locale, 'SYP')", 'alt={row.name}')
         ->and($arabic['credit'])->toBe('دائن')
         ->and($arabic['debit'])->toBe('مدين')
         ->and($english['credit'])->toBe('Credit')
         ->and($english['debit'])->toBe('Debit')
-        ->and($vendorSales)->toContain('vendor.currency_syp', "toLocaleDateString(locale, { weekday: 'short' })")
+        ->and($vendorSales)->toContain('formatCurrency(ledgerSummary[key], locale)', 'formatDate(entry.created_at, locale)')
         ->not->toContain('} SYP`', 'No completed orders found.', 'No trend data available.')
-        ->and($syndicateDashboard)->toContain('syndicate.currency_syp', 'i18n[`status_${r.status}`]')
+        ->and($syndicateDashboard)->toContain('formatCurrency as money', 'i18n[`status_${r.status}`]')
         ->not->toContain('} SYP`')
         ->and($generalReport)->toContain('{{ $l[\'vendors\'] }}<br><strong>')
         ->and($vendorReport)->toContain('{{ $translatedValue($row[\'status\']) }}')
@@ -128,6 +128,6 @@ test('admin order detail response reconciles quantity prices line and final tota
     $source = file_get_contents(resource_path('js/Pages/Admin/Orders/Show.jsx'));
     expect($source)->toContain('item.has_discount && Number(item.original_unit_price) !== Number(item.unit_price)')
         ->toContain('visible: Number(order.shipping_total) > 0', 'visible: Number(order.tax_total) > 0')
-        ->toContain("copy[order.payment_way || 'cash']")
+        ->toContain("translatedEnum(order.payment_way || 'cash', common.not_available, copy)")
         ->toContain('order.grand_total ?? order.total_amount');
 });

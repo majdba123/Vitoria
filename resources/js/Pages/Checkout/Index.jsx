@@ -162,7 +162,7 @@ export default function CheckoutIndex() {
                                     <div className="space-y-2">
                                         {(summary?.addresses ?? []).map((address) => {
                                             const checked = address.id === selectedAddressId;
-                                            const line = [address.street, address.district, address.city, address.governorate].filter(Boolean).join('، ');
+                                            const line = [address.street, address.district, address.city, address.governorate].filter(Boolean).join(locale === 'ar' ? '، ' : ', ');
                                             return (
                                                 <label key={address.id} className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${checked ? 'border-primary bg-accent/40' : 'border-border hover:border-primary/40'}`}>
                                                     <input type="radio" name="checkout-address" checked={checked} onChange={() => setSelectedAddressId(address.id)} className="mt-1 size-4 shrink-0 accent-primary" />
