@@ -86,9 +86,31 @@ class SyriaGovernorates
         return self::CITY_TO_GOVERNORATE[$cityName] ?? null;
     }
 
+    /**
+     * The vendor map's source image (public/images/syria-governorates-map.jpg)
+     * draws no real boundary within each of these groups — every governorate
+     * in a group is one undivided shape in the artwork (verified by flood-
+     * filling: a seed anywhere in the group reaches every other member), so
+     * the map UI merges each group into a single hoverable/clickable zone
+     * instead of fabricating borders that don't exist in the image. This lets
+     * each synthetic key still resolve to a real set of cities for filtering.
+     *
+     * @var array<string, list<string>>
+     */
+    public const MAP_MERGED_GROUPS = [
+        'central' => ['damascus', 'rif_dimashq', 'homs', 'tartus'],
+        'southwest' => ['quneitra', 'daraa'],
+    ];
+
     /** @return list<string> */
     public static function cityNamesForKey(string $key): array
     {
+        if (isset(self::MAP_MERGED_GROUPS[$key])) {
+            return collect(self::MAP_MERGED_GROUPS[$key])
+                ->flatMap(fn (string $memberKey): array => self::cityNamesForKey($memberKey))
+                ->all();
+        }
+
         return array_keys(array_filter(self::CITY_TO_GOVERNORATE, fn (string $governorate): bool => $governorate === $key));
     }
 }

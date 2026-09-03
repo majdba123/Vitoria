@@ -24,7 +24,10 @@ class VendorIndexRequest extends FormRequest
             'category_type' => ['sometimes', Rule::in([Vendor::BUSINESS_TYPE_AGRICULTURE, Vendor::BUSINESS_TYPE_VETERINARY])],
             'category_id' => ['sometimes', 'integer', 'exists:categories,id'],
             'city_id' => ['sometimes', 'integer', 'exists:cities,id'],
-            'governorate' => ['sometimes', 'string', Rule::in(collect(SyriaGovernorates::ALL)->pluck('key')->all())],
+            'governorate' => ['sometimes', 'string', Rule::in([
+                ...collect(SyriaGovernorates::ALL)->pluck('key')->all(),
+                ...array_keys(SyriaGovernorates::MAP_MERGED_GROUPS),
+            ])],
             'name' => ['sometimes', 'string', 'max:255'],
             'email' => ['sometimes', 'string', 'max:255'],
         ];

@@ -102,6 +102,8 @@ return [
     'map_agricultural_vendors' => 'البائعون الزراعيون',
     'map_veterinary_vendors' => 'البائعون البيطريون',
     'map_view_vendors' => 'عرض البائعين',
+    'map_region_central' => 'دمشق وريف دمشق وحمص وطرطوس',
+    'map_region_southwest' => 'القنيطرة ودرعا',
     'map_copy' => 'تقتصر الخريطة على سوريا فقط، وتعرض عدد فروع البائعين في كل محافظة دون الكشف عن أي موقع دقيق لأي بائع.',
     'map_region_label' => 'عدد فروع البائعين حسب المحافظة',
     'map_city_filter' => 'المدينة',

@@ -198,6 +198,43 @@ test('admin vendor index filters exactly by city and canonically by governorate'
         ->toBe(['Aleppo Store', 'Manbij Store']);
 });
 
+test('admin vendor index resolves the merged central governorate to its real member cities', function () {
+    // damascus/rif_dimashq/homs/tartus share no drawn boundary in the map
+    // image, so the dashboard map merges them into one "central" hover zone
+    // (see SyriaGovernorates::MAP_MERGED_GROUPS). Its drilldown must still
+    // filter vendors correctly across all four real governorates.
+    Sanctum::actingAs(User::factory()->admin()->create());
+    $damascus = mapCity('Damascus');
+    $homs = mapCity('Homs');
+    $aleppo = mapCity('Aleppo');
+
+    mapVendor('Damascus Store', ['city_id' => $damascus->id]);
+    mapVendor('Homs Store', ['city_id' => $homs->id]);
+    mapVendor('Aleppo Store', ['city_id' => $aleppo->id]);
+
+    $response = $this->getJson('/api/admin/vendors?governorate=central')->assertOk();
+    expect(collect($response->json('data'))->pluck('store_name')->sort()->values()->all())
+        ->toBe(['Damascus Store', 'Homs Store']);
+});
+
+test('admin vendor index resolves the merged southwest governorate to its real member cities', function () {
+    // quneitra/daraa also share no drawn boundary in the map image (see
+    // SyriaGovernorates::MAP_MERGED_GROUPS) and merge into one "southwest"
+    // hover zone; its drilldown must filter across both real governorates.
+    Sanctum::actingAs(User::factory()->admin()->create());
+    $quneitra = mapCity('Quneitra');
+    $daraa = mapCity('Daraa');
+    $aleppo = mapCity('Aleppo');
+
+    mapVendor('Quneitra Store', ['city_id' => $quneitra->id]);
+    mapVendor('Daraa Store', ['city_id' => $daraa->id]);
+    mapVendor('Aleppo Store', ['city_id' => $aleppo->id]);
+
+    $response = $this->getJson('/api/admin/vendors?governorate=southwest')->assertOk();
+    expect(collect($response->json('data'))->pluck('store_name')->sort()->values()->all())
+        ->toBe(['Daraa Store', 'Quneitra Store']);
+});
+
 test('admin vendor index rejects invalid geographic filters safely', function () {
     Sanctum::actingAs(User::factory()->admin()->create());
 
