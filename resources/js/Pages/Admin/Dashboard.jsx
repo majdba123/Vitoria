@@ -46,12 +46,17 @@ export default function Dashboard() {
     const productsData = products.data;
 
     const vendorsTotal = overviewData?.total_vendors ?? vendorsData?.meta?.total ?? 0;
-    const activeVendors = overviewData?.active_vendors ?? (vendorsData?.data ?? []).filter((v) => v.is_active).length;
-    const inactiveVendors = overviewData?.inactive_vendors ?? Math.max(0, vendorsTotal - activeVendors);
+    // active_vendors/active_products must come from overview's real aggregate
+    // count — vendors.data/products.data are only a single fetched page (8-15
+    // rows), so filtering them for "active" silently undercounts against the
+    // platform total. Treat the stat as unknown (not a wrong number) until
+    // overview itself has loaded.
+    const activeVendors = overviewData?.active_vendors ?? null;
+    const inactiveVendors = overviewData?.inactive_vendors ?? (activeVendors === null ? null : Math.max(0, vendorsTotal - activeVendors));
     const pendingVendors = overviewData?.pending_vendors ?? 0;
     const productsTotal = overviewData?.total_products ?? productsData?.meta?.total ?? 0;
     const recentProducts = overviewData?.recent_products ?? productsData?.data ?? [];
-    const activeProducts = overviewData?.active_products ?? recentProducts.filter((p) => p.is_active).length;
+    const activeProducts = overviewData?.active_products ?? null;
     const usersTotal = users.data?.meta?.total ?? 0;
     const syndicatesTotal = overviewData?.total_syndicates ?? 0;
 
@@ -125,7 +130,7 @@ export default function Dashboard() {
                             <span
                                 className={`text-base font-bold tabular-nums ${item.tone === 'success' ? 'text-[var(--color-success-strong)]' : item.tone === 'danger' ? 'text-[var(--color-danger-strong)]' : 'text-foreground'}`}
                             >
-                                {overview.status === 'error' && overviewData === null ? '—' : item.value}
+                                {item.value === null ? '—' : item.value}
                             </span>
                         </div>
                     ))}
