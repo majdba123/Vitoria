@@ -83,7 +83,7 @@ return [
     'store_description' => 'Store description',
     'store_description_placeholder' => 'Briefly describe your store (optional)',
     'vetora_access' => 'Vetora access',
-    'workspace_title' => 'A refined workspace for every buyer, seller, and partner.',
+    'workspace_title' => 'Vetora, Syria\'s largest marketplace for veterinary and agricultural trade.',
     'workspace_copy' => 'Sign in to move from discovery into action with a smoother storefront, cleaner dashboards, and a single product language across the platform.',
     'workspace_customers' => 'Customers',
     'workspace_customers_copy' => 'Track favourites, orders, and saved preferences from one calm interface.',

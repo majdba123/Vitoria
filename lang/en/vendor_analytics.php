@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'title' => 'Vendor 360', 'period_note' => 'Period analytics use the order creation date. All-time ledger balance is shown separately.',
+    'title' => 'Vendor 360',
     'overview' => 'Overview', 'products' => 'Products', 'orders' => 'Orders', 'sales' => 'Sales', 'finance' => 'Finance / Ledger',
     'returns' => 'Returns & Refunds', 'staff' => 'Staff', 'documents' => 'Documents', 'activity' => 'Activity', 'categories' => 'Categories',
     'today' => 'Today', '7_days' => '7 days', '30_days' => '30 days', '90_days' => '90 days', 'this_year' => 'This year', 'custom' => 'Custom', 'all' => 'All time',

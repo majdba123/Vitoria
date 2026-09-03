@@ -157,10 +157,10 @@ export default function VendorCommission() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>{vendor.th_category}</TableHead>
-                                <TableHead>{vendor.th_commission_percent}</TableHead>
-                                <TableHead>{vendor.th_sales_total}</TableHead>
-                                <TableHead>{vendor.th_commission_amount}</TableHead>
+                                <TableHead className="text-start" style={{ width: '34%' }}>{vendor.th_category}</TableHead>
+                                <TableHead className="text-end">{vendor.th_commission_percent}</TableHead>
+                                <TableHead className="text-end">{vendor.th_sales_total}</TableHead>
+                                <TableHead className="text-end">{vendor.th_commission_amount}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -172,9 +172,9 @@ export default function VendorCommission() {
                                 categoryBreakdown.map((row, index) => (
                                     <TableRow key={index}>
                                         <TableCell className="font-semibold">{row.category_name ?? vendor.js_unknown_category}</TableCell>
-                                        <TableCell>{formatPercent(row.commission_rate, locale)}</TableCell>
-                                        <TableCell className="font-semibold">{formatCurrency(row.sales_total, locale)}</TableCell>
-                                        <TableCell className="font-semibold text-primary">{formatCurrency(row.commission_amount, locale)}</TableCell>
+                                        <TableCell className="text-end tabular-nums">{formatPercent(row.commission_rate, locale)}</TableCell>
+                                        <TableCell className="text-end font-semibold tabular-nums">{formatCurrency(row.sales_total, locale)}</TableCell>
+                                        <TableCell className="text-end font-semibold tabular-nums text-primary">{formatCurrency(row.commission_amount, locale)}</TableCell>
                                     </TableRow>
                                 ))
                             )}

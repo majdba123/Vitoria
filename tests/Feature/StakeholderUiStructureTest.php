@@ -11,13 +11,21 @@ use Laravel\Sanctum\Sanctum;
 test('stakeholder UI structure removes duplicated navigation and keeps shared headers centered', function () {
     $home = file_get_contents(resource_path('js/Pages/Home.jsx'));
     $table = file_get_contents(resource_path('js/Components/ui/table.jsx'));
+    $dataTable = file_get_contents(resource_path('js/Components/shared/DataTable.jsx'));
     $vendorNavigation = file_get_contents(resource_path('js/lib/nav-vendor.js'));
     $legacyVendorNavigation = file_get_contents(resource_path('views/components/vendor/sidebar.blade.php'));
     $vendorDetails = file_get_contents(resource_path('js/Components/vendor360/Vendor360.jsx'));
     $routes = file_get_contents(base_path('routes/web.php'));
 
     expect($home)->not->toContain('commerce-section-header border-t-2 border-foreground pt-7')
-        ->and($table)->toContain('[&_th]:text-center', 'px-4 py-3 text-center')
+        // TableHeader used to force every <th> to center via a parent
+        // `[&_th]:text-center` descendant selector, which beat any
+        // column-level alignment utility on specificity — no per-column
+        // header alignment (e.g. numeric columns right-aligned) was
+        // possible. DataTable now owns alignment per column instead.
+        ->and($table)->not->toContain('[&_th]:text-center')
+        ->and($table)->toContain('px-4 py-3 text-center')
+        ->and($dataTable)->toContain("ALIGN_CLASS = { end: 'text-end', center: 'text-center', start: 'text-start' }")
         ->and($vendorNavigation)->not->toContain('vendor.discounts.index', 't.discounts')
         ->and($vendorNavigation)->toContain("route: 'vendor.sales'")
         ->and($legacyVendorNavigation)->not->toContain('vendor.discounts.index', 'vendor.commission')
@@ -84,9 +92,17 @@ test('Vendor 360 and report templates keep accounting and PDF labels separated a
         ->not->toContain('} SYP`', 'No completed orders found.', 'No trend data available.')
         ->and($syndicateDashboard)->toContain('formatCurrency as money', 'i18n[`status_${r.status}`]')
         ->not->toContain('} SYP`')
-        ->and($generalReport)->toContain('{{ $l[\'vendors\'] }}<br><strong>')
+        // KPI cards used to separate label/value with a bare <br> (no
+        // semantic grouping); the label is now wrapped in <span class="lbl">
+        // immediately followed by <strong>, matching the stakeholder's
+        // label+value grouping fix for the report layout.
+        ->and($generalReport)->toContain('<span class="lbl">{{ $l[\'vendors\'] }}</span><strong>')
+        ->not->toContain('{{ $l[\'vendors\'] }}<br><strong>')
         ->and($vendorReport)->toContain('{{ $translatedValue($row[\'status\']) }}')
-        ->and(substr_count($vendorReport, '{{ $labels[\'city\'] }}:'))->toBe(1)
+        // Meta labels are distinguished via the .lbl CSS class rather than a
+        // literal trailing colon, so the city label appears exactly once,
+        // unadorned.
+        ->and(substr_count($vendorReport, '{{ $labels[\'city\'] }}'))->toBe(1)
         ->and($generalPdfService)->toContain('<div dir="ltr" style="direction:ltr;')
         ->and($vendorPdfService)->toContain('<div dir="ltr" style="direction:ltr;');
 });

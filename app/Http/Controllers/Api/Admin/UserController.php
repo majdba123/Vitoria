@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreUserRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Http\Resources\Auth\UserResource;
+use App\Models\Order;
 use App\Models\ProductPhoto;
 use App\Models\Role;
 use App\Models\User;
@@ -27,8 +28,15 @@ class UserController extends Controller
     public function index(): JsonResponse
     {
         $perPage = min((int) request('per_page', 15), 500);
+        $isCustomerView = request()->filled('type') && (int) request('type') === User::TYPE_USER;
+
         $users = User::query()
             ->when(request()->filled('type'), fn ($query) => $query->where('type', (int) request('type')))
+            ->when($isCustomerView, fn ($query) => $query
+                ->with('city:id,name')
+                ->withCount(['orders as orders_count' => fn ($q) => $q->where('status', '!=', Order::STATUS_CANCELLED)])
+                ->withSum(['orders as total_purchases' => fn ($q) => $q->where('status', '!=', Order::STATUS_CANCELLED)], 'grand_total')
+                ->withMax('orders as last_order_at', 'created_at'))
             ->latest()
             ->paginate($perPage);
 

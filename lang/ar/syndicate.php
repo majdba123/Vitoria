@@ -15,6 +15,7 @@ return [
     'orders' => 'الطلبات',
     'sales' => 'المبيعات',
     'reports' => 'التقارير',
+    'group_financials' => 'العمولات',
     'loading_access' => 'جارٍ التحقق من صلاحية النقابة...',
     'sign_out' => 'تسجيل الخروج',
     'dashboard_title' => 'لوحة النقابة',

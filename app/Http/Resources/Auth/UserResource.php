@@ -46,6 +46,13 @@ class UserResource extends JsonResource
             'email_verified_at' => $this->email_verified_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            // orders_count is always present (defaulting to 0) once withCount
+            // has run, so it's the reliable signal that the customer-view
+            // aggregates were attached at all — total_purchases/last_order_at
+            // are null instead of 0 for a buyer with no orders yet.
+            'orders_count' => $this->when(isset($this->orders_count), fn () => (int) $this->orders_count),
+            'total_purchases' => $this->when(isset($this->orders_count), fn () => (float) ($this->total_purchases ?? 0)),
+            'last_order_at' => $this->when(isset($this->orders_count), fn () => $this->last_order_at),
         ];
     }
 }

@@ -15,6 +15,7 @@ return [
     'orders' => 'Orders',
     'sales' => 'Sales',
     'reports' => 'Reports',
+    'group_financials' => 'Financials',
     'loading_access' => 'Verifying syndicate access...',
     'sign_out' => 'Sign Out',
     'dashboard_title' => 'Syndicate dashboard',

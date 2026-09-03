@@ -266,7 +266,7 @@ test('general syndicate PDF aggregates only the authenticated domain and selecte
         ->and(collect($report['vendor_performance'])->pluck('id'))->toContain($data['both']->id)->not->toContain($data['other']->id)
         ->and($arabicHtml)->toContain('dir="rtl"', 'التقرير العام لمبيعات النقابة', 'زراعي', '200.00 ل.س')
         ->not->toContain('General Syndicate Sales Report')
-        ->and($englishHtml)->toContain('dir="ltr"', 'General Syndicate Sales Report', 'Agriculture', '200.00 SYP')
+        ->and($englishHtml)->toContain('dir="ltr"', 'General Syndicate Sales Report', 'Agriculture', 'SYP 200.00')
         ->not->toContain('التقرير العام لمبيعات النقابة');
 });
 
@@ -335,6 +335,6 @@ test('syndicate report supports explicit Arabic and English presentation from id
 
     expect($arabicHtml)->toContain('dir="rtl"', 'تقرير أداء البائع', 'زراعي وبيطري', 'نشط', 'مكتمل', '600.00 ل.س')
         ->not->toContain('Vendor Performance Report')
-        ->and($englishHtml)->toContain('dir="ltr"', 'Vendor Performance Report', '600.00 SYP')
+        ->and($englishHtml)->toContain('dir="ltr"', 'Vendor Performance Report', 'SYP 600.00')
         ->and($report['kpis']['gross_sales'])->toBe(600.0);
 });

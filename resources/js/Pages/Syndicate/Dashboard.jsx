@@ -292,34 +292,34 @@ function useSyndicateTable(section, enabled, page) {
 function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, common, onReport, locale }) {
     const columnsBySection = {
         categories: [
-            { key: 'name', label: i18n.th_category, render: (r) => <span className="font-semibold text-foreground">{r.name}</span> },
+            { key: 'name', label: i18n.th_category, truncate: true, render: (r) => <span className="font-semibold text-foreground">{r.name}</span> },
             { key: 'type', label: i18n.th_type, render: (r) => typeLabel(r.type, i18n) },
             { key: 'vendors_count', label: i18n.th_vendors, align: 'end', render: (r) => Number(r.vendors_count || 0) },
             { key: 'products_count', label: i18n.th_products, align: 'end', render: (r) => Number(r.products_count || 0) },
         ],
         vendors: [
-            { key: 'store_name', label: i18n.th_store, render: (r) => <span className="font-semibold text-foreground">{r.store_name}</span> },
+            { key: 'store_name', label: i18n.th_store, truncate: true, render: (r) => <span className="font-semibold text-foreground">{r.store_name}</span> },
             { key: 'business_type', label: i18n.th_type, render: (r) => typeLabel(r.business_type, i18n) },
             { key: 'city', label: i18n.th_city, render: (r) => r.city?.name || '—' },
             { key: 'products_count', label: i18n.th_products, align: 'end', render: (r) => Number(r.products_count || 0) },
             { key: 'completed_orders_count', label: i18n.completed_orders, align: 'end', render: (r) => Number(r.completed_orders_count || 0) },
             { key: 'domain_sales', label: i18n.completed_sales, align: 'end', render: (r) => money(r.domain_sales, locale) },
             { key: 'last_activity_at', label: i18n.last_activity, render: (r) => r.last_activity_at ? formatDate(r.last_activity_at, locale) : '—' },
-            { key: 'status', label: i18n.th_status, render: (r) => <StatusBadge tone={r.is_active ? 'success' : 'danger'}>{r.is_active ? common.active : common.inactive}</StatusBadge> },
-            { key: 'actions', label: i18n.th_actions, render: (r) => <div className="flex items-center justify-center gap-1"><Button asChild size="sm" variant="ghost"><Link href={route('syndicate.vendors.show', r.id)}><Eye className="size-4" />{common.view_details}</Link></Button><Button type="button" size="sm" variant="outline" onClick={() => onReport(r)}><FileText className="size-4" />{i18n.report}</Button></div> },
+            { key: 'status', label: i18n.th_status, align: 'center', render: (r) => <StatusBadge tone={r.is_active ? 'success' : 'danger'}>{r.is_active ? common.active : common.inactive}</StatusBadge> },
+            { key: 'actions', label: i18n.th_actions, align: 'center', render: (r) => <div className="flex items-center justify-center gap-1"><Button asChild size="sm" variant="ghost"><Link href={route('syndicate.vendors.show', r.id)}><Eye className="size-4" />{common.view_details}</Link></Button><Button type="button" size="sm" variant="outline" onClick={() => onReport(r)}><FileText className="size-4" />{i18n.report}</Button></div> },
         ],
         products: [
-            { key: 'name', label: i18n.th_products, render: (r) => <span className="font-semibold text-foreground">{r.name}</span> },
-            { key: 'store', label: i18n.th_store, render: (r) => r.vendor?.store_name || '—' },
-            { key: 'category', label: i18n.th_category, render: (r) => r.category?.name || '—' },
-            { key: 'status', label: i18n.th_status, render: (r) => <StatusBadge tone={r.is_active ? 'success' : 'danger'}>{r.is_active ? common.active : common.inactive}</StatusBadge> },
+            { key: 'name', label: i18n.th_products, width: '38%', truncate: true, render: (r) => <span className="font-semibold text-foreground">{r.name}</span> },
+            { key: 'store', label: i18n.th_store, width: '24%', truncate: true, render: (r) => r.vendor?.store_name || '—' },
+            { key: 'category', label: i18n.th_category, width: '23%', truncate: true, render: (r) => r.category?.name || '—' },
+            { key: 'status', label: i18n.th_status, width: '15%', align: 'center', render: (r) => <StatusBadge tone={r.is_active ? 'success' : 'danger'}>{r.is_active ? common.active : common.inactive}</StatusBadge> },
         ],
         orders: [
-            { key: 'order', label: i18n.th_order, render: (r) => <span className="font-semibold text-foreground">{r.order_number || `#${r.id}`}</span> },
-            { key: 'customer', label: i18n.th_customer, render: (r) => r.user?.name || '—' },
-            { key: 'store', label: i18n.th_store, render: (r) => r.vendor?.store_name || '—' },
+            { key: 'order', label: i18n.th_order, truncate: true, render: (r) => <span className="font-semibold text-foreground">{r.order_number || `#${r.id}`}</span> },
+            { key: 'customer', label: i18n.th_customer, truncate: true, render: (r) => r.user?.name || '—' },
+            { key: 'store', label: i18n.th_store, truncate: true, render: (r) => r.vendor?.store_name || '—' },
             { key: 'total', label: i18n.th_total, align: 'end', render: (r) => money(r.total_amount, locale) },
-            { key: 'status', label: i18n.th_status, render: (r) => <StatusBadge tone={STATUS_TONE[r.status] ?? 'warning'}>{i18n[`status_${r.status}`] ?? translatedStatus(r.status, common)}</StatusBadge> },
+            { key: 'status', label: i18n.th_status, align: 'center', render: (r) => <StatusBadge tone={STATUS_TONE[r.status] ?? 'warning'}>{i18n[`status_${r.status}`] ?? translatedStatus(r.status, common)}</StatusBadge> },
         ],
     };
 

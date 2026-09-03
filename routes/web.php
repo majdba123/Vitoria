@@ -354,6 +354,10 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(funct
         return redirect()->route('admin.users.index', ['type' => \App\Models\User::TYPE_EMPLOYEE]);
     })->name('employees.index');
 
+    Route::get('/customers', function () {
+        return redirect()->route('admin.users.index', ['type' => \App\Models\User::TYPE_USER]);
+    })->name('customers.index');
+
     Route::get('/users/create', function () {
         return Inertia::render('Admin/Users/Create');
     })->name('users.create');
