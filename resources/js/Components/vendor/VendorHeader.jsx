@@ -21,11 +21,11 @@ export function VendorHeader({ title }) {
 
                 <div className="min-w-0 flex-1">
                     <p className="dashboard-eyebrow text-[11px] font-extrabold uppercase tracking-[0.16em] text-primary">{vendor.badge}</p>
-                    <h1 className="break-words text-base font-bold leading-tight text-foreground sm:text-lg">{title}</h1>
+                    <h1 className="truncate text-base font-bold leading-tight text-foreground sm:text-lg">{title}</h1>
                 </div>
 
                 <div className="flex items-center gap-0.5">
-                    <Button asChild variant="ghost" size="icon" className="size-11" aria-label={nav.home} title={nav.home}>
+                    <Button asChild variant="ghost" size="icon" className="hidden size-11 sm:inline-flex" aria-label={nav.home} title={nav.home}>
                         <Link href={route('home')}>
                             <Home className="size-4" />
                         </Link>

@@ -26,7 +26,7 @@ export function SyndicateHeader({ title }) {
 
                 <div className="min-w-0 flex-1">
                     <p className="dashboard-eyebrow text-[11px] font-extrabold uppercase tracking-[0.16em] text-primary">{syndicate.workspace_label}</p>
-                    <h1 className="break-words text-base font-bold leading-tight text-foreground sm:text-lg">{title}</h1>
+                    <h1 className="truncate text-base font-bold leading-tight text-foreground sm:text-lg">{title}</h1>
                 </div>
 
                 <div className="flex items-center gap-1.5">
