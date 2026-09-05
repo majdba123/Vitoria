@@ -1,4 +1,4 @@
-import { LayoutGrid, Package, ShoppingBag, TrendingUp, Bell, User } from 'lucide-react';
+import { LayoutGrid, Package, ShoppingBag, ShoppingCart, TrendingUp, Bell, User } from 'lucide-react';
 
 /** Mirrors resources/views/components/vendor/sidebar.blade.php's link list. */
 export function getVendorNavGroups(t, common) {
@@ -18,7 +18,10 @@ export function getVendorNavGroups(t, common) {
         },
         {
             label: t.group_account,
-            items: [{ label: common.profile, route: 'vendor.profile', active: 'vendor.profile', icon: User }],
+            items: [
+                { label: t.my_purchases, route: 'profile', active: 'profile', icon: ShoppingCart },
+                { label: common.profile, route: 'vendor.profile', active: 'vendor.profile', icon: User },
+            ],
         },
     ];
 

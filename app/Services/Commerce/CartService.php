@@ -89,6 +89,8 @@ class CartService
         return DB::transaction(function () use ($cart, $productId, $quantity) {
             $product = $this->findPurchasableProduct($productId, lock: true);
 
+            $this->assertNotOwnStore($cart, $product);
+
             $existing = CartItem::query()
                 ->where('cart_id', $cart->id)
                 ->where('product_id', $product->id)
@@ -376,6 +378,21 @@ class CartService
             && $product->status === Product::STATUS_APPROVED
             && $product->vendor !== null
             && $product->vendor->is_active;
+    }
+
+    /**
+     * A vendor may buy from another vendor's store, never their own (spec
+     * decision: vendor-to-vendor purchasing, self-dealing excluded).
+     *
+     * @throws CartException
+     */
+    private function assertNotOwnStore(Cart $cart, Product $product): void
+    {
+        $vendorId = $cart->user?->managedVendor()?->id;
+
+        if ($vendorId !== null && (int) $product->vendor_id === (int) $vendorId) {
+            throw new CartException(__('cart.cannot_purchase_own_store'));
+        }
     }
 
     /**

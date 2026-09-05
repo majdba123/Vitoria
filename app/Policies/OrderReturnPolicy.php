@@ -19,8 +19,8 @@ class OrderReturnPolicy
             return true;
         }
 
-        if ($user->isVendor()) {
-            return $this->ownsVendor($user, $return);
+        if ($user->isVendor() && $this->ownsVendor($user, $return)) {
+            return true;
         }
 
         return $return->user_id === $user->id;
@@ -45,8 +45,8 @@ class OrderReturnPolicy
             return true;
         }
 
-        if ($user->isVendor()) {
-            return $this->ownsVendor($user, $return);
+        if ($user->isVendor() && $this->ownsVendor($user, $return)) {
+            return true;
         }
 
         return $return->user_id === $user->id;

@@ -111,14 +111,16 @@ class User extends Authenticatable
 
     /**
      * Determine if the user may act as a buyer (add to cart, checkout,
-     * create orders). Only the normal customer type may purchase - Admin,
-     * Vendor, Syndicate and Employee accounts are privileged roles and must
-     * not act as buyers, even though they remain fully authenticated users
-     * for their own (order-management, vendor, admin, ...) permissions.
+     * create orders). Normal customers and vendors (buying from another
+     * vendor's store, never their own - see CartService/CheckoutService)
+     * may purchase. Admin, Syndicate and Employee accounts remain
+     * privileged-only and must not act as buyers, even though they stay
+     * fully authenticated users for their own (order-management, admin, ...)
+     * permissions.
      */
     public function canPurchase(): bool
     {
-        return $this->type === self::TYPE_USER;
+        return in_array($this->type, [self::TYPE_USER, self::TYPE_VENDOR], true);
     }
 
     /**

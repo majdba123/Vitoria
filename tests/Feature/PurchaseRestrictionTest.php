@@ -10,7 +10,9 @@ use App\Models\Vendor;
 use Laravel\Sanctum\Sanctum;
 
 /**
- * Only User::TYPE_USER may buy. Admin, Vendor, Syndicate and Employee are
+ * User::TYPE_USER and User::TYPE_VENDOR may buy - a vendor may purchase
+ * from another vendor's store, never their own (see
+ * PurchaseOwnStoreRestrictionTest). Admin, Syndicate and Employee are
  * authenticated for their own permissions (order management, vendor
  * dashboards, ...) but must be blocked from every buyer-side action - cart
  * mutation, coupon, checkout summary, checkout, and the deprecated
@@ -30,7 +32,6 @@ function purchaseTestProduct(int $quantity = 10, float $price = 100): Product
 
 dataset('privileged_types', [
     'admin' => [User::TYPE_ADMIN],
-    'vendor' => [User::TYPE_VENDOR],
     'syndicate' => [User::TYPE_SYNDICATE],
     'employee' => [User::TYPE_EMPLOYEE],
 ]);
@@ -161,14 +162,64 @@ it('automatically blocks a formerly-customer user the moment their type changes 
     $cartId = Cart::query()->where('user_id', $user->id)->value('id');
     expect(CartItem::query()->where('cart_id', $cartId)->count())->toBe(1);
 
-    // Promoted to vendor after the cart already has items - eligibility is
+    // Promoted to admin after the cart already has items - eligibility is
     // re-checked live against the DB type on every request, so the stale
     // cart is left untouched but further purchase actions are blocked.
-    $user->update(['type' => User::TYPE_VENDOR]);
+    $user->update(['type' => User::TYPE_ADMIN]);
 
     $this->patchJson('/api/cart/items', ['product_id' => $product->id, 'quantity' => 2])
         ->assertStatus(403);
 
     // The old cart line was not deleted by the type change or the rejection.
     expect(CartItem::query()->where('cart_id', $cartId)->count())->toBe(1);
+});
+
+it('lets a vendor buy from another vendor\'s store', function () {
+    $buyerVendor = Vendor::factory()->create(['is_active' => true, 'status' => Vendor::STATUS_ACTIVE]);
+    Sanctum::actingAs($buyerVendor->user);
+
+    $otherStoresProduct = purchaseTestProduct(quantity: 10);
+
+    $this->postJson('/api/cart/items', ['product_id' => $otherStoresProduct->id, 'quantity' => 1])
+        ->assertOk()
+        ->assertJsonPath('data.items_count', 1);
+});
+
+it('blocks a vendor from buying a product in their own store', function () {
+    $vendor = Vendor::factory()->create(['is_active' => true, 'status' => Vendor::STATUS_ACTIVE]);
+    Sanctum::actingAs($vendor->user);
+
+    $ownProduct = Product::factory()->for($vendor)->create([
+        'status' => Product::STATUS_APPROVED,
+        'is_active' => true,
+        'quantity' => 10,
+    ]);
+
+    $this->postJson('/api/cart/items', ['product_id' => $ownProduct->id, 'quantity' => 1])
+        ->assertStatus(422)
+        ->assertJsonPath('message', __('cart.cannot_purchase_own_store'));
+
+    expect(CartItem::query()->count())->toBe(0);
+});
+
+it('blocks checkout as defence in depth when a self-store line predates the cart guard', function () {
+    $vendor = Vendor::factory()->create(['is_active' => true, 'status' => Vendor::STATUS_ACTIVE]);
+    $buyer = $vendor->user;
+    $address = UserAddress::factory()->default()->create(['user_id' => $buyer->id]);
+
+    $ownProduct = Product::factory()->for($vendor)->create([
+        'status' => Product::STATUS_APPROVED,
+        'is_active' => true,
+        'quantity' => 10,
+    ]);
+
+    $cart = Cart::factory()->create(['user_id' => $buyer->id]);
+    CartItem::factory()->create(['cart_id' => $cart->id, 'product_id' => $ownProduct->id, 'quantity' => 1]);
+
+    $service = app(\App\Services\Commerce\CheckoutService::class);
+
+    expect(fn () => $service->place($cart, $buyer, $address, 'cash'))
+        ->toThrow(\App\Services\Commerce\CartException::class, __('cart.cannot_purchase_own_store'));
+
+    expect(\App\Models\Order::query()->count())->toBe(0);
 });

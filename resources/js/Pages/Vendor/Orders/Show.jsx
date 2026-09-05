@@ -186,6 +186,7 @@ export default function VendorOrdersShow({ orderId }) {
                             <p className="text-sm font-bold text-foreground">{item.product_name || orders.product}</p>
                             <div className="mt-3 grid gap-2 text-xs sm:grid-cols-2 lg:grid-cols-3">
                                 {[
+                                    { label: orders.quantity, value: item.quantity ?? 0 },
                                     { label: common.category, value: item.product?.category?.name || '—' },
                                     { label: orders.original_unit_price, value: money(item.original_unit_price) },
                                     { label: orders.applied_unit_price, value: money(item.unit_price) },

@@ -25,6 +25,7 @@ return [
 
     'empty' => 'سلة التسوق فارغة.',
     'product_unavailable' => 'هذا المنتج لم يعد متوفراً.',
+    'cannot_purchase_own_store' => 'لا يمكنك الشراء من متجرك الخاص.',
     'item_not_in_cart' => 'هذا العنصر غير موجود في سلتك.',
     'insufficient_stock' => 'لم يتبقَّ سوى :available من :product.',
     'quantity_too_large' => 'يمكنك طلب :max كحد أقصى من المنتج الواحد.',

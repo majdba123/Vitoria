@@ -19,8 +19,8 @@ class OrderPolicy
             return true;
         }
 
-        if ($user->isVendor()) {
-            return $this->ownsVendor($user, $order);
+        if ($user->isVendor() && $this->ownsVendor($user, $order)) {
+            return true;
         }
 
         return $order->user_id === $user->id;
@@ -47,8 +47,8 @@ class OrderPolicy
             return true;
         }
 
-        if ($user->isVendor()) {
-            return $this->ownsVendor($user, $order) && $user->hasVendorPermission($order->vendor, 'orders.cancel');
+        if ($user->isVendor() && $this->ownsVendor($user, $order)) {
+            return $user->hasVendorPermission($order->vendor, 'orders.cancel');
         }
 
         return $order->user_id === $user->id;

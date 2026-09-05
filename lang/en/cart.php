@@ -28,6 +28,7 @@ return [
     // internal state.
     'empty' => 'Your cart is empty.',
     'product_unavailable' => 'This product is no longer available.',
+    'cannot_purchase_own_store' => 'You cannot buy from your own store.',
     'item_not_in_cart' => 'That item is not in your cart.',
     'insufficient_stock' => 'Only :available left of :product.',
     'quantity_too_large' => 'You can order at most :max of a single item.',

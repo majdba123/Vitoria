@@ -12,6 +12,7 @@ return [
     'discounts' => 'الخصومات',
     'sales' => 'المبيعات',
     'orders' => 'الطلبات',
+    'my_purchases' => 'مشترياتي',
     'commission' => 'العمولة',
     'notifications' => 'الإشعارات',
     'mark_all_read' => 'تحديد الكل كمقروء',

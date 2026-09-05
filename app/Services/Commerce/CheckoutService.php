@@ -126,6 +126,14 @@ class CheckoutService
             $lines = collect($summary['items']);
             $byVendor = $lines->groupBy('vendor_id');
 
+            $ownVendorId = $user->managedVendor()?->id;
+            if ($ownVendorId !== null && $byVendor->keys()->contains(fn ($vendorId) => (int) $vendorId === (int) $ownVendorId)) {
+                // Defence in depth. CartService::add() already refuses to add a
+                // vendor's own product to their cart; this makes checkout safe
+                // even for a cart line that predates that guard.
+                throw new CartException(__('cart.cannot_purchase_own_store'));
+            }
+
             $vendorSubtotals = $byVendor->map(
                 fn (Collection $vendorLines) => round((float) $vendorLines->sum('line_total'), 2)
             );

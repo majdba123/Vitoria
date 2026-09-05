@@ -12,6 +12,7 @@ return [
     'discounts' => 'Discounts',
     'sales' => 'Sales',
     'orders' => 'Orders',
+    'my_purchases' => 'My Purchases',
     'commission' => 'Commission',
     'notifications' => 'Notifications',
     'mark_all_read' => 'Mark all as read',
