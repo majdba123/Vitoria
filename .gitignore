@@ -6,6 +6,11 @@
 .env.*
 !.env.example
 
+# Local browser / audit artifacts
+.playwright-cli/
+.playwright-mcp/
+.vitora-audit/
+
 .phpactor.json
 .phpunit.result.cache
 /.fleet
