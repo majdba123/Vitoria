@@ -2,116 +2,74 @@
 
 ## Client-side coverage
 
-### Blade (Laravel) – customer-facing
+### Laravel customer-facing application
 
 | Item | Route / View | Status |
-|------|----------------|--------|
-| Home | `/` → `home.blade.php` | ✅ |
-| Login | `/login` → `auth.login` | ✅ |
-| Register | `/register` → `auth.register` | ✅ |
-| Profile | `/profile` → `profile.blade.php` | ✅ |
-| All products | `/products` → `products.index` | ✅ |
-| Product detail | `/products/{id}` → `products.show` | ✅ |
-| All categories | `/categories` → `categories.index` | ✅ |
-| Category products | `/categories/{id}` → `categories.show` | ✅ |
-| Subcategory products | `/subcategories/{id}` → `subcategories.show` | ✅ |
-| All vendors | `/vendors` → `vendors.index` | ✅ |
-| Vendor detail | `/vendors/{id}` → `vendors.show` | ✅ |
-| Order detail (auth) | `/orders/{id}` → `orders.show` | ✅ |
-| Layout + navbar + footer | `layouts.app`, `navbar`, cart modal | ✅ |
-| Home sections | Hero, Categories, Subcategories, Promo, Vendors, Products, Best Selling, Most Favorited, Trust, Contact | ✅ |
+| --- | --- | --- |
+| Home | `/` → `home.blade.php` | Implemented |
+| Login | `/login` → `auth.login` | Implemented |
+| Register | `/register` → `auth.register` | Implemented |
+| Profile | `/profile` → `profile.blade.php` | Implemented |
+| Products | `/products` → `products.index` | Implemented |
+| Product detail | `/products/{id}` → `products.show` | Implemented |
+| Categories | `/categories` → `categories.index` | Implemented |
+| Category products | `/categories/{id}` → `categories.show` | Implemented |
+| Subcategory products | `/subcategories/{id}` → `subcategories.show` | Implemented |
+| Vendors | `/vendors` → `vendors.index` | Implemented |
+| Vendor detail | `/vendors/{id}` → `vendors.show` | Implemented |
+| Order detail | `/orders/{id}` → `orders.show` | Authenticated |
 
-### Flutter app – same client experience
+### Flutter client
 
-| Item | Screen / File | Status |
-|------|----------------|--------|
-| Login | `screens/login_screen.dart` | ✅ |
-| Register | `screens/register_screen.dart` | ✅ |
-| Client home | `screens/client_home_screen.dart` | ✅ |
-| Home sections | Hero, Categories, Subcategories, Promo, Vendors, Latest Products, Best Selling, Most Favorited, Trust, Contact | ✅ |
-| API config | `config/api_config.dart` (http://62.84.188.239) | ✅ |
-| Auth service | `services/auth_service.dart` | ✅ |
-| Client API | `services/client_api_service.dart` (categories, products, vendors, contact) | ✅ |
-| Models | Category, Subcategory, Product, Vendor, User | ✅ |
-| Theme | `theme/app_theme.dart` (brand orange, Blade-like) | ✅ |
+The Flutter application contains authentication, customer home, product/category/vendor flows, API services, models, and theme configuration. Backend endpoints are selected through runtime configuration rather than committed infrastructure addresses.
 
----
+## Run against a local backend
 
-## How to run the project
+### Laravel
 
-### Option A: Backend on server (http://62.84.188.239)
-
-You only need to run the **Flutter** app; the Blade site and API are already on the server.
-
-**Run Flutter:**
+From the repository root:
 
 ```powershell
-cd C:\Users\impos\Desktop\Projects\MSZ\flutter
-.\run-flutter.ps1 pub get
-.\run-flutter.ps1 run -d chrome
-```
-
-Or Windows desktop: `.\run-flutter.ps1 run -d windows`
-
----
-
-### Option B: Run everything locally
-
-**1. Laravel (backend + Blade)**
-
-```powershell
-cd C:\Users\impos\Desktop\Projects\MSZ
-copy .env.example .env
-php artisan key:generate
-# Edit .env: set DB_* and APP_URL if needed
+Copy-Item .env.example .env
 composer install
 npm install
+php artisan key:generate
 php artisan migrate
 php artisan serve
 ```
 
-In a **second** terminal (for frontend assets):
+In a second terminal:
 
 ```powershell
-cd C:\Users\impos\Desktop\Projects\MSZ
 npm run dev
 ```
 
-- Blade site: **http://localhost:8000**
-- Login: http://localhost:8000/login  
-- Register: http://localhost:8000/register  
+Default local URL: `http://localhost:8000`.
 
-**2. Flutter (point to local backend)**
-
-Run Flutter with local API:
+### Flutter
 
 ```powershell
-cd C:\Users\impos\Desktop\Projects\MSZ\flutter
+cd flutter
+.\run-flutter.ps1 pub get
 .\run-flutter.ps1 run -d chrome --dart-define=API_BASE_URL=http://localhost:8000
 ```
 
-Or leave default (server): `.\run-flutter.ps1 run -d chrome`
+## Run against another environment
 
----
-
-## Quick run (server backend)
-
-If your backend is already at **http://62.84.188.239**:
+Pass the environment's public HTTPS API URL at runtime:
 
 ```powershell
-cd C:\Users\impos\Desktop\Projects\MSZ\flutter
-.\run-flutter.ps1 pub get
-.\run-flutter.ps1 run -d chrome
+cd flutter
+.\run-flutter.ps1 run -d chrome --dart-define=API_BASE_URL=https://api.example.com
 ```
 
-Open the Blade site in the browser: **http://62.84.188.239** (login, register, home, products, etc.).
-
----
+Do not hardcode private hosts, raw server IPs, credentials, or environment-specific secrets into client source or documentation.
 
 ## Checklist before run
 
-- [ ] Backend reachable (server or `php artisan serve`)
-- [ ] `.env` exists and `APP_KEY` set (for Laravel)
-- [ ] Database migrated (for Laravel local)
-- [ ] Flutter: `.\run-flutter.ps1 pub get` run once
-- [ ] Flutter API base URL matches backend (default: http://62.84.188.239)
+- [ ] `.env` exists locally and contains a generated Laravel `APP_KEY`.
+- [ ] Database configuration is valid and migrations have been applied.
+- [ ] Backend is reachable from the selected client environment.
+- [ ] Flutter dependencies have been installed with `pub get`.
+- [ ] `API_BASE_URL` targets the intended local, staging, or production endpoint.
+- [ ] Production credentials remain outside source control.
