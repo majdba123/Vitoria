@@ -1,11 +1,26 @@
-# Add Flutter to your user PATH (run this once in PowerShell).
-# Flutter SDK path: C:\Users\impos\Downloads\flutter_windows_3.41.2-stable\flutter
-$flutterBin = "C:\Users\impos\Downloads\flutter_windows_3.41.2-stable\flutter\bin"
-$userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+param(
+    [Parameter(Mandatory = $true)]
+    [string]$FlutterSdkPath
+)
 
-if ($userPath -notlike "*flutter*") {
-    [Environment]::SetEnvironmentVariable("Path", "$userPath;$flutterBin", "User")
-    Write-Host "Flutter added to PATH. Restart Cursor/terminal for it to take effect."
-} else {
-    Write-Host "Flutter is already in your PATH."
+$resolvedSdkPath = [System.IO.Path]::GetFullPath($FlutterSdkPath)
+$flutterBin = Join-Path $resolvedSdkPath 'bin'
+$flutterExecutable = Join-Path $flutterBin 'flutter.bat'
+
+if (-not (Test-Path $flutterExecutable)) {
+    throw "Flutter SDK was not found at '$resolvedSdkPath'. Expected '$flutterExecutable'."
 }
+
+$userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+$pathEntries = @($userPath -split ';' | Where-Object { $_ })
+
+if ($pathEntries -contains $flutterBin) {
+    Write-Host "Flutter is already present in the user PATH: $flutterBin"
+    exit 0
+}
+
+$newPath = (@($pathEntries) + $flutterBin) -join ';'
+[Environment]::SetEnvironmentVariable('Path', $newPath, 'User')
+
+Write-Host "Flutter added to the user PATH: $flutterBin"
+Write-Host 'Open a new terminal and run: flutter doctor'
