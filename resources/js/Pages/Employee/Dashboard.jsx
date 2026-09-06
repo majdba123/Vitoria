@@ -114,7 +114,7 @@ export default function EmployeeDashboard() {
                 }
             />
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 @3xl/main:grid-cols-3 @[95rem]/main:grid-cols-6">
                 <StatCard label={employee.total_products} value={stats.total} icon={Package} status={status} onRetry={load} />
                 <StatCard label={employee.active_products_label} value={stats.active} icon={PackageCheck} status={status} onRetry={load} />
                 <StatCard label={employee.approved_products} value={stats.approved} icon={CircleCheck} status={status} onRetry={load} tone="success" />

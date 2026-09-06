@@ -10,16 +10,44 @@ function truncateLabel(label, max) {
     return label.length > max ? `${label.slice(0, max - 1)}…` : label;
 }
 
-/** Y-axis tick that truncates long category names but keeps the full name
- * reachable via a native SVG <title> tooltip, mirrored for RTL reading. */
+/**
+ * The chart is always laid out left-to-right internally (YAxis orientation
+ * "right" mis-measures its own tick position in the installed recharts
+ * version - the tick lands inside the plot, overlapping the bar, once a bar
+ * gets close to full length) and mirrored with a CSS scaleX(-1) on the SVG
+ * for RTL locales instead. Text nodes inside the mirrored SVG re-mirror
+ * themselves with a nested scale(-1,1) so glyphs stay readable while their
+ * position still flips with the rest of the chart.
+ */
 function CategoryTick({ x, y, payload, rtl, maxChars }) {
     const label = String(payload.value ?? '');
     return (
         <g transform={`translate(${x},${y})`}>
             <title>{label}</title>
-            <text dy={4} textAnchor={rtl ? 'start' : 'end'} fontSize={12} className="fill-foreground">
-                {truncateLabel(label, maxChars)}
-            </text>
+            <g transform={rtl ? 'scale(-1,1)' : undefined}>
+                <text dy={4} textAnchor="end" fontSize={12} className="fill-foreground">
+                    {truncateLabel(label, maxChars)}
+                </text>
+            </g>
+        </g>
+    );
+}
+
+/**
+ * Un-mirrors the bar's value label the same way CategoryTick does. A custom
+ * LabelList `content` renderer receives the bar's raw `viewBox`, not a
+ * pre-computed position - the x/y offsetting that `position="right"` would
+ * normally do has to happen here instead.
+ */
+function ValueLabel({ viewBox, value, rtl, formatValue }) {
+    const { x, y, width, height } = viewBox;
+    return (
+        <g transform={`translate(${x + width},${y + height / 2})`}>
+            <g transform={rtl ? 'scale(-1,1)' : undefined}>
+                <text dy={4} dx={4} textAnchor="start" fontSize={12} className="fill-foreground text-xs font-semibold">
+                    {formatValue(value)}
+                </text>
+            </g>
         </g>
     );
 }
@@ -40,18 +68,21 @@ export function HorizontalRankingChart({ rows, valueKey, labelKey = 'name', valu
     const height = Math.max(220, data.length * 44 + 56);
     const axisWidth = AXIS_WIDTH[locale] ?? AXIS_WIDTH.en;
     const maxChars = MAX_LABEL_CHARS[locale] ?? MAX_LABEL_CHARS.en;
-    const margin = rtl ? { top: 4, right: 0, bottom: 4, left: 48 } : { top: 4, right: 48, bottom: 4, left: 0 };
 
     return (
         <>
-            <ChartContainer config={{ value: { label: valueLabel, color: 'var(--chart-1)' } }} className="aspect-auto w-full" style={{ height }}>
-                <BarChart data={data} layout="vertical" margin={margin} barCategoryGap="30%">
+            <ChartContainer
+                config={{ value: { label: valueLabel, color: 'var(--chart-1)' } }}
+                className={`aspect-auto w-full ${rtl ? '[&_.recharts-surface]:-scale-x-100' : ''}`}
+                style={{ height }}
+            >
+                <BarChart data={data} layout="vertical" margin={{ top: 4, right: 48, bottom: 4, left: 0 }} barCategoryGap="30%">
                     <CartesianGrid horizontal={false} strokeDasharray="3 3" />
-                    <XAxis type="number" hide reversed={rtl} />
+                    <XAxis type="number" hide />
                     <YAxis
                         dataKey="label"
                         type="category"
-                        orientation={rtl ? 'right' : 'left'}
+                        orientation="left"
                         width={axisWidth}
                         tickLine={false}
                         axisLine={false}
@@ -63,8 +94,8 @@ export function HorizontalRankingChart({ rows, valueKey, labelKey = 'name', valu
                         offset={16}
                         content={<ChartTooltipContent labelKey="label" formatter={(value) => <span className="font-mono font-medium tabular-nums text-foreground">{resolvedFormatValue(value)}</span>} />}
                     />
-                    <Bar dataKey="value" fill="var(--color-value)" radius={rtl ? [4, 0, 0, 4] : [0, 4, 4, 0]} maxBarSize={18}>
-                        <LabelList dataKey="value" position={rtl ? 'left' : 'right'} className="fill-foreground text-xs font-semibold" formatter={resolvedFormatValue} />
+                    <Bar dataKey="value" fill="var(--color-value)" radius={[0, 4, 4, 0]} maxBarSize={18} isAnimationActive={false}>
+                        <LabelList dataKey="value" content={(props) => <ValueLabel {...props} rtl={rtl} formatValue={resolvedFormatValue} />} />
                     </Bar>
                 </BarChart>
             </ChartContainer>
