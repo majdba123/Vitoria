@@ -1,9 +1,5 @@
-# CI/CD Pipeline for MSZ bayer
+# Production deployment pipeline for Vitoria
 name: Deploy to Production
-
-concurrency:
-  group: production-deployment
-  cancel-in-progress: false
 
 on:
   workflow_run:
@@ -14,6 +10,13 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
 jobs:
   deploy:
     name: Deploy to Server
@@ -22,12 +25,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # 2.35.5
         with:
           php-version: '8.3'
           extensions: mbstring, xml, ctype, json, bcmath, curl, zip, pdo, mysql
@@ -37,7 +40,7 @@ jobs:
         run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '20'
           cache: 'npm'
@@ -49,7 +52,7 @@ jobs:
         run: npm run build
 
       - name: Deploy to Server via SSH
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262 # v1.0.3
         env:
           DEPLOY_SHA: ${{ github.event.workflow_run.head_sha }}
         with:
@@ -107,15 +110,14 @@ jobs:
 
             test -s "$backup_path"
 
-            # Fix git ownership issue
             git config --global --add safe.directory /var/www/MSZ
 
-            # Force update to the exact commit CI passed on (not just whatever origin/main is at SSH time)
+            # Deploy the exact commit that passed CI rather than the moving branch head.
             git fetch origin
             git reset --hard "$DEPLOY_SHA"
 
-            # This release intentionally disables SSR until a supervised
-            # renderer is installed and its route-resolution failure is fixed.
+            # SSR remains disabled until a supervised renderer and route-resolution
+            # path are intentionally deployed and validated.
             if grep -q '^INERTIA_SSR_ENABLED=' .env; then
               sed -i 's/^INERTIA_SSR_ENABLED=.*/INERTIA_SSR_ENABLED=false/' .env
             else
@@ -123,39 +125,29 @@ jobs:
             fi
             php artisan config:clear
 
-            # Install/update Composer dependencies
             composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
-
-            # Install NPM dependencies and build
             npm ci
             npm run build
 
-            # Run migrations
             php artisan migrate --force
-
-            # Restart queue workers (if using)
             php artisan queue:restart
 
-            # Rebuild caches (do NOT run optimize:clear after this — it wipes what we just built)
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
             php artisan event:cache
             php artisan tinker --execute='echo "POST_DEPLOY_SSR_ENABLED=".(config("inertia.ssr.enabled") ? "true" : "false").PHP_EOL;'
 
-            # Fix permissions
             chown -R www-data:www-data .
             chmod -R 775 storage
             chmod -R 775 bootstrap/cache
 
-            # Restart services
             systemctl reload php8.3-fpm
             systemctl reload nginx
             supervisorctl restart msz-reverb
 
             php artisan up
 
-            # Verify the app actually came back up before declaring success (APP_URL comes from the server's own .env)
             if [ -n "${APP_URL:-}" ]; then
               curl -fsS "${APP_URL%/}/up" > /dev/null
             else
@@ -163,4 +155,4 @@ jobs:
             fi
 
             trap - EXIT
-            echo "Deployment completed successfully!"
+            echo "Deployment completed successfully"
