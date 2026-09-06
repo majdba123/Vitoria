@@ -29,7 +29,7 @@ class StoreUserRequest extends FormRequest
             'national_id' => ['required', 'string', 'max:50', 'unique:users,national_id'],
             'age' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:120'],
             'membership_number' => ['sometimes', 'nullable', 'string', 'max:100', 'unique:users,membership_number'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'email' => ['nullable', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6'],
             // Vendor and syndicate accounts are deliberately excluded: both
             // need a paired row (vendors / syndicates) created atomically
