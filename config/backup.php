@@ -230,7 +230,10 @@ return [
         'notifiable' => \Spatie\Backup\Notifications\Notifiable::class,
 
         'mail' => [
-            'to' => env('BACKUP_NOTIFICATION_EMAIL', env('MAIL_FROM_ADDRESS', 'hello@example.com')),
+            // `?:` (not the `env()` default arg) so a BLANK BACKUP_NOTIFICATION_EMAIL
+            // falls through too — env()'s own default only fires when the key is unset,
+            // and .env.example ships the key present-but-empty.
+            'to' => env('BACKUP_NOTIFICATION_EMAIL') ?: env('MAIL_FROM_ADDRESS', 'hello@example.com'),
 
             'from' => [
                 'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),

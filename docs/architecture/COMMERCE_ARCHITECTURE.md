@@ -268,8 +268,7 @@ client over `/api/cart`:
 - the `+` control disables at the product's available quantity, and the server
   rejects the request anyway if the client ignores that
 
-`resources/js/pages/checkout.js` + `resources/views/checkout/index.blade.php`
-implement the checkout page. It is deliberately **single-page, not a five-step
+`resources/js/Pages/Checkout/Index.jsx` implements the checkout page. It is deliberately **single-page, not a five-step
 wizard**: the whole flow is address, review, payment, and a stepper would hide
 the total behind a "next" button on mobile for no benefit. Address creation is
 inline so the shopper is never bounced out of checkout.

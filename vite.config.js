@@ -10,7 +10,6 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
-                'resources/js/entries/checkout.js',
                 'resources/js/app.jsx',
             ],
             ssr: 'resources/js/ssr.jsx',

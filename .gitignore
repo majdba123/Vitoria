@@ -33,3 +33,4 @@ Homestead.yaml
 Thumbs.db
 flutter/android/gradle/wrapper/gradle-wrapper.properties
 /flutter
+/qa-artifacts

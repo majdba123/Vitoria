@@ -309,10 +309,10 @@ function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, co
             { key: 'actions', label: i18n.th_actions, align: 'center', render: (r) => <div className="flex items-center justify-center gap-1"><Button asChild size="sm" variant="ghost"><Link href={route('syndicate.vendors.show', r.id)}><Eye className="size-4" />{common.view_details}</Link></Button><Button type="button" size="sm" variant="outline" onClick={() => onReport(r)}><FileText className="size-4" />{i18n.report}</Button></div> },
         ],
         products: [
-            { key: 'name', label: i18n.th_products, width: '38%', truncate: true, render: (r) => <span className="font-semibold text-foreground">{r.name}</span> },
-            { key: 'store', label: i18n.th_store, width: '24%', truncate: true, render: (r) => r.vendor?.store_name || '—' },
-            { key: 'category', label: i18n.th_category, width: '23%', truncate: true, render: (r) => r.category?.name || '—' },
-            { key: 'status', label: i18n.th_status, width: '15%', align: 'center', render: (r) => <StatusBadge tone={r.is_active ? 'success' : 'danger'}>{r.is_active ? common.active : common.inactive}</StatusBadge> },
+            { key: 'name', label: i18n.th_products, width: '42%', truncate: true, render: (r) => <span className="font-semibold text-foreground">{r.name}</span> },
+            { key: 'store', label: i18n.th_store, width: '24%', truncate: true, render: (r) => r.vendor?.store_name || '-' },
+            { key: 'category', label: i18n.th_category, width: '22%', truncate: true, render: (r) => r.category?.name || '-' },
+            { key: 'status', label: i18n.th_status, width: '12%', align: 'center', render: (r) => <StatusBadge tone={r.is_active ? 'success' : 'danger'}>{r.is_active ? common.active : common.inactive}</StatusBadge> },
         ],
         orders: [
             { key: 'order', label: i18n.th_order, truncate: true, render: (r) => <span className="font-semibold text-foreground">{r.order_number || `#${r.id}`}</span> },

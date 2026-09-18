@@ -119,6 +119,11 @@ test('the admin map returns governorate business aggregates without vendor point
             'veterinary_count' => 1,
         ])
         ->and($homs)->not->toHaveKeys(['email', 'phone_number', 'national_id', 'latitude', 'longitude']);
+
+    // Every one of Syria's 14 governorates must be present so the SVG map
+    // can render a count for each region.
+    expect(collect($response->json('data.regions'))->pluck('key')->all())
+        ->toEqualCanonicalizing(collect(App\Support\SyriaGovernorates::ALL)->pluck('key')->all());
 });
 
 test('admin map query parameters cannot alter dashboard scope', function () {
@@ -198,11 +203,10 @@ test('admin vendor index filters exactly by city and canonically by governorate'
         ->toBe(['Aleppo Store', 'Manbij Store']);
 });
 
-test('admin vendor index resolves the merged central governorate to its real member cities', function () {
-    // damascus/rif_dimashq/homs/tartus share no drawn boundary in the map
-    // image, so the dashboard map merges them into one "central" hover zone
-    // (see SyriaGovernorates::MAP_MERGED_GROUPS). Its drilldown must still
-    // filter vendors correctly across all four real governorates.
+test('admin vendor index resolves Damascus and Homs drills independently', function () {
+    // The rebuilt SVG map gives every governorate — including the four that
+    // the old raster artwork could not split — its own selectable region,
+    // so each drilldown filters only its own governorate's vendors.
     Sanctum::actingAs(User::factory()->admin()->create());
     $damascus = mapCity('Damascus');
     $homs = mapCity('Homs');
@@ -212,15 +216,18 @@ test('admin vendor index resolves the merged central governorate to its real mem
     mapVendor('Homs Store', ['city_id' => $homs->id]);
     mapVendor('Aleppo Store', ['city_id' => $aleppo->id]);
 
-    $response = $this->getJson('/api/admin/vendors?governorate=central')->assertOk();
-    expect(collect($response->json('data'))->pluck('store_name')->sort()->values()->all())
-        ->toBe(['Damascus Store', 'Homs Store']);
+    $damascusResponse = $this->getJson('/api/admin/vendors?governorate=damascus')->assertOk();
+    expect(collect($damascusResponse->json('data'))->pluck('store_name')->sort()->values()->all())
+        ->toBe(['Damascus Store']);
+
+    $homsResponse = $this->getJson('/api/admin/vendors?governorate=homs')->assertOk();
+    expect(collect($homsResponse->json('data'))->pluck('store_name')->sort()->values()->all())
+        ->toBe(['Homs Store']);
 });
 
-test('admin vendor index resolves the merged southwest governorate to its real member cities', function () {
-    // quneitra/daraa also share no drawn boundary in the map image (see
-    // SyriaGovernorates::MAP_MERGED_GROUPS) and merge into one "southwest"
-    // hover zone; its drilldown must filter across both real governorates.
+test('admin vendor index resolves Quneitra and Daraa drills independently', function () {
+    // Same as above for the southwest: Quneitra and Daraa are now separate
+    // regions on the map and must filter separately.
     Sanctum::actingAs(User::factory()->admin()->create());
     $quneitra = mapCity('Quneitra');
     $daraa = mapCity('Daraa');
@@ -230,9 +237,13 @@ test('admin vendor index resolves the merged southwest governorate to its real m
     mapVendor('Daraa Store', ['city_id' => $daraa->id]);
     mapVendor('Aleppo Store', ['city_id' => $aleppo->id]);
 
-    $response = $this->getJson('/api/admin/vendors?governorate=southwest')->assertOk();
-    expect(collect($response->json('data'))->pluck('store_name')->sort()->values()->all())
-        ->toBe(['Daraa Store', 'Quneitra Store']);
+    $quneitraResponse = $this->getJson('/api/admin/vendors?governorate=quneitra')->assertOk();
+    expect(collect($quneitraResponse->json('data'))->pluck('store_name')->sort()->values()->all())
+        ->toBe(['Quneitra Store']);
+
+    $daraaResponse = $this->getJson('/api/admin/vendors?governorate=daraa')->assertOk();
+    expect(collect($daraaResponse->json('data'))->pluck('store_name')->sort()->values()->all())
+        ->toBe(['Daraa Store']);
 });
 
 test('admin vendor index rejects invalid geographic filters safely', function () {

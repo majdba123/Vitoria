@@ -77,14 +77,14 @@ export default function VendorOrdersIndex() {
                 <CardContent className="grid gap-4 p-4 sm:grid-cols-3">
                     <Input placeholder={orders.product_name_placeholder} value={product} onChange={(e) => { setProduct(e.target.value); setPage(1); }} />
                     <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
-                        <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                        <SelectTrigger className="w-full" aria-label={orders.all_statuses}><SelectValue /></SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">{orders.all_statuses}</SelectItem>
                             {STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s}>{translatedStatus(s, common)}</SelectItem>)}
                         </SelectContent>
                     </Select>
                     <Select value={categoryId} onValueChange={(v) => { setCategoryId(v); setPage(1); }}>
-                        <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                        <SelectTrigger className="w-full" aria-label={orders.all_categories}><SelectValue /></SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">{orders.all_categories}</SelectItem>
                             {categories.map((c) => <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>)}

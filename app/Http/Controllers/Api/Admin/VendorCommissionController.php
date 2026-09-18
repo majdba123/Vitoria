@@ -67,7 +67,7 @@ class VendorCommissionController extends Controller
                 /** @var OrderItem $item */
                 $category = $item->product?->category;
                 $categoryId = $category?->id ?? 0;
-                $categoryName = $category?->name ?? 'Unknown';
+                $categoryName = $category?->name ?? __('common.unknown_category');
                 $commissionRate = (float) ($category?->commission ?? 0);
                 $lineTotal = (float) $item->line_total;
                 $commissionAmount = ($lineTotal * $commissionRate) / 100;

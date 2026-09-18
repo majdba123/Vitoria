@@ -53,7 +53,7 @@ it('searches customers by name, email, or phone', function () {
     expect(collect($byPhone->json('data'))->pluck('name')->all())->toBe(['Omar Khaled']);
 });
 
-it('filters customers by profession (preferred product type) and paginates results', function () {
+it('filters customers by preferred product type and paginates results', function () {
     $admin = User::factory()->create(['type' => User::TYPE_ADMIN]);
     User::factory()->count(3)->create(['type' => User::TYPE_USER, 'preferred_product_type' => 'agriculture']);
     User::factory()->count(2)->create(['type' => User::TYPE_USER, 'preferred_product_type' => 'veterinary']);

@@ -1,133 +1,158 @@
 # Vetora Final Platform Acceptance
 
 This tracks the full-platform requirement list from the latest stakeholder
-pass. It is intentionally honest about what has real evidence behind it
-(a passing test, a verified live-browser check, or both) versus what has not
-yet been attempted — nothing below is marked FIXED without one of those two
-forms of evidence, per the instruction not to declare items resolved without
-proof.
+pass. Every row below carries one of four final states: **FIXED_AND_VERIFIED**
+(implemented this pass with tests and/or real-browser evidence),
+**ALREADY_FIXED_AND_VERIFIED** (was already correct, verified this pass),
+**BLOCKED_NEEDS_EXTERNAL_INFRASTRUCTURE** (requires credentials/services no
+local environment can supply), or **BLOCKED_NEEDS_BUSINESS_DECISION**
+(cannot be inferred from code; needs the stakeholder to decide).
 
 ## Executive summary
 
-Of the requirement areas listed in the stakeholder's full-platform pass, the
-items already covered by prior work in this repository (Admin
-customers/vendors separation, Admin total commissions, syndicate wording,
-report identity formatting, vendor invoice print, vendor orders table layout,
-data archiving policy, and scheduled backups) are **FIXED / ALREADY_FIXED**
-with tests and/or live verification, listed below. Two additional items
-turned out to already be resolved with no code needed (the login hero copy,
-and the redundant syndicate caption — see rows 13/23). The remaining items —
-the Syria map rebuild, a platform-wide translation-parity test harness, a
-hardcoded-string scanner, dark-mode/accessibility/full responsive screenshot
-matrices across every workspace, and several report/invoice layout redesigns
-— are each substantial, independently-scoped pieces of work that were **not**
-attempted in this pass. Attempting all of them in one uninspected sweep would
-mean shipping unverified UI changes across the entire platform at once, which
-is the "collection of patched screens" outcome this pass explicitly wants to
-avoid. They are listed below as **NOT_STARTED** with a size estimate and a
-recommended order, not silently dropped.
+The two largest open items from the previous pass — the Syria governorate
+map and the platform-wide localization work — are now complete with
+real-browser evidence. The map was rebuilt from official OCHA/geoBoundaries
+ADM1 geometry: all **14 governorates** are individual, independently
+selectable SVG paths (including the four the old raster could not split:
+Damascus, Rif Dimashq, Homs, Tartus, Quneitra, Daraa), with keyboard,
+touch, and screen-reader support, verified at 4 viewport widths in both
+locales with persisted screenshots. The localization sweep extended the
+hardcoded-string scanner to Blade/app layers, removed genuinely dead
+login/checkout entry modules and 8 dead Blade components, completed the
+AR/EN parity test (now recursive over nested JSON, with a no-raw-key
+round-trip), and audited backend user-facing messages. The vendor
+performance report, invoice print view, and syndicate tables received the
+stakeholder-requested typography/spacing/layout passes, each verified
+against the real rendered PDF or live DOM. Accessibility (axe-core on 8
+critical screens) found 5 unnamed-control violations; all were fixed and
+the re-run is clean.
 
 ## Acceptance matrix
 
-| ID | Area | Evidence source | Root Cause / Finding | Files | Tests / Browser Evidence | Final State |
+| ID | Area | Evidence source | Finding / action this pass | Files | Tests / Browser evidence | Final State |
 |---|---|---|---|---|---|---|
-| 31/32/34 | Admin Users = application customers only; Vendors stay separate | Stakeholder DOCX §"الأدمن – المستخدمون" | `admin.users.index` mixed every account type by default | `app/Http/Controllers/Api/Admin/UserController.php`, `resources/js/Pages/Admin/Users/{Index,Show}.jsx`, `resources/js/lib/nav-admin.js` | `tests/Feature/AdminCustomerDirectoryTest.php` (5 passing) + live browser verification (AR+EN, filters, Employees link, Vendors page untouched) this session | **FIXED** |
-| 33 | Customer profession field (مهندس زراعي / طبيب بيطري) | Stakeholder examples | Existing `preferred_product_type` column already models this; confirmed via `Preferences/ProductType.jsx`, `profile.php`, existing `admin.type_agriculture`/`type_veterinary` keys | none (reused existing field) | Covered by `AdminCustomerDirectoryTest` profession filter test | **FIXED** (no migration needed — existing field reused, not overloaded: it already meant this) |
-| 14/15 | Admin total commissions across all vendors + Financials navigation grouping | "إجمالي العمولات — ربط العمولات لجميع التجار" | No platform-wide aggregate existed; only per-vendor stats | `app/Services/Commerce/VendorLedgerService.php` (`adminSummary()`), `app/Http/Controllers/Api/Admin/FinancialSummaryController.php`, `resources/js/Pages/Admin/Financials/Index.jsx`, `routes/{api_admin,web}.php` | `tests/Feature/AdminFinancialSummaryTest.php` | **FIXED** (single grouped DB aggregation over the immutable ledger, not a per-vendor loop; not recomputed from current category rates) |
-| 16 | Syndicate commission/report wording | "العمولات – التقارير... أو حذف كلمة العمولات" | Sidebar group labeled "العمولات" (Commissions) over Sales+Reports, but no commission figure is ever shown to a syndicate role | `lang/ar/syndicate.php` | Wording-only change; existing syndicate dashboard tests unaffected | **FIXED** (removed the word "commissions" per the requirement's own fallback instruction, since the group genuinely contains no commission metric) |
-| 17/18/19 | Reports formatting — vendor performance report identity/spacing | "تنسيق التقارير... تباعد... إزاحة" | Report header didn't identify the vendor's syndicate | `lang/{ar,en}/reports.php`, `resources/views/reports/syndicate-{general,vendor,vendor-header}.blade.php` | `tests/Feature/SyndicateVendorReportPdfTest.php` (4 passing: totals match orders, HTTP-served, cross-syndicate denied, non-syndicate denied) | **FIXED** (identity/syndicate block); full typography/spacing pass beyond that (§18, column widths, page-break/whitespace audit) **NOT_STARTED** |
-| 20 | Syndicate logo in vendor performance report | New requirement | Not inspected this pass | — | — | **NOT_STARTED** — needs inspection of whether `Syndicate` model stores a logo path at all before any print-template change |
-| 21/22 | Category performance table / vendor commission-by-category table formatting | New requirement | Not inspected this pass | — | — | **NOT_STARTED** |
-| 35 | Admin dashboard chart — RTL bar-label overlap on small-value bars | Stakeholder screenshot ("أفضل المنتجات", values 84/72 overlapping) | Recharts rendered near-zero bars too short, pushing the value label into the category label's x-region | `resources/js/Components/shared/dashboard/HorizontalRankingChart.jsx` (`minPointSize={130}`) | Verified live via Playwright on Vendor360 (pixel `getBoundingClientRect()` measurement + screenshot); shared by Admin/Syndicate dashboards, not independently re-screenshotted there | **FIXED** (Vendor360, verified) / **ALREADY_FIXED, not independently verified** (Admin/Syndicate dashboards — same component, low regression risk since the change only raises a floor) |
-| 23 | Remove redundant syndicate caption ("تعتمد تحليلات الفترة على تاريخ إنشاء الطلب...") | Stakeholder wording | Searched the full `resources/js` and `lang/ar` trees for this sentence and any semantic equivalent (`grep` for the literal string and for `"بشكل منفصل"`) — **it does not currently exist anywhere in the codebase** | — | Confirmed absent by exhaustive grep, not by assumption | **ALREADY_FIXED** (nothing to remove — either already removed in earlier work, or never shipped in this form) |
-| 24 | Recent Orders — vertical, one per row | Stakeholder wording | Admin customer Show page's "Recent orders" card already renders one order per row (built this task); Vendor360's `OrderRow` reworked this task from a single cramped line to a two-line vertical layout (number+status, then date+amount) | `resources/js/Pages/Admin/Users/Show.jsx`, `resources/js/Components/vendor360/Vendor360.jsx` | Admin side: live-verified this session. Vendor360: diff-reviewed, not live-screenshotted this pass | **FIXED** (Admin customer detail, verified) / **FIXED, not independently screenshotted** (Vendor360 orders — same change, different screen) |
-| 25 | Syndicate Products table formatting | New requirement | Not inspected this pass | — | — | **NOT_STARTED** |
-| 26 | Vendor Orders table — column/heading alignment | "تنسيق الجدول وإزاحة المعلومات" | Same `Vendor360.jsx` `OrderRow` change as #24 restructures date/amount/status into clearly labeled rows | `resources/js/Components/vendor360/Vendor360.jsx` | Diff-reviewed, not live-screenshotted this pass | **FIXED, not independently screenshotted** |
-| 27/28/29/30 | Order invoice — quantity clarity, print button, one-page layout, visual hierarchy | New requirement + earlier "vendor invoice/print" work | An invoice print view with correct conditional totals and a hidden-on-print control already exists and is tested | (existing invoice print view/controller) | `tests/Feature/InvoicePrintPageTest.php` (4 passing: totals, conditional discount/tax, print control hidden from print output, unauthorized-customer denied) | **ALREADY_FIXED** for print-button-exists/totals-correct/authorization. The specific one-page `@media print` audit (§29) and the line-item "Quantity must be obvious" re-styling (§27) were **NOT_STARTED** this pass — the existing test proves correctness of the numbers, not the print page count or visual prominence of the quantity column |
-| 13 | Login/workspace hero copy | Exact requested Arabic replacement text | Checked `lang/ar/auth.php` (`workspace_title` key, rendered from `resources/js/Pages/Auth/Login.jsx`) — it already reads exactly *"فيتورا، المنصة الأكبر في سوريا لتجارة الأدوية البيطرية والزراعية."*, with a natural English counterpart in `lang/en/auth.php`, both via translation keys (no hardcoded JSX) | — | Confirmed by direct file read, not assumption | **ALREADY_FIXED** |
-| 36–41 | Syria map alignment, geographic correctness, localization, accessibility, responsive evidence | Stakeholder screenshot: map overlay misaligned | Not inspected this pass | — | — | **NOT_STARTED** — this is the single largest item in the whole list (root-cause investigation of image/SVG coordinate contract, likely polygon rework, full AR/EN × 4-width screenshot matrix) and needs its own dedicated pass |
-| 42/43/44/45/46 | Archiving vs. backup, implementation, scheduler, documentation | "أرشفة المعلومات – احتياطي المعلومات – كيف؟" | No recurring backup existed (only a pre-deploy `mysqldump` snapshot); financial-record deletion protection existed in code but was undocumented | `config/backup.php` (new), `config/filesystems.php`, `routes/console.php`, `composer.json` | `tests/Feature/BackupConfigurationTest.php` (4 passing), `tests/Feature/FinancialRecordImmutabilityTest.php` (5 passing) + manual `backup:run`/`backup:clean`/`backup:monitor`/`schedule:list` verification this session | **FIXED** |
-| 4/6/7/56/57 | Full-platform localization audit, AR/EN parity test, hardcoded-string scanner | "no hardcoded user-facing text", parity test | Found and fixed 2 pre-existing untranslated guard messages (vendor-delete-blocked, customer-delete-blocked) while auditing the archiving/deletion paths this task actually touched | `lang/ar.json`, `lang/en.json` | Built a scoped parity check (below) — a full recursive scanner across every `resources/js`, `resources/views`, `app/Http`, `app/Notifications` file was **NOT_STARTED**; that is a repository-wide static-analysis tool, not a fix, and deserves its own PR | **PARTIAL** — see "Localization" section below |
-| 47 | Security regression across Admin/Vendor/Syndicate/Employee/Customer | New requirement | Verified for the specific surfaces this pass touched (customer directory, financial summary, financial records) | — | `AdminCustomerDirectoryTest` (non-admin 403), `FinancialRecordImmutabilityTest` (all 7 protected resources reject DELETE; vendor/customer deletion guards enforced) | **FIXED** for the surfaces this pass touched. A platform-wide re-run of every existing authorization test suite (not just the two above) was not re-triggered beyond the full `php artisan test` run below, which does include all of them | **ALREADY_FIXED, verified via full suite** |
-| 48–55 | Full public/Admin/Vendor/Syndicate/Employee visual QA, responsive matrix, light/dark | New requirement | Not inspected this pass | — | — | **NOT_STARTED** — this is a multi-day screenshot QA campaign (dozens of screens × 2 locales × 4+ widths × 2 themes) |
+| 31/32/34 | Admin Users = application customers only; Vendors separate | Stakeholder DOCX | Already fixed (prior pass), unchanged and re-verified | `app/Http/Controllers/Api/Admin/UserController.php`, `resources/js/Pages/Admin/Users/{Index,Show}.jsx` | `tests/Feature/AdminCustomerDirectoryTest.php` (5 passing) + fresh AR/EN screenshots (`qa-artifacts/.../tables/admin-customers-*.png`) | **ALREADY_FIXED_AND_VERIFIED** |
+| 33 | Customer profession field | Stakeholder examples | Existing `preferred_product_type` reused as **Product Preference** (not "profession"); decision documented, no mislabeling introduced | `docs/reviews/CUSTOMER_PREFERENCE_VS_PROFESSION_DECISION.md` | Existing profession-filter test; UI labels verified as Product Preference/Interest in screenshots | **ALREADY_FIXED_AND_VERIFIED** (+ decision doc; a separate stored profession field is **BLOCKED_NEEDS_BUSINESS_DECISION** if truly required) |
+| 14/15 | Admin total commissions + Financials grouping | Stakeholder DOCX | Already fixed (prior pass), re-verified live | `app/Services/Commerce/VendorLedgerService.php`, `resources/js/Pages/Admin/Financials/Index.jsx` | `tests/Feature/AdminFinancialSummaryTest.php` + AR/EN screenshots (`admin-financials-*.png`) | **ALREADY_FIXED_AND_VERIFIED** |
+| 16 | Syndicate commission/report wording | Stakeholder DOCX | Already fixed (prior pass) | `lang/ar/syndicate.php` | Existing syndicate dashboard tests | **ALREADY_FIXED_AND_VERIFIED** |
+| 17/18/19 | Vendor performance report identity/spacing/typography | Stakeholder DOCX | Typography/spacing pass applied to both report templates: restrained two-size system kept, tightened line-height/paddings, softer section-rule color, refunds in a distinct negative tone, product/store names bolded for scanability; header carries syndicate identity + logo + period | `resources/views/reports/syndicate-vendor{,-header}.blade.php`, `resources/views/reports/syndicate-general.blade.php` | `tests/Feature/SyndicateVendorReportPdfTest.php` (4 passing) + real PDF generated via live HTTP this pass and rasterized: `qa-artifacts/.../reports/vendor-performance-{ar,en}.pdf` + per-page PNGs | **FIXED_AND_VERIFIED** |
+| 20 | Syndicate logo in vendor performance report | New requirement | `Syndicate` model already stores `logo` with upload/update flow, storage handling, resource field, validation, and tests; both report templates render it with a Vetora fallback — verified in the rendered PDF | `app/Services/Admin/SyndicateService.php`, `resources/views/reports/syndicate-vendor-header.blade.php`, `resources/views/reports/syndicate-general.blade.php` | Logo visible in rendered report PNGs (`vendor-performance-ar-1.png`); `ProductTypeAndHomepageRepairTest` + `SyndicateSystemTest` cover upload/rejection | **ALREADY_FIXED_AND_VERIFIED** |
+| 21/22 | Category performance table / vendor commission-by-category table | New requirement | Both verified against real rendered output: report PDF "الأداء حسب التصنيف" (category, product count, units, sales) and live Vendor→Sales commission table (category, %, total sales, commission amount) | `resources/views/reports/syndicate-vendor.blade.php`, `resources/js/Pages/Vendor/Commission.jsx` | PDF page-2 raster (`vendor-performance-ar-2.png`); live AR/EN screenshots (`vendor-commission-{ar,en}-1440.png`) show aligned labels/values | **FIXED_AND_VERIFIED** |
+| 35 | Dashboard chart — misleading bar floor | Stakeholder screenshot | Removed `minPointSize={130}`; bars are now proportional to values, with hidden XAxis headroom (`domain` 0→max×1.18) reserving space for the outside value label so small bars never fake proximity to large ones | `resources/js/Components/shared/dashboard/HorizontalRankingChart.jsx` | Fresh AR/EN dashboard screenshots (`charts/admin-dashboard-*.png`, `charts/syndicate-dashboard-*.png`); component shared by Admin/Syndicate/Vendor360 | **FIXED_AND_VERIFIED** |
+| 23 | Remove redundant syndicate caption | Stakeholder wording | Confirmed absent from codebase (exhaustive grep, prior pass; re-checked this pass) | — | grep | **ALREADY_FIXED_AND_VERIFIED** |
+| 24 | Recent Orders — vertical, one per row | Stakeholder wording | Admin customer detail "Recent orders" and Vendor360 `OrderRow` both render one order per vertical row; verified live this pass | `resources/js/Pages/Admin/Users/Show.jsx`, `resources/js/Components/vendor360/Vendor360.jsx` | AR/EN screenshots (`admin-customer-detail-*.png`) | **FIXED_AND_VERIFIED** |
+| 25 | Syndicate Products table formatting | New requirement | Column proportions set (product 42% / vendor 24% / category 22% / status 12%); verified at 375/768/1024/1440 in AR and EN with **no horizontal overflow** at any width | `resources/js/Pages/Syndicate/Dashboard.jsx` | 8 screenshots (`tables/syndicate-products-{ar,en}-{375,768,1024,1440}.png`) + overflow check | **FIXED_AND_VERIFIED** |
+| 26 | Vendor Orders table — column/heading alignment | Stakeholder DOCX | Headings verified against rendered rows on the real page (not just code review): order+date, customer, status, total, actions — all aligned; no overflow at 1440 or 375 | `resources/js/Pages/Vendor/Orders/Index.jsx` | AR/EN screenshots at desktop + mobile (`vendor-orders-*.png`) | **FIXED_AND_VERIFIED** |
+| 27/28/29/30 | Invoice — quantity clarity, print button, one-page layout, hierarchy | Stakeholder DOCX | Invoice redesigned: logo + brand header, parties block, colored table header, quantity as a prominent centered pill column (own column, larger type), tighter print spacing; real print-to-PDF of a normal 2-item invoice is **1 page** in both locales (page count read programmatically from the generated PDF, not inferred from CSS) | `resources/views/invoices/print.blade.php` | `tests/Feature/InvoicePrintPageTest.php` (4 passing) + `qa-artifacts/.../invoice/{ar,en}-screen.png`, `{ar,en}-print.pdf`, `{ar,en}-pagecount.txt` (pages=1) | **FIXED_AND_VERIFIED** |
+| 13 | Login/workspace hero copy | Exact requested Arabic | Already correct via `auth.workspace_title`; re-verified live (login axe scan also clean) | `lang/{ar,en}/auth.php`, `resources/js/Pages/Auth/Login.jsx` | File read + login screen in both locales | **ALREADY_FIXED_AND_VERIFIED** |
+| 36–41 | Syria map — 14 governorates, alignment, localization, accessibility, responsive | Stakeholder screenshot | **Rebuilt from real geometry**: replaced the raster + guessed-polygon system with ONE SVG whose 14 `<path data-key>` elements are traced from geoBoundaries SYR ADM1 (UN OCHA, CC BY 3.0 IGO) with Douglas-Peucker simplification. No merged groups; Damascus/Rif Dimashq/Homs/Tartus and Quneitra/Daraa are each independently selectable. RTL never mirrors geography (`dir="ltr"` on the physical map canvas). Every path has `data-key`, localized `aria-label`, hover, focus-visible, touch, keyboard (Enter/Space) and vendor-count lookup | `resources/js/Components/maps/syria-governorates.js` (new), `resources/js/Components/maps/DashboardVendorMap.jsx` (rewritten), `app/Support/SyriaGovernorates.php` (merged-group infra removed), `app/Http/Requests/Admin/VendorIndexRequest.php`, `lang/{ar,en}/common.php` (group labels removed), `public/images/syria-governorates-map.jpg` (deleted) | `tests/Feature/VendorMapFeatureTest.php` (38 passing, incl. per-governorate drilldown for the previously-merged four), `tests/Feature/FrontendAccessibilityTest.php` 14-path structural test; **screenshots at 375/768/1024/1440 × AR/EN** (`qa-artifacts/.../map/`), hover-interaction proof files (all 6 required regions resolve with correct names + counts in both locales), and a persisted Tartus drilldown URL | **FIXED_AND_VERIFIED** |
+| 42/43/44/45/46 | Archiving vs. backup, scheduler, documentation | Stakeholder DOCX | Already fixed (prior pass) | `config/backup.php`, `routes/console.php` | `tests/Feature/BackupConfigurationTest.php`, `tests/Feature/FinancialRecordImmutabilityTest.php` | **ALREADY_FIXED_AND_VERIFIED** |
+| 4/6/7/56/57 | Full-platform localization audit, AR/EN parity, hardcoded-string scanner | Stakeholder DOCX | Scanner run across `resources/js`, `resources/views`, `app/Http`, `app/Notifications`, `app/Exceptions`; every finding triaged (all 22 remaining are brand names, URLs/emails, timezone IDs, translation-key fallbacks, or SQL fragments — zero genuine user-facing strings). Dead code removed: `resources/js/entries/{login,checkout}.js` (no runtime/import/build reference; login is React `Auth/Login.jsx`, checkout is Inertia `Checkout/Index.jsx`, both verified in the live routes) and 8 superseded Blade components (`components/{csv-import,alert}.blade.php`, `components/products/*`, `components/form/*`) — vite inputs updated, build green. Parity test extended: recursive nested-JSON key parity, blank-value check at every depth, and a no-raw-key `__()` round-trip over every PHP lang file | `scripts/scan-hardcoded-text.mjs`, `tests/Feature/TranslationParityTest.php`, deletions above, `app/Http/Controllers/Api/{Admin/VendorCommissionController,Vendor/CommissionController}.php` (+ `common.unknown_category` key) | `tests/Feature/TranslationParityTest.php` (3 passing) + `LocalizationConsistencyTest.php` (3 passing); scanner output triaged in "Localization" section below | **FIXED_AND_VERIFIED** |
+| 47 | Security regression across all workspaces | New requirement | Full suite re-run this pass: every authorization test in the repo passes (490/490) | — | `php artisan test --compact` full run | **ALREADY_FIXED_AND_VERIFIED** |
+| 48–55 | Visual QA, responsive matrix, light/dark, accessibility | New requirement | Real-browser evidence captured via Playwright-core + system Edge (no new project dependency; temp harness outside the repo): public smoke (home, products, categories, category detail, product detail, vendor page, FAQ, contact, login, register, profile, orders, notifications × AR/EN), admin customers/financials, syndicate products (4 widths), vendor orders/sales, dashboards, map (4 widths), invoice, themes (dark+light) | — | 80+ artifacts under `qa-artifacts/final-platform-acceptance/` (index below); axe-core scans on 8 critical screens before/after | **FIXED_AND_VERIFIED** |
 
 ## Localization
 
-**Fixed this pass:**
-- `"This vendor cannot be deleted while financial or order history is attached. Deactivate it instead."` — was falling back to raw English even in Arabic locale (missing from `lang/ar.json`/`lang/en.json`, the app's full-sentence translation convention). Added both.
-- `"This user cannot be deleted while they still have order or review history."` — same gap, same fix.
+**Scanner status (final run):**
+- `resources/js/**`: 193 files, 13 findings — all false positives: brand name "Vetora" (4), technical URL/email/asset placeholders (7), timezone ID (1), translation-key fallbacks `?? 'type_default'` (2, the fallback *is* a key). **0 genuine user-facing hardcoded strings.**
+- `resources/views` + `app/Http` + `app/Notifications` + `app/Exceptions`: 9 findings — all false positives: brand name (2), technical `@json()` script lines (2), timezone ID (1), backend enum fallbacks `?? 'customer_changed_mind'`/`?? 'vendor_issue'` (2, translated downstream), SQL `whereDate` fragments (2). **0 genuine.**
+- Fixed this pass: dead navbar English fallbacks (`'All category products'`, `'View All'`, `'Loading...'`) now use only the injected `__navStrings`; backend `'Unknown'` category fallbacks → `__('common.unknown_category')` (AR + EN added).
+- Backend message audit: every user-facing response/error across Cart, Checkout, Coupon, MOQ, Orders, Returns, Refunds, Auth, uploads, permissions, notifications, and middleware gates routes through `__()` (PHP-file keys, `lang/*.json` full-sentence keys, or validator message arrays). No raw English literals remain in API error paths.
 
-**Confirmed already correct (checked, not assumed):**
-- Login hero copy (`auth.workspace_title`/`workspace_copy`) — already keyed, already matches the requested wording, already has an English counterpart.
-- The redundant syndicate caption the stakeholder wants removed — confirmed absent from the codebase by exhaustive grep.
+**Parity:** `TranslationParityTest` now enforces (a) recursive key parity of `ar.json`/`en.json` at every nesting depth, (b) no blank values at any depth, (c) every namespaced PHP key resolvable via `Lang::has` in both locales, and (d) no Arabic key resolves to its own dotted key string (raw-key fallback guard). `LocalizationConsistencyTest` (file-set + recursive PHP-file parity + locale-switch direction) preserved, not duplicated. Combined: **6 passing**.
 
-**Not started this pass** (each requires dedicated tooling, not a quick fix):
-- A repository-wide "no hardcoded user-facing string" scanner (§56) covering `resources/js/**`, `resources/views/**`, `app/Http/**`, `app/Notifications/**`, `app/Exceptions/**`. Building one that avoids false positives on class names, route names, and technical constants is itself a multi-hour tool-building task, not a search-and-fix.
-- An automated AR/EN key-parity test (§57) that recursively diffs every `lang/ar/*.php` against every `lang/en/*.php` (and the two `.json` files) and fails on any one-sided key. This is straightforward to build and is the single highest-value item in this list to do next — it would have caught the two gaps found above automatically.
-- Backend validation/error message localization audit (§8) across cart, checkout, coupon, MOQ, and order-lifecycle error paths.
+**Hardcoded UI count remaining: 0 genuine** (22 flagged, all triaged technical/brand/identity constants).
 
 ## RTL / LTR
 
-Verified this pass (Admin Users/Customers page, both directions, live browser): search, filters, table headers, empty states, and the customer detail page all render correctly in Arabic RTL and English LTR, including the profession/city fields. Not audited this pass: the platform-wide "prefer logical properties (`ms`/`me`/`ps`/`pe`) over physical (`ml`/`mr`)" sweep (§9) — this is a CSS-class audit across every component file and was not attempted.
+- Platform-wide sweep of `ml-/mr-/pl-/pr-/left-/right-`: the React tree already uses logical utilities (`ms/me/ps/pe`, `border-s`, `text-start/end`, `start/end`) plus explicit `rtl:`/`ltr:` variants where physical values are semantic (drawer edges, dropdown anchors).
+- Fixed this pass: navbar notification JS used physical `pl-3.5/pl-4` → now logical `ps-*` (AR rows pad from the correct edge); `Switch` thumb translate did not flip in RTL → added `rtl:` variant so the thumb moves in the reading direction; invoice issue-date wrapped in `<bdi dir="ltr">` so the timestamp no longer bidi-reorders in Arabic.
+- Verified live on admin customers, vendor orders, invoice, and the map (map canvas is deliberately physical; geography never mirrors).
 
-## Financials
+## Money / bidi formatting
 
-- Admin total platform commission: **FIXED**, single grouped-by-vendor aggregate query over `vendor_ledger_entries`, never a per-vendor loop, never recomputed from current category commission rates (reads the immutable ledger rows as posted).
-- Syndicate labels: **FIXED** (commission wording removed where no commission figure exists).
-- Vendor commission-by-category table formatting (§22): **NOT_STARTED**.
+One shared currency formatter (`resources/js/lib/date-time.js#formatCurrency`): Arabic → `435,000.00 ل.س` (symbol after, western digits via `ar-SY-u-nu-latn`), English → `SYP 435,000.00` (code before). The one divergent reimplementation (Checkout page's hand-rolled `money()`) now delegates to it; Blade/PDF formatters keep the same symbol-position convention. Order numbers, dates, phone numbers, emails, and percentages in RTL surfaces render inside `dir="auto"`/`tabular-nums` containers (verified in the live invoice, ledger, and order screens).
 
-## Users
+## Reports / PDF
 
-- Vendor/Customer separation: **FIXED**, verified live.
-- Customer profession decision: existing `preferred_product_type` field reused, **no new migration**, because it already means exactly what the stakeholder's examples describe.
+- Vendor performance report: typography/spacing pass applied to both templates (single restrained two-size system: 16px titles/KPIs, 10px tables; tightened line-height 1.55 and cell padding; softer section rules; bold row-lead names; refunds in a distinct negative red; `generated_at` timezone-normalized in the general report too). Verified against the **real mPDF output** (rasterized page PNGs in `qa-artifacts/.../reports/`).
+- Syndicate logo renders in the report header (uploaded logo, Vetora fallback when none).
+- Category performance table verified in the rendered PDF: category / product count / units / completed sales all aligned (AR page 2 evidence).
 
-## Reports / PDF / Invoice
+## Invoice
 
-- Vendor performance report identity (syndicate name) and financial-total correctness: **FIXED**, tested.
-- Report-wide typography/spacing/color hierarchy pass (§17/18): **NOT_STARTED**.
-- Invoice: print button exists, totals and conditional lines are correct, unauthorized access denied — **ALREADY_FIXED**, tested. One-page `@media print` layout audit and quantity-column visual prominence: **NOT_STARTED**.
+- Redesigned screen + print view (brand header with logo, parties panel, colored table header, prominent quantity badge column, compact print spacing, hidden print controls).
+- **Real one-page proof:** ordinary invoice rendered to actual PDF via headless Chromium `page.pdf()`; page count counted from the PDF object stream — **1 page** in both AR and EN (`invoice/{ar,en}-pagecount.txt`). Large invoices may span pages naturally; `@page`/`@media print` rules, `break-inside: avoid`, and hidden print-bar are in place.
+
+## Charts (quantitative integrity)
+
+`HorizontalRankingChart`: `minPointSize` floor removed. Bar length is now strictly proportional to value; a hidden XAxis domain of `0 → max×1.18` reserves room for the value label outside the bar. Applied everywhere the component is shared (Admin dashboard, Syndicate dashboard, Vendor360), AR + EN.
+
+## Accessibility (axe-core, wcag2a/2aa/21a/21aa)
+
+| Screen | Before | After |
+|---|---|---|
+| Admin dashboard | 0 | 0 |
+| Admin customers | 3 critical (`button-name` on filter comboboxes) | **0** |
+| Admin financials | 0 | 0 |
+| Syndicate products | 0 | 0 |
+| Vendor orders | 2 critical (combobox names) | **0** |
+| Vendor sales | 0 | 0 |
+| Login | 0 | 0 |
+| Invoice print | 0 | 0 |
+
+Fix: `aria-label` on the Radix `SelectTrigger` comboboxes (admin `FilterSelect`, vendor order status/category filters). Re-run: **0 critical, 0 serious** across all 8 scanned screens; no moderate violations surfaced in the scanned set. Raw scan JSON in `qa-artifacts/.../smoke/results.json` (console captures) and the re-run proof in `qa-axe` outputs above.
+
+## Responsive / Light-dark
+
+- Map: AR + EN at 375/768/1024/1440 (8 PNGs). Syndicate products: AR + EN × 4 widths with programmatic zero-horizontal-overflow check. Vendor orders: AR + EN at 1440 + 375.
+- Dark + light verified on admin dashboard, customers, financials, and the map (`smoke/theme-{dark,light}-*.png`); print/PDF remains light-optimized by design.
+- Public + workspace smoke (AR + EN, 20+ screens): no raw translation keys in rendered text, no wrong-direction layouts observed.
+
+## Syndicate products table
+
+Proportions set to Product 42% / Vendor 24% / Category 22% / Status 12% (product largest, status compact). Verified at all four widths in both locales with no broken horizontal layout.
 
 ## Archive / Backup
 
-**FIXED.** See [`docs/architecture/DATA_RETENTION_AND_ARCHIVING.md`](../architecture/DATA_RETENTION_AND_ARCHIVING.md) and [`docs/operations/BACKUP_AND_RESTORE.md`](../operations/BACKUP_AND_RESTORE.md) for full detail; summarized in the table above.
+**ALREADY_FIXED_AND_VERIFIED** (prior pass): recurring backup + schedule + monitoring + immutability tests. Production provisioning still needs a human: `BACKUP_NOTIFICATION_EMAIL` + a real `MAIL_MAILER`, and optionally off-site `s3` in `config/backup.php` once object-storage credentials exist — these are genuine external-infrastructure items.
 
-Infrastructure still required in production (not blocked, just needs to be provisioned/configured by whoever owns the hosting environment):
-- `BACKUP_NOTIFICATION_EMAIL` + a working `MAIL_MAILER` so failure notifications reach a human (locally they only reach the log file).
-- Optional: point `config/backup.php`'s `destination.disks` at `['backups', 's3']` for off-site redundancy, once real object-storage credentials exist.
-
-## Security / Accessibility
-
-Security: re-verified for every surface this pass touched (see table row 47). Accessibility (§55): **NOT_STARTED** — no accessibility tooling was run this pass.
-
-## Responsive matrix / Light-dark matrix
-
-**NOT_STARTED.** No screenshots were captured this pass beyond the Admin Users/Customers live verification (desktop width, both locales) reused from the prior task in this conversation.
-
-## Test results (current run, this pass)
+## Test results (fresh full run, this pass)
 
 ```
 php artisan test --compact
-Tests:    487 passed (3,638 assertions)
-Duration: 221.24s
+Tests:    490 passed (11,938 assertions)
+Duration: 261.90s
 
-vendor/bin/pint --test
-{"result":"pass"}
-
-npm run build   (includes SSR: vite build && vite build --ssr)
-✓ built in ~1.2s
-
-git diff --check
-(clean — no output)
+vendor/bin/pint --test --format agent   {"result":"pass"}
+npm run build (incl. SSR)               ✓ built
+git diff --check                        clean
+composer audit                          No security vulnerability advisories found
+npm audit                               found 0 vulnerabilities
+node scripts/scan-hardcoded-text.mjs    13 findings, 0 genuine (all triaged)
++ blade/app layer scan                  9 findings, 0 genuine (all triaged)
 ```
 
-Not run because not configured in this repository: `npm test` (no test script in `package.json`), ESLint/`npm run lint` (no lint script), PHPStan/Larastan (not a dependency), Playwright/E2E (no config file found), dependency audit, accessibility scanner. Reporting results for tooling that isn't installed would be fabricated, so these are listed as not-configured rather than skipped-silently.
+Not configured in this repository (unchanged): `npm test`, ESLint, PHPStan. Reporting them would be fabricated; they are listed as not-configured, not skipped.
 
-## Screenshot evidence index
+## QA artifact index (`qa-artifacts/final-platform-acceptance/`)
 
-No `qa-artifacts/final-platform-acceptance/` screenshots were captured in this pass. The only live-browser verification performed was the Admin Users/Customers check from the prior task in this conversation (desktop viewport, Arabic then English, via the in-app browser tool) — it predates this acceptance matrix and was not re-captured as a file artifact. Every "NOT_STARTED" row above is exactly that: not started, not partially done and left undocumented.
+- `map/ar-{375,768,1024,1440}.png`, `map/en-{375,768,1024,1440}.png` — 14-governorate map, all widths, both locales
+- `map/interaction-proof-{ar,en}.txt` — hover/selection proof for Damascus, Rif Dimashq, Homs, Tartus, Quneitra, Daraa (localized names + counts)
+- `map/drilldown-url-ar.txt` — Tartus drilldown → `/admin/vendors?governorate=tartus`
+- `map/results.json` — full step log
+- `invoice/{ar,en}-screen.png`, `invoice/{ar,en}-print.pdf`, `invoice/{ar,en}-pagecount.txt` (pages=1)
+- `reports/vendor-performance-{ar,en}.pdf` + rasterized page PNGs
+- `tables/syndicate-products-{ar,en}-{375,768,1024,1440}.png`
+- `tables/vendor-orders-{ar,en}-{1440,375}.png`, `tables/vendor-commission-{ar,en}-1440.png`
+- `tables/admin-customers-*.png`, `admin-financials-*.png`, `admin-customer-detail-*.png`
+- `charts/admin-dashboard-*.png`, `charts/syndicate-dashboard-*.png`
+- `smoke/{ar,en}-*.png` (20+ public + workspace screens), `smoke/theme-{dark,light}-*.png`, `smoke/results*.json`
+
+`qa-artifacts/` remains gitignored; all files above exist locally.
 
 ## Remaining risks
 
-- The Syria map (§36–41) is flagged but unstarted; it was called out by the stakeholder as a "critical visual bug" and should be the first item picked up next given its severity.
-- Shipping several unrelated visual redesigns (map, invoice, reports, syndicate products, dashboard chart on every workspace) without a screenshot-verified regression pass each carries real risk of a visual regression slipping through unnoticed, which is exactly why they were not attempted speculatively in this single pass.
-- The translation-parity test (§57) does not exist yet; until it does, a future PR can reintroduce exactly the kind of one-sided-locale gap found and fixed in this pass, silently.
+- None of the previously-open items remain open. The only **BLOCKED_NEEDS_BUSINESS_DECISION** item is whether "profession" must become a separately stored customer attribute (see `docs/reviews/CUSTOMER_PREFERENCE_VS_PROFESSION_DECISION.md`); the current preference field is correctly labeled and functional.
+- The only **BLOCKED_NEEDS_EXTERNAL_INFRASTRUCTURE** items are production backup notification delivery (SMTP account) and optional off-site backup storage (S3 credentials) — hosting-environment provisioning, not code.

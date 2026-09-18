@@ -12,7 +12,7 @@ import { CategoryCoverage } from '@/Components/shared/dashboard/CategoryCoverage
 import { HorizontalRankingChart } from '@/Components/shared/dashboard/HorizontalRankingChart';
 import { DonutChart } from '@/Components/shared/dashboard/DonutChart';
 import { DashboardVendorMap } from '@/Components/maps/DashboardVendorMap';
-import { Tabs, TabsList, TabsTrigger } from '@/Components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
 import { useAdminDashboard } from '@/hooks/use-admin-dashboard';
 import { useI18n } from '@/hooks/use-i18n';
 
@@ -159,15 +159,21 @@ export default function Dashboard() {
                                     {distributionOptions.map((option) => <TabsTrigger key={option.key} value={option.key}>{option.title}</TabsTrigger>)}
                                 </TabsList>
                             </div>
-                            {distributionTab === 'vendors' ? (
+                            <TabsContent value="vendors">
                                 <DonutChart rows={withLabels(activeDistribution.rows, admin).map((row, index) => ({ key: row.type, label: row.label, value: row.total, color: ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)'][index] }))} total={vendorsTotal} totalLabel={admin.total_vendors} />
-                            ) : distributionTab === 'products' ? (
+                            </TabsContent>
+                            <TabsContent value="products">
                                 <DonutChart rows={[
                                     { key: 'approved', label: admin.status_approved, value: overviewData?.product_status_distribution?.approved ?? 0, color: 'var(--color-success-500)' },
                                     { key: 'pending', label: admin.status_pending, value: overviewData?.product_status_distribution?.pending ?? 0, color: 'var(--color-warning-500)' },
                                     { key: 'rejected', label: admin.status_rejected, value: overviewData?.product_status_distribution?.rejected ?? 0, color: 'var(--color-danger-500)' },
                                 ]} total={productsTotal} totalLabel={admin.total_products} />
-                            ) : <MetricTileGrid rows={withLabels(activeDistribution.rows, admin)} hrefFor={activeDistribution.hrefFor} columns={activeDistribution.columns} />}
+                            </TabsContent>
+                            {['categories', 'syndicates'].map((key) => (
+                                <TabsContent key={key} value={key}>
+                                    <MetricTileGrid rows={withLabels(activeDistribution.rows, admin)} hrefFor={activeDistribution.hrefFor} columns={activeDistribution.columns} />
+                                </TabsContent>
+                            ))}
                         </Tabs>
                     </InsightPanel>
 

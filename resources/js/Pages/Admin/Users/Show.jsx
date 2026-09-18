@@ -92,7 +92,7 @@ export default function UsersShow({ userId }) {
                                 ? [
                                       { label: admin.th_city, value: user?.city?.name || common.not_specified },
                                       {
-                                          label: admin.th_profession,
+                                          label: admin.th_product_interest,
                                           value:
                                               user?.preferred_product_type === 'agriculture'
                                                   ? admin.type_agriculture

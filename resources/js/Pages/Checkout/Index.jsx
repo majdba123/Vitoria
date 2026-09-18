@@ -4,12 +4,14 @@ import { ChevronRight, Loader2 } from 'lucide-react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
-import { formatNumber } from '@/lib/date-time';
+import { formatCurrency } from '@/lib/date-time';
 
 const ADDRESS_LABELS = ['home', 'work', 'farm', 'clinic', 'pharmacy', 'other'];
 
-function money(amount, currency, locale) {
-    return `${formatNumber(amount, locale, { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ${currency || ''}`.trim();
+// One shared currency formatter (lib/date-time.js): Arabic renders "435,000 ل.س"
+// with the symbol after the amount, English renders "SYP 435,000" with the code before.
+function money(amount) {
+    return formatCurrency(amount, locale, 'SYP');
 }
 
 export default function CheckoutIndex() {
@@ -96,7 +98,6 @@ export default function CheckoutIndex() {
         });
     };
 
-    const currency = summary?.totals?.currency;
     const items = summary?.cart?.items ?? [];
     const vendorCount = new Set(items.map((i) => i.vendor_id)).size;
     const totals = summary?.totals ?? {};
@@ -241,9 +242,9 @@ export default function CheckoutIndex() {
                                                 <div className="min-w-0 flex-1">
                                                     <p className="truncate text-sm font-medium text-foreground">{item.name}</p>
                                                     {item.vendor_name && <p className="truncate text-xs text-muted-foreground">{checkout.sold_by} {item.vendor_name}</p>}
-                                                    <p className="mt-0.5 text-xs text-muted-foreground">{checkout.quantity_short} {item.quantity} × {money(item.unit_price, currency, locale)}</p>
+                                                    <p className="mt-0.5 text-xs text-muted-foreground">{checkout.quantity_short} {item.quantity} × {money(item.unit_price)}</p>
                                                 </div>
-                                                <p className="shrink-0 text-sm font-semibold tabular-nums text-foreground">{money(item.line_total, currency, locale)}</p>
+                                                <p className="shrink-0 text-sm font-semibold tabular-nums text-foreground">{money(item.line_total)}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -283,27 +284,27 @@ export default function CheckoutIndex() {
                                 <dl className="space-y-2 border-t border-border pt-4 text-sm">
                                     <div className="flex justify-between">
                                         <dt className="text-muted-foreground">{checkout.subtotal}</dt>
-                                        <dd className="font-medium tabular-nums text-foreground">{money(totals.subtotal, currency, locale)}</dd>
+                                        <dd className="font-medium tabular-nums text-foreground">{money(totals.subtotal)}</dd>
                                     </div>
                                     {Number(totals.discount_total) > 0 && (
                                         <div className="flex justify-between">
                                             <dt className="text-muted-foreground">{checkout.discount}</dt>
-                                            <dd className="font-medium tabular-nums text-[var(--color-success-strong)]">− {money(totals.discount_total, currency, locale)}</dd>
+                                            <dd className="font-medium tabular-nums text-[var(--color-success-strong)]">− {money(totals.discount_total)}</dd>
                                         </div>
                                     )}
                                     <div className="flex justify-between">
                                         <dt className="text-muted-foreground">{checkout.shipping}</dt>
-                                        <dd className="font-medium tabular-nums text-foreground">{Number(totals.shipping_total) > 0 ? money(totals.shipping_total, currency, locale) : checkout.shipping_free}</dd>
+                                        <dd className="font-medium tabular-nums text-foreground">{Number(totals.shipping_total) > 0 ? money(totals.shipping_total) : checkout.shipping_free}</dd>
                                     </div>
                                     {Number(totals.tax_total) > 0 && (
                                         <div className="flex justify-between">
                                             <dt className="text-muted-foreground">{checkout.tax}</dt>
-                                            <dd className="font-medium tabular-nums text-foreground">{money(totals.tax_total, currency, locale)}</dd>
+                                            <dd className="font-medium tabular-nums text-foreground">{money(totals.tax_total)}</dd>
                                         </div>
                                     )}
                                     <div className="flex justify-between border-t border-border pt-3">
                                         <dt className="font-semibold text-foreground">{checkout.total}</dt>
-                                        <dd className="text-lg font-bold tabular-nums text-foreground">{money(totals.grand_total, currency, locale)}</dd>
+                                        <dd className="text-lg font-bold tabular-nums text-foreground">{money(totals.grand_total)}</dd>
                                     </div>
                                 </dl>
 

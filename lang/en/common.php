@@ -102,8 +102,6 @@ return [
     'map_agricultural_vendors' => 'Agricultural vendors',
     'map_veterinary_vendors' => 'Veterinary vendors',
     'map_view_vendors' => 'View vendors',
-    'map_region_central' => 'Damascus, Rif Dimashq, Homs & Tartus',
-    'map_region_southwest' => 'Quneitra & Daraa',
     'map_copy' => 'Syria only, shown as a count of vendor branches per governorate. No exact vendor location is ever displayed.',
     'map_region_label' => 'Vendor branches per governorate',
     'map_city_filter' => 'City',
@@ -127,7 +125,7 @@ return [
     'back' => 'Back',
     'category' => 'Category',
     'price' => 'Price',
-    'price' => 'Price',
+    'unknown_category' => 'Unknown category',
     'select' => 'Select...',
     'status' => [
         'pending' => 'Pending',

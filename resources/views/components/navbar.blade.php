@@ -505,7 +505,7 @@ function loadNotificationDropdown(page) {
                 const dataHref = href ? ' data-href="' + esc(href) + '"' : '';
                 return '<div class="flex border-b border-gray-100 last:border-0 dark:border-gray-800 ' + (isUnread ? 'bg-gray-50/60 dark:bg-gray-800/40' : 'hover:bg-gray-50/50 dark:hover:bg-gray-800/30') + clickable + '" data-notification-id="' + id + '"' + dataHref + ' role="' + (href ? 'button' : 'presentation') + '">' +
                     (isUnread ? '<div class="w-0.5 shrink-0 self-stretch bg-brand-500 dark:bg-brand-400" aria-hidden="true"></div>' : '') +
-                    '<div class="min-w-0 flex-1 py-3.5 px-4 ' + (isUnread ? 'pl-3.5' : 'pl-4') + '">' +
+                    '<div class="min-w-0 flex-1 py-3.5 px-4 ' + (isUnread ? 'ps-3.5' : 'ps-4') + '">' +
                     '<p class="text-[14px] leading-relaxed text-gray-800 dark:text-gray-100">' + body + '</p>' +
                     '<p class="mt-1.5 text-[11px] text-gray-400 dark:text-gray-500">' + time + (sender ? ' · ' + sender : '') + '</p>' +
                     (isUnread ? '<button type="button" class="notification-mark-one mt-2 text-[11px] font-medium text-brand-600 hover:underline dark:text-brand-400" data-id="' + id + '">' + esc((window.__navStrings && window.__navStrings.mark_notification_read) ? window.__navStrings.mark_notification_read : '') + '</button>' : '') +
@@ -543,8 +543,8 @@ function loadNotificationDropdown(page) {
                             if (accent) accent.remove();
                             row.classList.remove('bg-gray-50/60', 'dark:bg-gray-800/40');
                             row.classList.add('hover:bg-gray-50/50', 'dark:hover:bg-gray-800/30');
-                            var inner = row.querySelector('div[class*="min-w-0"][class*="pl-3"]');
-                            if (inner) inner.classList.replace('pl-3.5', 'pl-4');
+                            var inner = row.querySelector('div[class*="min-w-0"][class*="ps-3"]');
+                            if (inner) inner.classList.replace('ps-3.5', 'ps-4');
                             btn.remove();
                         }
                         var badge = document.getElementById('notification-badge');
@@ -592,8 +592,8 @@ function initNotificationDropdown() {
                         if (accent) accent.remove();
                         row.classList.remove('bg-gray-50/60', 'dark:bg-gray-800/40');
                         row.classList.add('hover:bg-gray-50/50', 'dark:hover:bg-gray-800/30');
-                        var inner = row.querySelector('div[class*="min-w-0"][class*="pl-3"]');
-                        if (inner) inner.classList.replace('pl-3.5', 'pl-4');
+                        var inner = row.querySelector('div[class*="min-w-0"][class*="ps-3"]');
+                        if (inner) inner.classList.replace('ps-3.5', 'ps-4');
                     }
                     b.remove();
                 });
@@ -806,7 +806,7 @@ window.showNavSubs = function(catId, btn) {
     const cat = (window._navCats || []).find(c => c.id === catId);
     const panel = document.getElementById('mega-subs');
     if (!cat) {
-        panel.innerHTML = '<div class="flex h-full items-center justify-center"><p class="text-sm text-gray-400">' + _esc(window.__navStrings.view_all || 'View All') + '</p></div>';
+        panel.innerHTML = '<div class="flex h-full items-center justify-center"><p class="text-sm text-gray-400">' + _escwindow.__navStrings.view_all + '</p></div>';
         return;
     }
     const subs = Array.isArray(cat.subcategories) ? cat.subcategories : [];
@@ -835,7 +835,7 @@ window.showNavSubs = function(catId, btn) {
                 <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">${_esc((window.__navStrings.subcategories_count || '').replace(':count', String(subs.length)))}</p>
             </div>
             <a href="/products?category_id=${cat.id}" class="inline-flex items-center gap-1 text-xs font-semibold text-brand-600 hover:text-brand-700 dark:text-brand-400">
-                ${_esc(window.__navStrings.all_category_products || 'All category products')}
+                ${_escwindow.__navStrings.all_category_products}
                 <svg class="h-3.5 w-3.5 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
             </a>
         </div>

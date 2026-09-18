@@ -26,7 +26,7 @@ export default function UsersIndex() {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
     const [cityId, setCityId] = useState('all');
-    const [professionType, setProfessionType] = useState('all');
+    const [productInterest, setProductInterest] = useState('all');
     const [accountStatus, setAccountStatus] = useState('all');
     const [cities, setCities] = useState([]);
     const [deleteTarget, setDeleteTarget] = useState(null);
@@ -37,7 +37,7 @@ export default function UsersIndex() {
         type: filterType || undefined,
         search: isCustomerView && search ? search : undefined,
         city_id: isCustomerView && cityId !== 'all' ? cityId : undefined,
-        product_type: isCustomerView && professionType !== 'all' ? professionType : undefined,
+        product_type: isCustomerView && productInterest !== 'all' ? productInterest : undefined,
         status: isCustomerView && accountStatus !== 'all' ? accountStatus : undefined,
     });
 
@@ -98,8 +98,8 @@ export default function UsersIndex() {
               },
               { key: 'city', label: admin.th_city, truncate: true, render: (row) => row.city?.name || '-' },
               {
-                  key: 'profession',
-                  label: admin.th_profession,
+                  key: 'product_interest',
+                  label: admin.th_product_interest,
                   render: (row) =>
                       row.preferred_product_type === 'agriculture'
                           ? admin.type_agriculture
@@ -198,10 +198,10 @@ export default function UsersIndex() {
                             options={cities.map((city) => ({ value: String(city.id), label: city.name }))}
                         />
                         <FilterSelect
-                            label={admin.th_profession}
-                            value={professionType}
-                            onValueChange={(v) => { setProfessionType(v); setPage(1); }}
-                            allLabel={admin.all_professions}
+                            label={admin.th_product_interest}
+                            value={productInterest}
+                            onValueChange={(v) => { setProductInterest(v); setPage(1); }}
+                            allLabel={admin.all_product_interests}
                             options={[{ value: 'agriculture', label: admin.type_agriculture }, { value: 'veterinary', label: admin.type_veterinary }]}
                         />
                         <FilterSelect
@@ -249,7 +249,7 @@ function FilterSelect({ label, value, onValueChange, allLabel, options }) {
         <div>
             <label className="mb-1.5 block text-sm font-medium">{label}</label>
             <Select value={value} onValueChange={onValueChange}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full" aria-label={label}>
                     <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

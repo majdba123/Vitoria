@@ -78,7 +78,10 @@ export function HorizontalRankingChart({ rows, valueKey, labelKey = 'name', valu
             >
                 <BarChart data={data} layout="vertical" margin={{ top: 4, right: 48, bottom: 4, left: 0 }} barCategoryGap="30%">
                     <CartesianGrid horizontal={false} strokeDasharray="3 3" />
-                    <XAxis type="number" hide />
+                    {/* Headroom past the longest bar keeps the outside value label
+                        inside the plot; bar lengths stay proportional to their
+                        values - a low value must never look close to a high one. */}
+                    <XAxis type="number" hide domain={[0, (dataMax) => Math.max(1, Math.ceil(Number(dataMax) * 1.18))]} />
                     <YAxis
                         dataKey="label"
                         type="category"
@@ -94,7 +97,7 @@ export function HorizontalRankingChart({ rows, valueKey, labelKey = 'name', valu
                         offset={16}
                         content={<ChartTooltipContent labelKey="label" formatter={(value) => <span className="font-mono font-medium tabular-nums text-foreground">{resolvedFormatValue(value)}</span>} />}
                     />
-                    <Bar dataKey="value" fill="var(--color-value)" radius={[0, 4, 4, 0]} maxBarSize={18} minPointSize={130} isAnimationActive={false}>
+                    <Bar dataKey="value" fill="var(--color-value)" radius={[0, 4, 4, 0]} maxBarSize={18} isAnimationActive={false}>
                         <LabelList dataKey="value" content={(props) => <ValueLabel {...props} rtl={rtl} formatValue={resolvedFormatValue} />} />
                     </Bar>
                 </BarChart>

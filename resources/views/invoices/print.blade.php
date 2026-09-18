@@ -11,50 +11,70 @@
             color: #1f2937;
             background: #fff;
             margin: 0;
-            padding: 2rem;
+            padding: 1.75rem;
             max-width: 780px;
             margin-inline: auto;
             font-size: 0.875rem;
-            line-height: 1.4;
+            line-height: 1.35;
         }
         .invoice-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 2px solid #297497;
-            padding-bottom: 1rem;
-            margin-bottom: 1.1rem;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 2.5px solid #297497;
+            padding-bottom: 0.85rem;
+            margin-bottom: 0.9rem;
         }
-        .invoice-header h1 { font-size: 1.3rem; margin: 0 0 0.2rem; color: #297497; }
+        .invoice-brand { display: flex; align-items: center; gap: 0.6rem; }
+        .invoice-brand img { width: 46px; height: 46px; object-fit: contain; }
+        .invoice-brand h1 { font-size: 1.25rem; margin: 0; color: #297497; line-height: 1.1; }
+        .invoice-brand div { font-size: 0.8rem; color: #4b5563; }
         .invoice-meta { text-align: end; font-size: 0.8rem; color: #4b5563; }
-        .invoice-meta strong { color: #1f2937; }
-        .parties { display: flex; justify-content: space-between; gap: 2rem; margin-bottom: 1.1rem; }
-        .parties h2 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; margin: 0 0 0.35rem; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 1.1rem; font-size: 0.85rem; table-layout: fixed; }
-        th, td { padding: 0.45rem 0.7rem; text-align: start; border-bottom: 1px solid #e5e7eb; overflow-wrap: break-word; }
-        th:first-child, td:first-child { width: 42%; }
-        th { background: #f9fafb; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: #6b7280; }
-        .num { text-align: end; font-variant-numeric: tabular-nums; }
+        .invoice-meta .invoice-number { font-size: 0.95rem; font-weight: 700; color: #1f2937; }
+        .parties {
+            display: flex;
+            justify-content: space-between;
+            gap: 2rem;
+            margin-bottom: 0.9rem;
+            padding: 0.6rem 0.75rem;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        .parties h2 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; margin: 0 0 0.25rem; }
+        .parties div { font-size: 0.85rem; font-weight: 600; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 0.9rem; font-size: 0.85rem; table-layout: fixed; }
+        th, td { padding: 0.45rem 0.6rem; text-align: start; border-bottom: 1px solid #e5e7eb; overflow-wrap: break-word; vertical-align: middle; }
+        thead th { background: #297497; color: #fff; }
+        th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
+        th:first-child, td:first-child { width: 46%; }
+        th.qty-col, td.qty-col { width: 13%; text-align: center; }
+        th.num, td.num { text-align: end; font-variant-numeric: tabular-nums; }
+        td.item-name { font-weight: 600; }
         .qty-badge {
             display: inline-flex; align-items: center; justify-content: center;
-            min-width: 1.9rem; padding: 0.15rem 0.5rem; border-radius: 999px;
-            background: #eaf3f7; color: #1c5a75; font-weight: 700; font-variant-numeric: tabular-nums;
+            min-width: 2.1rem; padding: 0.2rem 0.55rem; border-radius: 999px;
+            background: #eaf3f7; border: 1px solid #bcd9e4; color: #1c5a75;
+            font-weight: 800; font-variant-numeric: tabular-nums; font-size: 0.95rem;
         }
-        .section-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; margin: 0 0 0.35rem; }
-        .payment { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: 1.1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #e5e7eb; }
+        .section-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7280; margin: 0; }
+        .payment { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: 0.9rem; padding-bottom: 0.6rem; border-bottom: 1px solid #e5e7eb; }
         .payment-value { font-weight: 600; }
-        .totals { margin-inline-start: auto; width: 280px; font-size: 0.85rem; }
-        .totals div { display: flex; justify-content: space-between; padding: 0.3rem 0; }
+        .totals { margin-inline-start: auto; width: 290px; font-size: 0.85rem; }
+        .totals div { display: flex; justify-content: space-between; padding: 0.25rem 0; }
+        .totals .num { min-width: 8.5rem; }
         .totals .discount .num { color: #b45309; }
-        .totals .grand { border-top: 2px solid #297497; margin-top: 0.35rem; padding-top: 0.55rem; font-weight: 700; font-size: 1rem; }
-        .print-bar { text-align: center; margin-top: 1.5rem; }
+        .totals .grand { border-top: 2px solid #297497; margin-top: 0.3rem; padding-top: 0.5rem; font-weight: 700; font-size: 1rem; }
+        .totals .grand .num { color: #297497; }
+        .print-bar { text-align: center; margin-top: 1.25rem; }
         .print-bar button {
             background: #297497; color: #fff; border: none; border-radius: 8px;
             padding: 0.6rem 1.5rem; font-size: 0.9rem; cursor: pointer;
         }
         @page {
             size: A4;
-            margin: 10mm;
+            margin: 9mm;
         }
         @media print {
             html, body {
@@ -67,28 +87,34 @@
                 margin: 0;
                 padding: 0;
                 overflow: visible;
-                font-size: 0.8rem;
+                font-size: 0.78rem;
+                line-height: 1.3;
             }
             .invoice-header {
-                padding-bottom: 0.7rem;
-                margin-bottom: 0.8rem;
+                padding-bottom: 0.55rem;
+                margin-bottom: 0.6rem;
                 break-inside: avoid;
             }
             .parties {
-                margin-bottom: 0.8rem;
+                margin-bottom: 0.6rem;
+                padding: 0.45rem 0.6rem;
                 break-inside: avoid;
             }
             table {
-                margin-bottom: 0.8rem;
+                margin-bottom: 0.6rem;
             }
             th, td {
-                padding: 0.35rem 0.5rem;
+                padding: 0.28rem 0.45rem;
             }
             thead {
                 display: table-header-group;
             }
             tr, .totals, .payment {
                 break-inside: avoid;
+            }
+            .totals {
+                width: 270px;
+                font-size: 0.8rem;
             }
             .print-bar {
                 display: none !important;
@@ -105,13 +131,16 @@
             : $currencySymbol.' '.number_format((float) $value, 2);
     @endphp
     <div class="invoice-header">
-        <div>
-            <h1>{{ config('app.name', 'Vetora') }}</h1>
-            <div>{{ __('invoices.title') }} — {{ $invoice->order?->order_number }}</div>
+        <div class="invoice-brand">
+            <img src="{{ asset('images/vetora-logo-transparent.png') }}" alt="">
+            <div>
+                <h1>{{ config('app.name', 'Vetora') }}</h1>
+                <div>{{ __('invoices.title') }} — {{ $invoice->order?->order_number }}</div>
+            </div>
         </div>
         <div class="invoice-meta">
-            <div><strong>{{ $invoice->invoice_number }}</strong></div>
-            <div>{{ __('invoices.issued_at') }}: {{ $invoice->issued_at->format('Y-m-d H:i') }}</div>
+            <div class="invoice-number">{{ $invoice->invoice_number }}</div>
+            <div>{{ __('invoices.issued_at') }}: <bdi dir="ltr">{{ $invoice->issued_at->format('Y-m-d H:i') }}</bdi></div>
         </div>
     </div>
 
@@ -130,7 +159,7 @@
         <thead>
             <tr>
                 <th>{{ __('invoices.item') }}</th>
-                <th class="num">{{ __('invoices.quantity') }}</th>
+                <th class="qty-col">{{ __('invoices.quantity') }}</th>
                 <th class="num">{{ __('invoices.unit_price') }}</th>
                 <th class="num">{{ __('invoices.line_total') }}</th>
             </tr>
@@ -138,8 +167,8 @@
         <tbody>
             @foreach ($invoice->order?->items ?? [] as $item)
                 <tr>
-                    <td>{{ $item->product_name }}</td>
-                    <td class="num"><span class="qty-badge">{{ $item->quantity }}</span></td>
+                    <td class="item-name">{{ $item->product_name }}</td>
+                    <td class="qty-col"><span class="qty-badge">{{ $item->quantity }}</span></td>
                     <td class="num">{{ $money($item->unit_price) }}</td>
                     <td class="num">{{ $money($item->line_total) }}</td>
                 </tr>

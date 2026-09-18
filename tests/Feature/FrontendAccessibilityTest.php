@@ -40,8 +40,7 @@ test('vendor map is a local focusable svg rather than a third party tile map', f
     $source = file_get_contents(resource_path('js/Components/maps/DashboardVendorMap.jsx'));
 
     expect($source)
-        ->toContain('<svg viewBox=')
-        ->toContain('/images/syria-governorates-map.jpg')
+        ->toContain('<svg viewBox={SYRIA_VIEWBOX}')
         ->toContain('tabIndex="0"')
         ->not->toContain('TILE_URL')
         ->not->toContain('loadLeaflet');
@@ -69,20 +68,24 @@ test('locale formatters use one explicit western-digit locale for Arabic screens
         ->toContain('Intl.NumberFormat');
 });
 
-test('vendor map keeps its raster and SVG in one explicit physical coordinate system', function () {
-    $source = file_get_contents(resource_path('js/Components/maps/DashboardVendorMap.jsx'));
+test('vendor map covers all 14 governorates as individual svg paths', function () {
+    $paths = require resource_path('js/Components/maps/syria-governorates.js');
 
-    expect($source)
-        ->toContain("MAP_VIEWBOX = '0 0 512 468'")
-        ->toContain("MAP_ASSET = '/images/syria-governorates-map.jpg'")
-        ->toContain('viewBox={MAP_VIEWBOX}')
-        ->toContain('preserveAspectRatio="none"')
-        ->toContain('dir="ltr"')
-        ->toContain('object-contain')
-        ->toContain('className="absolute inset-0 size-full"');
+    // JS export syntax isn't require-able from PHP; parse the file instead.
+    $source = file_get_contents(resource_path('js/Components/maps/syria-governorates.js'));
+    preg_match('/SYRIA_GOVERNORATE_PATHS = (\{.*?\});\n/s', $source, $matches);
+    expect($matches)->toHaveCount(2);
 
-    expect(getimagesize(public_path('images/syria-governorates-map.jpg')))
-        ->toMatchArray([0 => 512, 1 => 468]);
+    $keys = array_keys(json_decode($matches[1], true, flags: JSON_THROW_ON_ERROR));
+    expect($keys)->toHaveCount(14)
+        ->toEqualCanonicalizing(collect(App\Support\SyriaGovernorates::ALL)->pluck('key')->all());
+
+    expect(file_get_contents(resource_path('js/Components/maps/DashboardVendorMap.jsx')))
+        ->toContain('SYRIA_GOVERNORATE_PATHS')
+        ->toContain('SYRIA_VIEWBOX')
+        ->toContain('data-key={key}')
+        ->not->toContain('MERGED_GROUPS')
+        ->not->toContain('.jpg');
 });
 
 test('homepage partner presentation is logos only and banners preserve their image ratio', function () {
