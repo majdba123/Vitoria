@@ -47,6 +47,18 @@ return [
             'report' => false,
         ],
 
+        // Destination for scheduled backups (database dumps + private/public
+        // uploads). Deliberately outside public/ and app/public/ so a backup
+        // archive is never reachable through the "storage" symlink or any
+        // public URL — see docs/operations/BACKUP_AND_RESTORE.md.
+        'backups' => [
+            'driver' => 'local',
+            'root' => storage_path('app/backups'),
+            'visibility' => 'private',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
-import { Pencil, Heart } from 'lucide-react';
+import { Pencil, Heart, ShoppingBag } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { PageHeader } from '@/Components/shared/PageHeader';
 import { DetailCard } from '@/Components/shared/DetailCard';
@@ -11,16 +11,20 @@ import { Skeleton } from '@/Components/ui/skeleton';
 import { Button } from '@/Components/ui/button';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { formatCurrency, formatDate } from '@/lib/date-time';
+import { translatedStatus } from '@/lib/translated-enum';
 
 const TYPE_TONES = { 0: 'brand', 1: 'warning', 2: 'brand', 3: 'warning', 4: 'success' };
 
 export default function UsersShow({ userId }) {
-    const { admin, common } = useI18n();
+    const { admin, common, orders: ordersLang } = useI18n();
     const locale = useLocale();
     const [status, setStatus] = useState('loading');
     const [user, setUser] = useState(null);
     const [favourites, setFavourites] = useState([]);
     const [favStatus, setFavStatus] = useState('loading');
+    const [recentOrders, setRecentOrders] = useState([]);
+    const [ordersStatus, setOrdersStatus] = useState('loading');
+    const isCustomer = user?.type === 0;
 
     useEffect(() => {
         window.axios.get(`/api/admin/users/${userId}`, { silent: true }).then((res) => {
@@ -32,6 +36,11 @@ export default function UsersShow({ userId }) {
             setFavourites(res.data.data ?? []);
             setFavStatus('ready');
         }).catch(() => setFavStatus('error'));
+
+        window.axios.get('/api/admin/orders', { params: { user_id: userId, per_page: 5 }, silent: true }).then((res) => {
+            setRecentOrders(res.data?.data ?? []);
+            setOrdersStatus('ready');
+        }).catch(() => setOrdersStatus('error'));
     }, [userId]);
 
     return (
@@ -79,6 +88,20 @@ export default function UsersShow({ userId }) {
                             { label: admin.email_label, value: user?.email },
                             { label: admin.phone_number_label, value: user?.phone_number },
                             { label: admin.th_national_id, value: user?.national_id },
+                            ...(isCustomer
+                                ? [
+                                      { label: admin.th_city, value: user?.city?.name || common.not_specified },
+                                      {
+                                          label: admin.th_profession,
+                                          value:
+                                              user?.preferred_product_type === 'agriculture'
+                                                  ? admin.type_agriculture
+                                                  : user?.preferred_product_type === 'veterinary'
+                                                    ? admin.type_veterinary
+                                                    : common.not_specified,
+                                      },
+                                  ]
+                                : []),
                             { label: admin.member_since_label, value: user ? formatDate(user.created_at, locale) : null },
                         ]}
                     />
@@ -122,6 +145,65 @@ export default function UsersShow({ userId }) {
                     </CardContent>
                 </Card>
             </div>
+
+            {isCustomer && (
+                <div className="grid gap-5 lg:grid-cols-3">
+                    <Card className="border-border/80 shadow-none lg:col-span-1">
+                        <CardHeader className="border-b border-border/80">
+                            <CardTitle className="text-base font-bold">{admin.order_summary_title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-2 gap-4 p-5">
+                            <div>
+                                <p className="text-xs text-muted-foreground">{admin.th_orders_count}</p>
+                                <p className="mt-1 text-lg font-bold text-foreground">{user?.orders_count ?? 0}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-muted-foreground">{admin.th_total_purchases}</p>
+                                <p className="mt-1 text-lg font-bold text-foreground">{formatCurrency(user?.total_purchases ?? 0, locale)}</p>
+                            </div>
+                            <div className="col-span-2">
+                                <p className="text-xs text-muted-foreground">{admin.th_last_order}</p>
+                                <p className="mt-1 text-sm font-semibold text-foreground">{user?.last_order_at ? formatDate(user.last_order_at, locale) : common.not_specified}</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-border/80 shadow-none lg:col-span-2">
+                        <CardHeader className="border-b border-border/80">
+                            <CardTitle className="text-base font-bold">{admin.recent_orders_title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-2 p-5">
+                            {ordersStatus === 'loading' && (
+                                <div className="flex flex-col gap-2">
+                                    {[0, 1, 2].map((i) => <Skeleton key={i} className="h-14 w-full rounded-md" />)}
+                                </div>
+                            )}
+                            {ordersStatus === 'ready' && recentOrders.length === 0 && (
+                                <div className="py-10 text-center">
+                                    <ShoppingBag className="mx-auto size-10 text-muted-foreground/40" />
+                                    <p className="mt-2 text-sm font-semibold text-muted-foreground">{admin.no_orders_yet}</p>
+                                </div>
+                            )}
+                            {recentOrders.slice(0, 5).map((order) => (
+                                <Link
+                                    key={order.id}
+                                    href={route('admin.orders.show', order.id)}
+                                    className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2 transition-colors hover:bg-muted"
+                                >
+                                    <span className="min-w-0">
+                                        <span className="block truncate font-semibold text-foreground">{order.order_number || ordersLang.order_number_fallback.replace(':id', String(order.id))}</span>
+                                        <span className="block text-xs text-muted-foreground" dir="auto">{formatDate(order.created_at, locale)}</span>
+                                    </span>
+                                    <span className="flex shrink-0 items-center gap-2">
+                                        <StatusBadge tone={order.status === 'completed' ? 'success' : order.status === 'cancelled' ? 'danger' : 'warning'}>{translatedStatus(order.status, common)}</StatusBadge>
+                                        <span className="tabular-nums font-medium text-foreground">{formatCurrency(order.grand_total ?? 0, locale)}</span>
+                                    </span>
+                                </Link>
+                            ))}
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
         </AdminLayout>
     );
 }

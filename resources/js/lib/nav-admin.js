@@ -7,7 +7,6 @@ import {
     Ticket,
     ShoppingBag,
     Users,
-    UserRound,
     Bell,
     Mail,
     Info,
@@ -16,6 +15,7 @@ import {
     Layers,
     Workflow,
     Building2,
+    Wallet,
 } from 'lucide-react';
 
 /**
@@ -23,15 +23,18 @@ import {
  * icon list. Keep the two in sync until the Blade admin layout is retired.
  */
 /**
- * Users/Employees/Customers all resolve (Employees and Customers via a
- * server-side redirect) to the same `admin.users.index` route, so
+ * "Users" (application customers) and "Employees" both resolve to the same
+ * `admin.users.index` route (Employees via a server-side redirect), so
  * `route().current()` alone can't tell them apart once landed — it would
- * highlight "Users" for all three. Match on the `type` query param instead.
+ * highlight "Users" for both. Match on the `type` query param instead.
+ * "Users" has no dedicated `type=0` link of its own (the page itself
+ * defaults an absent `type` to customers), so it must also match a bare
+ * `/admin/users` visit with no query param at all.
  */
 function isUsersTypeActive(expectedType) {
     if (!route().current('admin.users.index')) return false;
     const type = new URLSearchParams(window.location.search).get('type');
-    return expectedType === null ? !type : type === expectedType;
+    return expectedType === null ? (!type || type === '0') : type === expectedType;
 }
 
 export function getAdminNavGroups(t) {
@@ -39,6 +42,10 @@ export function getAdminNavGroups(t) {
         {
             label: t.overview,
             items: [{ label: t.dashboard, route: 'admin.dashboard', active: 'admin.dashboard', icon: LayoutGrid }],
+        },
+        {
+            label: t.group_financials,
+            items: [{ label: t.financials, route: 'admin.financials.index', active: 'admin.financials.*', icon: Wallet }],
         },
         {
             label: t.management,
@@ -50,7 +57,6 @@ export function getAdminNavGroups(t) {
                 { label: t.coupons, route: 'admin.coupons.index', active: 'admin.coupons.*', icon: Ticket },
                 { label: t.orders, route: 'admin.orders.index', active: 'admin.orders.*', icon: ShoppingBag },
                 { label: t.users, route: 'admin.users.index', usersType: null, icon: Users },
-                { label: t.customers, route: 'admin.customers.index', usersType: '0', icon: UserRound },
                 { label: t.notifications_log, route: 'admin.notifications.index', active: 'admin.notifications.*', icon: Bell },
                 { label: t.contact_messages, route: 'admin.contact-messages.index', active: 'admin.contact-messages.*', icon: Mail },
                 { label: t.about_us, route: 'admin.about-us.edit', active: 'admin.about-us.*', icon: Info },

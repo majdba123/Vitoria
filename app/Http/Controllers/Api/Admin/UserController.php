@@ -32,6 +32,17 @@ class UserController extends Controller
 
         $users = User::query()
             ->when(request()->filled('type'), fn ($query) => $query->where('type', (int) request('type')))
+            ->when(request()->filled('search'), function ($query) {
+                $term = '%'.request('search').'%';
+                $query->where(fn ($q) => $q->where('name', 'like', $term)
+                    ->orWhere('email', 'like', $term)
+                    ->orWhere('phone_number', 'like', $term));
+            })
+            ->when(request()->filled('city_id'), fn ($query) => $query->where('city_id', (int) request('city_id')))
+            ->when(request()->filled('product_type'), fn ($query) => $query->where('preferred_product_type', request('product_type')))
+            ->when(request()->filled('status'), fn ($query) => request('status') === 'verified'
+                ? $query->whereNotNull('email_verified_at')
+                : $query->whereNull('email_verified_at'))
             ->when($isCustomerView, fn ($query) => $query
                 ->with('city:id,name')
                 ->withCount(['orders as orders_count' => fn ($q) => $q->where('status', '!=', Order::STATUS_CANCELLED)])
@@ -59,6 +70,13 @@ class UserController extends Controller
     {
         if ($user->type === User::TYPE_EMPLOYEE) {
             $user->load('employeeRoles');
+        }
+
+        if ($user->type === User::TYPE_USER) {
+            $user->load('city:id,name');
+            $user->loadCount(['orders as orders_count' => fn ($q) => $q->where('status', '!=', Order::STATUS_CANCELLED)]);
+            $user->loadSum(['orders as total_purchases' => fn ($q) => $q->where('status', '!=', Order::STATUS_CANCELLED)], 'grand_total');
+            $user->loadMax('orders as last_order_at', 'created_at');
         }
 
         return response()->json([

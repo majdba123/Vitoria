@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'admin_financial_summary_retrieved' => 'تم جلب الملخص المالي للأدمن بنجاح.',
     'audit_log_retrieved' => 'تم جلب سجل التدقيق بنجاح.',
     'commission_statistics_retrieved' => 'تم جلب إحصاءات العمولة بنجاح.',
     'dashboard_overview_retrieved' => 'تم جلب إحصاءات لوحة التحكم بنجاح.',

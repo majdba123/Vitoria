@@ -129,7 +129,24 @@ function DataSummary({ rows, locale, ordersLabel }) { const sales = rows.reduce(
 function RankedList({ rows, title, empty, locale }) { return <Card className="border-border/80 shadow-none"><CardHeader><CardTitle className="text-base">{title}</CardTitle></CardHeader><CardContent>{rows.length ? <HorizontalRankingChart rows={rows} valueKey="sales" valueLabel={title} formatValue={(value) => formatValue(value, true, locale)} maxItems={8} /> : <Empty text={empty} />}</CardContent></Card>; }
 
 function OrdersCards({ rows, title, empty, locale, mode, labels, common }) { return <Card className="border-border/80 shadow-none"><CardHeader><CardTitle className="text-base">{title}</CardTitle></CardHeader><CardContent className="flex flex-col gap-2">{rows.length ? rows.map((row) => <OrderRow key={row.id} row={row} locale={locale} mode={mode} labels={labels} common={common} />) : <Empty text={empty} />}</CardContent></Card>; }
-function OrderRow({ row, locale, mode, labels, common }) { const href = mode === 'admin' ? route('admin.orders.show', row.id) : null; const content = <><span className="font-semibold">{row.order_number}</span><span className="text-sm tabular-nums text-muted-foreground">{formatValue(row.scoped_sales ?? row.subtotal, true, locale)}</span><StatusBadge tone={row.status === 'completed' ? 'success' : row.status === 'cancelled' ? 'danger' : 'warning'}>{translatedStatus(row.status, common)}</StatusBadge></>; return href ? <Link href={href} className="flex min-h-12 items-center justify-between gap-3 rounded-md border border-border px-3 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{content}</Link> : <div className="flex min-h-12 items-center justify-between gap-3 rounded-md border border-border px-3">{content}</div>; }
+function OrderRow({ row, locale, mode, labels, common }) {
+    const href = mode === 'admin' ? route('admin.orders.show', row.id) : null;
+    const content = (
+        <>
+            <span className="flex items-center justify-between gap-3">
+                <span className="font-semibold">{row.order_number}</span>
+                <StatusBadge tone={row.status === 'completed' ? 'success' : row.status === 'cancelled' ? 'danger' : 'warning'}>{translatedStatus(row.status, common)}</StatusBadge>
+            </span>
+            <span className="flex items-center justify-between gap-3 text-sm text-muted-foreground">
+                <span dir="auto">{formatDate(row.created_at, locale)}</span>
+                <span className="tabular-nums font-medium text-foreground">{formatValue(row.scoped_sales ?? row.subtotal, true, locale)}</span>
+            </span>
+        </>
+    );
+    return href
+        ? <Link href={href} className="flex flex-col gap-1 rounded-md border border-border px-3 py-2 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{content}</Link>
+        : <div className="flex flex-col gap-1 rounded-md border border-border px-3 py-2">{content}</div>;
+}
 
 function RemoteTab({ active, name, base, params, vendorId, mode, labels, common, locale, finance, onChanged }) {
     const [state, setState] = useState({ status: 'idle', rows: [], meta: null }); const [page, setPage] = useState(1); const [search, setSearch] = useState('');

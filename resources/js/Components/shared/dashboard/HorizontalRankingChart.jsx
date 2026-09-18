@@ -94,7 +94,7 @@ export function HorizontalRankingChart({ rows, valueKey, labelKey = 'name', valu
                         offset={16}
                         content={<ChartTooltipContent labelKey="label" formatter={(value) => <span className="font-mono font-medium tabular-nums text-foreground">{resolvedFormatValue(value)}</span>} />}
                     />
-                    <Bar dataKey="value" fill="var(--color-value)" radius={[0, 4, 4, 0]} maxBarSize={18} isAnimationActive={false}>
+                    <Bar dataKey="value" fill="var(--color-value)" radius={[0, 4, 4, 0]} maxBarSize={18} minPointSize={130} isAnimationActive={false}>
                         <LabelList dataKey="value" content={(props) => <ValueLabel {...props} rtl={rtl} formatValue={resolvedFormatValue} />} />
                     </Bar>
                 </BarChart>

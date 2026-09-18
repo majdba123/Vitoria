@@ -15,7 +15,12 @@ return [
     'orders' => 'الطلبات',
     'sales' => 'المبيعات',
     'reports' => 'التقارير',
-    'group_financials' => 'العمولات',
+    // Not "العمولات" (commissions): this group only holds Sales + Reports,
+    // neither of which computes or displays an actual commission figure
+    // (SyndicateDashboardService::salesStats() is gross sales only, no
+    // vendor-ledger/commission data is exposed to a syndicate). Labeling it
+    // "commissions" would imply a financial figure that doesn't exist here.
+    'group_financials' => 'المالية',
     'loading_access' => 'جارٍ التحقق من صلاحية النقابة...',
     'sign_out' => 'تسجيل الخروج',
     'dashboard_title' => 'لوحة النقابة',

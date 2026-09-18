@@ -29,6 +29,7 @@ return [
         'labels' => [
             'title' => 'Vendor Performance Report',
             'identity' => 'Vendor identity',
+            'syndicate' => 'Syndicate',
             'period' => 'Report period',
             'from' => 'From',
             'to' => 'To',

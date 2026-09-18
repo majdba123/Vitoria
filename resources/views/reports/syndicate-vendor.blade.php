@@ -3,26 +3,31 @@
 <head>
     <meta charset="utf-8">
     <style>
-        body { font-family: dejavusans; color: #172033; font-size: 10px; line-height: 1.55; }
-        h1 { color: #173f35; font-size: 20px; margin: 0 0 2px; }
-        h2 { color: #173f35; font-size: 13px; border-bottom: 1px solid #d7dee7; padding-bottom: 4px; margin: 14px 0 6px; }
-        .muted { color: #64748b; }
+        /* Two-size typography discipline: 16px (LARGE) for the title, section
+           headings and headline KPI figures; 10px (SMALL) for every label,
+           value, table cell and supporting line. No other sizes are used. */
+        body { font-family: dejavusans; color: #172033; font-size: 10px; line-height: 1.65; }
+        h1, h2 { color: #173f35; font-size: 16px; font-weight: 700; }
+        h1 { margin: 0 0 4px; }
+        h2 { border-bottom: 1.5px solid #173f35; padding-bottom: 5px; margin: 16px 0 8px; }
+        .muted { color: #64748b; font-size: 10px; }
         .meta, .kpis, .report-table { width: 100%; border-collapse: collapse; }
-        .meta td { width: 50%; padding: 4px 10px 4px 0; vertical-align: top; border-bottom: 1px solid #eef1f5; }
+        .meta td { width: 50%; padding: 6px 14px 6px 0; vertical-align: top; border-bottom: 1px solid #eef1f5; font-size: 10px; }
         .meta td:nth-child(2n) { padding-{{ $isArabic ? 'left' : 'right' }}: 0; }
-        .meta .lbl { display: inline-block; min-width: 84px; color: #64748b; font-weight: 700; }
-        .kpis td { border: 1px solid #d7dee7; background: #f7f9fb; padding: 7px 8px; width: 25%; vertical-align: top; }
-        .kpis .lbl { display: block; color: #64748b; font-size: 9px; }
-        .kpis strong { display: block; color: #173f35; font-size: 13px; margin-top: 2px; font-variant-numeric: tabular-nums; }
-        .report-table { page-break-inside: auto; margin-bottom: 2px; }
+        .meta .lbl { display: inline-block; min-width: 96px; margin-{{ $isArabic ? 'left' : 'right' }}: 12px; color: #64748b; font-weight: 700; }
+        .kpis td { border: 1px solid #d7dee7; background: #f7f9fb; padding: 8px 10px; width: 25%; vertical-align: top; }
+        .kpis .lbl { display: block; color: #64748b; font-size: 10px; margin-bottom: 3px; }
+        .kpis strong { display: block; color: #173f35; font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+        .report-table { page-break-inside: auto; margin: 4px 0 12px; }
         .report-table thead { display: table-header-group; }
         .report-table tr { page-break-inside: avoid; }
-        .report-table th { background: #173f35; color: #fff; padding: 5px 8px; text-align: {{ $isArabic ? 'right' : 'left' }}; }
+        .report-table th { background: #173f35; color: #fff; font-size: 10px; font-weight: 700; padding: 7px 10px; text-align: {{ $isArabic ? 'right' : 'left' }}; }
         .report-table th.num { text-align: right; }
-        .report-table td { border-bottom: 1px solid #e5eaf0; padding: 5px 8px; vertical-align: top; }
-        .number { direction: ltr; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .report-table td { border-bottom: 1px solid #e5eaf0; padding: 6px 10px; vertical-align: middle; font-size: 10px; }
+        .report-table tbody tr:nth-child(even) td { background: #f7f9fb; }
+        .number { direction: ltr; unicode-bidi: embed; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
         .dynamic { unicode-bidi: plaintext; }
-        .notice { border: 1px solid #d6a94a; background: #fff9e8; padding: 7px 8px; margin-top: 6px; }
+        .notice { border: 1px solid #d6a94a; background: #fff9e8; padding: 8px 10px; margin-top: 8px; font-size: 10px; }
     </style>
 </head>
 <body>
@@ -39,10 +44,19 @@
 @endphp
 
 <h1>{{ $labels['title'] }}</h1>
-<div class="muted dynamic" dir="auto">{{ $data['vendor']['store_name'] }} — {{ $syndicate ? str_replace(':domain', $translatedValue($data['scope']['domain']), $scope['syndicate']) : $scope['admin'] }}</div>
+<div class="muted dynamic" dir="auto">
+    @if($syndicate)
+        {{ $syndicate->name }} &#8594; {{ $data['vendor']['store_name'] }}
+    @else
+        {{ $scope['admin'] }} &#8594; {{ $data['vendor']['store_name'] }}
+    @endif
+</div>
 
 <h2>{{ $labels['identity'] }}</h2>
 <table class="meta">
+    @if($syndicate)
+    <tr><td colspan="2"><span class="lbl">{{ $labels['syndicate'] }}</span><span class="dynamic" dir="auto">{{ $syndicate->name }}</span></td></tr>
+    @endif
     <tr><td><span class="lbl">{{ $labels['store'] }}</span><span class="dynamic" dir="auto">{{ $data['vendor']['store_name'] }}</span></td><td><span class="lbl">{{ $labels['city'] }}</span><span class="dynamic" dir="auto">{{ $data['vendor']['city']['name'] ?? '—' }}</span></td></tr>
     <tr><td><span class="lbl">{{ $labels['type'] }}</span>{{ $translatedValue($data['vendor']['business_type']) }}</td><td><span class="lbl">{{ $labels['status'] }}</span>{{ $translatedValue($data['vendor']['status']) }}</td></tr>
     <tr><td><span class="lbl">{{ $labels['joined'] }}</span>{{ $date($data['vendor']['joined_at']) }}</td><td><span class="lbl">{{ $labels['domain'] }}</span>{{ $data['scope']['domain'] ? $translatedValue($data['scope']['domain']) : $scope['all_vendor_activity'] }}</td></tr>
@@ -61,27 +75,27 @@
 @if(($data['finance']['attribution_complete'] ?? true) === false)<div class="notice">{{ $labels['attribution_notice'] }}</div>@endif
 
 <h2>{{ $labels['sales_summary'] }}</h2>
-<table class="report-table"><thead><tr><th>{{ $labels['date'] }}</th><th class="num">{{ $labels['orders'] }}</th><th class="num">{{ $labels['sales'] }}</th></tr></thead><tbody>
+<table class="report-table"><thead><tr><th style="width:40%">{{ $labels['date'] }}</th><th class="num" style="width:25%">{{ $labels['orders'] }}</th><th class="num" style="width:35%">{{ $labels['sales'] }}</th></tr></thead><tbody>
 @forelse($data['trend'] as $row)<tr><td>{{ $row['date'] }}</td><td class="number">{{ $row['orders'] }}</td><td class="number">{{ $money($row['sales']) }}</td></tr>@empty<tr><td colspan="3">—</td></tr>@endforelse
 </tbody></table>
 
 <h2>{{ $labels['product_performance'] }}</h2>
-<table class="report-table"><thead><tr><th>{{ $labels['product'] }}</th><th>{{ $labels['category'] }}</th><th class="num">{{ $labels['units'] }}</th><th class="num">{{ $labels['order_count'] }}</th><th class="num">{{ $labels['gross'] }}</th><th class="num">{{ $labels['refunds'] }}</th><th class="num">{{ $labels['last_sale'] }}</th></tr></thead><tbody>
+<table class="report-table"><thead><tr><th style="width:26%">{{ $labels['product'] }}</th><th style="width:16%">{{ $labels['category'] }}</th><th class="num" style="width:10%">{{ $labels['units'] }}</th><th class="num" style="width:10%">{{ $labels['order_count'] }}</th><th class="num" style="width:14%">{{ $labels['gross'] }}</th><th class="num" style="width:14%">{{ $labels['refunds'] }}</th><th class="num" style="width:10%">{{ $labels['last_sale'] }}</th></tr></thead><tbody>
 @forelse($data['products'] as $row)<tr><td class="dynamic" dir="auto">{{ $row['name'] }}</td><td class="dynamic" dir="auto">{{ $row['category']['name'] ?? '—' }}</td><td class="number">{{ $row['units_sold'] }}</td><td class="number">{{ $row['order_count'] }}</td><td class="number">{{ $money($row['completed_sales_amount']) }}</td><td class="number">{{ $money($row['refunds']) }}</td><td class="number">{{ $date($row['last_sold_at']) }}</td></tr>@empty<tr><td colspan="7">—</td></tr>@endforelse
 </tbody></table>
 
 <h2>{{ $labels['orders_summary'] }}</h2>
-<table class="report-table"><thead><tr><th>{{ $labels['order'] }}</th><th>{{ $labels['date'] }}</th><th>{{ $labels['items'] }}</th><th class="num">{{ $labels['amount'] }}</th><th>{{ $labels['return_status'] }}</th></tr></thead><tbody>
+<table class="report-table"><thead><tr><th style="width:14%">{{ $labels['order'] }}</th><th style="width:12%">{{ $labels['date'] }}</th><th style="width:38%">{{ $labels['items'] }}</th><th class="num" style="width:16%">{{ $labels['amount'] }}</th><th style="width:20%">{{ $labels['return_status'] }}</th></tr></thead><tbody>
 @forelse($data['orders'] as $row)<tr><td>{{ $row['order_number'] }}</td><td>{{ $date($row['created_at']) }}</td><td class="dynamic" dir="auto">{{ collect($row['products'])->map(fn ($item) => $item['name'].' x '.$item['quantity'])->join(', ') }}</td><td class="number">{{ $money($row['scoped_sales']) }}</td><td>{{ $translatedValue($row['status']) }}</td></tr>@empty<tr><td colspan="5">—</td></tr>@endforelse
 </tbody></table>
 
 <h2>{{ $labels['returns'] }}</h2>
-<table class="report-table"><thead><tr><th>{{ $labels['order'] }}</th><th>{{ $labels['product'] }}</th><th class="num">{{ $labels['amount'] }}</th><th>{{ $labels['return_status'] }}</th><th>{{ $labels['date'] }}</th></tr></thead><tbody>
+<table class="report-table"><thead><tr><th style="width:14%">{{ $labels['order'] }}</th><th style="width:28%">{{ $labels['product'] }}</th><th class="num" style="width:16%">{{ $labels['amount'] }}</th><th style="width:22%">{{ $labels['return_status'] }}</th><th style="width:20%">{{ $labels['date'] }}</th></tr></thead><tbody>
 @forelse($data['returns'] as $row)@foreach($row['items'] as $item)<tr><td>{{ $row['order']['order_number'] ?? '—' }}</td><td>{{ $item['product']['name'] ?? '—' }}</td><td class="number">{{ $money($item['line_total']) }}</td><td>{{ $translatedValue($row['status']) }}</td><td>{{ $date($row['created_at']) }}</td></tr>@endforeach @empty<tr><td colspan="5">—</td></tr>@endforelse
 </tbody></table>
 
 <h2>{{ $labels['category_performance'] }}</h2>
-<table class="report-table"><thead><tr><th style="width:40%">{{ $labels['category'] }}</th><th class="num">{{ $labels['products_count'] }}</th><th class="num">{{ $labels['units'] }}</th><th class="num">{{ $labels['sales'] }}</th></tr></thead><tbody>
+<table class="report-table"><thead><tr><th style="width:34%">{{ $labels['category'] }}</th><th class="num" style="width:20%">{{ $labels['products_count'] }}</th><th class="num" style="width:20%">{{ $labels['units'] }}</th><th class="num" style="width:26%">{{ $labels['sales'] }}</th></tr></thead><tbody>
 @forelse($data['category_performance'] as $row)<tr><td class="dynamic" dir="auto">{{ $row['name'] }}</td><td class="number">{{ $row['products_count'] }}</td><td class="number">{{ $row['units_sold'] }}</td><td class="number">{{ $money($row['sales']) }}</td></tr>@empty<tr><td colspan="4">—</td></tr>@endforelse
 </tbody></table>
 </body>

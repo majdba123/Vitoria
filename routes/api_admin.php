@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('throttle:api.authenticated')->group(function () {
     Route::get('dashboard/vendor-category-stats', [DashboardController::class, 'vendorCategoryStats'])->middleware('throttle:dashboard.stats')->name('dashboard.vendor-category-stats');
     Route::get('dashboard/overview', [DashboardController::class, 'overview'])->middleware('throttle:dashboard.stats')->name('dashboard.overview');
+    Route::get('financials/summary', [\App\Http\Controllers\Api\Admin\FinancialSummaryController::class, 'index'])->middleware('throttle:dashboard.stats')->name('financials.summary');
     Route::get('reports/sales', [\App\Http\Controllers\Api\Admin\ReportController::class, 'sales'])->middleware('throttle:dashboard.stats')->name('reports.sales');
     Route::get('reports/vendors', [\App\Http\Controllers\Api\Admin\ReportController::class, 'vendors'])->middleware('throttle:dashboard.stats')->name('reports.vendors');
     Route::get('reports/products', [\App\Http\Controllers\Api\Admin\ReportController::class, 'products'])->middleware('throttle:dashboard.stats')->name('reports.products');

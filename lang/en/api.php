@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'admin_financial_summary_retrieved' => 'Admin financial summary retrieved successfully.',
     'audit_log_retrieved' => 'Audit log retrieved successfully.',
     'commission_statistics_retrieved' => 'Commission statistics retrieved successfully.',
     'dashboard_overview_retrieved' => 'Dashboard overview statistics retrieved successfully.',

@@ -269,4 +269,73 @@ class VendorLedgerService
             'outstanding' => $outstanding,
         ];
     }
+
+    /**
+     * The platform-wide equivalent of {@see summary()}, across every vendor.
+     * Single DB-aggregated query — the same ledger, just not filtered to one
+     * vendor — so it never drifts from what each vendor's own screen shows.
+     *
+     * `outstanding` cannot be `max(sum(net) - sum(settled), 0)`: a vendor
+     * refunded below its settled total (see summary()'s own floor) would let
+     * that vendor's negative balance cancel out another vendor's genuine
+     * outstanding balance. It must be the sum of each vendor's own floored
+     * outstanding, so this groups by vendor_id too and floors per vendor —
+     * still one query, reduced in memory, not one query per vendor.
+     *
+     * @return array{gross_sales: float, commission: float, refunds: float, adjustments: float, net_earnings: float, settled: float, outstanding: float, vendor_count: int, top_vendors_by_commission: list<array{vendor_id: int, commission: float}>}
+     */
+    public function adminSummary(): array
+    {
+        $rowsByVendor = VendorLedgerEntry::query()
+            ->selectRaw('vendor_id, type, direction, COALESCE(SUM(amount), 0) as total')
+            ->groupBy('vendor_id', 'type', 'direction')
+            ->get()
+            ->groupBy('vendor_id');
+
+        $totals = ['gross_sales' => 0.0, 'commission' => 0.0, 'refunds' => 0.0, 'adjustments' => 0.0, 'settled' => 0.0, 'outstanding' => 0.0];
+        $vendorCommissions = [];
+
+        foreach ($rowsByVendor as $vendorId => $vendorRows) {
+            $byTypeDirection = $vendorRows->reduce(function (array $carry, $row) {
+                $carry[$row->type][$row->direction] = (float) $row->total;
+
+                return $carry;
+            }, []);
+
+            $amount = fn (string $type, string $direction) => (float) ($byTypeDirection[$type][$direction] ?? 0.0);
+
+            $grossSales = $amount(VendorLedgerEntry::TYPE_SALE, VendorLedgerEntry::DIRECTION_CREDIT);
+            $commission = $amount(VendorLedgerEntry::TYPE_COMMISSION, VendorLedgerEntry::DIRECTION_DEBIT);
+            $refunds = $amount(VendorLedgerEntry::TYPE_REFUND, VendorLedgerEntry::DIRECTION_DEBIT);
+            $adjustmentsNet = $amount(VendorLedgerEntry::TYPE_ADJUSTMENT, VendorLedgerEntry::DIRECTION_CREDIT)
+                - $amount(VendorLedgerEntry::TYPE_ADJUSTMENT, VendorLedgerEntry::DIRECTION_DEBIT);
+            $settled = $amount(VendorLedgerEntry::TYPE_SETTLEMENT, VendorLedgerEntry::DIRECTION_DEBIT);
+            $netEarnings = $grossSales - $commission - $refunds + $adjustmentsNet;
+
+            $totals['gross_sales'] += $grossSales;
+            $totals['commission'] += $commission;
+            $totals['refunds'] += $refunds;
+            $totals['adjustments'] += $adjustmentsNet;
+            $totals['settled'] += $settled;
+            $totals['outstanding'] += max($netEarnings - $settled, 0.0);
+
+            if ($commission > 0) {
+                $vendorCommissions[] = ['vendor_id' => (int) $vendorId, 'commission' => round($commission, 2)];
+            }
+        }
+
+        usort($vendorCommissions, fn (array $a, array $b) => $b['commission'] <=> $a['commission']);
+
+        return [
+            'gross_sales' => round($totals['gross_sales'], 2),
+            'commission' => round($totals['commission'], 2),
+            'refunds' => round($totals['refunds'], 2),
+            'adjustments' => round($totals['adjustments'], 2),
+            'net_earnings' => round($totals['gross_sales'] - $totals['commission'] - $totals['refunds'] + $totals['adjustments'], 2),
+            'settled' => round($totals['settled'], 2),
+            'outstanding' => round($totals['outstanding'], 2),
+            'vendor_count' => $rowsByVendor->count(),
+            'top_vendors_by_commission' => array_slice($vendorCommissions, 0, 10),
+        ];
+    }
 }

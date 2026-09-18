@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import AdminLayout from '@/Layouts/AdminLayout';
@@ -8,6 +8,9 @@ import { Pagination } from '@/Components/shared/Pagination';
 import { DeleteConfirmDialog } from '@/Components/admin/DeleteConfirmDialog';
 import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Button } from '@/Components/ui/button';
+import { Input } from '@/Components/ui/input';
+import { Card, CardContent } from '@/Components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
 import { useAdminList } from '@/hooks/use-admin-list';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { formatCurrency, formatDate } from '@/lib/date-time';
@@ -17,14 +20,32 @@ const TYPE_TONES = { 0: 'brand', 1: 'warning', 2: 'brand', 3: 'warning', 4: 'suc
 export default function UsersIndex() {
     const { admin, common } = useI18n();
     const locale = useLocale();
-    const filterType = new URLSearchParams(window.location.search).get('type') || '';
+    const filterType = new URLSearchParams(window.location.search).get('type') || '0';
     const isEmployeeView = filterType === '4';
     const isCustomerView = filterType === '0';
     const [page, setPage] = useState(1);
+    const [search, setSearch] = useState('');
+    const [cityId, setCityId] = useState('all');
+    const [professionType, setProfessionType] = useState('all');
+    const [accountStatus, setAccountStatus] = useState('all');
+    const [cities, setCities] = useState([]);
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const { status, rows, meta, errorMessage, reload } = useAdminList('/api/admin/users', { page, type: filterType || undefined });
+    const { status, rows, meta, errorMessage, reload } = useAdminList('/api/admin/users', {
+        page,
+        type: filterType || undefined,
+        search: isCustomerView && search ? search : undefined,
+        city_id: isCustomerView && cityId !== 'all' ? cityId : undefined,
+        product_type: isCustomerView && professionType !== 'all' ? professionType : undefined,
+        status: isCustomerView && accountStatus !== 'all' ? accountStatus : undefined,
+    });
+
+    useEffect(() => {
+        if (!isCustomerView) return;
+        window.axios.get('/api/cities', { silent: true }).then((res) => setCities(res.data?.data ?? []));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isCustomerView]);
 
     const confirmDelete = () => {
         if (!deleteTarget) return;
@@ -76,6 +97,16 @@ export default function UsersIndex() {
                   ),
               },
               { key: 'city', label: admin.th_city, truncate: true, render: (row) => row.city?.name || '-' },
+              {
+                  key: 'profession',
+                  label: admin.th_profession,
+                  render: (row) =>
+                      row.preferred_product_type === 'agriculture'
+                          ? admin.type_agriculture
+                          : row.preferred_product_type === 'veterinary'
+                            ? admin.type_veterinary
+                            : common.not_specified,
+              },
               { key: 'registered', label: admin.th_registered, render: (row) => formatDate(row.created_at, locale) },
               {
                   key: 'account_status',
@@ -147,6 +178,43 @@ export default function UsersIndex() {
                 }
             />
 
+            {isCustomerView && (
+                <Card className="border-border/80 shadow-none">
+                    <CardContent className="grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-4">
+                        <div>
+                            <label className="mb-1.5 block text-sm font-medium">{admin.search_label}</label>
+                            <Input
+                                type="search"
+                                placeholder={admin.customer_search_placeholder}
+                                value={search}
+                                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                            />
+                        </div>
+                        <FilterSelect
+                            label={admin.th_city}
+                            value={cityId}
+                            onValueChange={(v) => { setCityId(v); setPage(1); }}
+                            allLabel={admin.all_cities}
+                            options={cities.map((city) => ({ value: String(city.id), label: city.name }))}
+                        />
+                        <FilterSelect
+                            label={admin.th_profession}
+                            value={professionType}
+                            onValueChange={(v) => { setProfessionType(v); setPage(1); }}
+                            allLabel={admin.all_professions}
+                            options={[{ value: 'agriculture', label: admin.type_agriculture }, { value: 'veterinary', label: admin.type_veterinary }]}
+                        />
+                        <FilterSelect
+                            label={admin.th_account_status}
+                            value={accountStatus}
+                            onValueChange={(v) => { setAccountStatus(v); setPage(1); }}
+                            allLabel={admin.all_statuses}
+                            options={[{ value: 'verified', label: admin.status_verified }, { value: 'unverified', label: admin.status_unverified }]}
+                        />
+                    </CardContent>
+                </Card>
+            )}
+
             <div>
                 <DataTable
                     columns={columns}
@@ -173,5 +241,26 @@ export default function UsersIndex() {
                 onConfirm={confirmDelete}
             />
         </AdminLayout>
+    );
+}
+
+function FilterSelect({ label, value, onValueChange, allLabel, options }) {
+    return (
+        <div>
+            <label className="mb-1.5 block text-sm font-medium">{label}</label>
+            <Select value={value} onValueChange={onValueChange}>
+                <SelectTrigger className="w-full">
+                    <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">{allLabel}</SelectItem>
+                    {options.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        </div>
     );
 }

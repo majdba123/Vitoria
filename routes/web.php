@@ -301,6 +301,10 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(funct
         return Inertia::render('Admin/Vendors/Commission', ['vendorId' => (int) $id]);
     })->name('vendors.commission');
 
+    Route::get('/financials', function () {
+        return Inertia::render('Admin/Financials/Index');
+    })->name('financials.index');
+
     // Product Management
     Route::get('/products', function () {
         return Inertia::render('Admin/Products/Index');

@@ -397,6 +397,8 @@
     "Vendor activated successfully.": "تم تفعيل البائع بنجاح.",
     "Vendor deactivated successfully.": "تم إلغاء تفعيل البائع بنجاح.",
     "Vendor deleted successfully.": "تم حذف البائع بنجاح.",
+    "This vendor cannot be deleted while financial or order history is attached. Deactivate it instead.": "لا يمكن حذف هذا البائع لوجود سجل مالي أو طلبات مرتبطة به. قم بإلغاء تفعيله بدلاً من ذلك.",
+    "This user cannot be deleted while they still have order or review history.": "لا يمكن حذف هذا المستخدم لوجود سجل طلبات أو تقييمات مرتبط به.",
     "Photos retrieved successfully.": "تم جلب الصور بنجاح.",
     ":count photo(s) uploaded successfully.": "تم رفع :count صورة بنجاح.",
     "Photo deleted successfully.": "تم حذف الصورة بنجاح.",

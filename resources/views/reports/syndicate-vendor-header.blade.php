@@ -14,9 +14,9 @@
     <tr>
         <td width="16%" style="vertical-align:middle"><img src="{{ $logoPath }}" style="max-width:72px;max-height:52px;width:auto;height:auto" alt="{{ $syndicate->name ?? 'Vetora' }}"></td>
         <td width="84%" style="text-align:{{ $isArabic ? 'right' : 'left' }};vertical-align:middle">
-            <strong style="font-size:13px;color:#173f35">{{ trans('reports.vendor.labels.title', [], $locale) }}</strong>
-            <span style="font-size:9px;color:#64748b">&nbsp;·&nbsp;{{ $reportPeriod ?: trans('reports.vendor.labels.not_available', [], $locale) }}</span><br>
-            <span dir="auto" style="font-size:9.5px;color:#334155">{{ $data['vendor']['store_name'] }} — {{ $scope }}</span>
+            <strong style="font-size:12px;color:#173f35">{{ trans('reports.vendor.labels.title', [], $locale) }}</strong>
+            <span style="font-size:10px;color:#64748b">&nbsp;&middot;&nbsp;{{ $reportPeriod ?: trans('reports.vendor.labels.not_available', [], $locale) }}</span><br>
+            <span dir="auto" style="font-size:10px;color:#334155">@if($syndicate){{ $syndicate->name }} &#8594; @endif{{ $data['vendor']['store_name'] }}</span>
         </td>
     </tr>
 </table>

@@ -397,6 +397,8 @@
     "Vendor activated successfully.": "Vendor activated successfully.",
     "Vendor deactivated successfully.": "Vendor deactivated successfully.",
     "Vendor deleted successfully.": "Vendor deleted successfully.",
+    "This vendor cannot be deleted while financial or order history is attached. Deactivate it instead.": "This vendor cannot be deleted while financial or order history is attached. Deactivate it instead.",
+    "This user cannot be deleted while they still have order or review history.": "This user cannot be deleted while they still have order or review history.",
     "Photos retrieved successfully.": "Photos retrieved successfully.",
     ":count photo(s) uploaded successfully.": ":count photo(s) uploaded successfully.",
     "Photo deleted successfully.": "Photo deleted successfully.",
