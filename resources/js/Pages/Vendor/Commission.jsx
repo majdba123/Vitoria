@@ -4,6 +4,7 @@ import { PageHeader } from '@/Components/shared/PageHeader';
 import { StatCard } from '@/Components/shared/dashboard/StatCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
+import { RecordCard, RecordCardList } from '@/Components/shared/RecordCard';
 import { Button } from '@/Components/ui/button';
 import { Wallet, DollarSign, HandCoins, TrendingDown, ShoppingBag } from 'lucide-react';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
@@ -122,6 +123,34 @@ export default function VendorCommission() {
                     <CardTitle className="text-base font-bold">{vendor.financial_history}</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
+                    {ledgerEntries.length === 0 ? (
+                        <p className="p-4 text-center text-sm text-muted-foreground md:hidden">{vendor.no_financial_movements}</p>
+                    ) : (
+                        <RecordCardList className="p-4">
+                            {ledgerEntries.map((entry) => (
+                                <RecordCard
+                                    key={entry.id}
+                                    title={entry.type_name}
+                                    rows={[
+                                        { key: 'date', label: vendor.th_date, value: formatDate(entry.created_at, locale) },
+                                        {
+                                            key: 'direction',
+                                            label: vendor.th_direction,
+                                            value: (
+                                                <span className={entry.direction === 'credit' ? 'text-[var(--color-success-strong)]' : 'text-[var(--color-danger-strong)]'}>
+                                                    {entry.direction === 'credit' ? vendor.credit : vendor.debit}
+                                                </span>
+                                            ),
+                                        },
+                                        { key: 'amount', label: vendor.th_amount, value: formatCurrency(entry.amount, locale), numeric: true },
+                                        { key: 'description', label: vendor.th_description, value: entry.description },
+                                    ]}
+                                />
+                            ))}
+                        </RecordCardList>
+                    )}
+
+                    <div className="hidden md:block">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -146,6 +175,7 @@ export default function VendorCommission() {
                             ))}
                         </TableBody>
                     </Table>
+                    </div>
                 </CardContent>
             </Card>
 
@@ -154,6 +184,25 @@ export default function VendorCommission() {
                     <CardTitle className="text-base font-bold">{vendor.commission_by_category}</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
+                    {categoryBreakdown.length === 0 ? (
+                        <p className="p-4 text-center text-sm text-muted-foreground md:hidden">{vendor.js_no_completed_orders_found}</p>
+                    ) : (
+                        <RecordCardList className="p-4">
+                            {categoryBreakdown.map((row, index) => (
+                                <RecordCard
+                                    key={index}
+                                    title={row.category_name ?? vendor.js_unknown_category}
+                                    rows={[
+                                        { key: 'rate', label: vendor.th_commission_percent, value: formatPercent(row.commission_rate, locale), numeric: true },
+                                        { key: 'sales', label: vendor.th_sales_total, value: formatCurrency(row.sales_total, locale), numeric: true },
+                                        { key: 'commission', label: vendor.th_commission_amount, value: formatCurrency(row.commission_amount, locale), numeric: true },
+                                    ]}
+                                />
+                            ))}
+                        </RecordCardList>
+                    )}
+
+                    <div className="hidden md:block">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -180,6 +229,7 @@ export default function VendorCommission() {
                             )}
                         </TableBody>
                     </Table>
+                    </div>
                 </CardContent>
             </Card>
 

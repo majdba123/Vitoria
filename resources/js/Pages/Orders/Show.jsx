@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
-import { formatCurrency, formatNumber, formatPercent } from '@/lib/date-time';
+import { formatCurrency, formatDate, formatNumber, formatPercent } from '@/lib/date-time';
 import { ORDER_STATUS_TONE as STATUS_TONE } from '@/lib/order-status';
 import { translatedEnum, translatedStatus } from '@/lib/translated-enum';
 
@@ -76,7 +76,7 @@ export default function OrdersShow({ orderId }) {
                                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                         <div className="min-w-0">
                                             <h1 className="text-xl font-bold text-foreground">{order.order_number || `Order #${order.id}`}</h1>
-                                            <p className="mt-1 text-sm text-muted-foreground">{order.created_at ? new Date(order.created_at).toLocaleDateString() : '—'}</p>
+                                            <p className="mt-1 text-sm text-muted-foreground">{formatDate(order.created_at, locale) || '—'}</p>
                                             {order.vendor && (
                                                 <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
                                                     {orders.sold_by}

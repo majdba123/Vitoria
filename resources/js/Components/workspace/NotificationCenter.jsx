@@ -9,6 +9,7 @@ import { Skeleton } from '@/Components/ui/skeleton';
 import { Switch } from '@/Components/ui/switch';
 import { useAdminList } from '@/hooks/use-admin-list';
 import { useI18n } from '@/hooks/use-i18n';
+import { formatDateTime } from '@/lib/date-time';
 
 function actionHref(role, actionType, actionId) {
     if (!actionType || actionId == null) return null;
@@ -72,7 +73,7 @@ export function NotificationCenter({ role, locale = 'en', sendRoute = null }) {
                         const isUnread = !notification.read_at;
                         const href = actionHref(role, notification.action_type, notification.action_id);
                         const Wrapper = href ? Link : 'div';
-                        const time = notification.sent_at ? new Date(notification.sent_at).toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' }) : '';
+                        const time = formatDateTime(notification.sent_at, locale, { dateStyle: 'medium', timeStyle: 'short' });
                         return <li key={notification.id} className={isUnread ? 'bg-accent/30' : ''}><Wrapper href={href ?? undefined} className="flex min-h-24 items-start gap-3 px-4 py-4 sm:px-5"><span className={`mt-2 size-2 shrink-0 rounded-full ${isUnread ? 'bg-primary' : 'bg-muted-foreground/30'}`} aria-hidden="true" /><div className="min-w-0 flex-1"><p className="text-sm font-semibold text-foreground">{notification.title}</p><p className="mt-1 max-w-[70ch] text-sm leading-6 text-muted-foreground">{notification.body}</p><div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground"><span>{time}</span>{notification.sender_name && <span>{text.sent_by}: {notification.sender_name}</span>}<span className="inline-flex items-center gap-1"><Info className="size-3" aria-hidden="true" />{text.why}: {notification.type === 'public' ? text.public_reason : text.private_reason}</span></div>{isUnread && <button type="button" onClick={(event) => markOneRead(notification.id, event)} className="mt-2 inline-flex min-h-11 items-center gap-1.5 text-xs font-semibold text-primary"><CheckCheck className="size-3.5" aria-hidden="true" />{text.mark_one}</button>}</div>{href && <ChevronRight className="mt-1 size-4 shrink-0 text-muted-foreground rtl:rotate-180" aria-hidden="true" />}</Wrapper></li>;
                     })}</ul><Pagination meta={meta} onPrev={() => setPage((current) => current - 1)} onNext={() => setPage((current) => current + 1)} /></>}
                 </Card>

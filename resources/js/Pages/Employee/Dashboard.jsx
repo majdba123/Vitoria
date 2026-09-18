@@ -6,7 +6,8 @@ import { PageHeader } from '@/Components/shared/PageHeader';
 import { StatCard } from '@/Components/shared/dashboard/StatCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
-import { useI18n } from '@/hooks/use-i18n';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { formatPercent } from '@/lib/date-time';
 import { GrowthChart } from '@/Components/shared/dashboard/GrowthChart';
 import { InsightPanel } from '@/Components/shared/dashboard/InsightPanel';
 
@@ -49,6 +50,7 @@ async function fetchAllProducts() {
 
 export default function EmployeeDashboard() {
     const { employee, common } = useI18n();
+    const locale = useLocale();
     const [status, setStatus] = useState('loading');
     const [stats, setStats] = useState({ total: 0, pending: 0, approved: 0, rejected: 0, active: 0, inactive: 0 });
     const [categoryRows, setCategoryRows] = useState([]);
@@ -80,7 +82,9 @@ export default function EmployeeDashboard() {
             allProducts.forEach((p) => {
                 const categoryName = p?.category?.name || common.not_found;
                 categoryCounts.set(categoryName, (categoryCounts.get(categoryName) || 0) + 1);
-                const typeName = p?.category?.type_label || common.not_found;
+                // `category.type_label` is the API's own English display string; the raw
+                // `type` enum is what can be localized, so it wins when it is present.
+                const typeName = employee[`type_${p?.category?.type}`] || p?.category?.type_label || common.not_found;
                 typeCounts.set(typeName, (typeCounts.get(typeName) || 0) + 1);
             });
             setCategoryRows([...categoryCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6));
@@ -187,7 +191,7 @@ export default function EmployeeDashboard() {
                                     <div className="flex items-center justify-between gap-3">
                                         <div>
                                             <p className="text-sm font-semibold text-foreground">{label}</p>
-                                            <p className="mt-1 text-xs text-muted-foreground">{pct}% of all products</p>
+                                            <p className="mt-1 text-xs text-muted-foreground">{formatPercent(pct, locale, { maximumFractionDigits: 0 })} {employee.of_all_products}</p>
                                         </div>
                                         <span className="inline-flex h-11 min-w-11 items-center justify-center rounded-md bg-muted px-3 text-sm font-bold text-foreground">{value}</span>
                                     </div>

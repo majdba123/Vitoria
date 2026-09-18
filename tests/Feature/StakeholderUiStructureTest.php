@@ -93,10 +93,12 @@ test('Vendor 360 and report templates keep accounting and PDF labels separated a
         ->and($syndicateDashboard)->toContain('formatCurrency as money', 'i18n[`status_${r.status}`]')
         ->not->toContain('} SYP`')
         // KPI cards used to separate label/value with a bare <br> (no
-        // semantic grouping); the label is now wrapped in <span class="lbl">
+        // semantic grouping); the label is now wrapped in a .lbl element
         // immediately followed by <strong>, matching the stakeholder's
-        // label+value grouping fix for the report layout.
-        ->and($generalReport)->toContain('<span class="lbl">{{ $l[\'vendors\'] }}</span><strong>')
+        // label+value grouping fix for the report layout. The wrapper is a <p>
+        // rather than a <span> because mPDF ignores display:block on an inline
+        // element, which fused the label onto its value in the Arabic PDF.
+        ->and($generalReport)->toContain('<p class="lbl">{{ $l[\'vendors\'] }}</p><strong>')
         ->not->toContain('{{ $l[\'vendors\'] }}<br><strong>')
         ->and($vendorReport)->toContain('{{ $translatedValue($row[\'status\']) }}')
         // Meta labels are distinguished via the .lbl CSS class rather than a

@@ -13,6 +13,9 @@ export default function VendorsShow({ vendorId, vendor }) {
     const [productsStatus, setProductsStatus] = useState('loading');
     const [products, setProducts] = useState([]);
     const [meta, setMeta] = useState(null);
+    // `business_type_label` arrives from the API already rendered in English; the
+    // raw enum beside it is the only part that can follow the active locale.
+    const businessType = vendors[`type_${vendor?.business_type}`] ?? vendor?.business_type_label;
 
     useEffect(() => {
         if (!vendor) return;
@@ -86,7 +89,7 @@ export default function VendorsShow({ vendorId, vendor }) {
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold text-foreground sm:text-3xl">{vendor.store_name}</h1>
-                            {vendor.business_type_label && <p className="mt-1 text-sm text-muted-foreground">{vendor.business_type_label}</p>}
+                            {businessType && <p className="mt-1 text-sm text-muted-foreground">{businessType}</p>}
                             {vendor.address && (
                                 <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
                                     <MapPin className="h-4 w-4 shrink-0" />

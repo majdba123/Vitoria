@@ -6,6 +6,7 @@ import { PageHeader } from '@/Components/shared/PageHeader';
 import { StatCard } from '@/Components/shared/dashboard/StatCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
+import { RecordCard, RecordCardList } from '@/Components/shared/RecordCard';
 import { Button } from '@/Components/ui/button';
 import { TextField } from '@/Components/admin/form/FormField';
 import { Wallet, DollarSign, HandCoins, TrendingDown } from 'lucide-react';
@@ -144,6 +145,25 @@ export default function VendorsCommission({ vendorId }) {
                     <CardTitle className="text-base font-bold">{vendorCopy.commission_by_category}</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
+                    {categoryBreakdown.length === 0 ? (
+                        <p className="p-4 text-center text-sm text-muted-foreground md:hidden">{vendorCopy.js_no_completed_orders_found}</p>
+                    ) : (
+                        <RecordCardList className="p-4">
+                            {categoryBreakdown.map((row, index) => (
+                                <RecordCard
+                                    key={index}
+                                    title={row.category_name ?? vendorCopy.js_unknown_category}
+                                    rows={[
+                                        { key: 'rate', label: vendorCopy.th_commission_percent, value: formatPercent(row.commission_rate, locale), numeric: true },
+                                        { key: 'sales', label: vendorCopy.th_sales_total, value: formatCurrency(row.sales_total, locale), numeric: true },
+                                        { key: 'commission', label: vendorCopy.th_commission_amount, value: formatCurrency(row.commission_amount, locale), numeric: true },
+                                    ]}
+                                />
+                            ))}
+                        </RecordCardList>
+                    )}
+
+                    <div className="hidden md:block">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -170,6 +190,7 @@ export default function VendorsCommission({ vendorId }) {
                             )}
                         </TableBody>
                     </Table>
+                    </div>
                 </CardContent>
             </Card>
 

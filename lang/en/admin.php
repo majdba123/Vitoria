@@ -298,6 +298,7 @@ return [
     'generate_report' => 'Generate report',
     'add_vendor' => 'Add Vendor',
     'status_label' => 'Status',
+    'active_filters' => 'Active filters',
     'all_statuses' => 'All statuses',
     'business_type_label' => 'Business Type',
     'all_business_types' => 'All business types',

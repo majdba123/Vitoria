@@ -22,10 +22,12 @@ import {
 } from '@/Components/ui/dialog';
 import { TextareaField } from '@/Components/admin/form/FormField';
 import { useAdminList } from '@/hooks/use-admin-list';
-import { useI18n } from '@/hooks/use-i18n';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { formatDateTime } from '@/lib/date-time';
 
 export default function ContactMessagesIndex() {
     const { admin, common } = useI18n();
+    const locale = useLocale();
     const [page, setPage] = useState(1);
     const [statusFilter, setStatusFilter] = useState(() => new URLSearchParams(window.location.search).get('status') || 'all');
     const [replyTarget, setReplyTarget] = useState(null);
@@ -90,7 +92,7 @@ export default function ContactMessagesIndex() {
                                 <div className="flex flex-wrap items-start justify-between gap-2">
                                     <div className="min-w-0 flex-1">
                                         <p className="text-sm font-medium text-foreground">{m.name || m.user?.name || '—'} &lt;{m.email || m.user?.email || '—'}&gt;</p>
-                                        <p className="mt-1 text-xs text-muted-foreground">{m.created_at ? new Date(m.created_at).toLocaleString() : '—'}</p>
+                                        <p className="mt-1 text-xs text-muted-foreground">{formatDateTime(m.created_at, locale, { dateStyle: 'medium', timeStyle: 'short' }) || '—'}</p>
                                         <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{m.message}</p>
                                     </div>
                                     <div className="flex shrink-0 items-center gap-2">

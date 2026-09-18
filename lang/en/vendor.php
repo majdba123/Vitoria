@@ -126,6 +126,7 @@ return [
     'commission_by_category' => 'Commission by Category',
     'th_category' => 'Category',
     'th_commission_percent' => 'Commission %',
+    'completed_orders' => 'Completed orders',
     'th_sales_total' => 'Sales Total',
     'th_commission_amount' => 'Commission Amount',
     'last_7_days_completed_orders' => 'Orders in the Last 7 Days',
@@ -181,5 +182,8 @@ return [
     'allowed_categories_copy' => 'Categories assigned by admin. Contact admin to change.',
     'no_categories_assigned' => 'No categories assigned',
     'both_business_type' => 'Both',
+    'type_agriculture' => 'Agriculture',
+    'type_veterinary' => 'Veterinary',
+    'type_both' => 'Both',
     'optional_placeholder' => '(optional)',
 ];

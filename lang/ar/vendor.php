@@ -126,6 +126,7 @@ return [
     'commission_by_category' => 'العمولة حسب التصنيف',
     'th_category' => 'التصنيف',
     'th_commission_percent' => 'نسبة العمولة %',
+    'completed_orders' => 'الطلبات المكتملة',
     'th_sales_total' => 'إجمالي المبيعات',
     'th_commission_amount' => 'مبلغ العمولة',
     'last_7_days_completed_orders' => 'الطلبات خلال آخر 7 أيام',
@@ -181,5 +182,8 @@ return [
     'allowed_categories_copy' => 'التصنيفات المسندة من الإدارة. تواصل مع الإدارة للتغيير.',
     'no_categories_assigned' => 'لا توجد تصنيفات مسندة',
     'both_business_type' => 'كلاهما',
+    'type_agriculture' => 'زراعي',
+    'type_veterinary' => 'بيطري',
+    'type_both' => 'كلاهما',
     'optional_placeholder' => '(اختياري)',
 ];

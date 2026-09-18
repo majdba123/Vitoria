@@ -6,6 +6,7 @@ import { PageHeader } from '@/Components/shared/PageHeader';
 import { StatCard } from '@/Components/shared/dashboard/StatCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
+import { RecordCard, RecordCardList } from '@/Components/shared/RecordCard';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { formatCurrency } from '@/lib/date-time';
 
@@ -71,6 +72,27 @@ export default function AdminFinancials() {
                     <CardTitle className="text-base font-bold">{admin.top_vendors_by_commission}</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
+                    {topVendors.length === 0 ? (
+                        <p className="p-4 text-center text-sm text-muted-foreground md:hidden">{admin.financials_no_commission_yet}</p>
+                    ) : (
+                        <RecordCardList className="p-4">
+                            {topVendors.map((row) => (
+                                <RecordCard
+                                    key={row.vendor_id}
+                                    title={
+                                        <Link href={route('admin.vendors.commission', row.vendor_id)} className="hover:underline">
+                                            {row.store_name ?? `${admin.vendor_label} #${row.vendor_id}`}
+                                        </Link>
+                                    }
+                                    rows={[
+                                        { key: 'commission', label: vendorCopy.th_commission_amount, value: formatCurrency(row.commission, locale), numeric: true },
+                                    ]}
+                                />
+                            ))}
+                        </RecordCardList>
+                    )}
+
+                    <div className="hidden md:block">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -97,6 +119,7 @@ export default function AdminFinancials() {
                             )}
                         </TableBody>
                     </Table>
+                    </div>
                 </CardContent>
             </Card>
         </AdminLayout>

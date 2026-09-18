@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { ChevronRight } from 'lucide-react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { formatDate } from '@/lib/date-time';
 
 export default function PageShow({ page }) {
     const { nav, common } = useI18n();
@@ -14,7 +15,9 @@ export default function PageShow({ page }) {
     const metaTitle = page?.meta_title || title;
     const metaDescription = page ? (page.meta_description || (body || '').replace(/\s+/g, ' ').trim().slice(0, 160)) : undefined;
     const updatedAt = page?.updated_at ? new Date(String(page.updated_at).replace(' ', 'T')) : null;
-    const updatedLabel = updatedAt && !Number.isNaN(updatedAt.getTime()) ? updatedAt.toLocaleDateString(locale, { dateStyle: 'long' }) : null;
+    // Bare 'ar' resolves to MSA month names ("سبتمبر"); the shared helper pins ar-SY,
+    // which is what the rest of the app renders ("أيلول").
+    const updatedLabel = formatDate(updatedAt, locale, { dateStyle: 'long' }) || null;
 
     const webPageJsonLd = page ? {
         '@context': 'https://schema.org',

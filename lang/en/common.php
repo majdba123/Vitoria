@@ -53,6 +53,7 @@ return [
     'retry' => 'Retry',
     'data_table' => 'Data table',
     'import_failed' => 'Import failed.',
+    'import' => 'Import',
     'import_copy' => 'Download the template, fill it in, then upload it here.',
     'download_template' => 'Download template',
     'upload' => 'Upload',

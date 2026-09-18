@@ -5,4 +5,7 @@ return [
     'products_heading' => 'منتجات هذا المتجر',
     'no_products' => 'لا توجد منتجات متاحة حالياً في هذا المتجر.',
     'about_heading' => 'عن هذا المتجر',
+    'type_agriculture' => 'زراعي',
+    'type_veterinary' => 'بيطري',
+    'type_both' => 'زراعي وبيطري',
 ];

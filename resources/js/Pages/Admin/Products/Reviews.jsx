@@ -7,8 +7,10 @@ import { DeleteConfirmDialog } from '@/Components/admin/DeleteConfirmDialog';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 import { Pagination } from '@/Components/shared/Pagination';
+import { RecordCard, RecordCardList } from '@/Components/shared/RecordCard';
 import { Button } from '@/Components/ui/button';
-import { useI18n } from '@/hooks/use-i18n';
+import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { formatDate } from '@/lib/date-time';
 
 function Stars({ rating }) {
     return (
@@ -22,6 +24,7 @@ function Stars({ rating }) {
 
 export default function ProductReviews({ product, reviews }) {
     const { admin, common, nav } = useI18n();
+    const locale = useLocale();
     const { props } = usePage();
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -74,6 +77,26 @@ export default function ProductReviews({ product, reviews }) {
                     </CardContent>
                 ) : (
                     <>
+                        <RecordCardList className="p-4">
+                            {reviews.data.map((review) => (
+                                <RecordCard
+                                    key={review.id}
+                                    title={review.user?.name ?? '—'}
+                                    rows={[
+                                        { key: 'rating', label: admin.th_rating, value: <Stars rating={Number(review.rating || 0)} /> },
+                                        { key: 'body', label: admin.th_comment, value: review.body || '—' },
+                                        { key: 'date', label: admin.th_date, value: formatDate(review.created_at, locale) || '—' },
+                                    ]}
+                                    actions={
+                                        <button type="button" onClick={() => setDeleteTarget(review)} className="text-xs font-medium text-[var(--color-danger-strong)] hover:underline">
+                                            {common.delete}
+                                        </button>
+                                    }
+                                />
+                            ))}
+                        </RecordCardList>
+
+                        <div className="hidden md:block">
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -90,7 +113,7 @@ export default function ProductReviews({ product, reviews }) {
                                         <TableCell className="font-medium">{review.user?.name ?? '—'}</TableCell>
                                         <TableCell><Stars rating={Number(review.rating || 0)} /></TableCell>
                                         <TableCell className="max-w-xs text-muted-foreground">{review.body || '—'}</TableCell>
-                                        <TableCell className="text-muted-foreground">{review.created_at ? new Date(review.created_at).toLocaleDateString() : '—'}</TableCell>
+                                        <TableCell className="text-muted-foreground">{formatDate(review.created_at, locale) || '—'}</TableCell>
                                         <TableCell className="text-end">
                                             <button type="button" onClick={() => setDeleteTarget(review)} className="text-xs font-medium text-[var(--color-danger-strong)] hover:underline">
                                                 {common.delete}
@@ -100,6 +123,7 @@ export default function ProductReviews({ product, reviews }) {
                                 ))}
                             </TableBody>
                         </Table>
+                        </div>
                         <Pagination
                             meta={{ current_page: reviews.current_page, last_page: reviews.last_page, total: reviews.total }}
                             onPrev={() => router.get(route('admin.products.reviews', product.id), { page: reviews.current_page - 1 }, { preserveScroll: true })}

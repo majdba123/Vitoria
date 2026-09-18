@@ -230,7 +230,7 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                             copy={syndicate.top_performance_copy}
                             status={overviewStatus}
                             isEmpty={topPerformanceRows.length === 0}
-                            emptyMessage={syndicate.noData}
+                            emptyMessage={syndicate.no_data}
                             onRetry={loadOverview}
                         >
                             <HorizontalRankingChart rows={topPerformanceRows} valueKey="value" valueLabel={syndicate.completed_sales} formatValue={(value) => money(value, locale)} />
@@ -246,12 +246,12 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                     copy={syndicate.monthly_order_growth_copy}
                     status={overviewStatus}
                     isEmpty={monthlyOrderGrowth.every((row) => Number(row.total || 0) === 0)}
-                    emptyMessage={syndicate.noData}
+                    emptyMessage={syndicate.no_data}
                     onRetry={loadOverview}
                 >
                     <GrowthChart rows={monthlyOrderGrowth} totalLabel={syndicate.total_orders} />
                 </InsightPanel>
-                <InsightPanel title={syndicate.vendor_status_title} copy={syndicate.vendor_status_copy} status={overviewStatus} isEmpty={(overview.total_merchants ?? 0) === 0} emptyMessage={syndicate.noData} onRetry={loadOverview}>
+                <InsightPanel title={syndicate.vendor_status_title} copy={syndicate.vendor_status_copy} status={overviewStatus} isEmpty={(overview.total_merchants ?? 0) === 0} emptyMessage={syndicate.no_data} onRetry={loadOverview}>
                     <DonutChart rows={[
                         { key: 'active', label: syndicate.active, value: merchantStats.active_merchants, color: 'var(--color-success-500)' },
                         { key: 'inactive', label: syndicate.inactive, value: merchantStats.inactive_merchants, color: 'var(--color-danger-500)' },

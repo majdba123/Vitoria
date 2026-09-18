@@ -298,6 +298,7 @@ return [
     'generate_report' => 'إنشاء التقرير',
     'add_vendor' => 'إضافة بائع',
     'status_label' => 'الحالة',
+    'active_filters' => 'عوامل التصفية المطبقة',
     'all_statuses' => 'كل الحالات',
     'business_type_label' => 'نوع النشاط',
     'all_business_types' => 'كل أنواع النشاط',

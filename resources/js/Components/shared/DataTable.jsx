@@ -2,6 +2,7 @@ import { AlertTriangle, RefreshCw, SearchX } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 import { Skeleton } from '@/Components/ui/skeleton';
+import { RecordCard, RecordCardList, RecordCardSkeleton } from '@/Components/shared/RecordCard';
 import { useI18n } from '@/hooks/use-i18n';
 import { cn } from '@/lib/utils';
 
@@ -14,6 +15,12 @@ const ALIGN_CLASS = { end: 'text-end', center: 'text-center', start: 'text-start
  * Header alignment always mirrors the column's data alignment, and `width`/
  * `truncate` let a column claim its fair share of space without breaking
  * row height consistency.
+ *
+ * Below `md` the same columns render as one card per row instead of a table:
+ * a column header only makes sense while the columns line up side by side, and
+ * at phone width they cannot, so the label moves next to its own value. The
+ * first column becomes the card title (and the row link, when there is one) and
+ * an `actions` column drops its label to sit in the card footer.
  */
 export function DataTable({ columns, rows, status, errorMessage, onRetry, rowHref, emptyTitle, emptyHint, skeletonRows = 6 }) {
     const { common } = useI18n();
@@ -41,8 +48,37 @@ export function DataTable({ columns, rows, status, errorMessage, onRetry, rowHre
         );
     }
 
+    const [titleColumn, ...restColumns] = columns;
+    const actionsColumn = restColumns.find((column) => column.key === 'actions');
+    const detailColumns = restColumns.filter((column) => column.key !== 'actions');
+
     return (
-        <div className="overflow-x-auto rounded-lg border border-border" role="region" aria-label={emptyTitle ?? common.data_table} tabIndex={0}>
+        <>
+        <RecordCardList>
+            {status === 'loading' &&
+                Array.from({ length: skeletonRows }).map((_, index) => <RecordCardSkeleton key={index} />)}
+
+            {status === 'ready' &&
+                rows.map((row) => {
+                    const title = titleColumn?.render(row);
+
+                    return (
+                        <RecordCard
+                            key={row.id}
+                            title={rowHref ? <Link href={rowHref(row)} className="hover:text-primary">{title}</Link> : title}
+                            rows={detailColumns.map((column) => ({
+                                key: column.key,
+                                label: column.label,
+                                value: column.render(row),
+                                numeric: column.align === 'end',
+                            }))}
+                            actions={actionsColumn?.render(row)}
+                        />
+                    );
+                })}
+        </RecordCardList>
+
+        <div className="hidden overflow-x-auto rounded-lg border border-border md:block" role="region" aria-label={emptyTitle ?? common.data_table} tabIndex={0}>
             <Table>
                 <TableHeader>
                     <TableRow className="hover:bg-transparent">
@@ -96,5 +132,6 @@ export function DataTable({ columns, rows, status, errorMessage, onRetry, rowHre
                 </TableBody>
             </Table>
         </div>
+        </>
     );
 }

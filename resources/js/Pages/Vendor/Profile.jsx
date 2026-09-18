@@ -43,7 +43,8 @@ export default function VendorProfile() {
                 latitude: vendorData?.latitude ?? '',
                 longitude: vendorData?.longitude ?? '',
             });
-            setBusinessTypeLabel(vendorData?.business_type_label || vendor.both_business_type);
+            // The API's `business_type_label` is pre-rendered English; prefer the raw enum.
+            setBusinessTypeLabel(vendor[`type_${vendorData?.business_type}`] || vendorData?.business_type_label || vendor.both_business_type);
             setCategories(vendorData?.categories ?? []);
             setIsActive(!!vendorData?.is_active);
             setAvatarPreview(user.avatar_url ?? null);
@@ -191,7 +192,7 @@ export default function VendorProfile() {
                                 ) : (
                                     categories.map((c) => (
                                         <StatusBadge key={c.id} tone={c.type === 'veterinary' ? 'brand' : 'success'}>
-                                            {c.name} {c.type_label ? <span className="opacity-75">{c.type_label}</span> : null}
+                                            {c.name} {(vendor[`type_${c.type}`] ?? c.type_label) ? <span className="opacity-75">{vendor[`type_${c.type}`] ?? c.type_label}</span> : null}
                                         </StatusBadge>
                                     ))
                                 )}

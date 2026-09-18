@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ $invoice->invoice_number }}</title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=manrope:400,600,700,800|ibm-plex-sans-arabic:400,500,600,700&display=swap" rel="stylesheet">
     <style>
         :root { color-scheme: light; }
         * { box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            font-family: 'Manrope', 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, Arial, sans-serif;
             color: #1f2937;
             background: #fff;
             margin: 0;
@@ -71,6 +73,14 @@
         .print-bar button {
             background: #297497; color: #fff; border: none; border-radius: 8px;
             padding: 0.6rem 1.5rem; font-size: 0.9rem; cursor: pointer;
+        }
+        /* Arabic is cursive: letter-spacing pulls the joined strokes apart and
+           uppercasing is a no-op, so both are dropped in RTL. */
+        [dir="rtl"] th,
+        [dir="rtl"] .parties h2,
+        [dir="rtl"] .section-label {
+            text-transform: none;
+            letter-spacing: normal;
         }
         @page {
             size: A4;

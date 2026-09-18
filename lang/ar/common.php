@@ -53,6 +53,7 @@ return [
     'retry' => 'إعادة المحاولة',
     'data_table' => 'جدول البيانات',
     'import_failed' => 'فشل الاستيراد.',
+    'import' => 'استيراد',
     'import_copy' => 'نزّل القالب واملأه، ثم ارفعه هنا.',
     'download_template' => 'تنزيل القالب',
     'upload' => 'رفع',

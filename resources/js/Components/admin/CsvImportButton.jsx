@@ -65,12 +65,12 @@ export function CsvImportButton({ label, templateUrl, importUrl, onImported }) {
             <DialogTrigger asChild>
                 <Button type="button" variant="outline" size="sm">
                     <Upload className="size-4" />
-                    {common.import ?? `Import ${label}`}
+                    {common.import} {label}
                 </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{common.import_title ?? `Import ${label}`}</DialogTitle>
+                    <DialogTitle>{common.import} {label}</DialogTitle>
                     <DialogDescription>{common.import_copy}</DialogDescription>
                 </DialogHeader>
 
