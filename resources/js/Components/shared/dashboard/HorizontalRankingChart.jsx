@@ -44,7 +44,10 @@ function ValueLabel({ viewBox, value, rtl, formatValue }) {
     return (
         <g transform={`translate(${x + width},${y + height / 2})`}>
             <g transform={rtl ? 'scale(-1,1)' : undefined}>
-                <text dy={4} dx={4} textAnchor="start" fontSize={12} className="fill-foreground text-xs font-semibold">
+                {/* direction is pinned so the anchor is unambiguous (an inherited RTL
+                    direction swaps SVG "start"/"end"); under the nested mirror the
+                    RTL label then has to anchor at "end" to grow away from its bar. */}
+                <text dy={4} dx={rtl ? -6 : 6} textAnchor={rtl ? 'end' : 'start'} direction="ltr" fontSize={12} className="fill-foreground text-xs font-semibold" data-bar-value>
                     {formatValue(value)}
                 </text>
             </g>
@@ -76,7 +79,7 @@ export function HorizontalRankingChart({ rows, valueKey, labelKey = 'name', valu
                 className={`aspect-auto w-full ${rtl ? '[&_.recharts-surface]:-scale-x-100' : ''}`}
                 style={{ height }}
             >
-                <BarChart data={data} layout="vertical" margin={{ top: 4, right: 48, bottom: 4, left: 0 }} barCategoryGap="30%">
+                <BarChart data={data} layout="vertical" margin={{ top: 4, right: 96, bottom: 4, left: 0 }} barCategoryGap="30%">
                     <CartesianGrid horizontal={false} strokeDasharray="3 3" />
                     {/* Headroom past the longest bar keeps the outside value label
                         inside the plot; bar lengths stay proportional to their

@@ -16,7 +16,7 @@
         <td width="84%" style="text-align:{{ $isArabic ? 'right' : 'left' }};vertical-align:middle">
             <strong style="font-size:12px;color:#173f35">{{ trans('reports.vendor.labels.title', [], $locale) }}</strong>
             <span style="font-size:10px;color:#64748b">&nbsp;&middot;&nbsp;{{ $reportPeriod ?: trans('reports.vendor.labels.not_available', [], $locale) }}</span><br>
-            <span dir="auto" style="font-size:10px;color:#334155">@if($syndicate){{ $syndicate->name }} &#8594; @endif{{ $data['vendor']['store_name'] }}</span>
+            <span dir="auto" style="font-size:10px;color:#334155">@if($syndicate){{ $syndicate->name }} &mdash; @endif{{ $data['vendor']['store_name'] }}</span>
         </td>
     </tr>
 </table>

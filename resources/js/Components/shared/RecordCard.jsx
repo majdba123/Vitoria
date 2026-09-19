@@ -17,7 +17,7 @@ export function hasValue(value) {
  */
 export function RecordCard({ title, rows = [], actions }) {
     return (
-        <li className="rounded-lg border border-border bg-card p-4">
+        <li data-record-card className="rounded-lg border border-border bg-card p-4">
             {hasValue(title) && <h3 className="text-sm font-semibold text-foreground">{title}</h3>}
 
             <dl className="mt-3 space-y-2 border-t border-border pt-3 text-sm empty:mt-0 empty:border-0 empty:pt-0">

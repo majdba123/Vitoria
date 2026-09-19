@@ -224,7 +224,8 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                     <div className="xl:col-span-2">
                         <DashboardVendorMap endpoint="/api/syndicate/vendors/map" />
                     </div>
-                    <div>
+                    {/* Side column carries two panels so it fills the map's height. */}
+                    <div className="flex flex-col gap-5">
                         <InsightPanel
                             title={syndicate.top_performance}
                             copy={syndicate.top_performance_copy}
@@ -235,12 +236,17 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                         >
                             <HorizontalRankingChart rows={topPerformanceRows} valueKey="value" valueLabel={syndicate.completed_sales} formatValue={(value) => money(value, locale)} />
                         </InsightPanel>
+                        <InsightPanel title={syndicate.vendor_status_title} copy={syndicate.vendor_status_copy} status={overviewStatus} isEmpty={(overview.total_merchants ?? 0) === 0} emptyMessage={syndicate.no_data} onRetry={loadOverview}>
+                            <DonutChart rows={[
+                                { key: 'active', label: syndicate.active, value: merchantStats.active_merchants, color: 'var(--color-success-500)' },
+                                { key: 'inactive', label: syndicate.inactive, value: merchantStats.inactive_merchants, color: 'var(--color-danger-500)' },
+                            ]} total={overview.total_merchants} totalLabel={syndicate.vendors} />
+                        </InsightPanel>
                     </div>
                 </div>
             )}
 
             {isOverview && (
-                <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
                 <InsightPanel
                     title={syndicate.monthly_order_growth_title}
                     copy={syndicate.monthly_order_growth_copy}
@@ -251,13 +257,6 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                 >
                     <GrowthChart rows={monthlyOrderGrowth} totalLabel={syndicate.total_orders} />
                 </InsightPanel>
-                <InsightPanel title={syndicate.vendor_status_title} copy={syndicate.vendor_status_copy} status={overviewStatus} isEmpty={(overview.total_merchants ?? 0) === 0} emptyMessage={syndicate.no_data} onRetry={loadOverview}>
-                    <DonutChart rows={[
-                        { key: 'active', label: syndicate.active, value: merchantStats.active_merchants, color: 'var(--color-success-500)' },
-                        { key: 'inactive', label: syndicate.inactive, value: merchantStats.inactive_merchants, color: 'var(--color-danger-500)' },
-                    ]} total={overview.total_merchants} totalLabel={syndicate.vendors} />
-                </InsightPanel>
-                </div>
             )}
             <Dialog open={!!reportTarget} onOpenChange={(open) => { if (!open) setReportTarget(null); }}><DialogContent><DialogHeader><DialogTitle>{syndicate.vendor_report}</DialogTitle><DialogDescription>{reportTarget?.store_name}</DialogDescription></DialogHeader><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1.5 text-sm font-medium">{syndicate.from}<Input type="date" value={reportForm.date_from} onChange={(e) => setReportForm({ ...reportForm, date_from: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium">{syndicate.to}<Input type="date" value={reportForm.date_to} onChange={(e) => setReportForm({ ...reportForm, date_to: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{syndicate.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={reportForm.locale} onChange={(e) => setReportForm({ ...reportForm, locale: e.target.value })}><option value="ar">{lang.arabic}</option><option value="en">{lang.english}</option></select></label></div><DialogFooter><Button type="button" disabled={!reportForm.date_from || !reportForm.date_to || reportForm.date_from > reportForm.date_to} onClick={generateVendorReport}><FileText className="size-4" />{syndicate.generate_report}</Button></DialogFooter></DialogContent></Dialog>
             <Dialog open={generalReportOpen} onOpenChange={setGeneralReportOpen}><DialogContent><DialogHeader><DialogTitle>{syndicate.general_report}</DialogTitle><DialogDescription>{syndicate.general_report_copy}</DialogDescription></DialogHeader><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1.5 text-sm font-medium">{syndicate.from}<Input type="date" value={reportForm.date_from} onChange={(e) => setReportForm({ ...reportForm, date_from: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium">{syndicate.to}<Input type="date" value={reportForm.date_to} onChange={(e) => setReportForm({ ...reportForm, date_to: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{syndicate.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={reportForm.locale} onChange={(e) => setReportForm({ ...reportForm, locale: e.target.value })}><option value="ar">{lang.arabic}</option><option value="en">{lang.english}</option></select></label></div><DialogFooter><Button type="button" disabled={!reportForm.date_from || !reportForm.date_to || reportForm.date_from > reportForm.date_to} onClick={generateGeneralReport}><FileChartColumn className="size-4" />{syndicate.generate_report}</Button></DialogFooter></DialogContent></Dialog>

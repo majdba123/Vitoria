@@ -36,6 +36,7 @@
            breaks them mid-string ("ORD-20260917-41" / "477") across two lines. */
         .code { direction: ltr; unicode-bidi: embed; white-space: nowrap; text-align: {{ $isArabic ? 'right' : 'left' }}; }
         .negative { color: #a93226; }
+        .report-table td.empty { text-align: center; color: #64748b; padding: 9px; }
         .dynamic { unicode-bidi: plaintext; }
         .notice { border: 1px solid #d6a94a; background: #fff9e8; padding: 7px 9px; margin-top: 6px; font-size: 10px; }
     </style>
@@ -56,9 +57,9 @@
 <h1>{{ $labels['title'] }}</h1>
 <div class="muted dynamic" dir="auto">
     @if($syndicate)
-        {{ $syndicate->name }} &#8594; {{ $data['vendor']['store_name'] }}
+        {{ $syndicate->name }} &mdash; {{ $data['vendor']['store_name'] }}
     @else
-        {{ $scope['admin'] }} &#8594; {{ $data['vendor']['store_name'] }}
+        {{ $scope['admin'] }} &mdash; {{ $data['vendor']['store_name'] }}
     @endif
 </div>
 
@@ -79,34 +80,34 @@
 <h2>{{ $labels['kpis'] }}</h2>
 <table class="kpis">
     <tr><td><p class="lbl">{{ $labels['products'] }}</p><strong>{{ $data['kpis']['total_products'] }}</strong></td><td><p class="lbl">{{ $labels['active_products'] }}</p><strong>{{ $data['kpis']['active_products'] }}</strong></td><td><p class="lbl">{{ $labels['orders'] }}</p><strong>{{ $data['kpis']['completed_orders'] }}</strong></td><td><p class="lbl">{{ $labels['units'] }}</p><strong>{{ $data['kpis']['units_sold'] }}</strong></td></tr>
-    <tr><td><p class="lbl">{{ $labels['sales'] }}</p><strong>{{ $money($data['kpis']['gross_sales']) }}</strong></td><td><p class="lbl">{{ $labels['refunds'] }}</p><strong class="negative">{{ $money($data['kpis']['refunds']) }}</strong></td><td><p class="lbl">{{ $labels['net'] }}</p><strong>{{ $money($data['finance']['net_earnings'] ?? null) }}</strong></td><td><p class="lbl">{{ $labels['average'] }}</p><strong>{{ $money($data['kpis']['average_completed_order_value']) }}</strong></td></tr>
+    <tr><td><p class="lbl">{{ $labels['sales'] }}</p><strong>{{ $money($data['kpis']['gross_sales']) }}</strong></td><td><p class="lbl">{{ $labels['refunds'] }}</p><strong class="{{ (float) $data['kpis']['refunds'] > 0 ? 'negative' : '' }}">{{ $money($data['kpis']['refunds']) }}</strong></td><td><p class="lbl">{{ $labels['net'] }}</p><strong>{{ $money($data['finance']['net_earnings'] ?? null) }}</strong></td><td><p class="lbl">{{ $labels['average'] }}</p><strong>{{ $money($data['kpis']['average_completed_order_value']) }}</strong></td></tr>
 </table>
 <table class="meta"><tr><td class="lbl">{{ $labels['last_sale'] }}</td><td class="val" colspan="3">{{ $date($data['kpis']['last_sale_at']) }}</td></tr></table>
 @if(($data['finance']['attribution_complete'] ?? true) === false)<div class="notice">{{ $labels['attribution_notice'] }}</div>@endif
 
 <h2>{{ $labels['sales_summary'] }}</h2>
 <table class="report-table"><thead><tr><th style="width:40%">{{ $labels['date'] }}</th><th class="num" style="width:25%">{{ $labels['orders'] }}</th><th class="num" style="width:35%">{{ $labels['sales'] }}</th></tr></thead><tbody>
-@forelse($data['trend'] as $row)<tr><td>{{ $row['date'] }}</td><td class="number">{{ $row['orders'] }}</td><td class="money">{{ $money($row['sales']) }}</td></tr>@empty<tr><td colspan="3">—</td></tr>@endforelse
+@forelse($data['trend'] as $row)<tr><td>{{ $row['date'] }}</td><td class="number">{{ $row['orders'] }}</td><td class="money">{{ $money($row['sales']) }}</td></tr>@empty<tr><td colspan="3" class="empty">{{ $labels['no_records'] }}</td></tr>@endforelse
 </tbody></table>
 
 <h2>{{ $labels['product_performance'] }}</h2>
 <table class="report-table"><thead><tr><th style="width:24%">{{ $labels['product'] }}</th><th style="width:15%">{{ $labels['category'] }}</th><th class="num" style="width:9%">{{ $labels['units'] }}</th><th class="num" style="width:12%">{{ $labels['order_count'] }}</th><th class="num" style="width:13%">{{ $labels['gross'] }}</th><th class="num" style="width:13%">{{ $labels['refunds'] }}</th><th class="num" style="width:14%">{{ $labels['last_sale'] }}</th></tr></thead><tbody>
-@forelse($data['products'] as $row)<tr><td class="dynamic" dir="auto" style="font-weight:700">{{ $row['name'] }}</td><td class="dynamic" dir="auto">{{ $row['category']['name'] ?? '—' }}</td><td class="number">{{ $row['units_sold'] }}</td><td class="number">{{ $row['order_count'] }}</td><td class="money">{{ $money($row['completed_sales_amount']) }}</td><td class="money negative">{{ $money($row['refunds']) }}</td><td class="number">{{ $date($row['last_sold_at']) }}</td></tr>@empty<tr><td colspan="7">—</td></tr>@endforelse
+@forelse($data['products'] as $row)<tr><td class="dynamic" dir="auto" style="font-weight:700">{{ $row['name'] }}</td><td class="dynamic" dir="auto">{{ $row['category']['name'] ?? '—' }}</td><td class="number">{{ $row['units_sold'] }}</td><td class="number">{{ $row['order_count'] }}</td><td class="money">{{ $money($row['completed_sales_amount']) }}</td><td class="money{{ (float) $row['refunds'] > 0 ? ' negative' : '' }}">{{ $money($row['refunds']) }}</td><td class="number">{{ $date($row['last_sold_at']) }}</td></tr>@empty<tr><td colspan="7" class="empty">{{ $labels['no_records'] }}</td></tr>@endforelse
 </tbody></table>
 
 <h2>{{ $labels['orders_summary'] }}</h2>
 <table class="report-table"><thead><tr><th style="width:19%">{{ $labels['order'] }}</th><th style="width:12%">{{ $labels['date'] }}</th><th style="width:33%">{{ $labels['items'] }}</th><th class="num" style="width:16%">{{ $labels['amount'] }}</th><th style="width:20%">{{ $labels['return_status'] }}</th></tr></thead><tbody>
-@forelse($data['orders'] as $row)<tr><td class="code">{{ $row['order_number'] }}</td><td>{{ $date($row['created_at']) }}</td><td class="dynamic" dir="auto">{{ collect($row['products'])->map(fn ($item) => $item['name'].' x '.$item['quantity'])->join(', ') }}</td><td class="money">{{ $money($row['scoped_sales']) }}</td><td>{{ $translatedValue($row['status']) }}</td></tr>@empty<tr><td colspan="5">—</td></tr>@endforelse
+@forelse($data['orders'] as $row)<tr><td class="code">{{ $row['order_number'] }}</td><td>{{ $date($row['created_at']) }}</td><td class="dynamic" dir="auto">{{ collect($row['products'])->map(fn ($item) => $item['name'].' x '.$item['quantity'])->join(', ') }}</td><td class="money">{{ $money($row['scoped_sales']) }}</td><td>{{ $translatedValue($row['status']) }}</td></tr>@empty<tr><td colspan="5" class="empty">{{ $labels['no_records'] }}</td></tr>@endforelse
 </tbody></table>
 
 <h2>{{ $labels['returns'] }}</h2>
 <table class="report-table"><thead><tr><th style="width:19%">{{ $labels['order'] }}</th><th style="width:23%">{{ $labels['product'] }}</th><th class="num" style="width:16%">{{ $labels['amount'] }}</th><th style="width:22%">{{ $labels['return_status'] }}</th><th style="width:20%">{{ $labels['date'] }}</th></tr></thead><tbody>
-@forelse($data['returns'] as $row)@foreach($row['items'] as $item)<tr><td class="code">{{ $row['order']['order_number'] ?? '—' }}</td><td class="dynamic" dir="auto">{{ $item['product']['name'] ?? '—' }}</td><td class="money">{{ $money($item['line_total']) }}</td><td>{{ $translatedValue($row['status']) }}</td><td>{{ $date($row['created_at']) }}</td></tr>@endforeach @empty<tr><td colspan="5">—</td></tr>@endforelse
+@forelse($data['returns'] as $row)@foreach($row['items'] as $item)<tr><td class="code">{{ $row['order']['order_number'] ?? '—' }}</td><td class="dynamic" dir="auto">{{ $item['product']['name'] ?? '—' }}</td><td class="money">{{ $money($item['line_total']) }}</td><td>{{ $translatedValue($row['status']) }}</td><td>{{ $date($row['created_at']) }}</td></tr>@endforeach @empty<tr><td colspan="5" class="empty">{{ $labels['no_records'] }}</td></tr>@endforelse
 </tbody></table>
 
 <h2>{{ $labels['category_performance'] }}</h2>
 <table class="report-table"><thead><tr><th style="width:34%">{{ $labels['category'] }}</th><th class="num" style="width:20%">{{ $labels['products_count'] }}</th><th class="num" style="width:20%">{{ $labels['units'] }}</th><th class="num" style="width:26%">{{ $labels['sales'] }}</th></tr></thead><tbody>
-@forelse($data['category_performance'] as $row)<tr><td class="dynamic" dir="auto">{{ $row['name'] }}</td><td class="number">{{ $row['products_count'] }}</td><td class="number">{{ $row['units_sold'] }}</td><td class="money">{{ $money($row['sales']) }}</td></tr>@empty<tr><td colspan="4">—</td></tr>@endforelse
+@forelse($data['category_performance'] as $row)<tr><td class="dynamic" dir="auto">{{ $row['name'] }}</td><td class="number">{{ $row['products_count'] }}</td><td class="number">{{ $row['units_sold'] }}</td><td class="money">{{ $money($row['sales']) }}</td></tr>@empty<tr><td colspan="4" class="empty">{{ $labels['no_records'] }}</td></tr>@endforelse
 </tbody></table>
 </body>
 </html>

@@ -47,7 +47,7 @@ export function PublicHeader() {
                         <img src="/images/vetora-logo-transparent.png" alt="Vetora" className="h-9 w-auto object-contain sm:h-10" />
                     </Link>
 
-                    <div className="hidden shrink-0 items-center gap-1 lg:flex">
+                    <div className="hidden shrink-0 items-center gap-1 xl:flex">
                         <CategoryMegaMenu categories={categories} />
                         <Link href={route('products.index')} aria-current={url.startsWith('/products') ? 'page' : undefined} className="nav-primary-link min-h-11">{nav.products}</Link>
                         <Link href={route('faq')} aria-current={url.startsWith('/faq') ? 'page' : undefined} className="nav-primary-link min-h-11">{nav.faq}</Link>
@@ -65,7 +65,7 @@ export function PublicHeader() {
                         />
                     </form>
 
-                    <div className="flex-1 lg:hidden" />
+                    <div className="flex-1 xl:hidden" />
 
                     <div className="flex shrink-0 items-center gap-1">
                         <div className="hidden items-center gap-1 md:flex">
@@ -105,7 +105,7 @@ export function PublicHeader() {
                             type="button"
                             ref={mobileTriggerRef}
                             onClick={() => setMobileOpen(true)}
-                            className="nav-action-btn flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-transparent text-muted-foreground lg:hidden"
+                            className="nav-action-btn flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-transparent text-muted-foreground xl:hidden"
                             aria-label={nav.menu}
                             aria-expanded={mobileOpen}
                             aria-controls="public-mobile-drawer"

@@ -69,6 +69,10 @@
         .totals .discount .num { color: #b45309; }
         .totals .grand { border-top: 2px solid #297497; margin-top: 0.3rem; padding-top: 0.5rem; font-weight: 700; font-size: 1rem; }
         .totals .grand .num { color: #297497; }
+        /* Identifiers, timestamps and amounts are single tokens: breaking them
+           mid-string ("4,500./00", "INV-20260905-/83015") makes them unreadable. */
+        .code, .num, .invoice-meta bdi { white-space: nowrap; }
+        .code { direction: ltr; unicode-bidi: isolate; }
         .print-bar { text-align: center; margin-top: 1.25rem; }
         .print-bar button {
             background: #297497; color: #fff; border: none; border-radius: 8px;
@@ -81,6 +85,19 @@
         [dir="rtl"] .section-label {
             text-transform: none;
             letter-spacing: normal;
+        }
+        @media screen and (max-width: 560px) {
+            body { padding: 1rem; font-size: 0.8rem; }
+            .invoice-header { flex-direction: column; align-items: flex-start; }
+            .invoice-meta { text-align: start; }
+            .parties { flex-direction: column; gap: 0.6rem; }
+            table { font-size: 0.75rem; }
+            th, td { padding: 0.4rem 0.3rem; }
+            th { white-space: nowrap; font-size: 0.68rem; }
+            th:first-child, td:first-child { width: 34%; }
+            th.qty-col, td.qty-col { width: 16%; }
+            .qty-badge { min-width: 1.8rem; padding: 0.15rem 0.4rem; font-size: 0.85rem; }
+            .totals { width: 100%; }
         }
         @page {
             size: A4;
@@ -145,11 +162,11 @@
             <img src="{{ asset('images/vetora-logo-transparent.png') }}" alt="">
             <div>
                 <h1>{{ config('app.name', 'Vetora') }}</h1>
-                <div>{{ __('invoices.title') }} — {{ $invoice->order?->order_number }}</div>
+                <div>{{ __('invoices.title') }} — <bdi class="code">{{ $invoice->order?->order_number }}</bdi></div>
             </div>
         </div>
         <div class="invoice-meta">
-            <div class="invoice-number">{{ $invoice->invoice_number }}</div>
+            <div class="invoice-number"><bdi class="code">{{ $invoice->invoice_number }}</bdi></div>
             <div>{{ __('invoices.issued_at') }}: <bdi dir="ltr">{{ $invoice->issued_at->format('Y-m-d H:i') }}</bdi></div>
         </div>
     </div>

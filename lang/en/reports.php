@@ -68,6 +68,7 @@ return [
             'category_performance' => 'Category performance',
             'products_count' => 'Products count',
             'not_available' => 'Not available',
+            'no_records' => 'No records for this period',
             'attribution_notice' => 'Net earnings cannot be attributed accurately because the period contains mixed-domain orders, so no estimate is shown.',
         ],
     ],

@@ -28,6 +28,16 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
 
     const regionsByKey = useMemo(() => new Map(payload.regions.map((region) => [region.key, region])), [payload.regions]);
     const active = activeKey ? regionsByKey.get(activeKey) : null;
+    const vendorCount = (region) => Number((payload.domain ? region?.vendor_count : region?.unique_vendor_count) ?? 0);
+    const maxCount = Math.max(1, ...payload.regions.map(vendorCount));
+    /* Shade by vendor count so the map itself shows where vendors are; a
+       governorate with none stays visibly muted instead of matching one with many. */
+    const regionFill = (region) => {
+        const count = vendorCount(region);
+        return count === 0
+            ? 'color-mix(in srgb, var(--color-primary) 22%, #1e293b)'
+            : `color-mix(in srgb, var(--color-primary) ${Math.round(55 + (45 * count) / maxCount)}%, #1e293b)`;
+    };
     const isArabic = locale === 'ar';
     const title = common.map_distribution;
     const agricultureLabel = common.map_agriculture;
@@ -61,7 +71,7 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
                                     const selected = activeKey === key;
                                     return <path key={key} d={path} data-key={key} tabIndex="0" role={adminDrilldown ? 'link' : 'img'} aria-label={accessibleLabel(region)}
                                         className={`${adminDrilldown ? 'cursor-pointer' : ''} stroke-border transition-colors focus:outline-none focus-visible:fill-white/30 focus-visible:stroke-white`}
-                                        style={{ fill: selected ? 'rgb(255 255 255 / .35)' : 'var(--color-primary)', strokeWidth: selected ? 2.5 : 1 }}
+                                        style={{ fill: selected ? 'rgb(255 255 255 / .35)' : regionFill(region), strokeWidth: selected ? 2.5 : 1 }}
                                         onMouseEnter={() => setActiveKey(key)} onMouseLeave={() => setActiveKey(null)} onFocus={() => setActiveKey(key)} onBlur={() => setActiveKey(null)}
                                         onClick={() => activeKey === key && navigate(key)} onTouchStart={() => setActiveKey(key)}
                                         onKeyDown={(event) => { if (adminDrilldown && ['Enter', ' '].includes(event.key)) { event.preventDefault(); navigate(key); } }} />;

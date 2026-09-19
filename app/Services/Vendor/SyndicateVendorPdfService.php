@@ -34,7 +34,7 @@ class SyndicateVendorPdfService
             'autoScriptToLang' => true,
             'autoLangToFont' => true,
             'tempDir' => $temporaryDirectory,
-            'margin_top' => 25,
+            'margin_top' => 32,
             'margin_bottom' => 18,
         ]);
         $pdf->SetHTMLHeader(view('reports.syndicate-vendor-header', compact('data', 'syndicate', 'isArabic'))->render());

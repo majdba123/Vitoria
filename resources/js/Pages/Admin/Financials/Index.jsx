@@ -10,6 +10,9 @@ import { RecordCard, RecordCardList } from '@/Components/shared/RecordCard';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { formatCurrency } from '@/lib/date-time';
 
+/** A zero amount is neutral: painting "0.00" red or green signals a problem or gain that isn't there. */
+const toneIfPositive = (value, tone) => (Number(value) > 0 ? tone : undefined);
+
 export default function AdminFinancials() {
     const { admin, vendor: vendorCopy } = useI18n();
     const locale = useLocale();
@@ -45,8 +48,8 @@ export default function AdminFinancials() {
                 <h3 className="text-sm font-bold text-foreground">{admin.financials_section_commissions}</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     <StatCard label={admin.total_commission} value={formatCurrency(data?.commission_total, locale)} icon={Wallet} status={status} onRetry={load} />
-                    <StatCard label={admin.total_settled} value={formatCurrency(data?.settled_total, locale)} icon={HandCoins} status={status} onRetry={load} tone="success" />
-                    <StatCard label={admin.total_outstanding} value={formatCurrency(data?.outstanding_total, locale)} icon={TrendingDown} status={status} onRetry={load} tone="danger" />
+                    <StatCard label={admin.total_settled} value={formatCurrency(data?.settled_total, locale)} icon={HandCoins} status={status} onRetry={load} tone={toneIfPositive(data?.settled_total, 'success')} />
+                    <StatCard label={admin.total_outstanding} value={formatCurrency(data?.outstanding_total, locale)} icon={TrendingDown} status={status} onRetry={load} tone={toneIfPositive(data?.outstanding_total, 'danger')} />
                 </div>
             </section>
 
@@ -54,7 +57,7 @@ export default function AdminFinancials() {
                 <h3 className="text-sm font-bold text-foreground">{admin.financials_section_sales}</h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     <StatCard label={admin.total_gross_sales} value={formatCurrency(data?.gross_sales_total, locale)} icon={DollarSign} status={status} onRetry={load} />
-                    <StatCard label={admin.total_refunds} value={formatCurrency(data?.refunds_total, locale)} icon={Undo2} status={status} onRetry={load} tone="danger" />
+                    <StatCard label={admin.total_refunds} value={formatCurrency(data?.refunds_total, locale)} icon={Undo2} status={status} onRetry={load} tone={toneIfPositive(data?.refunds_total, 'danger')} />
                     <StatCard label={admin.total_net_earnings} value={formatCurrency(data?.net_earnings_total, locale)} icon={Store} status={status} onRetry={load} />
                 </div>
             </section>
