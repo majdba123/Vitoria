@@ -12,12 +12,12 @@ Scope: five stakeholder items. No change to commission, settlement, refund, orde
 
 ## Decisions recorded
 - **Notification audience (resolved by evidence, not assumption):** `docs/architecture/IMPLEMENTATION_DECISIONS.md` D18 and the `notification_preferences` copy ("New products & offers", "Shared with everyone on Vetora") define marketing notices as addressed to every user, opt-out via the `marketing` preference. An earlier draft of this round hard-coded "customers only"; that has been reverted. What changed for good is the transport: delivery is per-recipient over private channels only, never the public `notifications.public` channel that any client could subscribe to.
-- "Vendor profit" = `net_earnings` (sale - commission - refunds), with settlements shown separately as settled/outstanding.
+- "Vendor profit" = `net_earnings`. Syndicate view: `VendorAnalyticsService::domainFinance` = ledger sale credits - commission debits - refund debits for the in-domain period; the all-time vendor figure (`VendorLedgerService::summary`) also adds ledger adjustments. Both read immutable `vendor_ledger_entries`; neither reads the mutable category commission rate, and settlements are excluded, so they never reduce historical earnings. No file under `app/Services/Commerce` or `app/Services/Vendor` is modified by this round.
 - The Syndicate order list and order detail show the customer's name only (plus governorate on detail); no phone, alternate phone, email, street, notes or cancellation notes.
 
 ## Open items (not hidden)
 - **Vendor 360 syndicate drill-down still shows customer PII.** The pre-existing vendor "orders" and "overview" tabs (`VendorAnalyticsService::presentOrder`, documented in code as a deliberate operational drill-down) return the customer's email, phone and full shipping address to syndicate viewers. This is outside the five tasks and was left unchanged; it is inconsistent with the minimal exposure now applied to the order detail page. It needs a business decision on whether syndicates have a basis for that data. If not, restrict `customer` and `shipping_address` in `presentOrder` when `$domain !== null`.
-- Seed order 6 shows subtotal 980 + shipping 15 against a stored total of 980; seed data, unaffected by this round.
+- **Order 6 total mismatch is dev-data only, not an application defect.** In the local dev database (git-ignored `database/database.sqlite`), orders 4-6 have `shipping_total` 15 but `grand_total` 0 and `total_amount` equal to the subtotal, and their `items_count` (2/6/2) disagrees with their line items; order 1 also disagrees with its components. The only production writer, `CheckoutService::createOrder`, always sets `grand_total = max(subtotal - discount + shipping + tax, 0)` and mirrors it into `total_amount`, so it cannot produce these rows, and no seeder or factory writes `shipping_total`. These rows were inserted by hand for QA/demo. No calculation code was changed to compensate.
 - 13 pre-existing hardcoded-text scan findings remain (none introduced here); the scan exits 0.
 - PDF: the header shows "غير متاح" (not available) next to the title for an all-time range, and the logo asset has a baked-in checkerboard background. Both are pre-existing and were left alone.
 - Out-of-scope product/order URLs are proven by API tests (404), not by browser screenshots.
@@ -27,5 +27,5 @@ Scope: five stakeholder items. No change to commission, settlement, refund, orde
 - `vendor/bin/pint --test`: pass
 - `npm run build`: success (client and SSR)
 - `git diff --check`: clean
-- `node scripts/scan-hardcoded-text.mjs`: exit 0, 13 pre-existing findings, none in files added by this round
+- `node scripts/scan-hardcoded-text.mjs`: exit 0, 13 findings, none in files added by this round
 - `composer audit`: no advisories; `npm audit`: 0 vulnerabilities
