@@ -73,7 +73,6 @@ export function setupNotificationEcho(userId) {
     };
 
     try {
-        window.Echo.channel('notifications.public').listen('.AdminNotificationSent', refresh);
         window.Echo.private(`App.Models.User.${userId}`).listen('.AdminNotificationSent', refresh);
         notificationChannelsSetup = true;
     } catch (e) {

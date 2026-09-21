@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Syndicate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SyndicateVendorReportRequest;
 use App\Http\Requests\VendorMapRequest;
+use App\Http\Resources\ProductResource;
 use App\Models\Syndicate;
 use App\Services\Syndicate\SyndicateDashboardService;
 use App\Services\Syndicate\SyndicateReportService;
@@ -76,6 +77,28 @@ class DashboardController extends Controller
             'message' => __('Syndicate products retrieved successfully.'),
             'data' => $products->items(),
             'meta' => $this->meta($products),
+        ]);
+    }
+
+    public function product(Request $request, int $product): JsonResponse
+    {
+        $found = $this->dashboardService->findProduct($this->syndicate($request), $product);
+        abort_if($found === null, 404);
+
+        return response()->json([
+            'message' => __('Syndicate product retrieved successfully.'),
+            'data' => (new ProductResource($found))->resolve($request),
+        ]);
+    }
+
+    public function order(Request $request, int $order): JsonResponse
+    {
+        $detail = $this->dashboardService->orderDetail($this->syndicate($request), $order);
+        abort_if($detail === null, 404);
+
+        return response()->json([
+            'message' => __('Syndicate order retrieved successfully.'),
+            'data' => $detail,
         ]);
     }
 

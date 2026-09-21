@@ -95,9 +95,13 @@ class SyndicateDashboardService
 
     public function orders(Syndicate $syndicate, int $perPage = 15): LengthAwarePaginator
     {
+        // Explicit column list: the raw order row carries the customer's
+        // phone, alternate phone, street address and notes, none of which a
+        // syndicate has a business basis to receive.
         return $this->orderQuery($syndicate->type)
+            ->select(['orders.id', 'orders.order_number', 'orders.user_id', 'orders.vendor_id', 'orders.status', 'orders.total_amount', 'orders.created_at', 'orders.updated_at'])
             ->with([
-                'user:id,name,email',
+                'user:id,name',
                 'vendor:id,store_name',
                 'items' => fn ($items) => $items->forDomain($syndicate->type)
                     ->select('id', 'order_id', 'product_id', 'category_type', 'product_name', 'quantity', 'line_total', 'unit_price'),
@@ -106,6 +110,77 @@ class SyndicateDashboardService
             ])
             ->latest()
             ->paginate($perPage);
+    }
+
+    /**
+     * Product detail restricted to the syndicate's domain. Returns null when
+     * the product is outside that domain so the caller answers 404 - the same
+     * scope as the products list, enforced here rather than in the UI.
+     */
+    public function findProduct(Syndicate $syndicate, int $productId): ?Product
+    {
+        return $this->productQuery($syndicate->type)
+            ->with(['vendor.city:id,name', 'category:id,name,type', 'subcategory', 'photos', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail'])
+            ->find($productId);
+    }
+
+    /**
+     * Order detail restricted to the syndicate's domain and to the minimum
+     * data the role needs: domain line items, status, vendor, payment method
+     * and a coarse ship-to governorate. Customer contact details, street
+     * address, notes and every other-domain line stay out of the payload.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function orderDetail(Syndicate $syndicate, int $orderId): ?array
+    {
+        $type = $syndicate->type;
+        $order = $this->orderQuery($type)
+            ->with(['user:id,name', 'vendor:id,store_name'])
+            ->find($orderId);
+
+        if (! $order) {
+            return null;
+        }
+
+        $scoped = $order->items()->forDomain($type)->get();
+        $inDomainProductIds = $this->productQuery($type)->whereIn('products.id', $scoped->pluck('product_id')->filter())->pluck('products.id')->all();
+        $isPartial = $order->items()->count() > $scoped->count();
+
+        $detail = [
+            'id' => $order->id,
+            'order_number' => $order->order_number,
+            'status' => $order->status,
+            'created_at' => $order->created_at,
+            'payment_way' => $order->payment_way,
+            'ship_governorate' => $order->ship_governorate,
+            'customer_name' => $order->user?->name,
+            'vendor' => $order->vendor ? ['id' => $order->vendor->id, 'store_name' => $order->vendor->store_name] : null,
+            'items' => $scoped->map(fn ($item): array => [
+                'id' => $item->id,
+                'product_id' => in_array($item->product_id, $inDomainProductIds, true) ? $item->product_id : null,
+                'name' => $item->product_name,
+                'quantity' => (int) $item->quantity,
+                'unit_price' => (float) $item->unit_price,
+                'original_unit_price' => $item->has_discount ? (float) $item->original_unit_price : null,
+                'line_total' => (float) $item->line_total,
+            ])->values(),
+            'scoped_total' => round((float) $scoped->sum('line_total'), 2),
+            'is_partial' => $isPartial,
+        ];
+
+        // Order-level money (coupon, shipping, tax, grand total) covers every
+        // line of the order, so it is shown only when nothing outside the
+        // syndicate's domain would be inferable from it.
+        $detail['totals'] = $isPartial ? null : [
+            'subtotal' => (float) $order->subtotal_amount,
+            'coupon_discount' => (float) $order->coupon_discount_amount,
+            'shipping' => (float) $order->shipping_total,
+            'tax' => (float) $order->tax_total,
+            'total' => (float) $order->total_amount,
+        ];
+
+        return $detail;
     }
 
     /**

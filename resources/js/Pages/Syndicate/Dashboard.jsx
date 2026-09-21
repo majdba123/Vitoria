@@ -308,10 +308,11 @@ function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, co
             { key: 'actions', label: i18n.th_actions, align: 'center', render: (r) => <div className="flex items-center justify-center gap-1"><Button asChild size="sm" variant="ghost"><Link href={route('syndicate.vendors.show', r.id)}><Eye className="size-4" />{common.view_details}</Link></Button><Button type="button" size="sm" variant="outline" onClick={() => onReport(r)}><FileText className="size-4" />{i18n.report}</Button></div> },
         ],
         products: [
-            { key: 'name', label: i18n.th_products, width: '42%', truncate: true, render: (r) => <span className="font-semibold text-foreground">{r.name}</span> },
-            { key: 'store', label: i18n.th_store, width: '24%', truncate: true, render: (r) => r.vendor?.store_name || '-' },
+            { key: 'name', label: i18n.th_products, width: '34%', truncate: true, render: (r) => <span className="font-semibold text-foreground">{r.name}</span> },
+            { key: 'store', label: i18n.th_store, width: '20%', truncate: true, render: (r) => r.vendor?.store_name || '-' },
             { key: 'category', label: i18n.th_category, width: '22%', truncate: true, render: (r) => r.category?.name || '-' },
             { key: 'status', label: i18n.th_status, width: '12%', align: 'center', render: (r) => <StatusBadge tone={r.is_active ? 'success' : 'danger'}>{r.is_active ? common.active : common.inactive}</StatusBadge> },
+            { key: 'actions', label: i18n.th_actions, align: 'center', render: (r) => <Button asChild size="sm" variant="ghost"><Link href={route('syndicate.products.show', r.id)} aria-label={`${i18n.view_product}: ${r.name}`}><Eye className="size-4" />{common.view_details}</Link></Button> },
         ],
         orders: [
             { key: 'order', label: i18n.th_order, truncate: true, render: (r) => <span className="font-semibold text-foreground">{r.order_number || `#${r.id}`}</span> },
@@ -319,6 +320,7 @@ function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, co
             { key: 'store', label: i18n.th_store, truncate: true, render: (r) => r.vendor?.store_name || '—' },
             { key: 'total', label: i18n.th_total, align: 'end', render: (r) => money(r.total_amount, locale) },
             { key: 'status', label: i18n.th_status, align: 'center', render: (r) => <StatusBadge tone={STATUS_TONE[r.status] ?? 'warning'}>{i18n[`status_${r.status}`] ?? translatedStatus(r.status, common)}</StatusBadge> },
+            { key: 'actions', label: i18n.th_actions, align: 'center', render: (r) => <Button asChild size="sm" variant="ghost"><Link href={route('syndicate.orders.show', r.id)} aria-label={`${i18n.view_order}: ${r.order_number || r.id}`}><Eye className="size-4" />{common.view_details}</Link></Button> },
         ],
     };
 
@@ -329,11 +331,17 @@ function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, co
             status={status}
             errorMessage={errorMessage}
             onRetry={onRetry}
-            rowHref={section === 'vendors' ? (row) => route('syndicate.vendors.show', row.id) : undefined}
+            rowHref={ROW_HREF[section]}
             emptyTitle={common.no_data}
         />
     );
 }
+
+const ROW_HREF = {
+    vendors: (row) => route('syndicate.vendors.show', row.id),
+    products: (row) => route('syndicate.products.show', row.id),
+    orders: (row) => route('syndicate.orders.show', row.id),
+};
 
 function typeLabel(type, i18n) {
     if (type === 'agriculture') return i18n.type_agriculture;

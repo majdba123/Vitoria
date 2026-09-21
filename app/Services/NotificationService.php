@@ -22,7 +22,7 @@ class NotificationService
     ) {}
 
     /**
-     * Send a broadcast notification (e.g. new product approved) to every
+     * Send a marketing notification (e.g. new product approved) to every
      * user who has not opted out of marketing notifications. Message in
      * Arabic. Clicking the notification takes the user to the product page.
      *
@@ -384,6 +384,10 @@ class NotificationService
         int $actionId,
         array|callable $replacements = [],
     ): void {
+        // Canonical audience (docs/architecture/IMPLEMENTATION_DECISIONS.md D18,
+        // notification_preferences "New products & offers"): every application
+        // user who has not opted out of the marketing category. Delivery is
+        // per-recipient (private channels), never a public channel.
         $recipientIds = $this->preferenceService->filterEnabled(
             User::query()->pluck('id')->all(),
             NotificationPreference::CATEGORY_MARKETING,

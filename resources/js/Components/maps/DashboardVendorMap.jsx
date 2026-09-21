@@ -35,8 +35,8 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
     const regionFill = (region) => {
         const count = vendorCount(region);
         return count === 0
-            ? 'color-mix(in srgb, var(--color-primary) 22%, #1e293b)'
-            : `color-mix(in srgb, var(--color-primary) ${Math.round(55 + (45 * count) / maxCount)}%, #1e293b)`;
+            ? 'color-mix(in srgb, var(--color-primary) 14%, var(--color-muted))'
+            : `color-mix(in srgb, var(--color-primary) ${Math.round(45 + (55 * count) / maxCount)}%, var(--color-muted))`;
     };
     const isArabic = locale === 'ar';
     const title = common.map_distribution;
@@ -63,15 +63,15 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
                 {status === 'loading' && <Skeleton className="aspect-[572/516] w-full" />}
                 {status === 'error' && <button type="button" onClick={load} className="mx-auto flex items-center gap-2 py-12 text-sm font-semibold text-primary"><RefreshCw className="size-4" />{common.retry}</button>}
                 {status === 'ready' && (
-                    <div className="relative isolate mx-auto w-full max-w-3xl overflow-hidden rounded-lg bg-black p-2 sm:p-4">
+                    <div className="relative isolate mx-auto w-full max-w-3xl overflow-hidden rounded-lg border border-border bg-muted/30 p-2 sm:p-4">
                         <div className="relative aspect-[572/516] w-full">
                             <svg viewBox={SYRIA_VIEWBOX} preserveAspectRatio="xMidYMid meet" role="group" aria-label={title} dir="ltr" className="absolute inset-0 size-full">
                                 {Object.entries(SYRIA_GOVERNORATE_PATHS).map(([key, path]) => {
                                     const region = regionsByKey.get(key);
                                     const selected = activeKey === key;
                                     return <path key={key} d={path} data-key={key} tabIndex="0" role={adminDrilldown ? 'link' : 'img'} aria-label={accessibleLabel(region)}
-                                        className={`${adminDrilldown ? 'cursor-pointer' : ''} stroke-border transition-colors focus:outline-none focus-visible:fill-white/30 focus-visible:stroke-white`}
-                                        style={{ fill: selected ? 'rgb(255 255 255 / .35)' : regionFill(region), strokeWidth: selected ? 2.5 : 1 }}
+                                        className={`${adminDrilldown ? 'cursor-pointer' : ''} stroke-border transition-colors focus:outline-none focus-visible:stroke-foreground`}
+                                        style={{ fill: selected ? 'color-mix(in srgb, var(--color-primary) 70%, var(--color-foreground))' : regionFill(region), strokeWidth: selected ? 2.5 : 1 }}
                                         onMouseEnter={() => setActiveKey(key)} onMouseLeave={() => setActiveKey(null)} onFocus={() => setActiveKey(key)} onBlur={() => setActiveKey(null)}
                                         onClick={() => activeKey === key && navigate(key)} onTouchStart={() => setActiveKey(key)}
                                         onKeyDown={(event) => { if (adminDrilldown && ['Enter', ' '].includes(event.key)) { event.preventDefault(); navigate(key); } }} />;

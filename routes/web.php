@@ -213,6 +213,14 @@ Route::prefix('syndicate')->as('syndicate.')->middleware(['auth', 'syndicate'])-
         return Inertia::render('Syndicate/Vendors/Show', ['vendorId' => (int) $id]);
     })->name('vendors.show');
 
+    Route::get('/products/{id}', function (string $id) {
+        return Inertia::render('Syndicate/Products/Show', ['productId' => (int) $id]);
+    })->whereNumber('id')->name('products.show');
+
+    Route::get('/orders/{id}', function (string $id) {
+        return Inertia::render('Syndicate/Orders/Show', ['orderId' => (int) $id]);
+    })->whereNumber('id')->name('orders.show');
+
     Route::get('/notifications', function () {
         return Inertia::render('Syndicate/Notifications/Index');
     })->name('notifications.index');

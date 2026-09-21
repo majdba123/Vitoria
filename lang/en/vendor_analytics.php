@@ -34,4 +34,6 @@ return [
     'action_product.activated' => 'Product activated', 'action_product.deactivated' => 'Product deactivated',
     'action_vendor_ledger.adjustment' => 'Ledger adjustment', 'action_vendor_ledger.settlement' => 'Vendor settlement',
     'action_vendor_ledger.entry.sale' => 'Sale entry', 'action_vendor_ledger.entry.commission' => 'Commission entry', 'action_vendor_ledger.entry.refund' => 'Refund entry', 'action_vendor_ledger.entry.settlement' => 'Settlement entry',
+    'vendor_profit' => 'Vendor profit',
+    'vendor_profit_hint' => 'Net vendor profit = completed sales - platform commission - refunds (from the ledger)',
 ];

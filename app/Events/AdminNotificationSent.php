@@ -2,8 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\AdminNotification;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -19,7 +17,7 @@ class AdminNotificationSent implements ShouldBroadcast, ShouldDispatchAfterCommi
     /**
      * Create a new event instance.
      *
-     * @param  array<int>  $recipientUserIds  User IDs for private notifications (empty for public).
+     * @param  array<int>  $recipientUserIds  Explicit recipient user IDs; each gets their own private channel.
      */
     public function __construct(
         public int $id,
@@ -38,10 +36,8 @@ class AdminNotificationSent implements ShouldBroadcast, ShouldDispatchAfterCommi
      */
     public function broadcastOn(): array
     {
-        if ($this->type === AdminNotification::TYPE_PUBLIC) {
-            return [new Channel('notifications.public')];
-        }
-
+        // Never a public channel: every notification, including marketing
+        // ones, is delivered only to its explicit recipients' private channels.
         $channels = [];
         foreach ($this->recipientUserIds as $userId) {
             $channels[] = new PrivateChannel('App.Models.User.'.$userId);

@@ -1,5 +1,5 @@
 /**
- * Real-time admin notification listener (public + private).
+ * Real-time admin notification listener (private per-user channel only).
  * Subscribes to WebSocket channels and shows a toast when a notification is received.
  */
 function showNotificationToast(title, body) {
@@ -44,8 +44,6 @@ function setupNotificationListeners() {
         const body = e?.body ?? e?.data?.body;
         if (title && body) showNotificationToast(title, body);
     };
-
-    window.Echo.channel('notifications.public').listen('.AdminNotificationSent', handleEvent);
 
     const user = typeof window.Auth !== 'undefined' && window.Auth.getUser && window.Auth.getUser();
     if (user && user.id) {
