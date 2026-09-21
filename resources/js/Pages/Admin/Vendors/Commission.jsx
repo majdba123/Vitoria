@@ -90,7 +90,6 @@ export default function VendorsCommission({ vendorId }) {
             <PageHeader
                 breadcrumb={[{ label: admin.vendors, href: route('admin.vendors.index') }]}
                 title={vendor.store_name ? `${vendor.store_name} — ${vendorCopy.commission_dashboard_suffix}` : `${admin.vendor_label} #${vendorId}`}
-                copy={vendorCopy.commission_dashboard_copy}
                 actions={
                     <Button asChild variant="outline" size="sm">
                         <Link href={route('admin.vendors.index')}>{admin.commission_back_to_vendors}</Link>

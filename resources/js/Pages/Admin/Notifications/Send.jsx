@@ -51,7 +51,6 @@ export default function NotificationsSend() {
             <PageHeader
                 breadcrumb={[{ label: admin.dashboard, href: route('admin.dashboard') }, { label: admin.notifications_log, href: route('admin.notifications.index') }, { label: admin.send_notification }]}
                 title={admin.send_notification}
-                copy={admin.send_notification_copy}
             />
 
             <Card className="max-w-2xl border-border/80 shadow-none">
@@ -64,7 +63,6 @@ export default function NotificationsSend() {
                         <TextareaField id="body" label={admin.notification_message} required maxLength={10000} rows={4} placeholder={admin.notification_message_placeholder} value={form.body} onChange={(e) => set('body')(e.target.value)} error={errors.body} />
                         <div>
                             <label className="mb-1.5 block text-sm font-medium">{admin.notification_recipients} *</label>
-                            <p className="mb-2 text-xs text-muted-foreground">{admin.notification_recipients_copy}</p>
                             <select
                                 multiple
                                 required

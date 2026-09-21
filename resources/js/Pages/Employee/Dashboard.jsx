@@ -104,7 +104,6 @@ export default function EmployeeDashboard() {
         <EmployeeLayout title={employee.dashboard_overview}>
             <PageHeader
                 title={employee.dashboard_title}
-                copy={employee.dashboard_copy}
                 actions={
                     <>
                         <Button asChild size="sm">
@@ -153,7 +152,6 @@ export default function EmployeeDashboard() {
                     <CardHeader className="flex-row items-center justify-between border-b border-border/80">
                         <div>
                             <CardTitle className="text-base font-bold">{employee.products_by_category}</CardTitle>
-                            <p className="mt-1 text-xs text-muted-foreground">{employee.products_by_category_copy}</p>
                         </div>
                         <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">{employee.live_mix}</span>
                     </CardHeader>
@@ -177,7 +175,6 @@ export default function EmployeeDashboard() {
                     <CardHeader className="flex-row items-center justify-between border-b border-border/80">
                         <div>
                             <CardTitle className="text-base font-bold">{employee.products_by_type}</CardTitle>
-                            <p className="mt-1 text-xs text-muted-foreground">{employee.products_by_type_copy}</p>
                         </div>
                         <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">{employee.type_view}</span>
                     </CardHeader>
@@ -207,7 +204,6 @@ export default function EmployeeDashboard() {
 
             <InsightPanel
                 title={employee.monthly_product_growth_title}
-                copy={employee.monthly_product_growth_copy}
                 status={status}
                 isEmpty={monthlyGrowth.every((row) => row.total === 0)}
                 emptyMessage={employee.no_products}

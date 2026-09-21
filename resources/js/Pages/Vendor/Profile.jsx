@@ -154,7 +154,6 @@ export default function VendorProfile() {
 
                         <fieldset className="space-y-4">
                             <legend className="text-sm font-semibold text-foreground">{vendor.personal_information_title}</legend>
-                            <p className="mb-2 text-xs text-muted-foreground">{vendor.personal_information_copy}</p>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <TextField id="name" label={vendor.full_name_label} required value={form.name} onChange={(e) => set('name')(e.target.value)} error={errors.name} />
                                 <TextField id="phone_number" label={vendor.phone_number_label} type="tel" required value={form.phone_number} onChange={(e) => set('phone_number')(e.target.value)} error={errors.phone_number} />
@@ -169,7 +168,6 @@ export default function VendorProfile() {
 
                         <fieldset className="space-y-4">
                             <legend className="text-sm font-semibold text-foreground">{vendor.store_profile_title}</legend>
-                            <p className="mb-2 text-xs text-muted-foreground">{vendor.store_profile_copy}</p>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <TextField id="store_name" label={vendor.store_name_label} required value={form.store_name} onChange={(e) => set('store_name')(e.target.value)} error={errors.store_name} />
                                 <TextField id="address" label={vendor.address_label} placeholder={vendor.optional_placeholder} value={form.address} onChange={(e) => set('address')(e.target.value)} error={errors.address} />
@@ -185,7 +183,6 @@ export default function VendorProfile() {
 
                         <fieldset className="space-y-3">
                             <legend className="text-sm font-semibold text-foreground">{vendor.allowed_categories_title}</legend>
-                            <p className="mb-2 text-xs text-muted-foreground">{vendor.allowed_categories_copy}</p>
                             <div className="flex flex-wrap gap-2">
                                 {categories.length === 0 ? (
                                     <span className="text-sm italic text-muted-foreground">{vendor.no_categories_assigned}</span>

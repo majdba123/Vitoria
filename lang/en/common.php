@@ -103,6 +103,7 @@ return [
     'map_agricultural_vendors' => 'Agricultural vendors',
     'map_veterinary_vendors' => 'Veterinary vendors',
     'map_view_vendors' => 'View vendors',
+    'map_select_hint' => 'Select a governorate on the map to see its figures.',
     'map_copy' => 'Syria only, shown as a count of vendor branches per governorate. No exact vendor location is ever displayed.',
     'map_region_label' => 'Vendor branches per governorate',
     'map_city_filter' => 'City',

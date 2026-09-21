@@ -44,7 +44,6 @@ export default function VendorProductsIndex({ discountOnly = false }) {
         <VendorLayout title={vendor.total_products}>
             <PageHeader
                 title={vendor.total_products}
-                copy={vendor.manage_products_copy}
                 actions={
                     <>
                         <CsvImportButton label={vendor.products} templateUrl="/api/vendor/products/import/template" importUrl="/api/vendor/products/import" onImported={reload} />

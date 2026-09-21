@@ -196,7 +196,6 @@ export default function VendorsIndex() {
         <AdminLayout title={admin.manage_vendors_title}>
             <PageHeader
                 title={admin.manage_vendors_title}
-                copy={admin.manage_vendor_accounts_copy}
                 actions={
                     <Button asChild size="sm">
                             <Link href={route('admin.vendors.create')}>

@@ -86,7 +86,6 @@ export default function EmployeeProductsIndex({ status: statusParam }) {
         <EmployeeLayout title={pageTitle}>
             <PageHeader
                 title={pageTitle}
-                copy={statusParam ? employee.all_products_copy : employee.products_copy}
                 actions={
                     <Button asChild variant="outline" size="sm">
                         <Link href={route('employee.dashboard')}>{employee.back_dashboard}</Link>
@@ -98,7 +97,6 @@ export default function EmployeeProductsIndex({ status: statusParam }) {
                 <CardContent className="flex flex-wrap items-center justify-between gap-3 border-b border-border/80 p-4">
                     <div>
                         <h3 className="text-base font-bold text-foreground">{employee.all_products}</h3>
-                        <p className="mt-1 text-sm text-muted-foreground">{employee.all_products_copy}</p>
                     </div>
                     <div className="flex gap-2">
                         <Select value={statusFilter} onValueChange={setStatusFilter}>

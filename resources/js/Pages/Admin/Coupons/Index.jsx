@@ -158,7 +158,6 @@ export default function CouponsIndex() {
         <AdminLayout title={admin.coupons}>
             <PageHeader
                 title={admin.coupons}
-                copy={admin.coupons_copy}
                 actions={
                     <Button size="sm" onClick={openCreate}>
                         <Plus className="size-4" />

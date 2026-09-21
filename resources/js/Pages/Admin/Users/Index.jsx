@@ -167,7 +167,6 @@ export default function UsersIndex() {
         <AdminLayout title={isEmployeeView ? admin.employees : isCustomerView ? admin.customers : admin.users}>
             <PageHeader
                 title={isEmployeeView ? admin.manage_employees_title : isCustomerView ? admin.manage_customers_title : admin.manage_users_title}
-                copy={isEmployeeView ? admin.manage_employees_copy : isCustomerView ? admin.manage_customers_copy : admin.manage_users_copy}
                 actions={
                     <Button asChild size="sm">
                         <Link href={createHref}>

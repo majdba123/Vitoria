@@ -72,10 +72,10 @@ export default function Dashboard() {
 
     const withLabels = (rows, admin) => (rows ?? []).map((r) => ({ ...r, label: typeLabel(admin, r.type, r.label) }));
     const distributionOptions = [
-        { key: 'vendors', title: admin.vendors_by_type_title, copy: admin.vendors_by_type_copy, rows: overviewData?.vendors_by_type, hrefFor: metricUrl.vendor, columns: 3 },
-        { key: 'categories', title: admin.categories_by_type_title, copy: admin.categories_by_type_copy, rows: overviewData?.categories_by_type, hrefFor: metricUrl.category, columns: 2 },
-        { key: 'syndicates', title: admin.syndicates_by_type_title, copy: admin.syndicates_by_type_copy, rows: overviewData?.syndicates_by_type, hrefFor: metricUrl.syndicate, columns: 2 },
-        { key: 'products', title: admin.products_by_type_title, copy: admin.products_by_type_copy, rows: overviewData?.products_by_category_type, hrefFor: metricUrl.product, columns: 2 },
+        { key: 'vendors', title: admin.vendors_by_type_title, rows: overviewData?.vendors_by_type, hrefFor: metricUrl.vendor, columns: 3 },
+        { key: 'categories', title: admin.categories_by_type_title, rows: overviewData?.categories_by_type, hrefFor: metricUrl.category, columns: 2 },
+        { key: 'syndicates', title: admin.syndicates_by_type_title, rows: overviewData?.syndicates_by_type, hrefFor: metricUrl.syndicate, columns: 2 },
+        { key: 'products', title: admin.products_by_type_title, rows: overviewData?.products_by_category_type, hrefFor: metricUrl.product, columns: 2 },
     ];
     const activeDistribution = distributionOptions.find((option) => option.key === distributionTab) ?? distributionOptions[0];
 
@@ -86,7 +86,6 @@ export default function Dashboard() {
                 <div className="min-w-0">
                     <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-primary">{admin.badge}</p>
                     <h2 className="mt-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{admin.dashboard_title}</h2>
-                    <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">{admin.dashboard_copy}</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                     <Button asChild size="sm">
@@ -108,7 +107,6 @@ export default function Dashboard() {
             <section className="space-y-4">
                 <div>
                     <h3 className="text-sm font-bold text-foreground">{admin.stats_section_title}</h3>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{admin.stats_section_copy}</p>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 @4xl/main:grid-cols-4">
@@ -141,13 +139,11 @@ export default function Dashboard() {
             <section className="space-y-4">
                 <div>
                     <h3 className="text-sm font-bold text-foreground">{admin.insights_section_title}</h3>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{admin.insights_section_copy}</p>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
                     <InsightPanel
                         title={activeDistribution.title}
-                        copy={activeDistribution.copy}
                         status={overview.status}
                         isEmpty={!(activeDistribution.rows ?? []).length}
                         emptyMessage={admin.no_metric_data}
@@ -179,7 +175,6 @@ export default function Dashboard() {
 
                     <InsightPanel
                         title={admin.vendor_status_title}
-                        copy={admin.vendor_status_copy}
                         status={overview.status}
                         isEmpty={vendorsTotal === 0}
                         emptyMessage={admin.no_metric_data}
@@ -194,7 +189,6 @@ export default function Dashboard() {
 
                     <InsightPanel
                         title={admin.monthly_product_growth_title}
-                        copy={admin.monthly_product_growth_copy}
                         status={overview.status}
                         isEmpty={!(overviewData?.monthly_product_growth ?? []).length}
                         emptyMessage={admin.no_growth_data}
@@ -221,7 +215,6 @@ export default function Dashboard() {
                 <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
                     <InsightPanel
                         title={admin.top_vendors_title}
-                        copy={admin.top_vendors_copy}
                         action={<ViewAllLink href={route('admin.vendors.index')}>{admin.view_vendors}</ViewAllLink>}
                         status={overview.status}
                         isEmpty={!(overviewData?.top_vendors_by_product_count ?? []).length}
@@ -233,7 +226,6 @@ export default function Dashboard() {
 
                     <InsightPanel
                         title={admin.most_selected_categories_title}
-                        copy={admin.most_selected_categories_copy}
                         action={<ViewAllLink href={route('admin.categories.index')}>{admin.show_all}</ViewAllLink>}
                         status={overview.status}
                         isEmpty={!(overviewData?.most_selected_categories ?? []).length}
@@ -245,7 +237,6 @@ export default function Dashboard() {
 
                     <InsightPanel
                         title={admin.categories_without_products_title}
-                        copy={admin.categories_without_products_copy}
                         status={overview.status}
                         isEmpty={!(overviewData?.categories_with_no_products ?? []).length}
                         emptyMessage={admin.no_gap_data}
@@ -266,7 +257,6 @@ export default function Dashboard() {
 
                     <InsightPanel
                         title={admin.categories_without_vendors_title}
-                        copy={admin.categories_without_vendors_copy}
                         status={overview.status}
                         isEmpty={!(overviewData?.categories_with_no_vendors ?? []).length}
                         emptyMessage={admin.no_gap_data}
@@ -295,7 +285,6 @@ export default function Dashboard() {
             <section className="grid grid-cols-1 gap-4 xl:grid-cols-[1.3fr_1fr]">
                 <InsightPanel
                     title={admin.vendors_by_category_title}
-                    copy={admin.vendors_by_category_copy}
                     action={<ViewAllLink href={route('admin.vendors.index')}>{admin.view_vendors}</ViewAllLink>}
                     status={categoryStats.status}
                     isEmpty={!(categoryStats.data?.data ?? []).length}
@@ -307,7 +296,6 @@ export default function Dashboard() {
 
                 <InsightPanel
                     title={admin.recent_products_title}
-                    copy={admin.recent_products_copy}
                     action={<ViewAllLink href={route('admin.products.index')}>{admin.show_all}</ViewAllLink>}
                     status={combinedStatus(overview.status, products.status)}
                     isEmpty={!recentProducts.length}
@@ -332,12 +320,10 @@ export default function Dashboard() {
             <section className="space-y-4">
                 <div>
                     <h3 className="text-sm font-bold text-foreground">{admin.recent_activity_title}</h3>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{admin.recent_activity_copy}</p>
                 </div>
 
                 <InsightPanel
                     title={admin.recent_vendors_title}
-                    copy={admin.recent_vendors_copy}
                     status={overview.status}
                     isEmpty={!(overviewData?.recent_vendor_registrations ?? []).length}
                     emptyMessage={admin.no_vendors_yet}
@@ -365,14 +351,13 @@ export default function Dashboard() {
             <section className="space-y-4">
                 <div>
                     <h3 className="text-sm font-bold text-foreground">{admin.actions_section_title}</h3>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{admin.actions_section_copy}</p>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                     {[
-                        { href: route('admin.vendors.index'), icon: Store, title: admin.manage_vendors_title, copy: admin.manage_vendors_copy },
-                        { href: route('admin.users.index'), icon: Users, title: admin.manage_users_title, copy: admin.manage_users_copy },
-                        { href: route('admin.products.index'), icon: Package, title: admin.manage_products_title, copy: admin.manage_products_copy },
+                        { href: route('admin.vendors.index'), icon: Store, title: admin.manage_vendors_title },
+                        { href: route('admin.users.index'), icon: Users, title: admin.manage_users_title },
+                        { href: route('admin.products.index'), icon: Package, title: admin.manage_products_title },
                     ].map((action) => (
                         <Link
                             key={action.title}
@@ -385,7 +370,6 @@ export default function Dashboard() {
                                 </span>
                                 <div className="min-w-0">
                                     <p className="text-sm font-bold text-foreground">{action.title}</p>
-                                    <p className="mt-0.5 text-sm text-muted-foreground">{action.copy}</p>
                                 </div>
                             </div>
                             <ArrowRight className="size-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />

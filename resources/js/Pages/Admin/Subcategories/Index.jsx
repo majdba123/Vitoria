@@ -87,7 +87,6 @@ export default function SubcategoriesIndex() {
         <AdminLayout title={admin.subcategories_heading}>
             <PageHeader
                 title={admin.subcategories_heading}
-                copy={admin.manage_subcategories_copy}
                 actions={
                     <>
                         <CsvImportButton

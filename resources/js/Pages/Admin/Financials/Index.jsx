@@ -42,7 +42,7 @@ export default function AdminFinancials() {
 
     return (
         <AdminLayout title={admin.financials_title}>
-            <PageHeader title={admin.financials_title} copy={admin.financials_copy} />
+            <PageHeader title={admin.financials_title} />
 
             <section className="space-y-3">
                 <h3 className="text-sm font-bold text-foreground">{admin.financials_section_commissions}</h3>

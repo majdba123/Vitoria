@@ -40,7 +40,6 @@ export default function EmployeeProductsShow({ productId }) {
         <EmployeeLayout title={product.name}>
             <PageHeader
                 title={product.name}
-                copy={employee.review_product_copy}
                 actions={
                     <Button asChild variant="outline" size="sm">
                         <Link href={route('employee.products.index')}>{employee.back_products}</Link>

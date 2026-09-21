@@ -68,7 +68,6 @@ export default function CitiesIndex() {
         <AdminLayout title={admin.cities}>
             <PageHeader
                 title={admin.cities}
-                copy={admin.manage_cities_copy}
                 actions={
                     <>
                         <CsvImportButton label={admin.cities} templateUrl="/api/admin/cities/import/template" importUrl="/api/admin/cities/import" onImported={reload} />

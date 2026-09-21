@@ -71,7 +71,7 @@ export default function VendorOrdersIndex() {
 
     return (
         <VendorLayout title={vendor.orders}>
-            <PageHeader title={vendor.orders} copy={orders.vendor_filter_copy} />
+            <PageHeader title={vendor.orders} />
 
             <Card className="border-border/80 shadow-none">
                 <CardContent className="grid gap-4 p-4 sm:grid-cols-3">

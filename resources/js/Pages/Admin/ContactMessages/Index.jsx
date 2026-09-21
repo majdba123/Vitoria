@@ -67,7 +67,6 @@ export default function ContactMessagesIndex() {
         <AdminLayout title={admin.contact_messages}>
             <PageHeader
                 title={admin.contact_messages}
-                copy={admin.contact_messages_copy}
                 actions={
                     <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
                         <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>

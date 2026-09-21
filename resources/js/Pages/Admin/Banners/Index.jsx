@@ -136,7 +136,6 @@ export default function BannersIndex() {
         <AdminLayout title={admin.banners}>
             <PageHeader
                 title={admin.banners}
-                copy={admin.banners_copy}
                 actions={
                     <Button size="sm" onClick={openCreate}>
                         <Plus className="size-4" />

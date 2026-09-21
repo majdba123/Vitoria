@@ -110,7 +110,6 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
         <SyndicateLayout title={syndicate[section] ?? syndicate.dashboard}>
             <PageHeader
                 title={overviewStatus === 'ready' ? (syndicateInfo.name || 'Vetora') : syndicate.loading_data}
-                copy={syndicate.dashboard_copy}
                 actions={
                     <>
                         <StatusBadge tone={syndicateInfo.status === 'inactive' ? 'danger' : 'success'}>{syndicateInfo.status === 'inactive' ? syndicate.inactive : syndicate.active}</StatusBadge>
@@ -155,7 +154,6 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                     <CardHeader className="flex-row items-center justify-between border-b border-border/80 py-4">
                         <div>
                             <CardTitle className="text-base font-bold">{syndicate.records_title}</CardTitle>
-                            <p className="mt-1 text-xs text-muted-foreground">{syndicate.records_subtitle}</p>
                         </div>
                         <div className="flex items-center gap-3">
                             {tableStatus === 'ready' && <StatusBadge tone="brand">{tableMeta.total}</StatusBadge>}
@@ -228,7 +226,6 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                     <div className="flex flex-col gap-5">
                         <InsightPanel
                             title={syndicate.top_performance}
-                            copy={syndicate.top_performance_copy}
                             status={overviewStatus}
                             isEmpty={topPerformanceRows.length === 0}
                             emptyMessage={syndicate.no_data}
@@ -236,7 +233,7 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                         >
                             <HorizontalRankingChart rows={topPerformanceRows} valueKey="value" valueLabel={syndicate.completed_sales} formatValue={(value) => money(value, locale)} />
                         </InsightPanel>
-                        <InsightPanel title={syndicate.vendor_status_title} copy={syndicate.vendor_status_copy} status={overviewStatus} isEmpty={(overview.total_merchants ?? 0) === 0} emptyMessage={syndicate.no_data} onRetry={loadOverview}>
+                        <InsightPanel title={syndicate.vendor_status_title} status={overviewStatus} isEmpty={(overview.total_merchants ?? 0) === 0} emptyMessage={syndicate.no_data} onRetry={loadOverview}>
                             <DonutChart rows={[
                                 { key: 'active', label: syndicate.active, value: merchantStats.active_merchants, color: 'var(--color-success-500)' },
                                 { key: 'inactive', label: syndicate.inactive, value: merchantStats.inactive_merchants, color: 'var(--color-danger-500)' },
@@ -249,7 +246,6 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
             {isOverview && (
                 <InsightPanel
                     title={syndicate.monthly_order_growth_title}
-                    copy={syndicate.monthly_order_growth_copy}
                     status={overviewStatus}
                     isEmpty={monthlyOrderGrowth.every((row) => Number(row.total || 0) === 0)}
                     emptyMessage={syndicate.no_data}

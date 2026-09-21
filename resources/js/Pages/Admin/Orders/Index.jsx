@@ -94,7 +94,7 @@ export default function OrdersIndex() {
 
     return (
         <AdminLayout title={orders.orders}>
-            <PageHeader title={orders.orders} copy={orders.admin_filter_copy} />
+            <PageHeader title={orders.orders} />
 
             <Card className="border-border/80 shadow-none">
                 <CardContent className="grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-5">

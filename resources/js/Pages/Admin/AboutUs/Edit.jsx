@@ -41,7 +41,7 @@ export default function AboutUsEdit({ about_description, facebook_url, instagram
 
     return (
         <AdminLayout title={admin.about_us}>
-            <PageHeader title={admin.about_us} copy={admin.about_edit_desc} />
+            <PageHeader title={admin.about_us} />
 
             <Card className="max-w-2xl border-border/80 shadow-none">
                 <CardContent className="p-5 sm:p-6">

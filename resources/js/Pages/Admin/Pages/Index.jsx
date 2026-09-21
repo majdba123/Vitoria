@@ -115,7 +115,6 @@ export default function PagesIndex() {
         <AdminLayout title={admin.pages}>
             <PageHeader
                 title={admin.pages}
-                copy={admin.pages_copy}
                 actions={
                     <Button size="sm" onClick={openCreate}>
                         <Plus className="size-4" />

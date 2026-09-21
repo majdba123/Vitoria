@@ -52,7 +52,6 @@ export default function VendorDashboard() {
                 <div className="min-w-0">
                     <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">{vendor.workspace}</p>
                     <h2 className="mt-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{storeName}</h2>
-                    <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">{vendor.dashboard_copy}</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                     <Button asChild size="sm">
@@ -74,7 +73,6 @@ export default function VendorDashboard() {
             <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1.15fr_0.85fr]">
                 <InsightPanel
                     title={vendor.recent_products_title}
-                    copy={vendor.recent_products_copy}
                     action={<Link href={route('vendor.products.index')} className="text-xs font-semibold text-primary hover:underline">{vendor.view_all}</Link>}
                     status={status}
                     isEmpty={products.length === 0}
@@ -97,7 +95,6 @@ export default function VendorDashboard() {
                 <Card className="border-border/80 shadow-none">
                     <CardHeader className="border-b border-border/80">
                         <CardTitle className="text-base font-bold">{vendor.quick_actions_title}</CardTitle>
-                        <p className="text-sm text-muted-foreground">{vendor.quick_actions_copy}</p>
                     </CardHeader>
                     <CardContent className="grid gap-3 p-5">
                         {[
@@ -114,7 +111,6 @@ export default function VendorDashboard() {
 
             <InsightPanel
                 title={vendor.orders_last_7_days_title}
-                copy={vendor.orders_last_7_days_copy}
                 status={status}
                 isEmpty={orderTrend.every((row) => row.count === 0)}
                 emptyMessage={vendor.orders_last_7_days_empty}
@@ -133,7 +129,7 @@ export default function VendorDashboard() {
                 </p>
             </InsightPanel>
 
-            <InsightPanel title={vendor.store_information_title} copy={vendor.store_information_copy} status={status} isEmpty={false} onRetry={load}>
+            <InsightPanel title={vendor.store_information_title} status={status} isEmpty={false} onRetry={load}>
                 <div className="grid gap-3 sm:grid-cols-2">
                     {[
                         { label: vendor.store_name_label, value: profile?.vendor?.store_name },

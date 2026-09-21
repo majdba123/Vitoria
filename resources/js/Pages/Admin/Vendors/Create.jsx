@@ -46,7 +46,7 @@ export default function VendorsCreate() {
 
     return (
         <AdminLayout title={admin.vendors_create}>
-            <PageHeader breadcrumb={[{ label: admin.vendors_breadcrumb, href: route('admin.vendors.index') }, { label: admin.create }]} title={admin.vendors_create_new} copy={admin.vendors_create_desc} />
+            <PageHeader breadcrumb={[{ label: admin.vendors_breadcrumb, href: route('admin.vendors.index') }, { label: admin.create }]} title={admin.vendors_create_new} />
 
             <Card className="max-w-3xl border-border/80 shadow-none">
                 <CardContent className="p-5 sm:p-6">
@@ -56,7 +56,6 @@ export default function VendorsCreate() {
                         <fieldset className="space-y-4">
                             <div>
                                 <legend className="text-sm font-semibold text-foreground">{admin.vendors_user_account}</legend>
-                                <p className="mt-0.5 text-xs text-muted-foreground">{admin.vendors_credentials}</p>
                             </div>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <TextField id="name" label={admin.full_name_label} required value={form.name} onChange={(e) => set('name')(e.target.value)} error={errors.name} />
@@ -74,7 +73,6 @@ export default function VendorsCreate() {
                         <fieldset className="space-y-4">
                             <div>
                                 <legend className="text-sm font-semibold text-foreground">{admin.vendors_store_details}</legend>
-                                <p className="mt-0.5 text-xs text-muted-foreground">{admin.vendors_store_info}</p>
                             </div>
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <TextField id="store_name" label={admin.vendors_store_name} required value={form.store_name} onChange={(e) => set('store_name')(e.target.value)} error={errors.store_name} />

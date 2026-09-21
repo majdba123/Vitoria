@@ -170,7 +170,6 @@ export default function ProductsIndex({ discountOnly = false }) {
         <AdminLayout title={admin.manage_products_title}>
             <PageHeader
                 title={admin.manage_products_title}
-                copy={admin.manage_products_copy}
                 actions={
                     <>
                         <CsvImportButton label={admin.products} templateUrl="/api/admin/products/import/template" importUrl="/api/admin/products/import" onImported={reload} />

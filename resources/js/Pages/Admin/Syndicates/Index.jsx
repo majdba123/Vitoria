@@ -123,7 +123,6 @@ export default function SyndicatesIndex() {
         <AdminLayout title={admin.syndicate_agents_heading}>
             <PageHeader
                 title={admin.syndicate_agents_heading}
-                copy={admin.syndicate_agents_copy}
                 actions={
                     <Button asChild size="sm">
                         <Link href={route('admin.syndicates.create')}>

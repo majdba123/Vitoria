@@ -49,7 +49,6 @@ export default function CategoriesIndex() {
         <AdminLayout title={admin.categories}>
             <PageHeader
                 title={admin.categories}
-                copy={admin.manage_categories_copy}
                 actions={
                     <>
                         <CsvImportButton

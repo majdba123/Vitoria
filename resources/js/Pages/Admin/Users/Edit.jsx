@@ -85,7 +85,7 @@ export default function UsersEdit({ userId }) {
 
     return (
         <AdminLayout title={admin.edit_user_title}>
-            <PageHeader breadcrumb={[{ label: admin.users, href: route('admin.users.index') }, { label: common.edit }]} title={admin.edit_user_title} copy={admin.edit_user_copy} />
+            <PageHeader breadcrumb={[{ label: admin.users, href: route('admin.users.index') }, { label: common.edit }]} title={admin.edit_user_title} />
 
             <Card className="max-w-2xl border-border/80 shadow-none">
                 <CardContent className="p-5 sm:p-6">

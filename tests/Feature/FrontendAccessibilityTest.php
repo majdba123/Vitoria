@@ -88,6 +88,36 @@ test('vendor map covers all 14 governorates as individual svg paths', function (
         ->not->toContain('.jpg');
 });
 
+test('vendor map shows one selection panel below the svg that hover can never drive', function () {
+    $source = file_get_contents(resource_path('js/Components/maps/DashboardVendorMap.jsx'));
+
+    // Hover and selection are separate state; the panel is derived from the selection alone.
+    expect($source)
+        ->toContain('const [hoveredKey, setHoveredKey] = useState(null);')
+        ->toContain('const [selectedKey, setSelectedKey] = useState(null);')
+        ->toContain('const selected = selectedKey ? regionsByKey.get(selectedKey) : null;')
+        ->not->toContain('hoveredKey || selectedKey')
+        ->not->toContain('selectedKey || hoveredKey');
+
+    // Exactly one panel element, rendered after the svg rather than floating over it.
+    expect(substr_count($source, 'data-map-panel='))->toBe(1)
+        ->and(strpos($source, 'data-map-panel='))->toBeGreaterThan(strpos($source, '</svg>'))
+        ->and($source)->not->toContain('absolute inset-x-2 bottom-2');
+
+    // Governorates are keyboard buttons exposing their selected state; clicking never navigates.
+    expect($source)
+        ->toContain('role="button" aria-pressed={isSelected}')
+        ->toContain("['Enter', ' '].includes(event.key)")
+        ->not->toContain('window.location.assign');
+
+    // Counts come from the API payload only; no black canvas.
+    expect($source)
+        ->toContain('window.axios.get(endpoint')
+        ->not->toContain('governorateData')
+        ->not->toContain('bg-black')
+        ->not->toContain('#000');
+});
+
 test('homepage partner presentation is logos only and banners preserve their image ratio', function () {
     $source = file_get_contents(resource_path('js/Pages/Home.jsx'));
     $partners = substr($source, strpos($source, '<section className="storefront-section border-t'));

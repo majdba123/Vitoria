@@ -65,7 +65,7 @@ export default function EmployeeProductsEdit({ productId }) {
 
     return (
         <EmployeeLayout title={employee.review_product}>
-            <PageHeader title={employee.review_product} copy={employee.review_product_copy} />
+            <PageHeader title={employee.review_product} />
 
             <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
                 <Card className="border-border/80 shadow-none">
@@ -94,7 +94,6 @@ export default function EmployeeProductsEdit({ productId }) {
                     <CardContent className="space-y-5 p-5 sm:p-6">
                         <div>
                             <h2 className="text-lg font-bold text-foreground">{employee.moderation_form}</h2>
-                            <p className="mt-0.5 text-sm text-muted-foreground">{employee.moderation_form_copy}</p>
                         </div>
 
                         {generalError && <p className="rounded-md border border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-danger-strong)]">{generalError}</p>}

@@ -57,7 +57,7 @@ export default function VendorCommission() {
     if (status === 'error') {
         return (
             <VendorLayout title={vendor.commission_title}>
-                <PageHeader title={vendor.commission_dashboard_heading} copy={vendor.commission_dashboard_copy} />
+                <PageHeader title={vendor.commission_dashboard_heading} />
                 <Card className="border-border/80 shadow-none">
                     <CardContent className="py-14 text-center">
                         <p className="text-sm font-medium text-[var(--color-danger-strong)]">{vendor.js_failed_load_commission_stats}</p>
@@ -72,7 +72,6 @@ export default function VendorCommission() {
         <VendorLayout title={vendor.commission_title}>
             <PageHeader
                 title={vendorInfo.store_name ? `${vendorInfo.store_name} — ${vendor.commission_dashboard_suffix}` : vendor.commission_dashboard_heading}
-                copy={vendor.commission_dashboard_copy}
             />
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
@@ -105,7 +104,6 @@ export default function VendorCommission() {
                         <CardTitle className="text-base font-bold">{vendor.payment_summary}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3 p-5">
-                        <p className="text-xs text-muted-foreground">{vendor.payment_summary_copy}</p>
                         <div className="rounded-md border border-border bg-muted/40 p-3">
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{vendor.paid_amount_label}</p>
                             <p className="mt-1 text-lg font-bold text-[var(--color-success-strong)]">{formatCurrency(ledgerSummary.settled, locale)}</p>

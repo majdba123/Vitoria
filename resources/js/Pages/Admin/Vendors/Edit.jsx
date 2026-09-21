@@ -102,7 +102,6 @@ export default function VendorsEdit({ vendorId }) {
             <PageHeader
                 breadcrumb={[{ label: admin.vendors_breadcrumb, href: route('admin.vendors.index') }, { label: common.edit }]}
                 title={admin.edit_vendor_title}
-                copy={admin.edit_vendor_copy}
                 actions={
                     <label className="flex items-center gap-2 text-sm font-medium">
                         <Switch checked={isActive} onCheckedChange={toggleActive} />
