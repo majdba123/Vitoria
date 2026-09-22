@@ -53,7 +53,7 @@ function ledger(Vendor $vendor, ?Order $order, string $type, string $direction, 
     VendorLedgerEntry::factory()->create(['vendor_id' => $vendor->id, 'order_id' => $order?->id, 'type' => $type, 'direction' => $direction, 'amount' => $amount]);
 }
 
-it('shows vendor profit (net earnings) derived from the immutable ledger, unaffected by settlements or later commission edits', function () {
+it('hides vendor profit (net earnings) and platform commission from syndicates, exposing only a domain-scoped refunds figure', function () {
     $w = finalRoundWorld();
     $order = finalRoundOrder($w['vendor'], $w['agriProduct'], 1000);
     ledger($w['vendor'], $order, VendorLedgerEntry::TYPE_SALE, VendorLedgerEntry::DIRECTION_CREDIT, 1000);
@@ -69,26 +69,33 @@ it('shows vendor profit (net earnings) derived from the immutable ledger, unaffe
     $w['agriCategory']->update(['commission' => 90]);
 
     Sanctum::actingAs($w['agri']->user);
-    $finance = $this->getJson("/api/syndicate/vendors/{$w['vendor']->id}/analytics/overview?range=all")->assertOk()->json('data.finance');
+    $response = $this->getJson("/api/syndicate/vendors/{$w['vendor']->id}/analytics/overview?range=all")->assertOk();
+    $finance = $response->json('data.finance');
 
-    expect($finance['net_earnings'])->toEqual(850)
-        ->and($finance['commission'])->toEqual(100)
-        ->and($finance['refunds'])->toEqual(50)
+    expect($finance)->not->toHaveKey('net_earnings')->and($finance)->not->toHaveKey('commission');
+    expect($finance['refunds'])->toEqual(50)
         ->and($finance['attribution_complete'])->toBeTrue();
+
+    // The admin surface still sees the merchant's real profit - only syndicates are scoped down.
     expect(app(\App\Services\Commerce\VendorLedgerService::class)->summary($w['vendor'])['net_earnings'])->toBe(850.0);
 });
 
-it('renders the vendor profit label and figure in the vendor report PDF data and view', function () {
+it('omits the vendor profit section from the vendor report PDF served to syndicates', function () {
     $w = finalRoundWorld();
     $order = finalRoundOrder($w['vendor'], $w['agriProduct'], 1000);
     ledger($w['vendor'], $order, VendorLedgerEntry::TYPE_SALE, VendorLedgerEntry::DIRECTION_CREDIT, 1000);
     ledger($w['vendor'], $order, VendorLedgerEntry::TYPE_COMMISSION, VendorLedgerEntry::DIRECTION_DEBIT, 100);
 
     $result = app(SyndicateVendorPdfService::class)->render($w['vendor'], $w['agri'], ['key' => 'all', 'from' => null, 'to' => null], 'ar');
-    expect($result['bytes'])->toStartWith('%PDF')->and($result['data']['finance']['net_earnings'])->toBe(900.0);
+    expect($result['bytes'])->toStartWith('%PDF')->and($result['data']['finance'])->not->toHaveKey('net_earnings');
 
     $html = view('reports.syndicate-vendor', ['data' => $result['data'], 'syndicate' => $w['agri'], 'isArabic' => true])->render();
-    expect($html)->toContain('أرباح التاجر (الصافي)')->toContain('900.00');
+    expect($html)->not->toContain('أرباح التاجر (الصافي)');
+
+    // The admin report (no syndicate scope) still renders the merchant's profit section.
+    $adminResult = app(SyndicateVendorPdfService::class)->render($w['vendor'], null, ['key' => 'all', 'from' => null, 'to' => null], 'ar');
+    $adminHtml = view('reports.syndicate-vendor', ['data' => $adminResult['data'], 'syndicate' => null, 'isArabic' => true])->render();
+    expect($adminHtml)->toContain('أرباح التاجر (الصافي)')->toContain('900.00');
 });
 
 it('blocks another syndicate from reading an unrelated vendor financials', function () {

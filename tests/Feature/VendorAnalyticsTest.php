@@ -181,7 +181,7 @@ test('a mixed domain order never leaks its other domain totals or fabricates fin
     $orders = $this->getJson("/api/syndicate/vendors/{$data['both']->id}/analytics/orders?range=all")->assertOk();
     $row = collect($orders->json('data'))->firstWhere('id', $mixed->id);
 
-    $overview->assertJsonPath('data.kpis.gross_sales', 900)->assertJsonPath('data.finance.attribution_complete', false)->assertJsonPath('data.finance.net_earnings', null);
+    $overview->assertJsonPath('data.kpis.gross_sales', 900)->assertJsonPath('data.finance.attribution_complete', false)->assertJsonMissingPath('data.finance.net_earnings');
     expect($row['scoped_sales'])->toBe(300)->and($row['grand_total'])->toBeNull()->and(collect($row['products'])->pluck('id'))->toEqual(collect([$data['vetProduct']->id]));
 });
 

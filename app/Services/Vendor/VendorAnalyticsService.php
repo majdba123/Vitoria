@@ -368,19 +368,21 @@ class VendorAnalyticsService
         return ['amount' => round((float) $query->sum('amount'), 2), 'complete' => true];
     }
 
+    /**
+     * Syndicates get a domain-scoped refunds figure only - vendor profit
+     * (net earnings) and the platform commission that feeds it are merchant
+     * and platform financials, not syndicate-facing data.
+     */
     private function domainFinance(Vendor $vendor, array $period, string $domain): array
     {
         $mixed = $this->mixedDomainOrders($vendor, $period, $domain);
         if ($mixed) {
-            return ['net_earnings' => null, 'commission' => null, 'refunds' => null, 'attribution_complete' => false, 'mixed_domain_orders' => $mixed];
+            return ['refunds' => null, 'attribution_complete' => false, 'mixed_domain_orders' => $mixed];
         }
         $orderIds = $this->period($this->orderQuery($vendor, $domain)->where('status', Order::STATUS_COMPLETED), $period, 'orders.created_at')->pluck('id');
-        $totals = VendorLedgerEntry::query()->where('vendor_id', $vendor->id)->whereIn('order_id', $orderIds)->selectRaw('type, SUM(amount) total')->groupBy('type')->pluck('total', 'type');
-        $gross = (float) ($totals[VendorLedgerEntry::TYPE_SALE] ?? 0);
-        $commission = (float) ($totals[VendorLedgerEntry::TYPE_COMMISSION] ?? 0);
-        $refunds = (float) ($totals[VendorLedgerEntry::TYPE_REFUND] ?? 0);
+        $refunds = (float) VendorLedgerEntry::query()->where('vendor_id', $vendor->id)->whereIn('order_id', $orderIds)->where('type', VendorLedgerEntry::TYPE_REFUND)->sum('amount');
 
-        return ['net_earnings' => round($gross - $commission - $refunds, 2), 'commission' => round($commission, 2), 'refunds' => round($refunds, 2), 'attribution_complete' => true, 'mixed_domain_orders' => 0];
+        return ['refunds' => round($refunds, 2), 'attribution_complete' => true, 'mixed_domain_orders' => 0];
     }
 
     /** @param array{key: string, from: CarbonImmutable|null, to: CarbonImmutable|null} $period */

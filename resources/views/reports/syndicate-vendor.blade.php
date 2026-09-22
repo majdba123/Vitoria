@@ -85,8 +85,10 @@
     <tr><td><p class="lbl">{{ $labels['products'] }}</p><strong>{{ $data['kpis']['total_products'] }}</strong></td><td><p class="lbl">{{ $labels['active_products'] }}</p><strong>{{ $data['kpis']['active_products'] }}</strong></td><td><p class="lbl">{{ $labels['orders'] }}</p><strong>{{ $data['kpis']['completed_orders'] }}</strong></td><td><p class="lbl">{{ $labels['units'] }}</p><strong>{{ $data['kpis']['units_sold'] }}</strong></td></tr>
     <tr><td><p class="lbl">{{ $labels['sales'] }}</p><strong>{{ $money($data['kpis']['gross_sales']) }}</strong></td><td><p class="lbl">{{ $labels['refunds'] }}</p><strong class="{{ (float) $data['kpis']['refunds'] > 0 ? 'negative' : '' }}">{{ $money($data['kpis']['refunds']) }}</strong></td><td colspan="2"><p class="lbl">{{ $labels['average'] }}</p><strong>{{ $money($data['kpis']['average_completed_order_value']) }}</strong></td></tr>
 </table>
+@unless($syndicate)
 <table class="kpis profit" style="margin-top:6px"><tr><td style="width:25%"><p class="lbl">{{ $labels['sales'] }}</p><strong>{{ $money($data['kpis']['gross_sales']) }}</strong></td><td style="width:25%"><p class="lbl">{{ $labels['commission'] }}</p><strong>{{ $money($data['finance']['commission'] ?? null) }}</strong></td><td style="width:25%"><p class="lbl">{{ $labels['refunds'] }}</p><strong>{{ $money($data['finance']['refunds'] ?? null) }}</strong></td><td style="width:25%"><p class="lbl">{{ $labels['net'] }}</p><strong>{{ $money($data['finance']['net_earnings'] ?? null) }}</strong></td></tr></table>
 <div class="muted">{{ $labels['profit_hint'] }}</div>
+@endunless
 <table class="meta"><tr><td class="lbl">{{ $labels['last_sale'] }}</td><td class="val" colspan="3">{{ $date($data['kpis']['last_sale_at']) }}</td></tr></table>
 @if(($data['finance']['attribution_complete'] ?? true) === false)<div class="notice">{{ $labels['attribution_notice'] }}</div>@endif
 

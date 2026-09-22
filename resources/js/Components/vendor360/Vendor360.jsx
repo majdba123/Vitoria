@@ -79,9 +79,8 @@ export function Vendor360({ vendorId, mode = 'admin' }) {
                     <TabsList variant="line" className="h-12 min-w-max">{tabs.map((name) => <TabsTrigger key={name} value={name} className="min-h-11 px-4">{t[name]}</TabsTrigger>)}</TabsList>
                 </div>
                 <TabsContent value="overview" className="space-y-5 pt-5">
-                    {mode === 'syndicate' && <ProfitCard finance={finance} labels={t} locale={locale} loading={status === 'loading'} />}
                     <KpiGrid values={overview?.kpis} labels={t} locale={locale} loading={status === 'loading'} />
-                    <FinanceStrip values={finance} labels={t} locale={locale} title={mode === 'admin' ? t.all_time_finance : t.period_analytics} />
+                    {mode === 'admin' && <FinanceStrip values={finance} labels={t} locale={locale} title={t.all_time_finance} />}
                     {mode === 'syndicate' && overview?.finance?.attribution_complete === false && <p role="note" className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-foreground">{t.attribution_unavailable}</p>}
                     <div className="grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
                         <TrendCard rows={overview?.trend ?? []} title={t.sales_trend} empty={t.no_data} locale={locale} ordersLabel={t.orders} />
@@ -118,16 +117,6 @@ function PeriodFilter({ range, onRange, custom, onCustom, labels }) {
 
 function KpiGrid({ values = {}, labels, locale, loading }) {
     return <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border min-[380px]:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5">{KPI_KEYS.map((key) => { const Icon = KPI_ICONS[key]; return <div key={key} className="min-h-24 bg-card p-4"><div className="flex items-start justify-between gap-3"><p className="text-xs font-medium text-muted-foreground">{labels[key]}</p><Icon className="size-4 shrink-0 text-primary" strokeWidth={1.5} aria-hidden="true" /></div><p className="mt-2 text-xl font-bold tabular-nums text-foreground">{loading ? '—' : formatValue(values?.[key], MONEY_KEYS.has(key), locale)}</p></div>; })}</div>;
-}
-
-function ProfitCard({ finance = {}, labels, locale, loading }) {
-    return (
-        <section aria-labelledby="vendor-profit-title" className="rounded-lg border-2 border-primary/40 bg-primary/5 p-5">
-            <h2 id="vendor-profit-title" className="text-sm font-bold text-primary">{labels.vendor_profit}</h2>
-            <p className="mt-2 text-3xl font-extrabold tabular-nums text-foreground" data-testid="vendor-profit-value">{loading ? '…' : formatValue(finance?.net_earnings, true, locale)}</p>
-            <p className="mt-2 text-xs text-foreground/80">{labels.vendor_profit_hint}</p>
-        </section>
-    );
 }
 
 function FinanceStrip({ values = {}, labels, locale, title }) { const keys = ['gross_sales', 'commission', 'refunds', 'adjustments', 'net_earnings', 'settled', 'outstanding'].filter((key) => values?.[key] !== undefined); return keys.length ? <section aria-labelledby="finance-summary-title"><h2 id="finance-summary-title" className="mb-2 text-sm font-bold text-foreground">{title}</h2><div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7">{keys.map((key) => <div key={key} className="bg-muted/30 px-4 py-3"><p className="text-xs text-muted-foreground">{labels[key]}</p><p className="mt-1 font-bold tabular-nums">{formatValue(values[key], true, locale)}</p></div>)}</div></section> : null; }

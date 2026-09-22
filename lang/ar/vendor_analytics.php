@@ -34,6 +34,4 @@ return [
     'action_product.activated' => 'تم تفعيل المنتج', 'action_product.deactivated' => 'تم تعطيل المنتج',
     'action_vendor_ledger.adjustment' => 'تسوية دفتر الأستاذ', 'action_vendor_ledger.settlement' => 'تسوية مالية للبائع',
     'action_vendor_ledger.entry.sale' => 'قيد مبيعات', 'action_vendor_ledger.entry.commission' => 'قيد عمولة', 'action_vendor_ledger.entry.refund' => 'قيد مبلغ مسترد', 'action_vendor_ledger.entry.settlement' => 'قيد تسوية',
-    'vendor_profit' => 'أرباح التاجر',
-    'vendor_profit_hint' => 'صافي أرباح التاجر = المبيعات المكتملة − عمولة المنصة − المبالغ المستردة (من دفتر الأستاذ)',
 ];
