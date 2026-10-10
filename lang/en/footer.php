@@ -12,6 +12,7 @@ return [
     'terms' => 'Terms of Service',
     'rights' => 'All rights reserved.',
     'powered_by' => 'System is powered by',
+    'powered_by_brand' => 'Hexaterminal',
     'follow_facebook' => 'Follow Vetora on Facebook',
     'follow_instagram' => 'Follow Vetora on Instagram',
     'follow_twitter' => 'Follow Vetora on Twitter',
