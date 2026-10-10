@@ -3,6 +3,7 @@ import { ArrowLeft, Home, Search } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
 import { ThemeToggle } from '@/Components/workspace/ThemeToggle';
+import { DashboardFooter } from '@/Components/shared/DashboardFooter';
 import { useI18n } from '@/hooks/use-i18n';
 
 export default function NotFound() {
@@ -66,6 +67,10 @@ export default function NotFound() {
                         </div>
                     </div>
                 </section>
+
+                <div className="relative z-10">
+                    <DashboardFooter />
+                </div>
             </main>
         </>
     );

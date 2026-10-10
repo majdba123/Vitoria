@@ -16,7 +16,6 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from '@/Components/ui/sidebar';
-import { PoweredBy } from '@/Components/shared/PoweredBy';
 
 /** A nav item with nested `items` renders as a collapsible parent (e.g. the
  * syndicate sidebar's "Financials" group) instead of a direct link. */
@@ -112,10 +111,7 @@ export function RoleSidebar({ brandIcon: BrandIcon, homeHref, workspaceLabel, na
                 {extraContent}
             </SidebarContent>
 
-            <SidebarFooter>
-                {footer}
-                <PoweredBy className="px-2 pb-1 group-data-[collapsible=icon]:hidden" />
-            </SidebarFooter>
+            <SidebarFooter>{footer}</SidebarFooter>
         </Sidebar>
     );
 }
