@@ -29,13 +29,21 @@ function CategoryTick({ x, y, payload, rtl, maxChars }) {
     );
 }
 
-function TotalLabel({ viewBox, value, rtl }) {
+const SEGMENTS = ['active', 'pending', 'inactive'];
+
+/** Draws the row total once, after the outermost non-empty segment, since
+ * recharts skips labels on zero-width stacked segments. */
+function TotalLabel({ viewBox, index, data, segment, rtl }) {
+    const row = data[index];
+    if (!row || row.total === 0 || SEGMENTS.slice(SEGMENTS.indexOf(segment) + 1).some((key) => row[key] > 0)) {
+        return null;
+    }
     const { x, y, width, height } = viewBox;
     return (
         <g transform={`translate(${x + width},${y + height / 2})`}>
             <g transform={rtl ? 'scale(-1,1)' : undefined}>
                 <text dy={4} dx={rtl ? -6 : 6} textAnchor={rtl ? 'end' : 'start'} direction="ltr" fontSize={12} className="fill-foreground text-xs font-semibold">
-                    {value}
+                    {row.total}
                 </text>
             </g>
         </g>
@@ -83,11 +91,11 @@ export function CategoryCoverage({ rows }) {
                     />
                     <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: 'var(--color-accent)' }} offset={16} />
                     <Legend content={<ChartLegendContent />} verticalAlign="top" />
-                    <Bar dataKey="active" stackId="vendors" fill="var(--color-active)" maxBarSize={20} />
-                    <Bar dataKey="pending" stackId="vendors" fill="var(--color-pending)" maxBarSize={20} />
-                    <Bar dataKey="inactive" stackId="vendors" fill="var(--color-inactive)" radius={[0, 4, 4, 0]} maxBarSize={20}>
-                        <LabelList dataKey="total" content={(props) => <TotalLabel {...props} rtl={rtl} />} />
-                    </Bar>
+                    {SEGMENTS.map((segment) => (
+                        <Bar key={segment} dataKey={segment} stackId="vendors" fill={`var(--color-${segment})`} maxBarSize={20} isAnimationActive={false}>
+                            <LabelList dataKey="total" content={(props) => <TotalLabel {...props} data={data} segment={segment} rtl={rtl} />} />
+                        </Bar>
+                    ))}
                 </BarChart>
             </ChartContainer>
             <p className="sr-only">{data.map((row) => `${row.name}: ${row.total} ${admin.total_vendors}; ${row.active} ${admin.status_active}, ${row.pending} ${admin.status_pending}, ${row.inactive} ${admin.status_inactive}.`).join(' ')}</p>
