@@ -80,6 +80,12 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::apiResource('subcategories', \App\Http\Controllers\Api\Admin\SubcategoryController::class)->only(['index', 'show']);
     Route::apiResource('cities', \App\Http\Controllers\Api\Admin\CityController::class)->except(['index', 'show'])->middleware('throttle:api.write');
     Route::apiResource('cities', \App\Http\Controllers\Api\Admin\CityController::class)->only(['index', 'show']);
+
+    require __DIR__.'/partials/import_shipments.php';
+    Route::post('ports', [\App\Http\Controllers\Api\PortController::class, 'store'])->middleware('throttle:api.write')->name('ports.store');
+    Route::put('ports/{port}', [\App\Http\Controllers\Api\PortController::class, 'update'])->middleware('throttle:api.write')->name('ports.update');
+    Route::delete('ports/{port}', [\App\Http\Controllers\Api\PortController::class, 'destroy'])->middleware('throttle:api.write')->name('ports.destroy');
+
     Route::apiResource('coupons', \App\Http\Controllers\Api\Admin\CouponController::class)->except(['index', 'show'])->middleware('throttle:api.write');
     Route::apiResource('coupons', \App\Http\Controllers\Api\Admin\CouponController::class)->only(['index', 'show']);
     Route::get('orders', [\App\Http\Controllers\Api\Admin\OrderController::class, 'index'])->name('orders.index');

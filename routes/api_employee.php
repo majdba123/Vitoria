@@ -14,4 +14,6 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     // may reach these (stakeholder review #24).
     Route::get('orders', [EmployeeOrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{orderId}', [EmployeeOrderController::class, 'show'])->name('orders.show');
+
+    require __DIR__.'/partials/import_shipments.php';
 });

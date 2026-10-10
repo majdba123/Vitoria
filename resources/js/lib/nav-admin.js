@@ -16,6 +16,8 @@ import {
     Workflow,
     Building2,
     Wallet,
+    Container,
+    MapPin,
 } from 'lucide-react';
 
 /**
@@ -37,7 +39,7 @@ function isUsersTypeActive(expectedType) {
     return expectedType === null ? (!type || type === '0') : type === expectedType;
 }
 
-export function getAdminNavGroups(t) {
+export function getAdminNavGroups(t, shipments = {}) {
     const raw = [
         {
             label: t.overview,
@@ -62,6 +64,13 @@ export function getAdminNavGroups(t) {
                 { label: t.about_us, route: 'admin.about-us.edit', active: 'admin.about-us.*', icon: Info },
                 { label: t.pages, route: 'admin.pages.index', active: 'admin.pages.*', icon: FileText },
                 { label: t.banners, route: 'admin.banners.index', active: 'admin.banners.*', icon: ImageIcon },
+            ],
+        },
+        {
+            label: shipments.title,
+            items: [
+                { label: shipments.title, route: 'admin.shipments.index', active: 'admin.shipments.*', icon: Container },
+                { label: shipments.ports_title, route: 'admin.ports.index', active: 'admin.ports.*', icon: MapPin },
             ],
         },
         {

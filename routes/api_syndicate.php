@@ -20,4 +20,6 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::get('podcasts', [DashboardController::class, 'podcasts'])->name('podcasts');
     Route::get('reports', [DashboardController::class, 'reports'])->name('reports');
     Route::get('reports.pdf', [DashboardController::class, 'reportPdf'])->middleware('throttle:dashboard.stats')->name('reports.pdf');
+
+    require __DIR__.'/partials/import_shipments.php';
 });

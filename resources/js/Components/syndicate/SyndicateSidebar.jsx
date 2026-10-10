@@ -4,8 +4,8 @@ import { getSyndicateNavGroups } from '@/lib/nav-syndicate';
 import { useI18n } from '@/hooks/use-i18n';
 
 export function SyndicateSidebar(props) {
-    const { syndicate } = useI18n();
-    const groups = getSyndicateNavGroups(syndicate);
+    const { syndicate, importShipments } = useI18n();
+    const groups = getSyndicateNavGroups(syndicate, importShipments);
 
     return (
         <RoleSidebar

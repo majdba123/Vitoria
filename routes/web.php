@@ -411,6 +411,24 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(funct
     Route::get('/cities/{id}/edit', [\App\Http\Controllers\Admin\CityController::class, 'edit'])->name('cities.edit');
 });
 
+/*
+| Import shipments (الشحنات) pages, shared by the admin, employee and
+| syndicate workspaces. `workspace` tells the page which layout + API base to use.
+*/
+$registerShipmentPages = function (string $workspace): void {
+    Route::get('/shipments', fn () => Inertia::render('Shipments/Index', ['workspace' => $workspace]))->name('shipments.index');
+    Route::get('/shipments/create', fn () => Inertia::render('Shipments/Form', ['workspace' => $workspace, 'shipmentId' => null]))->name('shipments.create');
+    Route::get('/shipments/{id}', fn (string $id) => Inertia::render('Shipments/Show', ['workspace' => $workspace, 'shipmentId' => (int) $id]))->whereNumber('id')->name('shipments.show');
+    Route::get('/shipments/{id}/edit', fn (string $id) => Inertia::render('Shipments/Form', ['workspace' => $workspace, 'shipmentId' => (int) $id]))->whereNumber('id')->name('shipments.edit');
+};
+
+Route::prefix('syndicate')->as('syndicate.')->middleware(['auth', 'syndicate'])->group(fn () => $registerShipmentPages('syndicate'));
+Route::prefix('employee')->as('employee.')->middleware(['auth', 'employee'])->group(fn () => $registerShipmentPages('employee'));
+Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(function () use ($registerShipmentPages): void {
+    $registerShipmentPages('admin');
+    Route::get('/ports', fn () => Inertia::render('Admin/Ports/Index'))->name('ports.index');
+});
+
 Route::fallback(function (\Illuminate\Http\Request $request) {
     if ($request->expectsJson() || $request->is('api/*')) {
         abort(404);

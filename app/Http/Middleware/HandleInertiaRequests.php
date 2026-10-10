@@ -97,6 +97,7 @@ class HandleInertiaRequests extends Middleware
                 'vendors' => trans('vendors'),
                 'productSpecs' => trans('productSpecs'),
                 'vendorAnalytics' => trans('vendor_analytics'),
+                'importShipments' => trans('import_shipments'),
             ],
             'footerSettings' => fn () => app(ApplicationCacheService::class)->remember(
                 ApplicationCacheService::SETTINGS_WEBSITE,

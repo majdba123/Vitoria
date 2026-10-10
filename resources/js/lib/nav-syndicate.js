@@ -1,6 +1,6 @@
-import { Bell, LayoutGrid, Layers, Store, Package, Mic, ShoppingBag, TrendingUp, BarChart3, Wallet } from 'lucide-react';
+import { Bell, LayoutGrid, Layers, Store, Package, Mic, ShoppingBag, TrendingUp, BarChart3, Wallet, Container } from 'lucide-react';
 
-export function getSyndicateNavGroups(t) {
+export function getSyndicateNavGroups(t, shipments = {}) {
     const link = (item) => ({
         key: item.route,
         label: item.label,
@@ -16,6 +16,7 @@ export function getSyndicateNavGroups(t) {
         { label: t.products, route: 'syndicate.products', active: 'syndicate.products', icon: Package },
         { label: t.podcasts, route: 'syndicate.podcasts', active: 'syndicate.podcasts', icon: Mic },
         { label: t.orders, route: 'syndicate.orders', active: 'syndicate.orders', icon: ShoppingBag },
+        { label: shipments.title, route: 'syndicate.shipments.index', active: 'syndicate.shipments.*', icon: Container },
     ].map(link);
 
     const financials = [

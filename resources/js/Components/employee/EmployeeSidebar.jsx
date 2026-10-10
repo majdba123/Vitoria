@@ -5,9 +5,9 @@ import { getEmployeeNavGroups } from '@/lib/nav-employee';
 import { useI18n } from '@/hooks/use-i18n';
 
 export function EmployeeSidebar(props) {
-    const { employee, nav } = useI18n();
+    const { employee, nav, importShipments } = useI18n();
     const { url } = usePage();
-    const groups = getEmployeeNavGroups(employee, nav, url);
+    const groups = getEmployeeNavGroups(employee, nav, url, importShipments);
 
     return (
         <RoleSidebar

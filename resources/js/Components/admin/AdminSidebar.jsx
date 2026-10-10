@@ -5,8 +5,8 @@ import { getAdminNavGroups } from '@/lib/nav-admin';
 import { useI18n } from '@/hooks/use-i18n';
 
 export function AdminSidebar(props) {
-    const { admin } = useI18n();
-    const groups = getAdminNavGroups(admin);
+    const { admin, importShipments } = useI18n();
+    const groups = getAdminNavGroups(admin, importShipments);
 
     return (
         <RoleSidebar

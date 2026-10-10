@@ -1,16 +1,17 @@
-import { Bell, Grid2x2, CircleCheck, Hourglass, CircleX } from 'lucide-react';
+import { Bell, Grid2x2, CircleCheck, Hourglass, CircleX, Container } from 'lucide-react';
 
 /**
  * Employee nav matches by path + `status` query param rather than route-name
  * globbing, since the three product tabs all resolve to the same route with
  * a different `status` value. `currentUrl` is Inertia's `usePage().url`.
  */
-export function getEmployeeNavGroups(t, nav, currentUrl) {
+export function getEmployeeNavGroups(t, nav, currentUrl, shipments = {}) {
     const [currentPath, currentQuery] = currentUrl.split('?');
     const currentStatus = new URLSearchParams(currentQuery ?? '').get('status') ?? '';
-    const isActive = (href) => {
+    const isActive = (href, matchPrefix = false) => {
         const [path, query] = href.split('?');
         const status = new URLSearchParams(query ?? '').get('status') ?? '';
+        if (matchPrefix) return currentPath === path || currentPath.startsWith(`${path}/`);
         return path === currentPath && status === currentStatus;
     };
 
@@ -22,6 +23,7 @@ export function getEmployeeNavGroups(t, nav, currentUrl) {
                 { label: t.active_products_tab, href: route('employee.products.index', { status: 'approved' }), icon: CircleCheck },
                 { label: t.pending_products, href: route('employee.products.index', { status: 'pending' }), icon: Hourglass },
                 { label: t.rejected_products, href: route('employee.products.index', { status: 'rejected' }), icon: CircleX },
+                { label: shipments.title, href: route('employee.shipments.index'), icon: Container, matchPrefix: true },
                 { label: nav.notifications, href: route('employee.notifications.index'), icon: Bell },
             ],
         },
@@ -33,7 +35,7 @@ export function getEmployeeNavGroups(t, nav, currentUrl) {
             key: item.href,
             label: item.label,
             href: item.href,
-            active: isActive(item.href),
+            active: isActive(item.href, item.matchPrefix),
             icon: item.icon,
         })),
     }));
