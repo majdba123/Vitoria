@@ -9,6 +9,12 @@ test('guests can render the login page', function () {
         ->assertInertia(fn (Assert $page) => $page->component('Auth/Login'));
 });
 
+test('the powered by hexaterminal credit is shared with every page', function () {
+    $this->get(route('login'))
+        ->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page->where('i18n.footer.powered_by', trans('footer.powered_by')));
+});
+
 test('admins can render the live dashboard page', function () {
     $admin = User::factory()->admin()->create();
 

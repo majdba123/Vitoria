@@ -11,6 +11,7 @@ return [
     'privacy' => 'سياسة الخصوصية',
     'terms' => 'شروط الخدمة',
     'rights' => 'جميع الحقوق محفوظة.',
+    'powered_by' => 'النظام مُشغَّل بواسطة',
     'follow_facebook' => 'تابع Vetora على فيسبوك',
     'follow_instagram' => 'تابع Vetora على إنستغرام',
     'follow_twitter' => 'تابع Vetora على تويتر',

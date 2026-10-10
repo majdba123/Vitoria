@@ -6,6 +6,7 @@ import { Button } from '@/Components/ui/button';
 import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
 import { ThemeToggle } from '@/Components/workspace/ThemeToggle';
 import { useI18n } from '@/hooks/use-i18n';
+import { PoweredBy } from '@/Components/shared/PoweredBy';
 
 const DASHBOARD_ROUTE = { 1: 'admin.dashboard', 2: 'vendor.dashboard', 3: 'syndicate.dashboard', 4: 'employee.dashboard' };
 
@@ -121,7 +122,10 @@ export default function Login() {
                         </div>
                     </div>
 
-                    <p className="text-xs leading-5 text-muted-foreground">{authPage.vetora_access}</p>
+                    <div className="space-y-1">
+                        <p className="text-xs leading-5 text-muted-foreground">{authPage.vetora_access}</p>
+                        <PoweredBy />
+                    </div>
                 </section>
 
                 <aside className="relative hidden overflow-hidden bg-slate-950 lg:block" aria-label={authPage.workspace_title}>

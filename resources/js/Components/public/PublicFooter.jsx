@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import { Mail, MapPin } from 'lucide-react';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { PoweredBy } from '@/Components/shared/PoweredBy';
 
 /**
  * lucide-react dropped brand/logo glyphs, so these three social marks are
@@ -111,7 +112,10 @@ export function PublicFooter() {
                     </div>
 
                     <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-border/70 pt-5 sm:flex-row">
-                        <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} Vetora. {footer.rights}</p>
+                        <div className="flex flex-col items-center gap-1 sm:items-start">
+                            <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} Vetora. {footer.rights}</p>
+                            <PoweredBy />
+                        </div>
                         <div className="flex gap-6 text-xs text-muted-foreground">
                             <Link href={route('pages.show', { slug: 'privacy-policy' })} className="hover:text-foreground">{footer.privacy}</Link>
                             <Link href={route('pages.show', { slug: 'terms-of-service' })} className="hover:text-foreground">{footer.terms}</Link>
