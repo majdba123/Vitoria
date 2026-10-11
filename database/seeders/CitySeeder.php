@@ -17,6 +17,7 @@ class CitySeeder extends Seeder
     {
         $cities = [
             'Damascus',
+            'Rif Dimashq',
             'Aleppo',
             'Homs',
             'Hama',

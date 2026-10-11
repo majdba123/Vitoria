@@ -89,7 +89,7 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
         const count = vendorCount(region);
         return count === 0
             ? 'var(--color-muted)'
-            : `color-mix(in srgb, var(--color-primary) ${Math.round(12 + (26 * count) / maxCount)}%, var(--color-muted))`;
+            : `color-mix(in srgb, var(--color-primary) ${Math.round(12 + (14 * count) / maxCount)}%, var(--color-muted))`;
     };
     const isArabic = locale === 'ar';
     const title = common.map_distribution;

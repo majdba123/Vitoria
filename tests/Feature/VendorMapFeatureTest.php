@@ -126,6 +126,32 @@ test('the admin map returns governorate business aggregates without vendor point
         ->toEqualCanonicalizing(collect(App\Support\SyriaGovernorates::ALL)->pluck('key')->all());
 });
 
+test('Damascus and Rif Dimashq keep independent map counts and zero regions stay zero', function () {
+    Sanctum::actingAs(User::factory()->admin()->create());
+    $damascus = mapCity('Damascus');
+    $rifDimashq = mapCity('Rif Dimashq');
+
+    mapVendor('Damascus Veterinary', ['city_id' => $damascus->id, 'business_type' => Vendor::BUSINESS_TYPE_VETERINARY]);
+    mapVendor('Rif Agriculture', ['city_id' => $rifDimashq->id, 'business_type' => Vendor::BUSINESS_TYPE_AGRICULTURE]);
+    mapVendor('Rif Both', ['city_id' => $rifDimashq->id, 'business_type' => Vendor::BUSINESS_TYPE_BOTH]);
+
+    $regions = collect($this->getJson('/api/admin/vendors/map')->assertOk()->json('data.regions'))->keyBy('key');
+
+    expect($regions['damascus'])->toMatchArray(['unique_vendor_count' => 1, 'agriculture_count' => 0, 'veterinary_count' => 1])
+        ->and($regions['rif_dimashq'])->toMatchArray(['unique_vendor_count' => 2, 'agriculture_count' => 2, 'veterinary_count' => 1])
+        ->and($regions['hama'])->toMatchArray(['unique_vendor_count' => 0, 'agriculture_count' => 0, 'veterinary_count' => 0])
+        ->and(App\Support\SyriaGovernorates::keyForCity('ريف دمشق'))->toBe('rif_dimashq');
+
+    $this->getJson('/api/admin/vendors?governorate=rif_dimashq')->assertOk()->assertJsonPath('meta.total', 2);
+    $this->getJson('/api/admin/vendors?governorate=damascus')->assertOk()->assertJsonPath('meta.total', 1);
+});
+
+test('every Arabic governorate name maps to its own region', function () {
+    foreach (App\Support\SyriaGovernorates::ALL as $region) {
+        expect(App\Support\SyriaGovernorates::keyForCity($region['name_ar']))->toBe($region['key']);
+    }
+});
+
 test('admin map query parameters cannot alter dashboard scope', function () {
     Sanctum::actingAs(User::factory()->admin()->create());
     $homs = mapCity('Homs');

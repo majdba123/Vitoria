@@ -69,8 +69,6 @@ test('locale formatters use one explicit western-digit locale for Arabic screens
 });
 
 test('vendor map covers all 14 governorates as individual svg paths', function () {
-    $paths = require resource_path('js/Components/maps/syria-governorates.js');
-
     // JS export syntax isn't require-able from PHP; parse the file instead.
     $source = file_get_contents(resource_path('js/Components/maps/syria-governorates.js'));
     preg_match('/SYRIA_GOVERNORATE_PATHS = (\{.*?\});\n/s', $source, $matches);

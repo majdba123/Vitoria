@@ -367,6 +367,24 @@
         background: var(--dashboard-bg);
     }
 
+    html:has(.dashboard-body),
+    .dashboard-body [data-sidebar='content'] {
+        scrollbar-width: thin;
+        scrollbar-color: color-mix(in srgb, var(--color-text-secondary) 55%, transparent) transparent;
+    }
+
+    html:has(.dashboard-body)::-webkit-scrollbar,
+    .dashboard-body [data-sidebar='content']::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    html:has(.dashboard-body)::-webkit-scrollbar-thumb,
+    .dashboard-body [data-sidebar='content']::-webkit-scrollbar-thumb {
+        background: color-mix(in srgb, var(--color-text-secondary) 55%, transparent);
+        border: 1px solid transparent;
+        background-clip: padding-box;
+    }
+
     .skip-link {
         @apply fixed start-4 top-4 z-[200] -translate-y-24 font-semibold text-white;
         background: var(--color-ink-900);
@@ -1801,6 +1819,18 @@
 
     .home-type-grid {
         @apply mx-auto grid w-full max-w-[38rem] grid-cols-2 place-items-center gap-4 sm:gap-6;
+    }
+
+    .home-type-selector .home-type-grid {
+        max-width: none;
+    }
+
+    .home-type-selector .home-type-card:first-child {
+        justify-self: start;
+    }
+
+    .home-type-selector .home-type-card:last-child {
+        justify-self: end;
     }
 
     /* Circular full-bleed image cards with a bottom scrim for readable labels. */
