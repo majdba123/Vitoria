@@ -1822,15 +1822,7 @@
     }
 
     .home-type-selector .home-type-grid {
-        max-width: none;
-    }
-
-    .home-type-selector .home-type-card:first-child {
-        justify-self: start;
-    }
-
-    .home-type-selector .home-type-card:last-child {
-        justify-self: end;
+        max-width: 40rem;
     }
 
     /* Circular full-bleed image cards with a bottom scrim for readable labels. */

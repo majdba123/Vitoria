@@ -55,10 +55,6 @@ const GOVERNORATES = Object.entries(SYRIA_GOVERNORATE_PATHS).map(([key, path]) =
     };
 });
 
-// Damascus is ~13 viewBox units across, far below a usable touch target on a
-// phone; a transparent disc around it widens the pointer target only.
-const DAMASCUS = GOVERNORATES.find(({ key }) => key === 'damascus');
-
 export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
     const locale = useLocale();
     const { common } = useI18n();
@@ -115,6 +111,26 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
         onClick: () => setSelectedKey(key),
     });
 
+    const renderRegion = (key, path, inset = false) => {
+        const region = regionsByKey.get(key);
+        const isSelected = selectedKey === key;
+        const isHovered = hoveredKey === key && !isSelected;
+
+        return <path key={key} d={path} data-key={key} tabIndex="0" role="button" aria-pressed={isSelected} aria-label={accessibleLabel(region)}
+            data-state={isSelected ? 'selected' : isHovered ? 'hover' : 'idle'}
+            className="cursor-pointer outline-none transition-[fill] duration-150 motion-reduce:transition-none"
+            style={{
+                fill: isSelected ? 'var(--color-primary)' : isHovered ? 'color-mix(in srgb, var(--color-primary) 48%, var(--color-muted))' : regionFill(region),
+                stroke: inset && focusedKey === key ? 'var(--color-ring)' : inset && isSelected ? 'var(--color-foreground)' : 'var(--color-card)',
+                strokeWidth: inset && (focusedKey === key || isSelected) ? 2.5 : 1.5,
+                strokeLinejoin: 'round',
+            }}
+            {...hoverProps(key)}
+            onFocus={(event) => event.currentTarget.matches(':focus-visible') && setFocusedKey(key)}
+            onBlur={() => setFocusedKey((current) => (current === key ? null : current))}
+            onKeyDown={(event) => { if (['Enter', ' '].includes(event.key)) { event.preventDefault(); setSelectedKey(key); } }} />;
+    };
+
     return (
         <Card className="border-border/80 shadow-none">
             <CardHeader className="border-b border-border/80"><CardTitle className="text-base font-bold">{title}</CardTitle></CardHeader>
@@ -124,23 +140,7 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
                 {status === 'ready' && (
                     <div className="@container mx-auto w-full max-w-2xl" data-vendor-map>
                         <svg viewBox={SYRIA_VIEWBOX} preserveAspectRatio="xMidYMid meet" role="group" aria-label={title} dir="ltr" className="block h-auto w-full select-none" style={{ overflow: 'visible' }}>
-                            {GOVERNORATES.map(({ key, path }) => {
-                                const region = regionsByKey.get(key);
-                                const isSelected = selectedKey === key;
-                                const isHovered = hoveredKey === key && !isSelected;
-                                return <path key={key} d={path} data-key={key} tabIndex="0" role="button" aria-pressed={isSelected} aria-label={accessibleLabel(region)}
-                                    data-state={isSelected ? 'selected' : isHovered ? 'hover' : 'idle'}
-                                    className="cursor-pointer outline-none transition-[fill] duration-150 motion-reduce:transition-none"
-                                    style={{
-                                        fill: isSelected ? 'var(--color-primary)' : isHovered ? 'color-mix(in srgb, var(--color-primary) 48%, var(--color-muted))' : regionFill(region),
-                                        stroke: 'var(--color-card)', strokeWidth: 1.5, strokeLinejoin: 'round',
-                                    }}
-                                    {...hoverProps(key)}
-                                    onFocus={(event) => event.currentTarget.matches(':focus-visible') && setFocusedKey(key)}
-                                    onBlur={() => setFocusedKey((current) => (current === key ? null : current))}
-                                    onKeyDown={(event) => { if (['Enter', ' '].includes(event.key)) { event.preventDefault(); setSelectedKey(key); } }} />;
-                            })}
-                            {DAMASCUS && <circle cx={DAMASCUS.anchor.x} cy={DAMASCUS.anchor.y} r="11" fill="transparent" aria-hidden="true" className="cursor-pointer" {...hoverProps('damascus')} />}
+                            {GOVERNORATES.map(({ key, path }) => renderRegion(key, path))}
                             {/* Outlines are drawn above every region so a neighbour painted later can never hide them. */}
                             <g aria-hidden="true" pointerEvents="none" fill="none" strokeLinejoin="round">
                                 {hoveredKey && hoveredKey !== selectedKey && <path d={SYRIA_GOVERNORATE_PATHS[hoveredKey]} stroke="var(--color-primary)" strokeWidth="1.5" strokeDasharray="4 3" />}
@@ -166,6 +166,15 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
                                 })}
                             </g>
                         </svg>
+
+                        <div className="mt-2 flex justify-end">
+                            <div className="rounded-lg border border-border bg-card p-2">
+                                <p className="text-center text-xs font-semibold text-card-foreground">{regionName(regionsByKey.get('damascus'))} · {regionName(regionsByKey.get('rif_dimashq'))}</p>
+                                <svg viewBox="45 375 35 28" role="group" aria-label={`${regionName(regionsByKey.get('damascus'))} · ${regionName(regionsByKey.get('rif_dimashq'))}`} dir="ltr" className="mx-auto mt-1 block aspect-[5/4] w-36">
+                                    {['rif_dimashq', 'damascus'].map((key) => renderRegion(key, SYRIA_GOVERNORATE_PATHS[key], true))}
+                                </svg>
+                            </div>
+                        </div>
 
                         <div aria-live="polite" dir={isArabic ? 'rtl' : 'ltr'} className="mt-3 sm:mt-4">
                             {selected ? (

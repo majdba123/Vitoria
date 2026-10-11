@@ -86,6 +86,31 @@ test('vendor map covers all 14 governorates as individual svg paths', function (
         ->not->toContain('.jpg');
 });
 
+test('Damascus remains a separate polygon inside the Rif Dimashq boundary', function () {
+    $source = file_get_contents(resource_path('js/Components/maps/syria-governorates.js'));
+    preg_match('/SYRIA_GOVERNORATE_PATHS = (\{.*?\});\n/s', $source, $matches);
+    $paths = json_decode($matches[1], true, flags: JSON_THROW_ON_ERROR);
+    $rifRings = array_values(array_filter(explode('M', $paths['rif_dimashq'])));
+
+    $signedArea = function (string $path): float {
+        preg_match_all('/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/', $path, $matches, PREG_SET_ORDER);
+        $points = array_map(fn (array $match): array => [(float) $match[1], (float) $match[2]], $matches);
+        $area = 0.0;
+
+        foreach ($points as $index => [$x, $y]) {
+            [$nextX, $nextY] = $points[($index + 1) % count($points)];
+            $area += $x * $nextY - $nextX * $y;
+        }
+
+        return $area / 2;
+    };
+
+    expect($rifRings)->toHaveCount(2)
+        ->and($signedArea($paths['damascus']))->toBeLessThan(0)
+        ->and($signedArea($rifRings[1]))->toBeGreaterThan(0)
+        ->and(abs($signedArea($paths['damascus']) + $signedArea($rifRings[1])))->toBeLessThan(0.1);
+});
+
 test('vendor map shows one selection panel below the svg that hover can never drive', function () {
     $source = file_get_contents(resource_path('js/Components/maps/DashboardVendorMap.jsx'));
 
@@ -94,6 +119,10 @@ test('vendor map shows one selection panel below the svg that hover can never dr
         ->toContain('const [hoveredKey, setHoveredKey] = useState(null);')
         ->toContain('const [selectedKey, setSelectedKey] = useState(null);')
         ->toContain('const selected = selectedKey ? regionsByKey.get(selectedKey) : null;')
+        ->toContain('onClick: () => setSelectedKey(key)')
+        ->toContain('viewBox="45 375 35 28"')
+        ->toContain("['rif_dimashq', 'damascus'].map((key) => renderRegion(key, SYRIA_GOVERNORATE_PATHS[key], true))")
+        ->not->toContain('<circle cx={DAMASCUS.anchor.x}')
         ->not->toContain('hoveredKey || selectedKey')
         ->not->toContain('selectedKey || hoveredKey');
 
