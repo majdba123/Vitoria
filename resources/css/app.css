@@ -1536,6 +1536,14 @@
         padding-block: var(--section-space);
     }
 
+    .homepage-section {
+        padding-block: clamp(2rem, 3vw, 3rem);
+    }
+
+    .home-partners-section {
+        padding-block: clamp(1.5rem, 2.5vw, 2rem);
+    }
+
     /* Infinite-scroll partner logo strip. The track renders the logo list
        twice back to back and animates exactly one list-width of translation,
        so the loop point is seamless regardless of how many logos there are.
@@ -1767,8 +1775,9 @@
     .reveal-stagger.is-in-view > *:nth-child(8) { transition-delay: 420ms; }
 
     .home-type-selector {
-        @apply grid gap-5 py-10 lg:py-12;
+        @apply grid gap-4;
         max-width: var(--content-max);
+        padding-block: clamp(2rem, 3vw, 2.75rem);
     }
 
     .home-type-intro {

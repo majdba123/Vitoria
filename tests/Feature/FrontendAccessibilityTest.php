@@ -131,6 +131,7 @@ test('homepage partner presentation is logos only and banners preserve their ima
 });
 
 test('homepage product type cards keep their imagery in a responsive circular layout', function () {
+    $homepage = file_get_contents(resource_path('js/Pages/Home.jsx'));
     $source = file_get_contents(resource_path('css/app.css'));
 
     expect($source)
@@ -138,7 +139,11 @@ test('homepage product type cards keep their imagery in a responsive circular la
         ->toContain('aspect-square w-full max-w-80')
         ->toContain('rounded-full')
         ->toContain("url('/images/home-type-cards/agriculture.webp')")
-        ->toContain("url('/images/home-type-cards/veterinary.webp')");
+        ->toContain("url('/images/home-type-cards/veterinary.webp')")
+        ->toContain('.homepage-section')
+        ->toContain('.home-partners-section')
+        ->and($homepage)->toContain('className="logo-marquee"')
+        ->not->toContain('className="logo-marquee mt-10"');
 });
 
 test('public storefront keeps localized footer copy and semantic category fallbacks', function () {

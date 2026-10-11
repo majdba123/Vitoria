@@ -34,7 +34,7 @@ function PartnerLogoMarquee({ reducedMotion }) {
     const logos = [...PARTNER_LOGOS, ...PARTNER_LOGOS];
 
     return (
-        <div className="logo-marquee mt-10">
+        <div className="logo-marquee">
             <div className="logo-marquee-track" style={reducedMotion ? { animation: 'none' } : undefined}>
                 {logos.map((logo, index) => (
                     <img
@@ -159,7 +159,7 @@ function BannerStrip() {
     if (banners.length === 0) return null;
 
     return (
-        <section className="page-shell pt-2 sm:pt-3">
+        <section className="page-shell pb-0 pt-2 sm:pt-3">
             <div className="flex gap-3 overflow-x-auto pb-1" style={{ scrollSnapType: 'x mandatory' }}>
                 {banners.map((banner) => {
                     const title = locale === 'ar' ? (banner.title_ar || banner.title_en) : (banner.title_en || banner.title_ar);
@@ -336,7 +336,7 @@ export default function Home({ selectedType }) {
 
             <BannerStrip />
 
-            <section id="home-type-selector" className="page-shell py-0 home-type-selector" aria-labelledby="home-type-heading">
+            <section id="home-type-selector" className="page-shell home-type-selector" aria-labelledby="home-type-heading">
                 <div className="home-type-intro">
                     <h2 id="home-type-heading" className="commerce-title">{home.type_selector_title}</h2>
                 </div>
@@ -349,7 +349,7 @@ export default function Home({ selectedType }) {
 
             {selectedType ? (
                 <>
-                    <section id="categories" className="storefront-section scroll-mt-24 bg-transparent">
+                    <section id="categories" className="storefront-section homepage-section scroll-mt-24 bg-transparent">
                         <div className="page-shell py-0">
                             <div className="commerce-section-header">
                                 <div className="min-w-0">
@@ -414,7 +414,7 @@ export default function Home({ selectedType }) {
 
                     {categoryId && (
                         <div>
-                            <section id="sz-category-bar" className="page-shell pt-0">
+                            <section id="sz-category-bar" className="page-shell py-0">
                                 <div className="surface-card-muted px-5 py-4 sm:px-6">
                                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                                         <div className="flex min-w-0 items-center gap-4">
@@ -468,7 +468,7 @@ export default function Home({ selectedType }) {
                                 </div>
                             </section>
 
-                            <section id="products" className="storefront-section scroll-mt-24">
+                            <section id="products" className="storefront-section homepage-section scroll-mt-24">
                                 <div className="page-shell py-0">
                                     <div className="commerce-section-header">
                                         <div>
@@ -489,7 +489,7 @@ export default function Home({ selectedType }) {
                                 </div>
                             </section>
 
-                            <section id="best-selling" className="storefront-section scroll-mt-24">
+                            <section id="best-selling" className="storefront-section homepage-section scroll-mt-24">
                                 <div className="page-shell py-0">
                                     <div className="commerce-section-header">
                                         <div>
@@ -504,7 +504,7 @@ export default function Home({ selectedType }) {
                                 </div>
                             </section>
 
-                            <section id="most-favorited" className="storefront-section scroll-mt-24 bg-muted/30">
+                            <section id="most-favorited" className="storefront-section homepage-section scroll-mt-24 bg-muted/30">
                                 <div className="page-shell py-0">
                                     <div className="commerce-section-header">
                                         <div>
@@ -521,14 +521,14 @@ export default function Home({ selectedType }) {
                         </div>
                     )}
 
-                    <section className="storefront-section border-t border-border/60 bg-muted/20">
+                    <section className="storefront-section home-partners-section border-t border-border/60 bg-muted/20">
                         <div className="page-shell py-0" aria-label={home.partners_title}>
                             <PartnerLogoMarquee reducedMotion={reducedMotion} />
                         </div>
                     </section>
                 </>
             ) : (
-                <section className="page-shell">
+                <section className="page-shell py-8 sm:py-10">
                     <div className="mx-auto max-w-3xl text-center">
                         <p className="state-panel text-sm font-semibold text-muted-foreground">{home.choose_type_first}</p>
                     </div>
