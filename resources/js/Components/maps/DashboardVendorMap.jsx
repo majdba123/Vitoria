@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, ZoomIn, ZoomOut } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
@@ -64,6 +64,8 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
     const [hoveredKey, setHoveredKey] = useState(null);
     const [focusedKey, setFocusedKey] = useState(null);
     const [selectedKey, setSelectedKey] = useState(null);
+    const [zoomed, setZoomed] = useState(false);
+    const [tooltipPoint, setTooltipPoint] = useState(null);
 
     const load = () => {
         setStatus('loading');
@@ -77,6 +79,8 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
 
     const regionsByKey = useMemo(() => new Map(payload.regions.map((region) => [region.key, region])), [payload.regions]);
     const selected = selectedKey ? regionsByKey.get(selectedKey) : null;
+    const hovered = hoveredKey ? regionsByKey.get(hoveredKey) : null;
+    const visibleRegions = zoomed ? GOVERNORATES.filter(({ key }) => ['damascus', 'rif_dimashq'].includes(key)) : GOVERNORATES;
     const vendorCount = (region) => Number((payload.domain ? region?.vendor_count : region?.unique_vendor_count) ?? 0);
     const maxCount = Math.max(1, ...payload.regions.map(vendorCount));
     /* A quiet tint by vendor count keeps the map readable at a glance without
@@ -98,20 +102,32 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
 
     const accessibleLabel = (region) => `${regionName(region)} — ${payload.domain ? scopedLabel : totalLabel}: ${number(vendorCount(region))}`;
 
-    const stats = selected
-        ? (payload.domain
-            ? [[scopedLabel, selected.vendor_count]]
-            : [[totalLabel, selected.unique_vendor_count], [agricultureLabel, selected.agriculture_count], [veterinaryLabel, selected.veterinary_count]])
-        : [];
+    const regionStats = (region) => payload.domain
+        ? [[scopedLabel, region.vendor_count]]
+        : [[totalLabel, region.unique_vendor_count], [agricultureLabel, region.agriculture_count], [veterinaryLabel, region.veterinary_count]];
+    const stats = selected ? regionStats(selected) : [];
+
+    const moveTooltip = (event) => {
+        const bounds = event.currentTarget.closest('[data-map-canvas]').getBoundingClientRect();
+        const x = event.clientX - bounds.left;
+        const y = event.clientY - bounds.top;
+        setTooltipPoint({ x: Math.max(8, Math.min(x + 12, bounds.width - 216)), y: y + 110 > bounds.height ? y - 110 : y + 12 });
+    };
+
+    const clearHover = () => {
+        setHoveredKey(null);
+        setTooltipPoint(null);
+    };
 
     const hoverProps = (key) => ({
-        // Touch and pen taps must not leave a sticky hover behind.
-        onPointerEnter: (event) => event.pointerType === 'mouse' && setHoveredKey(key),
-        onPointerLeave: () => setHoveredKey((current) => (current === key ? null : current)),
-        onClick: () => setSelectedKey(key),
+        onPointerEnter: (event) => { if (event.pointerType !== 'touch') { setHoveredKey(key); moveTooltip(event); } },
+        onPointerMove: (event) => { if (event.pointerType !== 'touch') { setHoveredKey(key); moveTooltip(event); } },
+        onPointerLeave: clearHover,
+        onPointerCancel: clearHover,
+        onClick: () => { setSelectedKey(key); clearHover(); },
     });
 
-    const renderRegion = (key, path, inset = false) => {
+    const renderRegion = (key, path) => {
         const region = regionsByKey.get(key);
         const isSelected = selectedKey === key;
         const isHovered = hoveredKey === key && !isSelected;
@@ -121,9 +137,7 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
             className="cursor-pointer outline-none transition-[fill] duration-150 motion-reduce:transition-none"
             style={{
                 fill: isSelected ? 'var(--color-primary)' : isHovered ? 'color-mix(in srgb, var(--color-primary) 48%, var(--color-muted))' : regionFill(region),
-                stroke: inset && focusedKey === key ? 'var(--color-ring)' : inset && isSelected ? 'var(--color-foreground)' : 'var(--color-card)',
-                strokeWidth: inset && (focusedKey === key || isSelected) ? 2.5 : 1.5,
-                strokeLinejoin: 'round',
+                stroke: 'var(--color-card)', strokeWidth: 1.5, strokeLinejoin: 'round',
             }}
             {...hoverProps(key)}
             onFocus={(event) => event.currentTarget.matches(':focus-visible') && setFocusedKey(key)}
@@ -139,8 +153,17 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
                 {status === 'error' && <button type="button" onClick={load} className="mx-auto flex items-center gap-2 py-12 text-sm font-semibold text-primary"><RefreshCw className="size-4" />{common.retry}</button>}
                 {status === 'ready' && (
                     <div className="@container mx-auto w-full max-w-2xl" data-vendor-map>
-                        <svg viewBox={SYRIA_VIEWBOX} preserveAspectRatio="xMidYMid meet" role="group" aria-label={title} dir="ltr" className="block h-auto w-full select-none" style={{ overflow: 'visible' }}>
-                            {GOVERNORATES.map(({ key, path }) => renderRegion(key, path))}
+                        <div className="relative" data-map-canvas>
+                            <div className="mb-2 flex justify-end">
+                                <button type="button" onClick={() => { setZoomed((current) => !current); setSelectedKey(null); setFocusedKey(null); clearHover(); }}
+                                    aria-label={zoomed ? common.map_zoom_out : common.map_zoom_damascus}
+                                    className="inline-flex min-h-11 items-center gap-2 rounded-md border border-border bg-card px-3 text-xs font-semibold text-card-foreground shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+                                    {zoomed ? <ZoomOut className="size-4" /> : <ZoomIn className="size-4" />}
+                                    {zoomed ? common.map_zoom_out : common.map_zoom_damascus}
+                                </button>
+                            </div>
+                            <svg viewBox={zoomed ? '45 375 35 28' : SYRIA_VIEWBOX} preserveAspectRatio="xMidYMid meet" role="group" aria-label={title} dir="ltr" className="block h-auto w-full select-none overflow-hidden" onPointerLeave={clearHover}>
+                            {visibleRegions.map(({ key, path }) => renderRegion(key, path))}
                             {/* Outlines are drawn above every region so a neighbour painted later can never hide them. */}
                             <g aria-hidden="true" pointerEvents="none" fill="none" strokeLinejoin="round">
                                 {hoveredKey && hoveredKey !== selectedKey && <path d={SYRIA_GOVERNORATE_PATHS[hoveredKey]} stroke="var(--color-primary)" strokeWidth="1.5" strokeDasharray="4 3" />}
@@ -153,7 +176,7 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
                                 roughly 1:1), which depends on the sidebar as much as the viewport — hence a
                                 container query. Narrower maps rely on the panel below. */}
                             <g aria-hidden="true" pointerEvents="none" className="hidden @xl:inline" textAnchor="middle">
-                                {GOVERNORATES.map(({ key, anchor, label }) => {
+                                {!zoomed && GOVERNORATES.map(({ key, anchor, label }) => {
                                     const region = regionsByKey.get(key);
                                     const isSelected = selectedKey === key && !label.leader;
                                     return (
@@ -165,15 +188,13 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
                                     );
                                 })}
                             </g>
-                        </svg>
-
-                        <div className="mt-2 flex justify-end">
-                            <div className="rounded-lg border border-border bg-card p-2">
-                                <p className="text-center text-xs font-semibold text-card-foreground">{regionName(regionsByKey.get('damascus'))} · {regionName(regionsByKey.get('rif_dimashq'))}</p>
-                                <svg viewBox="45 375 35 28" role="group" aria-label={`${regionName(regionsByKey.get('damascus'))} · ${regionName(regionsByKey.get('rif_dimashq'))}`} dir="ltr" className="mx-auto mt-1 block aspect-[5/4] w-36">
-                                    {['rif_dimashq', 'damascus'].map((key) => renderRegion(key, SYRIA_GOVERNORATE_PATHS[key], true))}
-                                </svg>
-                            </div>
+                            </svg>
+                            {hovered && tooltipPoint && (
+                                <div role="tooltip" aria-hidden="true" dir={isArabic ? 'rtl' : 'ltr'} className="pointer-events-none absolute z-10 w-52 rounded-lg border border-border bg-card px-3 py-2 text-card-foreground shadow-lg" style={{ left: tooltipPoint.x, top: tooltipPoint.y }}>
+                                    <p className="text-sm font-bold">{regionName(hovered)}</p>
+                                    {regionStats(hovered).map(([label, value]) => <p key={label} className="mt-1 flex justify-between gap-2 text-xs"><span>{label}</span><span className="font-semibold tabular-nums">{number(value)}</span></p>)}
+                                </div>
+                            )}
                         </div>
 
                         <div aria-live="polite" dir={isArabic ? 'rtl' : 'ltr'} className="mt-3 sm:mt-4">

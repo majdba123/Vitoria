@@ -152,6 +152,44 @@ test('every Arabic governorate name maps to its own region', function () {
     }
 });
 
+test('all governorate API totals follow fixture vendors rather than product rows', function () {
+    Sanctum::actingAs(User::factory()->admin()->create());
+    $expected = [];
+
+    foreach (App\Support\SyriaGovernorates::ALL as $region) {
+        $key = $region['key'];
+        $city = mapCity($region['name_en']);
+        $expected[$key] = ['unique_vendor_count' => 0, 'agriculture_count' => 0, 'veterinary_count' => 0];
+
+        if (in_array($key, ['hama', 'quneitra'], true)) {
+            continue;
+        }
+
+        $type = $key === 'damascus' ? Vendor::BUSINESS_TYPE_VETERINARY : Vendor::BUSINESS_TYPE_AGRICULTURE;
+        $vendor = mapVendor($key.' Store', ['city_id' => $city->id, 'business_type' => $type]);
+        $expected[$key]['unique_vendor_count'] = 1;
+        $expected[$key][$type === Vendor::BUSINESS_TYPE_VETERINARY ? 'veterinary_count' : 'agriculture_count'] = 1;
+
+        if ($key === 'damascus') {
+            Product::factory()->count(3)->for($vendor)->create();
+        }
+
+        if ($key === 'rif_dimashq') {
+            $both = mapVendor('Rif Both', ['city_id' => $city->id, 'business_type' => Vendor::BUSINESS_TYPE_BOTH]);
+            Product::factory()->count(2)->for($both)->create();
+            $expected[$key] = ['unique_vendor_count' => 2, 'agriculture_count' => 2, 'veterinary_count' => 1];
+        }
+    }
+
+    $regions = collect($this->getJson('/api/admin/vendors/map')->assertOk()->json('data.regions'))->keyBy('key');
+
+    expect($regions)->toHaveCount(14);
+
+    foreach ($expected as $key => $counts) {
+        expect($regions[$key])->toMatchArray($counts);
+    }
+});
+
 test('admin map query parameters cannot alter dashboard scope', function () {
     Sanctum::actingAs(User::factory()->admin()->create());
     $homs = mapCity('Homs');
