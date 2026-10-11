@@ -65,7 +65,6 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
     const [focusedKey, setFocusedKey] = useState(null);
     const [selectedKey, setSelectedKey] = useState(null);
     const [zoomed, setZoomed] = useState(false);
-    const [tooltipPoint, setTooltipPoint] = useState(null);
 
     const load = () => {
         setStatus('loading');
@@ -107,21 +106,13 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
         : [[totalLabel, region.unique_vendor_count], [agricultureLabel, region.agriculture_count], [veterinaryLabel, region.veterinary_count]];
     const stats = selected ? regionStats(selected) : [];
 
-    const moveTooltip = (event) => {
-        const bounds = event.currentTarget.closest('[data-map-canvas]').getBoundingClientRect();
-        const x = event.clientX - bounds.left;
-        const y = event.clientY - bounds.top;
-        setTooltipPoint({ x: Math.max(8, Math.min(x + 12, bounds.width - 216)), y: y + 110 > bounds.height ? y - 110 : y + 12 });
-    };
-
     const clearHover = () => {
         setHoveredKey(null);
-        setTooltipPoint(null);
     };
 
     const hoverProps = (key) => ({
-        onPointerEnter: (event) => { if (event.pointerType !== 'touch') { setHoveredKey(key); moveTooltip(event); } },
-        onPointerMove: (event) => { if (event.pointerType !== 'touch') { setHoveredKey(key); moveTooltip(event); } },
+        onPointerEnter: (event) => { if (event.pointerType !== 'touch') setHoveredKey(key); },
+        onPointerMove: (event) => { if (event.pointerType !== 'touch') setHoveredKey(key); },
         onPointerLeave: clearHover,
         onPointerCancel: clearHover,
         onClick: () => { setSelectedKey(key); clearHover(); },
@@ -136,7 +127,7 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
             data-state={isSelected ? 'selected' : isHovered ? 'hover' : 'idle'}
             className="cursor-pointer outline-none transition-[fill] duration-150 motion-reduce:transition-none"
             style={{
-                fill: isSelected ? 'var(--color-primary)' : isHovered ? 'color-mix(in srgb, var(--color-primary) 48%, var(--color-muted))' : regionFill(region),
+                fill: isSelected ? 'var(--color-primary)' : regionFill(region),
                 stroke: 'var(--color-card)', strokeWidth: 1.5, strokeLinejoin: 'round',
             }}
             {...hoverProps(key)}
@@ -154,10 +145,20 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
                 {status === 'ready' && (
                     <div className="@container mx-auto w-full max-w-2xl" data-vendor-map>
                         <div className="relative" data-map-canvas>
-                            <div className="mb-2 flex justify-end">
+                            <div className="mb-2 flex min-h-20 items-center justify-between gap-2">
+                                <div role="tooltip" aria-hidden="true" dir={isArabic ? 'rtl' : 'ltr'} className="min-w-0 text-xs text-card-foreground" data-map-tooltip>
+                                    {hovered && (
+                                        <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-sm">
+                                            <p className="font-bold">{regionName(hovered)}</p>
+                                            <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
+                                                {regionStats(hovered).map(([label, value]) => <span key={label}>{label}: <strong className="tabular-nums">{number(value)}</strong></span>)}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                                 <button type="button" onClick={() => { setZoomed((current) => !current); setSelectedKey(null); setFocusedKey(null); clearHover(); }}
                                     aria-label={zoomed ? common.map_zoom_out : common.map_zoom_damascus}
-                                    className="inline-flex min-h-11 items-center gap-2 rounded-md border border-border bg-card px-3 text-xs font-semibold text-card-foreground shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+                                    className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-md border border-border bg-card px-3 text-xs font-semibold text-card-foreground shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
                                     {zoomed ? <ZoomOut className="size-4" /> : <ZoomIn className="size-4" />}
                                     {zoomed ? common.map_zoom_out : common.map_zoom_damascus}
                                 </button>
@@ -166,7 +167,7 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
                             {visibleRegions.map(({ key, path }) => renderRegion(key, path))}
                             {/* Outlines are drawn above every region so a neighbour painted later can never hide them. */}
                             <g aria-hidden="true" pointerEvents="none" fill="none" strokeLinejoin="round">
-                                {hoveredKey && hoveredKey !== selectedKey && <path d={SYRIA_GOVERNORATE_PATHS[hoveredKey]} stroke="var(--color-primary)" strokeWidth="1.5" strokeDasharray="4 3" />}
+                                {hoveredKey && hoveredKey !== selectedKey && <path d={SYRIA_GOVERNORATE_PATHS[hoveredKey]} stroke="var(--color-primary)" strokeWidth="2.5" />}
                                 {selectedKey && <path d={SYRIA_GOVERNORATE_PATHS[selectedKey]} stroke="var(--color-foreground)" strokeWidth="2.5" />}
                                 {/* The focus ring shares the brand colour with the selected fill, so a card-coloured halo keeps it visible on top of it. */}
                                 {focusedKey && <path d={SYRIA_GOVERNORATE_PATHS[focusedKey]} stroke="var(--color-card)" strokeWidth="6" />}
@@ -189,12 +190,6 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
                                 })}
                             </g>
                             </svg>
-                            {hovered && tooltipPoint && (
-                                <div role="tooltip" aria-hidden="true" dir={isArabic ? 'rtl' : 'ltr'} className="pointer-events-none absolute z-10 w-52 rounded-lg border border-border bg-card px-3 py-2 text-card-foreground shadow-lg" style={{ left: tooltipPoint.x, top: tooltipPoint.y }}>
-                                    <p className="text-sm font-bold">{regionName(hovered)}</p>
-                                    {regionStats(hovered).map(([label, value]) => <p key={label} className="mt-1 flex justify-between gap-2 text-xs"><span>{label}</span><span className="font-semibold tabular-nums">{number(value)}</span></p>)}
-                                </div>
-                            )}
                         </div>
 
                         <div aria-live="polite" dir={isArabic ? 'rtl' : 'ltr'} className="mt-3 sm:mt-4">

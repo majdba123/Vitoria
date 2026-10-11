@@ -109,6 +109,32 @@ test('Damascus remains a separate polygon inside the Rif Dimashq boundary', func
         ->and($signedArea($paths['damascus']))->toBeLessThan(0)
         ->and($signedArea($rifRings[1]))->toBeGreaterThan(0)
         ->and(abs($signedArea($paths['damascus']) + $signedArea($rifRings[1])))->toBeLessThan(0.1);
+
+    $contains = function (string $path, float $x, float $y): bool {
+        $inside = false;
+
+        foreach (array_filter(explode('M', $path)) as $ring) {
+            preg_match_all('/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/', $ring, $matches, PREG_SET_ORDER);
+            $points = array_map(fn (array $match): array => [(float) $match[1], (float) $match[2]], $matches);
+            $ringInside = false;
+
+            foreach ($points as $index => [$currentX, $currentY]) {
+                [$nextX, $nextY] = $points[($index + 1) % count($points)];
+                if (($currentY > $y) !== ($nextY > $y) && $x < ($nextX - $currentX) * ($y - $currentY) / ($nextY - $currentY) + $currentX) {
+                    $ringInside = ! $ringInside;
+                }
+            }
+
+            $inside = $inside !== $ringInside;
+        }
+
+        return $inside;
+    };
+
+    expect($contains($paths['damascus'], 60, 389))->toBeTrue()
+        ->and($contains($paths['rif_dimashq'], 60, 389))->toBeFalse()
+        ->and($contains($paths['damascus'], 70, 389))->toBeFalse()
+        ->and($contains($paths['rif_dimashq'], 70, 389))->toBeTrue();
 });
 
 test('vendor map shows one selection panel below the svg that hover can never drive', function () {
@@ -123,6 +149,8 @@ test('vendor map shows one selection panel below the svg that hover can never dr
         ->toContain("viewBox={zoomed ? '45 375 35 28' : SYRIA_VIEWBOX}")
         ->toContain('visibleRegions.map(({ key, path }) => renderRegion(key, path))')
         ->toContain('role="tooltip"')
+        ->toContain('data-map-tooltip')
+        ->not->toContain('tooltipPoint')
         ->not->toContain('data-map-inset')
         ->not->toContain('<circle cx={DAMASCUS.anchor.x}')
         ->not->toContain('hoveredKey || selectedKey')
@@ -131,6 +159,7 @@ test('vendor map shows one selection panel below the svg that hover can never dr
     // Exactly one panel element, rendered after the svg rather than floating over it.
     expect(substr_count($source, 'data-map-panel='))->toBe(1)
         ->and(strpos($source, 'data-map-panel='))->toBeGreaterThan(strpos($source, '</svg>'))
+        ->and(strpos($source, 'data-map-tooltip'))->toBeLessThan(strpos($source, '<svg viewBox='))
         ->and($source)->not->toContain('absolute inset-x-2 bottom-2');
 
     // Governorates are keyboard buttons exposing their selected state; clicking never navigates.
