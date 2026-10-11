@@ -141,7 +141,7 @@ export default function Dashboard() {
                     <h3 className="text-sm font-bold text-foreground">{admin.insights_section_title}</h3>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+                <div className="space-y-4 xl:columns-2 xl:gap-4 xl:space-y-0 xl:[&>*]:mb-4 xl:[&>*]:break-inside-avoid">
                     <InsightPanel
                         title={activeDistribution.title}
                         status={overview.status}
@@ -210,9 +210,6 @@ export default function Dashboard() {
                         </div>
                         <GrowthChart rows={overviewData?.monthly_product_growth ?? []} totalLabel={admin.total_products} />
                     </InsightPanel>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
                     <InsightPanel
                         title={admin.top_vendors_title}
                         action={<ViewAllLink href={route('admin.vendors.index')}>{admin.view_vendors}</ViewAllLink>}
@@ -282,7 +279,7 @@ export default function Dashboard() {
             </section>
 
             {/* Coverage + recent products */}
-            <section className="grid grid-cols-1 gap-4 xl:grid-cols-[1.3fr_1fr]">
+            <section className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[1.3fr_1fr]">
                 <InsightPanel
                     title={admin.vendors_by_category_title}
                     action={<ViewAllLink href={route('admin.vendors.index')}>{admin.view_vendors}</ViewAllLink>}

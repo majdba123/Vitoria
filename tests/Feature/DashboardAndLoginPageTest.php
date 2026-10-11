@@ -31,3 +31,10 @@ test('non admins cannot render the admin dashboard page', function () {
         ->get(route('admin.dashboard'))
         ->assertRedirect(route('login'));
 });
+
+test('category coverage labels use their own stacked row values', function () {
+    $source = file_get_contents(resource_path('js/Components/shared/dashboard/CategoryCoverage.jsx'));
+
+    expect($source)->toContain('valueAccessor={(entry) => entry.payload}', 'value: row')
+        ->not->toContain('data[index]');
+});

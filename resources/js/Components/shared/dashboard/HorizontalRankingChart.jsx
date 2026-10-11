@@ -3,54 +3,41 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/Components/
 import { useLocale } from '@/hooks/use-i18n';
 import { formatNumber } from '@/lib/date-time';
 
-const MAX_LABEL_CHARS = { ar: 12, en: 16 };
-const AXIS_WIDTH = { ar: 100, en: 116 };
+const MAX_LABEL_CHARS = { ar: 15, en: 16 };
+const AXIS_WIDTH = { ar: 132, en: 140 };
 
 function truncateLabel(label, max) {
     return label.length > max ? `${label.slice(0, max - 1)}…` : label;
 }
 
-/**
- * The chart is always laid out left-to-right internally (YAxis orientation
- * "right" mis-measures its own tick position in the installed recharts
- * version - the tick lands inside the plot, overlapping the bar, once a bar
- * gets close to full length) and mirrored with a CSS scaleX(-1) on the SVG
- * for RTL locales instead. Text nodes inside the mirrored SVG re-mirror
- * themselves with a nested scale(-1,1) so glyphs stay readable while their
- * position still flips with the rest of the chart.
- */
-function CategoryTick({ x, y, payload, rtl, maxChars }) {
+function labelLines(label, max) {
+    if (label.length <= max) return [label];
+    const nextSpace = label.indexOf(' ', max);
+    const previousSpace = label.lastIndexOf(' ', max);
+    const split = nextSpace > 0 && nextSpace <= max + 3 ? nextSpace : (previousSpace > 0 ? previousSpace : max);
+    return [label.slice(0, split), truncateLabel(label.slice(split).trim(), max)];
+}
+
+function CategoryTick({ x, y, payload, maxChars }) {
     const label = String(payload.value ?? '');
+    const lines = labelLines(label, maxChars);
     return (
         <g transform={`translate(${x},${y})`}>
             <title>{label}</title>
-            <g transform={rtl ? 'scale(-1,1)' : undefined}>
-                <text dy={4} textAnchor="end" fontSize={12} className="fill-foreground">
-                    {truncateLabel(label, maxChars)}
-                </text>
-            </g>
+            <text textAnchor="end" direction="ltr" fontSize={12} className="fill-foreground">
+                {lines.map((line, index) => <tspan key={index} x="0" dy={index === 0 ? (lines.length === 1 ? 4 : -2) : 13}>{line}</tspan>)}
+            </text>
         </g>
     );
 }
 
-/**
- * Un-mirrors the bar's value label the same way CategoryTick does. A custom
- * LabelList `content` renderer receives the bar's raw `viewBox`, not a
- * pre-computed position - the x/y offsetting that `position="right"` would
- * normally do has to happen here instead.
- */
-function ValueLabel({ viewBox, value, rtl, formatValue }) {
+function ValueLabel({ viewBox, value, formatValue }) {
     const { x, y, width, height } = viewBox;
     return (
         <g transform={`translate(${x + width},${y + height / 2})`}>
-            <g transform={rtl ? 'scale(-1,1)' : undefined}>
-                {/* direction is pinned so the anchor is unambiguous (an inherited RTL
-                    direction swaps SVG "start"/"end"); under the nested mirror the
-                    RTL label then has to anchor at "end" to grow away from its bar. */}
-                <text dy={4} dx={rtl ? -6 : 6} textAnchor={rtl ? 'end' : 'start'} direction="ltr" fontSize={12} className="fill-foreground text-xs font-semibold" data-bar-value>
-                    {formatValue(value)}
-                </text>
-            </g>
+            <text dy={4} dx={6} textAnchor="start" direction="ltr" fontSize={12} className="fill-foreground text-xs font-semibold" data-bar-value>
+                {formatValue(value)}
+            </text>
         </g>
     );
 }
@@ -62,24 +49,24 @@ function ValueLabel({ viewBox, value, rtl, formatValue }) {
  */
 export function HorizontalRankingChart({ rows, valueKey, labelKey = 'name', valueLabel, formatValue, maxItems = 5 }) {
     const locale = useLocale();
-    const rtl = locale === 'ar';
     const resolvedFormatValue = formatValue ?? ((value) => formatNumber(Number(value || 0), locale));
     const data = rows
         .map((row) => ({ label: row[labelKey] ?? '—', value: Number(row[valueKey] ?? 0) }))
         .sort((first, second) => second.value - first.value)
         .slice(0, maxItems);
-    const height = Math.max(220, data.length * 44 + 56);
+    const height = Math.max(144, data.length * 44 + 56);
     const axisWidth = AXIS_WIDTH[locale] ?? AXIS_WIDTH.en;
     const maxChars = MAX_LABEL_CHARS[locale] ?? MAX_LABEL_CHARS.en;
+    const valueMargin = Math.max(56, Math.min(120, resolvedFormatValue(Math.max(0, ...data.map((row) => row.value))).length * 7 + 14));
 
     return (
         <>
             <ChartContainer
                 config={{ value: { label: valueLabel, color: 'var(--chart-1)' } }}
-                className={`aspect-auto w-full ${rtl ? '[&_.recharts-surface]:-scale-x-100' : ''}`}
+                className="aspect-auto w-full"
                 style={{ height }}
             >
-                <BarChart data={data} layout="vertical" margin={{ top: 4, right: 96, bottom: 4, left: 0 }} barCategoryGap="30%">
+                <BarChart data={data} layout="vertical" margin={{ top: 4, right: valueMargin, bottom: 4, left: 0 }} barCategoryGap="30%">
                     <CartesianGrid horizontal={false} strokeDasharray="3 3" />
                     {/* Headroom past the longest bar keeps the outside value label
                         inside the plot; bar lengths stay proportional to their
@@ -93,7 +80,7 @@ export function HorizontalRankingChart({ rows, valueKey, labelKey = 'name', valu
                         tickLine={false}
                         axisLine={false}
                         tickMargin={8}
-                        tick={<CategoryTick rtl={rtl} maxChars={maxChars} />}
+                        tick={<CategoryTick maxChars={maxChars} />}
                     />
                     <ChartTooltip
                         cursor={{ fill: 'var(--color-accent)' }}
@@ -101,7 +88,7 @@ export function HorizontalRankingChart({ rows, valueKey, labelKey = 'name', valu
                         content={<ChartTooltipContent formatter={(value) => <span className="font-mono font-medium tabular-nums text-foreground">{resolvedFormatValue(value)}</span>} />}
                     />
                     <Bar dataKey="value" fill="var(--color-value)" radius={[0, 4, 4, 0]} maxBarSize={18} isAnimationActive={false}>
-                        <LabelList dataKey="value" content={(props) => <ValueLabel {...props} rtl={rtl} formatValue={resolvedFormatValue} />} />
+                        <LabelList dataKey="value" content={(props) => <ValueLabel {...props} formatValue={resolvedFormatValue} />} />
                     </Bar>
                 </BarChart>
             </ChartContainer>

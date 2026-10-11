@@ -2,29 +2,30 @@ import { Bar, BarChart, CartesianGrid, LabelList, Legend, XAxis, YAxis } from 'r
 import { ChartContainer, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@/Components/ui/chart';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 
-const MAX_LABEL_CHARS = { ar: 12, en: 16 };
-const AXIS_WIDTH = { ar: 100, en: 116 };
+const MAX_LABEL_CHARS = { ar: 15, en: 16 };
+const AXIS_WIDTH = { ar: 132, en: 140 };
 
 function truncateLabel(label, max) {
     return label.length > max ? `${label.slice(0, max - 1)}…` : label;
 }
 
-/**
- * Same RTL approach as HorizontalRankingChart: the chart is laid out
- * left-to-right and the SVG is mirrored with CSS, because a right-oriented
- * YAxis mis-measures its ticks and draws them on top of the bars. Text is
- * re-mirrored with a nested scale(-1,1) so it stays readable.
- */
-function CategoryTick({ x, y, payload, rtl, maxChars }) {
+function labelLines(label, max) {
+    if (label.length <= max) return [label];
+    const nextSpace = label.indexOf(' ', max);
+    const previousSpace = label.lastIndexOf(' ', max);
+    const split = nextSpace > 0 && nextSpace <= max + 3 ? nextSpace : (previousSpace > 0 ? previousSpace : max);
+    return [label.slice(0, split), truncateLabel(label.slice(split).trim(), max)];
+}
+
+function CategoryTick({ x, y, payload, maxChars }) {
     const label = String(payload.value ?? '');
+    const lines = labelLines(label, maxChars);
     return (
         <g transform={`translate(${x},${y})`}>
             <title>{label}</title>
-            <g transform={rtl ? 'scale(-1,1)' : undefined}>
-                <text dy={4} textAnchor="end" fontSize={12} className="fill-foreground">
-                    {truncateLabel(label, maxChars)}
-                </text>
-            </g>
+            <text textAnchor="end" direction="ltr" fontSize={12} className="fill-foreground">
+                {lines.map((line, index) => <tspan key={index} x="0" dy={index === 0 ? (lines.length === 1 ? 4 : -2) : 13}>{line}</tspan>)}
+            </text>
         </g>
     );
 }
@@ -33,19 +34,16 @@ const SEGMENTS = ['active', 'pending', 'inactive'];
 
 /** Draws the row total once, after the outermost non-empty segment, since
  * recharts skips labels on zero-width stacked segments. */
-function TotalLabel({ viewBox, index, data, segment, rtl }) {
-    const row = data[index];
+function TotalLabel({ viewBox, value: row, segment }) {
     if (!row || row.total === 0 || SEGMENTS.slice(SEGMENTS.indexOf(segment) + 1).some((key) => row[key] > 0)) {
         return null;
     }
     const { x, y, width, height } = viewBox;
     return (
         <g transform={`translate(${x + width},${y + height / 2})`}>
-            <g transform={rtl ? 'scale(-1,1)' : undefined}>
-                <text dy={4} dx={rtl ? -6 : 6} textAnchor={rtl ? 'end' : 'start'} direction="ltr" fontSize={12} className="fill-foreground text-xs font-semibold">
-                    {row.total}
-                </text>
-            </g>
+            <text dy={4} dx={6} textAnchor="start" direction="ltr" fontSize={12} className="fill-foreground text-xs font-semibold">
+                {row.total}
+            </text>
         </g>
     );
 }
@@ -58,7 +56,6 @@ function TotalLabel({ viewBox, index, data, segment, rtl }) {
 export function CategoryCoverage({ rows }) {
     const { admin } = useI18n();
     const locale = useLocale();
-    const rtl = locale === 'ar';
     const data = rows
         .map((row) => ({
             name: row.name,
@@ -75,8 +72,8 @@ export function CategoryCoverage({ rows }) {
 
     return (
         <>
-            <ChartContainer config={{ active: { label: admin.status_active, color: 'var(--color-success-500)' }, pending: { label: admin.status_pending, color: 'var(--color-warning-500)' }, inactive: { label: admin.status_inactive, color: 'var(--color-danger-500)' } }} className={`aspect-auto w-full ${rtl ? '[&_.recharts-surface]:-scale-x-100' : ''}`} style={{ height }}>
-                <BarChart data={data} layout="vertical" margin={{ top: 4, right: 36, bottom: 0, left: 0 }} barCategoryGap="32%">
+            <ChartContainer config={{ active: { label: admin.status_active, color: 'var(--color-success-500)' }, pending: { label: admin.status_pending, color: 'var(--color-warning-500)' }, inactive: { label: admin.status_inactive, color: 'var(--color-danger-500)' } }} className="aspect-auto w-full" style={{ height }}>
+                <BarChart data={data} layout="vertical" margin={{ top: 4, right: 48, bottom: 0, left: 0 }} barCategoryGap="32%">
                     <CartesianGrid horizontal={false} strokeDasharray="3 3" />
                     <XAxis type="number" hide />
                     <YAxis
@@ -87,13 +84,13 @@ export function CategoryCoverage({ rows }) {
                         tickLine={false}
                         axisLine={false}
                         tickMargin={8}
-                        tick={<CategoryTick rtl={rtl} maxChars={maxChars} />}
+                        tick={<CategoryTick maxChars={maxChars} />}
                     />
                     <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: 'var(--color-accent)' }} offset={16} />
                     <Legend content={<ChartLegendContent />} verticalAlign="top" />
                     {SEGMENTS.map((segment) => (
                         <Bar key={segment} dataKey={segment} stackId="vendors" fill={`var(--color-${segment})`} maxBarSize={20} isAnimationActive={false}>
-                            <LabelList dataKey="total" content={(props) => <TotalLabel {...props} data={data} segment={segment} rtl={rtl} />} />
+                            <LabelList valueAccessor={(entry) => entry.payload} content={(props) => <TotalLabel {...props} segment={segment} />} />
                         </Bar>
                     ))}
                 </BarChart>

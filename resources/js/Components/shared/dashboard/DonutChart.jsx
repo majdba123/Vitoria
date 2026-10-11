@@ -16,7 +16,7 @@ export function DonutChart({ rows, total, totalLabel, formatValue }) {
                 <ChartContainer config={Object.fromEntries(rows.map((row) => [row.key, { label: row.label, color: row.color }]))} className="aspect-square h-60 w-full">
                     <PieChart>
                         <ChartTooltip content={<ChartTooltipContent nameKey="name" formatter={(value, _name, item) => <span className="font-mono font-medium tabular-nums text-foreground">{resolvedFormatValue(value)} · {safeTotal ? Math.round((Number(value) / safeTotal) * 100) : 0}%</span>} />} />
-                        <Pie data={visibleRows} dataKey="value" nameKey="label" innerRadius="62%" outerRadius="88%" paddingAngle={2} strokeWidth={0}>
+                        <Pie data={visibleRows} dataKey="value" nameKey="label" innerRadius="62%" outerRadius="88%" paddingAngle={2} strokeWidth={0} isAnimationActive={false}>
                             {visibleRows.map((row) => <Cell key={row.key} fill={row.color} />)}
                         </Pie>
                     </PieChart>
