@@ -348,7 +348,7 @@ export default function Home({ selectedType }) {
 
             {selectedType ? (
                 <>
-                    <section id="categories" className="storefront-section homepage-section scroll-mt-24 bg-transparent">
+                    <section id="categories" className="storefront-section homepage-section home-categories-section scroll-mt-24 bg-transparent">
                         <div className="page-shell py-0">
                             <div className="commerce-section-header">
                                 <div className="min-w-0">
