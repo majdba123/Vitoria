@@ -40,7 +40,7 @@ test('vendor map is a local focusable svg rather than a third party tile map', f
     $source = file_get_contents(resource_path('js/Components/maps/DashboardVendorMap.jsx'));
 
     expect($source)
-        ->toContain("<svg viewBox={zoomed ? '45 375 35 28' : SYRIA_VIEWBOX}")
+        ->toContain('<svg viewBox={SYRIA_VIEWBOX}')
         ->toContain('tabIndex="0"')
         ->not->toContain('TILE_URL')
         ->not->toContain('loadLeaflet');
@@ -146,8 +146,11 @@ test('vendor map shows one selection panel below the svg that hover can never dr
         ->toContain('const [selectedKey, setSelectedKey] = useState(null);')
         ->toContain('const selected = selectedKey ? regionsByKey.get(selectedKey) : null;')
         ->toContain('onClick: () => { setSelectedKey(key); clearHover(); }')
-        ->toContain("viewBox={zoomed ? '45 375 35 28' : SYRIA_VIEWBOX}")
-        ->toContain('visibleRegions.map(({ key, path }) => renderRegion(key, path))')
+        ->toContain('viewBox={SYRIA_VIEWBOX}')
+        ->toContain("GOVERNORATES.filter(({ key }) => key !== 'damascus').map(({ key, path }) => renderRegion(key, path))")
+        ->toContain("renderRegion('damascus', SYRIA_GOVERNORATE_PATHS.damascus)")
+        ->toContain('data-label="damascus" role="button" tabIndex="0"')
+        ->not->toContain('zoomed')
         ->toContain('role="tooltip"')
         ->toContain('data-map-tooltip')
         ->not->toContain('tooltipPoint')
