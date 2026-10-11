@@ -25,25 +25,24 @@ function subLabel(sub, locale) {
     return locale === 'ar' ? (sub.name_ar || sub.name_en || '') : (sub.name_en || sub.name_ar || '');
 }
 
-// The visible window is capped to ~3 logos wide (see .logo-marquee in app.css), so the
-// list is duplicated only once - the minimum needed for the seamless-scroll technique
-// (animate exactly one list-width so the loop point is invisible) - without ever showing
-// two full passes of the (short) list side by side, at any viewport width.
 function PartnerLogoMarquee({ reducedMotion }) {
     const { home } = useI18n();
-    const logos = [...PARTNER_LOGOS, ...PARTNER_LOGOS];
 
     return (
         <div className="logo-marquee">
             <div className="logo-marquee-track" style={reducedMotion ? { animation: 'none' } : undefined}>
-                {logos.map((logo, index) => (
-                    <img
-                        key={`${logo.src}-${index}`}
-                        src={logo.src}
-                        alt={home[logo.altKey]}
-                        loading="lazy"
-                        className="h-16 w-auto shrink-0 object-contain opacity-90 transition duration-300 hover:opacity-100 sm:h-20"
-                    />
+                {[false, true].map((isDuplicate) => (
+                    <div key={String(isDuplicate)} className="logo-marquee-group" aria-hidden={isDuplicate || undefined}>
+                        {PARTNER_LOGOS.map((logo) => (
+                            <img
+                                key={`${logo.src}-${isDuplicate}`}
+                                src={logo.src}
+                                alt={isDuplicate ? '' : home[logo.altKey]}
+                                loading="lazy"
+                                className="logo-marquee-logo"
+                            />
+                        ))}
+                    </div>
                 ))}
             </div>
         </div>
@@ -522,7 +521,7 @@ export default function Home({ selectedType }) {
                     )}
 
                     <section className="storefront-section home-partners-section border-t border-border/60 bg-muted/20">
-                        <div className="page-shell py-0" aria-label={home.partners_title}>
+                        <div aria-label={home.partners_title}>
                             <PartnerLogoMarquee reducedMotion={reducedMotion} />
                         </div>
                     </section>

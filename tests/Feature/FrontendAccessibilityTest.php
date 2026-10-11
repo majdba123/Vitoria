@@ -120,14 +120,20 @@ test('vendor map shows one selection panel below the svg that hover can never dr
 
 test('homepage partner presentation is logos only and banners preserve their image ratio', function () {
     $source = file_get_contents(resource_path('js/Pages/Home.jsx'));
-    $partners = substr($source, strpos($source, '<section className="storefront-section border-t'));
+    $styles = file_get_contents(resource_path('css/app.css'));
+    $partners = substr($source, strpos($source, '<section className="storefront-section home-partners-section'));
 
     expect($partners)
         ->toContain('<PartnerLogoMarquee')
         ->not->toContain('home.partners_kicker')
         ->not->toContain('home.partners_subtitle')
+        ->and($source)->toContain('[false, true].map')
+        ->toContain('aria-hidden={isDuplicate || undefined}')
         ->and($source)->toContain('aspect-[16/7]')
-        ->and($source)->toContain('object-contain');
+        ->and($source)->toContain('object-contain')
+        ->and($styles)->toContain('width: 200%;')
+        ->toContain('.logo-marquee-group')
+        ->toContain('@media (prefers-reduced-motion: reduce)');
 });
 
 test('homepage product type cards keep their imagery in a responsive circular layout', function () {
@@ -136,7 +142,7 @@ test('homepage product type cards keep their imagery in a responsive circular la
 
     expect($source)
         ->toContain('grid-cols-2 place-items-center')
-        ->toContain('aspect-square w-full max-w-80')
+        ->toContain('aspect-square w-full max-w-72')
         ->toContain('rounded-full')
         ->toContain("url('/images/home-type-cards/agriculture.webp')")
         ->toContain("url('/images/home-type-cards/veterinary.webp')")

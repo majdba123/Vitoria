@@ -1544,32 +1544,47 @@
         padding-block: clamp(1.5rem, 2.5vw, 2rem);
     }
 
-    /* Infinite-scroll partner logo strip. The track renders the logo list
-       twice back to back and animates exactly one list-width of translation,
-       so the loop point is seamless regardless of how many logos there are.
-       The visible window itself is capped to roughly 3 logos wide and
-       centered, on every breakpoint - so widening the viewport never reveals
-       the second (duplicate) pass sitting beside the first; it only ever
-       reveals more empty margin around the same narrow strip. */
+    /* Two equal, viewport-wide groups keep the partner loop seamless at every width. */
     .logo-marquee {
         position: relative;
+        width: 100%;
         overflow: hidden;
-        max-width: 26rem;
-        margin-inline: auto;
-        -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
-        mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+        direction: ltr;
+        -webkit-mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+        mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
     }
 
     .logo-marquee-track {
         display: flex;
-        width: max-content;
+        width: 200%;
         align-items: center;
-        gap: 4rem;
-        animation: marquee-scroll 28s linear infinite;
+        animation: marquee-scroll 24s linear infinite;
+        will-change: transform;
     }
 
-    .logo-marquee:hover .logo-marquee-track {
-        animation-play-state: paused;
+    .logo-marquee-group {
+        display: flex;
+        flex: 0 0 50%;
+        align-items: center;
+        justify-content: space-around;
+        gap: clamp(1.5rem, 4vw, 4rem);
+        min-width: 0;
+        padding-inline: clamp(1rem, 3vw, 3rem);
+    }
+
+    .logo-marquee-logo {
+        width: auto;
+        height: clamp(3.25rem, 6vw, 5rem);
+        max-width: clamp(6.5rem, 18vw, 12rem);
+        flex-shrink: 1;
+        object-fit: contain;
+        opacity: 0.9;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .logo-marquee-track {
+            animation: none;
+        }
     }
 
     /* One cinematic hero: the approved footage is the full media layer of the
@@ -1775,22 +1790,22 @@
     .reveal-stagger.is-in-view > *:nth-child(8) { transition-delay: 420ms; }
 
     .home-type-selector {
-        @apply grid gap-4;
+        @apply grid gap-3;
         max-width: var(--content-max);
-        padding-block: clamp(2rem, 3vw, 2.75rem);
+        padding-block: clamp(1.5rem, 2.5vw, 2.25rem) clamp(1.25rem, 2vw, 1.75rem);
     }
 
     .home-type-intro {
-        @apply max-w-2xl;
+        @apply mx-auto max-w-2xl text-center;
     }
 
     .home-type-grid {
-        @apply mx-auto grid w-full max-w-3xl grid-cols-2 place-items-center gap-4 sm:gap-8 lg:gap-12;
+        @apply mx-auto grid w-full max-w-2xl grid-cols-2 place-items-center gap-3 sm:gap-7 lg:gap-10;
     }
 
     /* Circular full-bleed image cards with a bottom scrim for readable labels. */
     .home-type-card {
-        @apply relative flex aspect-square w-full max-w-80 items-end justify-center overflow-hidden rounded-full p-4 text-center sm:p-7;
+        @apply relative flex aspect-square w-full max-w-72 items-end justify-center overflow-hidden rounded-full p-4 text-center sm:p-6;
         color: var(--color-text-inverse);
         background-color: var(--color-brand-800);
         background-image: url('/images/home-type-cards/agriculture.webp');
