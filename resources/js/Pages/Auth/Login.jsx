@@ -59,8 +59,8 @@ export default function Login() {
             <Head title={authPage.sign_in}>
                 <meta name="robots" content="noindex, nofollow" />
             </Head>
-            <main className="grid min-h-svh bg-background lg:grid-cols-2">
-                <section className="flex min-h-svh flex-col gap-8 p-5 sm:p-8 lg:p-10">
+            <main className="grid min-h-dvh bg-background lg:grid-cols-2">
+                <section className="flex min-h-dvh flex-col gap-6 p-5 sm:p-8 lg:p-8">
                     <header className="flex items-center justify-between gap-4">
                         <Link href={route('home')} aria-label="Vetora" className="inline-flex min-h-11 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                             <img src="/images/vetora-logo-transparent.png" alt="Vetora" className="h-9 w-auto object-contain" />
@@ -71,7 +71,7 @@ export default function Login() {
                         </div>
                     </header>
 
-                    <div className="flex flex-1 items-center justify-center py-8">
+                    <div className="flex flex-1 items-center justify-center py-4">
                         <div className="w-full max-w-md">
                             <div className="mb-10">
                                 <h1 className="font-display text-4xl font-bold leading-tight text-foreground sm:text-5xl">{authPage.welcome_back}</h1>

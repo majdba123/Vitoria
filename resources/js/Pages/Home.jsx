@@ -335,10 +335,7 @@ export default function Home({ selectedType }) {
 
             <BannerStrip />
 
-            <section id="home-type-selector" className="page-shell home-type-selector" aria-labelledby="home-type-heading">
-                <div className="home-type-intro">
-                    <h2 id="home-type-heading" className="commerce-title">{home.type_selector_title}</h2>
-                </div>
+            <section id="home-type-selector" className="page-shell home-type-selector" aria-label={home.type_selector_title}>
                 <div className="home-type-grid">
                     {Object.entries(TYPE_META).map(([value, meta], index) => (
                         <TypeCard key={value} value={value} meta={meta} index={index} isSelected={selectedType === value} home={home} />

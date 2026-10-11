@@ -70,8 +70,8 @@ export default function Register() {
             <Head title={authPage.create_account_title}>
                 <meta name="robots" content="noindex, nofollow" />
             </Head>
-            <main className="grid min-h-svh bg-background lg:grid-cols-[minmax(0,1.35fr)_minmax(22rem,0.65fr)]">
-                <section className="flex min-h-svh min-w-0 flex-col gap-8 p-5 sm:p-8 lg:p-10 xl:p-12">
+            <main className="grid min-h-dvh bg-background lg:grid-cols-[minmax(0,1.35fr)_minmax(22rem,0.65fr)]">
+                <section className="flex min-h-dvh min-w-0 flex-col gap-6 p-5 sm:p-8 lg:gap-3 lg:px-8 lg:py-4">
                     <header className="flex items-center justify-between gap-4">
                         <Link href={route('home')} aria-label="Vetora" className="inline-flex min-h-11 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                             <img src="/images/vetora-logo-transparent.png" alt="Vetora" className="h-9 w-auto object-contain" />
@@ -82,12 +82,12 @@ export default function Register() {
                         </div>
                     </header>
 
-                    <div className="flex flex-1 items-center justify-center py-4 sm:py-8">
+                    <div className="flex flex-1 items-center justify-center py-4 lg:py-0">
                         <div className="w-full max-w-4xl">
-                            <div className="mb-8 flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
+                            <div className="mb-6 flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between lg:mb-3 lg:pb-3">
                                 <div>
                                     <p className="text-xs font-semibold uppercase tracking-[0.1em] text-primary rtl:normal-case rtl:tracking-normal">{authPage.register_intro_eyebrow}</p>
-                                    <h1 className="mt-3 font-display text-4xl font-bold leading-tight text-foreground sm:text-5xl">{authPage.create_account_title}</h1>
+                                    <h1 className="mt-3 font-display text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:mt-2 lg:text-4xl">{authPage.create_account_title}</h1>
                                     <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">{authPage.join_today}</p>
                                 </div>
                                 <Button asChild variant="outline" size="sm" className="shrink-0">
@@ -98,8 +98,8 @@ export default function Register() {
                             {generalError && <p className="mb-4 rounded-md border border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-danger-strong)]">{generalError}</p>}
                             {successMessage && <p className="mb-4 rounded-md border border-[var(--color-success-200)] bg-[var(--color-success-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-success-strong)]">{successMessage}</p>}
 
-                            <form onSubmit={handleSubmit} className="space-y-7" noValidate>
-                                <div className="grid gap-5 sm:grid-cols-2">
+                            <form onSubmit={handleSubmit} className="space-y-5 lg:space-y-3" noValidate>
+                                <div className="grid gap-5 sm:grid-cols-2 lg:gap-2">
                                     <TextField id="name" label={authPage.full_name} placeholder={authPage.placeholder_full_name} required autoComplete="name" value={form.name} onChange={(e) => set('name')(e.target.value)} error={errors.name} className="h-11 text-base" />
                                     <TextField id="phone_number" label={authPage.phone_number} type="tel" placeholder={authPage.placeholder_phone} required autoComplete="tel" value={form.phone_number} onChange={(e) => set('phone_number')(e.target.value)} error={errors.phone_number} className="h-11 text-base" />
                                     <TextField id="national_id" label={authPage.national_id} placeholder={authPage.placeholder_national_id} required value={form.national_id} onChange={(e) => set('national_id')(e.target.value)} error={errors.national_id} className="h-11 text-base" />
@@ -108,13 +108,13 @@ export default function Register() {
                                     <SelectField id="city_id" label={authPage.city} required value={form.city_id} onValueChange={set('city_id')} placeholder={authPage.select_city} options={cities.map((c) => ({ value: c.id, label: c.name }))} error={errors.city_id} />
                                 </div>
 
-                                <div className="grid gap-5 sm:grid-cols-2">
+                                <div className="grid gap-5 sm:grid-cols-2 lg:gap-2">
                                     <TextField id="email" label={authPage.email} type="email" placeholder={authPage.placeholder_email} required autoComplete="email" value={form.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} className="h-11 text-base sm:col-span-2" />
                                     <TextField id="password" label={authPage.password} type="password" placeholder={authPage.placeholder_password} required autoComplete="new-password" value={form.password} onChange={(e) => set('password')(e.target.value)} error={errors.password} className="h-11 text-base" />
                                     <TextField id="password_confirmation" label={authPage.confirm_password} type="password" placeholder={authPage.placeholder_password_confirm} required autoComplete="new-password" value={form.password_confirmation} onChange={(e) => set('password_confirmation')(e.target.value)} error={errors.password_confirmation} className="h-11 text-base" />
                                 </div>
 
-                                <div className="flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
+                                <div className="flex flex-col gap-4 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between lg:pt-3">
                                     <p className="text-sm text-muted-foreground">
                                         {authPage.has_account} <Link href={route('login')} className="font-semibold text-primary hover:underline">{nav.sign_in}</Link>
                                     </p>

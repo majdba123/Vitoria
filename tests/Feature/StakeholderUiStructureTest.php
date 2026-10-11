@@ -39,7 +39,7 @@ test('stakeholder UI structure removes duplicated navigation and keeps shared he
 test('register page uses the Login family at desktop and remains single column on narrow screens', function () {
     $register = file_get_contents(resource_path('js/Pages/Auth/Register.jsx'));
 
-    expect($register)->toContain('grid min-h-svh bg-background lg:grid-cols-', 'w-full max-w-4xl', 'grid gap-5 sm:grid-cols-2', 'h-11 text-base')
+    expect($register)->toContain('grid min-h-dvh bg-background lg:grid-cols-', 'w-full max-w-4xl', 'grid gap-5 sm:grid-cols-2', 'h-11 text-base')
         ->toContain('<LanguageSwitcher />', '<ThemeToggle')
         ->not->toContain('role', 'business_type', 'vendor');
 });

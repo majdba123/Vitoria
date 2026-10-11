@@ -1794,22 +1794,18 @@
     .reveal-stagger.is-in-view > *:nth-child(8) { transition-delay: 420ms; }
 
     .home-type-selector {
-        @apply grid gap-3;
+        @apply grid;
         max-width: var(--content-max);
-        padding-block: clamp(1.25rem, 2vw, 2rem) clamp(0.75rem, 1.5vw, 1.25rem);
-    }
-
-    .home-type-intro {
-        @apply mx-auto max-w-2xl text-center;
+        padding-block: clamp(1rem, 2vw, 1.5rem) clamp(0.5rem, 1vw, 1rem);
     }
 
     .home-type-grid {
-        @apply mx-auto grid w-full max-w-xl grid-cols-2 place-items-center gap-3 sm:gap-6 lg:gap-8;
+        @apply mx-auto grid w-full max-w-[38rem] grid-cols-2 place-items-center gap-4 sm:gap-6;
     }
 
     /* Circular full-bleed image cards with a bottom scrim for readable labels. */
     .home-type-card {
-        @apply relative flex aspect-square w-full max-w-68 items-end justify-center overflow-hidden rounded-full p-4 text-center sm:p-6;
+        @apply relative flex aspect-square w-full max-w-72 items-end justify-center overflow-hidden rounded-full p-4 text-center sm:p-6;
         color: var(--color-text-inverse);
         background-color: var(--color-brand-800);
         background-image: url('/images/home-type-cards/agriculture.webp');

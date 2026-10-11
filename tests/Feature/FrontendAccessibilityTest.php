@@ -142,7 +142,7 @@ test('homepage product type cards keep their imagery in a responsive circular la
 
     expect($source)
         ->toContain('grid-cols-2 place-items-center')
-        ->toContain('aspect-square w-full max-w-68')
+        ->toContain('aspect-square w-full max-w-72')
         ->toContain('rounded-full')
         ->toContain("url('/images/home-type-cards/agriculture.webp')")
         ->toContain("url('/images/home-type-cards/veterinary.webp')")
@@ -150,6 +150,8 @@ test('homepage product type cards keep their imagery in a responsive circular la
         ->toContain('.home-categories-section')
         ->toContain('.home-partners-section')
         ->and($homepage)->toContain('home-categories-section')
+        ->toContain('aria-label={home.type_selector_title}')
+        ->not->toContain('<h2 id="home-type-heading"')
         ->toContain('className="logo-marquee"')
         ->not->toContain('className="logo-marquee mt-10"');
 });
