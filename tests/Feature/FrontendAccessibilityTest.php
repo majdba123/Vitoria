@@ -130,6 +130,17 @@ test('homepage partner presentation is logos only and banners preserve their ima
         ->and($source)->toContain('object-contain');
 });
 
+test('homepage product type cards keep their imagery in a responsive circular layout', function () {
+    $source = file_get_contents(resource_path('css/app.css'));
+
+    expect($source)
+        ->toContain('grid-cols-2 place-items-center')
+        ->toContain('aspect-square w-full max-w-80')
+        ->toContain('rounded-full')
+        ->toContain("url('/images/home-type-cards/agriculture.webp')")
+        ->toContain("url('/images/home-type-cards/veterinary.webp')");
+});
+
 test('public storefront keeps localized footer copy and semantic category fallbacks', function () {
     app()->setLocale('ar');
     $arabicTagline = __('home.tagline');
