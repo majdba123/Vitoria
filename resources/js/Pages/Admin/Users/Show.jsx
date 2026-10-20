@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { Button } from '@/Components/ui/button';
+import { useAdminPermissions } from '@/hooks/use-admin-permissions';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { formatCurrency, formatDate } from '@/lib/date-time';
 import { translatedStatus } from '@/lib/translated-enum';
@@ -25,6 +26,7 @@ export default function UsersShow({ userId }) {
     const [recentOrders, setRecentOrders] = useState([]);
     const [ordersStatus, setOrdersStatus] = useState('loading');
     const isCustomer = user?.type === 0;
+    const canViewOrders = useAdminPermissions().can('orders.view');
 
     useEffect(() => {
         window.axios.get(`/api/admin/users/${userId}`, { silent: true }).then((res) => {
@@ -37,11 +39,13 @@ export default function UsersShow({ userId }) {
             setFavStatus('ready');
         }).catch(() => setFavStatus('error'));
 
-        window.axios.get('/api/admin/orders', { params: { user_id: userId, per_page: 5 }, silent: true }).then((res) => {
-            setRecentOrders(res.data?.data ?? []);
-            setOrdersStatus('ready');
-        }).catch(() => setOrdersStatus('error'));
-    }, [userId]);
+        if (canViewOrders) {
+            window.axios.get('/api/admin/orders', { params: { user_id: userId, per_page: 5 }, silent: true }).then((res) => {
+                setRecentOrders(res.data?.data ?? []);
+                setOrdersStatus('ready');
+            }).catch(() => setOrdersStatus('error'));
+        }
+    }, [userId, canViewOrders]);
 
     return (
         <AdminLayout title={user?.name ?? admin.user_profile_title}>
@@ -168,40 +172,42 @@ export default function UsersShow({ userId }) {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-border/80 shadow-none lg:col-span-2">
-                        <CardHeader className="border-b border-border/80">
-                            <CardTitle className="text-base font-bold">{admin.recent_orders_title}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex flex-col gap-2 p-5">
-                            {ordersStatus === 'loading' && (
-                                <div className="flex flex-col gap-2">
-                                    {[0, 1, 2].map((i) => <Skeleton key={i} className="h-14 w-full rounded-md" />)}
-                                </div>
-                            )}
-                            {ordersStatus === 'ready' && recentOrders.length === 0 && (
-                                <div className="py-10 text-center">
-                                    <ShoppingBag className="mx-auto size-10 text-muted-foreground/40" />
-                                    <p className="mt-2 text-sm font-semibold text-muted-foreground">{admin.no_orders_yet}</p>
-                                </div>
-                            )}
-                            {recentOrders.slice(0, 5).map((order) => (
-                                <Link
-                                    key={order.id}
-                                    href={route('admin.orders.show', order.id)}
-                                    className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2 transition-colors hover:bg-muted"
-                                >
-                                    <span className="min-w-0">
-                                        <span className="block truncate font-semibold text-foreground">{order.order_number || ordersLang.order_number_fallback.replace(':id', String(order.id))}</span>
-                                        <span className="block text-xs text-muted-foreground" dir="auto">{formatDate(order.created_at, locale)}</span>
-                                    </span>
-                                    <span className="flex shrink-0 items-center gap-2">
-                                        <StatusBadge tone={order.status === 'completed' ? 'success' : order.status === 'cancelled' ? 'danger' : 'warning'}>{translatedStatus(order.status, common)}</StatusBadge>
-                                        <span className="tabular-nums font-medium text-foreground">{formatCurrency(order.grand_total ?? 0, locale)}</span>
-                                    </span>
-                                </Link>
-                            ))}
-                        </CardContent>
-                    </Card>
+                    {canViewOrders && (
+                        <Card className="border-border/80 shadow-none lg:col-span-2">
+                            <CardHeader className="border-b border-border/80">
+                                <CardTitle className="text-base font-bold">{admin.recent_orders_title}</CardTitle>
+                            </CardHeader>
+                            <CardContent className="flex flex-col gap-2 p-5">
+                                {ordersStatus === 'loading' && (
+                                    <div className="flex flex-col gap-2">
+                                        {[0, 1, 2].map((i) => <Skeleton key={i} className="h-14 w-full rounded-md" />)}
+                                    </div>
+                                )}
+                                {ordersStatus === 'ready' && recentOrders.length === 0 && (
+                                    <div className="py-10 text-center">
+                                        <ShoppingBag className="mx-auto size-10 text-muted-foreground/40" />
+                                        <p className="mt-2 text-sm font-semibold text-muted-foreground">{admin.no_orders_yet}</p>
+                                    </div>
+                                )}
+                                {recentOrders.slice(0, 5).map((order) => (
+                                    <Link
+                                        key={order.id}
+                                        href={route('admin.orders.show', order.id)}
+                                        className="flex items-center justify-between gap-3 rounded-md border border-border px-3 py-2 transition-colors hover:bg-muted"
+                                    >
+                                        <span className="min-w-0">
+                                            <span className="block truncate font-semibold text-foreground">{order.order_number || ordersLang.order_number_fallback.replace(':id', String(order.id))}</span>
+                                            <span className="block text-xs text-muted-foreground" dir="auto">{formatDate(order.created_at, locale)}</span>
+                                        </span>
+                                        <span className="flex shrink-0 items-center gap-2">
+                                            <StatusBadge tone={order.status === 'completed' ? 'success' : order.status === 'cancelled' ? 'danger' : 'warning'}>{translatedStatus(order.status, common)}</StatusBadge>
+                                            <span className="tabular-nums font-medium text-foreground">{formatCurrency(order.grand_total ?? 0, locale)}</span>
+                                        </span>
+                                    </Link>
+                                ))}
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
             )}
         </AdminLayout>

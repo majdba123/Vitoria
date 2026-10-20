@@ -31,6 +31,7 @@ export default function RoleForm({ roleId }) {
     const [status, setStatus] = useState('loading');
     const [groups, setGroups] = useState([]);
     const [form, setForm] = useState({ key: '', name_en: '', name_ar: '', permissions: [] });
+    const [savedPermissions, setSavedPermissions] = useState([]);
     const [search, setSearch] = useState('');
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [successMessage, setSuccessMessage] = useState(null);
@@ -52,6 +53,7 @@ export default function RoleForm({ roleId }) {
                         name_ar: isEdit ? role.name_ar : '',
                         permissions: role.permissions ?? [],
                     });
+                    setSavedPermissions(isEdit ? (role.permissions ?? []) : []);
                 }
                 setStatus(isEdit && role && !role.can_edit ? 'locked' : 'ready');
             })
@@ -94,7 +96,7 @@ export default function RoleForm({ roleId }) {
             return [...keys];
         });
 
-    const sensitiveSelected = form.permissions.filter((key) => permissionMeta[key]?.sensitive);
+    const sensitiveAdded = form.permissions.filter((key) => permissionMeta[key]?.sensitive && !savedPermissions.includes(key));
 
     const save = async () => {
         setConfirmOpen(false);
@@ -106,6 +108,7 @@ export default function RoleForm({ roleId }) {
         try {
             await submit(isEdit ? 'put' : 'post', isEdit ? `/api/admin/roles/${roleId}` : '/api/admin/roles', payload);
             if (isEdit) {
+                setSavedPermissions(form.permissions);
                 setSuccessMessage(admin.rbac_role_updated);
             } else {
                 router.visit(route('admin.roles.index'));
@@ -117,7 +120,7 @@ export default function RoleForm({ roleId }) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (sensitiveSelected.length > 0) {
+        if (sensitiveAdded.length > 0) {
             setConfirmOpen(true);
             return;
         }
@@ -274,7 +277,7 @@ export default function RoleForm({ roleId }) {
                         <DialogDescription>{admin.rbac_sensitive_confirm_copy}</DialogDescription>
                     </DialogHeader>
                     <ul className="list-disc space-y-1 ps-5 text-sm text-foreground">
-                        {sensitiveSelected.map((key) => (
+                        {sensitiveAdded.map((key) => (
                             <li key={key}>{labelFor(key)}</li>
                         ))}
                     </ul>

@@ -18,6 +18,7 @@ import {
 } from '@/Components/ui/select';
 import { Card, CardContent } from '@/Components/ui/card';
 import { useAdminList } from '@/hooks/use-admin-list';
+import { useAdminPermissions } from '@/hooks/use-admin-permissions';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { formatCurrency, formatPercent } from '@/lib/date-time';
 
@@ -31,6 +32,7 @@ export default function ProductsIndex({ discountOnly = false }) {
     const [categoryId, setCategoryId] = useState('all');
     const [activeFilter, setActiveFilter] = useState('all');
     const [discountFilter, setDiscountFilter] = useState(discountOnly ? '1' : 'all');
+    const { can } = useAdminPermissions();
     const [vendors, setVendors] = useState([]);
     const [categories, setCategories] = useState([]);
     const [deleteTarget, setDeleteTarget] = useState(null);
@@ -48,7 +50,9 @@ export default function ProductsIndex({ discountOnly = false }) {
     });
 
     useEffect(() => {
-        window.axios.get('/api/admin/vendors', { params: { per_page: 100 }, silent: true }).then((res) => setVendors(res.data?.data ?? []));
+        if (can('vendors.view')) {
+            window.axios.get('/api/admin/vendors', { params: { per_page: 100 }, silent: true }).then((res) => setVendors(res.data?.data ?? []));
+        }
     }, []);
 
     useEffect(() => {
@@ -187,7 +191,7 @@ export default function ProductsIndex({ discountOnly = false }) {
 
             <Card className="border-border/80 shadow-none">
                 <CardContent className="grid gap-4 p-4 sm:grid-cols-3 xl:grid-cols-6">
-                    <FilterSelect label={admin.filter_by_vendor} value={vendorId} onValueChange={(v) => { setVendorId(v); setPage(1); }} allLabel={admin.all_vendors} options={vendors.map((v) => ({ value: String(v.id), label: v.store_name }))} />
+                    {can('vendors.view') && <FilterSelect label={admin.filter_by_vendor} value={vendorId} onValueChange={(v) => { setVendorId(v); setPage(1); }} allLabel={admin.all_vendors} options={vendors.map((v) => ({ value: String(v.id), label: v.store_name }))} />}
                     <FilterSelect label={admin.filter_by_product_status} value={productStatus} onValueChange={(v) => { setProductStatus(v); setPage(1); }} allLabel={admin.all_status} options={[{ value: 'pending', label: admin.status_pending }, { value: 'approved', label: admin.status_approved }, { value: 'rejected', label: admin.status_rejected }]} />
                     <FilterSelect label={admin.filter_by_type} value={categoryType} onValueChange={(v) => { setCategoryType(v); setCategoryId('all'); setPage(1); }} allLabel={admin.all_types} options={[{ value: 'agriculture', label: admin.type_agriculture }, { value: 'veterinary', label: admin.type_veterinary }]} />
                     <FilterSelect label={admin.filter_by_category} value={categoryId} onValueChange={(v) => { setCategoryId(v); setPage(1); }} allLabel={admin.all_categories} options={categories.map((c) => ({ value: String(c.id), label: c.name }))} />

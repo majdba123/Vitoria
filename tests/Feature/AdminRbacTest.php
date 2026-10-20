@@ -426,3 +426,26 @@ it('refuses to adopt a non-admin role that already uses the super admin key', fu
 
     expect(fn () => $migration->up())->toThrow(RuntimeException::class);
 });
+
+it('only requests another section\'s admin data when the signed-in admin holds its permission', function (string $page, string $endpoint, string $permission) {
+    $source = file_get_contents(resource_path("js/{$page}"));
+
+    expect($source)->toContain($endpoint)
+        ->and(str_contains($source, "can('{$permission}')"))->toBeTrue("{$page} fetches {$endpoint} without checking {$permission}");
+})->with([
+    'dashboard users' => ['hooks/use-admin-dashboard.js', "'/api/admin/users'", 'users.view'],
+    'dashboard vendors' => ['hooks/use-admin-dashboard.js', "'/api/admin/vendors'", 'vendors.view'],
+    'dashboard products' => ['hooks/use-admin-dashboard.js', "'/api/admin/products'", 'products.view'],
+    'dashboard vendor map' => ['Pages/Admin/Dashboard.jsx', '/api/admin/vendors/map', 'vendors.view'],
+    'orders user filter' => ['Pages/Admin/Orders/Index.jsx', "'/api/admin/users'", 'users.view'],
+    'orders vendor filter' => ['Pages/Admin/Orders/Index.jsx', "'/api/admin/vendors'", 'vendors.view'],
+    'products vendor filter' => ['Pages/Admin/Products/Index.jsx', "'/api/admin/vendors'", 'vendors.view'],
+    'user profile orders' => ['Pages/Admin/Users/Show.jsx', "'/api/admin/orders'", 'orders.view'],
+]);
+
+it('asks for confirmation only for sensitive permissions a role does not already hold', function () {
+    $source = file_get_contents(resource_path('js/Pages/Admin/Roles/Form.jsx'));
+
+    expect($source)->toContain('permissionMeta[key]?.sensitive && !savedPermissions.includes(key)')
+        ->toContain('setSavedPermissions(isEdit ? (role.permissions ?? []) : [])');
+});
