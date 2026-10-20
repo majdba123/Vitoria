@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use App\Models\User;
+
 /**
  * Route-name → admin permission map, enforced for every back-office route by
  * EnsureAdminPermission (alias `admin.permission`).
@@ -10,18 +12,41 @@ namespace App\Support;
  * with 403 for everyone except a super administrator, and
  * AdminRoutePermissionCoverageTest fails the build when a newly added admin
  * route is missing from this map. Entries mapped to OPEN are reachable by any
- * authenticated admin (reference-data reads, the /admin redirect).
+ * authenticated admin (reference-data reads, the /admin landing redirect).
+ * A value of the form `a|b` is satisfied by holding any one of the listed
+ * permissions (the role editor's reads, for role managers without roles.view).
  */
 final class AdminRoutePermissions
 {
     public const OPEN = '*';
 
     /**
+     * @var list<string>
+     */
+    public const LANDING_ROUTES = [
+        'admin.dashboard',
+        'admin.orders.index',
+        'admin.vendors.index',
+        'admin.products.index',
+        'admin.users.index',
+        'admin.syndicates.index',
+        'admin.financials.index',
+        'admin.shipments.index',
+        'admin.coupons.index',
+        'admin.notifications.index',
+        'admin.contact-messages.index',
+        'admin.pages.index',
+        'admin.roles.index',
+        'admin.audit-logs.index',
+        'admin.categories.index',
+    ];
+
+    /**
      * @var array<string, string>
      */
     public const MAP = [
         // ── Web (Inertia page shells) ────────────────────────────────────
-        'admin.' => self::OPEN,
+        'admin.home' => self::OPEN,
         'admin.dashboard' => 'dashboard.view',
         'admin.financials.index' => 'financials.view',
         'admin.vendors.index' => 'vendors.view',
@@ -138,8 +163,8 @@ final class AdminRoutePermissions
         'api.admin.users.destroy' => 'users.delete',
         'api.admin.users.admin-roles' => 'roles.assign',
         'api.admin.roles.index' => 'roles.view',
-        'api.admin.roles.show' => 'roles.view',
-        'api.admin.roles.permissions' => 'roles.view',
+        'api.admin.roles.show' => 'roles.view|roles.manage',
+        'api.admin.roles.permissions' => 'roles.view|roles.manage',
         'api.admin.roles.store' => 'roles.manage',
         'api.admin.roles.update' => 'roles.manage',
         'api.admin.roles.destroy' => 'roles.manage',
@@ -264,5 +289,36 @@ final class AdminRoutePermissions
     public static function for(?string $routeName): ?string
     {
         return $routeName === null ? null : (self::MAP[$routeName] ?? null);
+    }
+
+    public static function allows(User $user, string $required): bool
+    {
+        if ($required === self::OPEN || $user->isSuperAdmin()) {
+            return true;
+        }
+
+        foreach (explode('|', $required) as $permission) {
+            if ($user->hasAdminPermission($permission)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * The first back-office page, in sidebar order, the admin may open, so a
+     * delegated admin without `dashboard.view` never lands on Access denied.
+     * Categories are open to every admin, so this always resolves.
+     */
+    public static function landingRouteFor(User $user): string
+    {
+        foreach (self::LANDING_ROUTES as $routeName) {
+            if (self::allows($user, self::MAP[$routeName])) {
+                return $routeName;
+            }
+        }
+
+        return 'admin.categories.index';
     }
 }

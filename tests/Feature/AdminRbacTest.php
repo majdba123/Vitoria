@@ -62,8 +62,12 @@ it('maps every admin web and api route to a known permission', function () {
 
         if ($permission === null) {
             $unmapped[] = $name;
-        } elseif ($permission !== AdminRoutePermissions::OPEN && ! AdminPermissions::exists($permission)) {
-            $unknown[] = "{$name} => {$permission}";
+        } elseif ($permission !== AdminRoutePermissions::OPEN) {
+            foreach (explode('|', $permission) as $key) {
+                if (! AdminPermissions::exists($key)) {
+                    $unknown[] = "{$name} => {$key}";
+                }
+            }
         }
     }
 
@@ -448,4 +452,55 @@ it('asks for confirmation only for sensitive permissions a role does not already
 
     expect($source)->toContain('permissionMeta[key]?.sensitive && !savedPermissions.includes(key)')
         ->toContain('setSavedPermissions(isEdit ? (role.permissions ?? []) : [])');
+});
+
+it('sends each admin from /admin to the first back-office page they may open', function (array $permissions, string $expectedRoute) {
+    $this->actingAs(rbacAdminWith($permissions))
+        ->get('/admin')
+        ->assertRedirect(route($expectedRoute));
+})->with([
+    'dashboard holder' => [['dashboard.view', 'orders.view'], 'admin.dashboard'],
+    'orders only' => [['orders.view'], 'admin.orders.index'],
+    'audit trail only' => [['audit_logs.view'], 'admin.audit-logs.index'],
+    'no permissions' => [[], 'admin.categories.index'],
+]);
+
+it('points the admin login redirect at the landing route rather than the dashboard', function () {
+    $admin = rbacAdminWith(['orders.view']);
+    $admin->forceFill(['password' => bcrypt('landing-secret-1')])->save();
+
+    $this->postJson('/api/auth/login', ['phone_number' => $admin->phone_number, 'password' => 'landing-secret-1'])
+        ->assertOk()
+        ->assertJsonPath('data.redirect_url', route('admin.home'));
+});
+
+it('sends admins to the landing route from every frontend dashboard link', function (string $path) {
+    $source = file_get_contents(resource_path($path));
+
+    expect($source)->toContain("1: 'admin.home'")
+        ->and($source)->not->toContain("1: 'admin.dashboard'");
+})->with([
+    'login page' => 'js/Pages/Auth/Login.jsx',
+    'profile menu' => 'js/Components/public/ProfileMenu.jsx',
+    'mobile drawer' => 'js/Components/public/MobileDrawer.jsx',
+]);
+
+it('lets a role manager without roles.view load the role editor data', function () {
+    $role = rbacRole(['orders.view']);
+    Sanctum::actingAs(rbacAdminWith(['roles.manage', 'orders.view']));
+
+    $this->getJson('/api/admin/roles/permissions')->assertOk();
+    $this->getJson("/api/admin/roles/{$role->id}")->assertOk();
+    $this->getJson('/api/admin/roles')->assertForbidden();
+});
+
+it('shows product mutations only to admins who may perform them', function () {
+    $source = file_get_contents(resource_path('js/Pages/Admin/Products/Index.jsx'));
+
+    expect($source)->toContain("const canModerate = can('products.moderate');")
+        ->toContain("const canManage = can('products.manage');")
+        ->toContain('return canModerate ? <button type="button" onClick={() => toggleActive(row)}>')
+        ->toContain('render: (row) => !canModerate ? (')
+        ->toContain('actions={canManage && (')
+        ->toContain("{canManage && (\n                        <>\n                            <Button asChild variant=\"outline\" size=\"sm\">\n                                <Link href={route('admin.products.edit', row.id)}>");
 });

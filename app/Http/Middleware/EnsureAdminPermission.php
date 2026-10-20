@@ -65,6 +65,6 @@ class EnsureAdminPermission
             return false;
         }
 
-        return $required === AdminRoutePermissions::OPEN || $user->hasAdminPermission($required);
+        return AdminRoutePermissions::allows($user, $required);
     }
 }

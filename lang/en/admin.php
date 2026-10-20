@@ -664,7 +664,7 @@ return [
     'rbac_self_manage' => 'You cannot change your own roles.',
     'rbac_forbidden_title' => 'Access denied',
     'rbac_forbidden_copy' => 'Your role does not include access to this page. Ask a super administrator if you need it.',
-    'rbac_forbidden_back' => 'Back to dashboard',
+    'rbac_forbidden_back' => 'Back to admin home',
     'rbac_load_error' => 'Could not load this data. Check your connection and try again.',
     'rbac_error_escalation' => 'You can only grant, change or revoke permissions you hold yourself.',
     'rbac_error_self_assignment' => 'You cannot change your own administrator roles.',

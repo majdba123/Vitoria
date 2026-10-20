@@ -5,7 +5,7 @@ import { useAuthUser, useI18n } from '@/hooks/use-i18n';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 
 const ROLE_KEY = { 0: 'customer', 1: 'admin', 2: 'business_account', 3: 'syndicate', 4: 'employee' };
-const DASHBOARD_ROUTE = { 1: 'admin.dashboard', 2: 'vendor.dashboard', 3: 'syndicate.dashboard', 4: 'employee.dashboard' };
+const DASHBOARD_ROUTE = { 1: 'admin.home', 2: 'vendor.dashboard', 3: 'syndicate.dashboard', 4: 'employee.dashboard' };
 
 export function ProfileMenu() {
     const { nav, common } = useI18n();

@@ -134,7 +134,7 @@ class User extends Authenticatable
     public function redirectAfterLogin(): \Illuminate\Http\RedirectResponse
     {
         return match ($this->type) {
-            self::TYPE_ADMIN => redirect()->route('admin.dashboard'),
+            self::TYPE_ADMIN => redirect()->route('admin.home'),
             self::TYPE_VENDOR => redirect()->route('vendor.dashboard'),
             self::TYPE_SYNDICATE => redirect()->route('syndicate.dashboard'),
             self::TYPE_EMPLOYEE => redirect()->route('employee.dashboard'),

@@ -14,7 +14,7 @@ export function AdminSidebar(props) {
         <RoleSidebar
             {...props}
             brandIcon={Warehouse}
-            homeHref={route('admin.dashboard')}
+            homeHref={route('admin.home')}
             workspaceLabel={admin.badge}
             navigationLabel={admin.navigation_label}
             groups={groups}

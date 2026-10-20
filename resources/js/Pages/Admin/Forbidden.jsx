@@ -18,7 +18,7 @@ export default function Forbidden() {
                     <h2 className="font-display text-xl font-semibold text-foreground">{admin.rbac_forbidden_title}</h2>
                     <p className="max-w-[48ch] text-sm leading-6 text-muted-foreground">{admin.rbac_forbidden_copy ?? common.forbidden}</p>
                     <Button asChild className="min-h-11">
-                        <Link href={route('admin.dashboard')}>{admin.rbac_forbidden_back}</Link>
+                        <Link href={route('admin.home')}>{admin.rbac_forbidden_back}</Link>
                     </Button>
                 </CardContent>
             </Card>

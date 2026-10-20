@@ -262,10 +262,10 @@ Route::prefix('employee')->as('employee.')->middleware(['auth', 'employee'])->gr
 |
 */
 Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin', 'admin.permission'])->group(function () {
-    // Redirect /admin to /admin/dashboard
-    Route::get('/', function () {
-        return redirect()->route('admin.dashboard');
-    });
+    // Redirect /admin to the first page this admin may open
+    Route::get('/', function (\Illuminate\Http\Request $request) {
+        return redirect()->route(\App\Support\AdminRoutePermissions::landingRouteFor($request->user()));
+    })->name('home');
 
     // Dashboard
     Route::get('/dashboard', function () {
