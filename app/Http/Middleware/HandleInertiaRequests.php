@@ -63,6 +63,10 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'auth' => [
                 'user' => $user ? (new UserResource($user->loadMissing('syndicate')))->resolve($request) : null,
+                // Drives menu/action visibility only; every route and action
+                // is still authorized server-side (EnsureAdminPermission).
+                'permissions' => $user?->isAdmin() ? $user->adminPermissionKeys() : [],
+                'is_super_admin' => $user?->isAdmin() ? $user->isSuperAdmin() : false,
             ],
             'locale' => app()->getLocale(),
             'direction' => app()->getLocale() === 'ar' ? 'rtl' : 'ltr',

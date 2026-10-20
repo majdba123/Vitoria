@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\AdminPermissions;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -215,7 +216,9 @@ class User extends Authenticatable
             ->with('role.permissions')
             ->first();
 
-        return $membership !== null && $membership->role->permissions->contains('key', $permission);
+        return $membership !== null
+            && $membership->role->scope === Role::SCOPE_VENDOR
+            && $membership->role->permissions->contains('key', $permission);
     }
 
     /**
@@ -241,8 +244,102 @@ class User extends Authenticatable
     public function hasEmployeePermission(string $permission): bool
     {
         return $this->employeeRoles()
+            ->where('roles.scope', Role::SCOPE_EMPLOYEE)
             ->whereHas('permissions', fn ($query) => $query->where('key', $permission))
             ->exists();
+    }
+
+    /**
+     * Every platform-admin role assigned to this user. Only roles whose
+     * `scope` is `admin` are ever honoured from this table.
+     */
+    public function adminRoles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'admin_roles')
+            ->withPivot('assigned_by_user_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Whether this administrator holds the protected `super_admin` role —
+     * the only unrestricted back-office capability. An admin-type account
+     * without it is a delegated administrator limited to its roles.
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->isAdmin() && $this->resolveAdminAccess()['super'];
+    }
+
+    /**
+     * Effective back-office permission keys: the full catalog for a super
+     * administrator, otherwise the union of the admin-scoped roles' keys
+     * (restricted to the catalog). Non-admin accounts have none, whatever
+     * roles they hold in other scopes.
+     *
+     * @return list<string>
+     */
+    public function adminPermissionKeys(): array
+    {
+        return $this->isAdmin() ? $this->resolveAdminAccess()['keys'] : [];
+    }
+
+    /**
+     * Whether this administrator may perform the back-office action `$key`.
+     */
+    public function hasAdminPermission(string $key): bool
+    {
+        return in_array($key, $this->adminPermissionKeys(), true);
+    }
+
+    /**
+     * Resolves admin access once per request (one query). Memoized on the
+     * current request rather than the model instance, so a role change is
+     * honoured on the very next request — no cross-request cache to
+     * invalidate, and long-lived model instances never serve revoked
+     * permissions. Console processes (queue workers, scheduled commands)
+     * reuse one request object for their whole lifetime, so they resolve
+     * fresh every time instead of memoizing.
+     *
+     * @return array{super: bool, keys: list<string>}
+     */
+    private function resolveAdminAccess(): array
+    {
+        $request = request();
+        $memoKey = 'rbac.admin_access.'.$this->id;
+        $memoize = ! app()->runningInConsole() || app()->runningUnitTests();
+
+        if ($memoize && $request->attributes->has($memoKey)) {
+            return $request->attributes->get($memoKey);
+        }
+
+        $roles = $this->adminRoles()
+            ->where('roles.scope', Role::SCOPE_ADMIN)
+            ->with('permissions:id,key')
+            ->get(['roles.id', 'roles.key']);
+
+        $isSuper = $roles->contains(fn (Role $role) => $role->isSuperAdminRole());
+        $keys = $isSuper
+            ? AdminPermissions::all()
+            : array_values(array_intersect(
+                AdminPermissions::all(),
+                $roles->flatMap(fn (Role $role) => $role->permissions->pluck('key'))->unique()->all(),
+            ));
+
+        $access = ['super' => $isSuper, 'keys' => $keys];
+        if ($memoize) {
+            $request->attributes->set($memoKey, $access);
+        }
+
+        return $access;
+    }
+
+    /**
+     * Drop the memoized admin access so a role change made earlier in this
+     * request is reflected immediately.
+     */
+    public function forgetAdminAccess(): void
+    {
+        request()->attributes->remove('rbac.admin_access.'.$this->id);
     }
 
     /**

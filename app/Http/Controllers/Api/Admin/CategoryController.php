@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\StoreCategoryRequest;
 use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Models\Category;
 use App\Services\ApplicationCacheService;
+use App\Services\AuditLogService;
 use App\Services\ImageOptimizationService;
 use App\Services\Import\CsvImportException;
 use App\Services\Import\Importers\CategoryImporter;
@@ -23,6 +24,7 @@ class CategoryController extends Controller
         protected ApplicationCacheService $cacheService,
         protected SelectedProductTypeService $selectedProductTypeService,
         protected ImageOptimizationService $imageOptimizationService,
+        protected AuditLogService $auditLog,
     ) {}
 
     /**
@@ -159,11 +161,15 @@ class CategoryController extends Controller
 
         $data['icon_class'] = null;
 
-        DB::transaction(function () use ($category, $data): void {
+        DB::transaction(function () use ($category, $data, $request): void {
             $category->fill($data);
 
             if ($category->isDirty()) {
+                $changed = array_keys($category->getDirty());
+                $old = array_intersect_key($category->getOriginal(), array_flip($changed));
                 $category->save();
+
+                $this->auditLog->record($request->user(), 'category.updated', 'Category', $category->id, $old, $category->only($changed));
             }
         });
 

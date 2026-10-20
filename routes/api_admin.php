@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\DashboardController;
+use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\Admin\SyndicateController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\Admin\VendorCommissionController;
@@ -65,6 +66,11 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::apiResource('users', UserController::class)->only(['index', 'show']);
     Route::get('users/{user}/favourites', [UserController::class, 'favourites'])->name('users.favourites');
     Route::patch('users/{user}/employee-roles', [UserController::class, 'updateEmployeeRoles'])->middleware('throttle:api.write')->name('users.employee-roles');
+    Route::get('users/{user}/permissions', [UserController::class, 'permissions'])->name('users.permissions');
+    Route::put('users/{user}/admin-roles', [UserController::class, 'updateAdminRoles'])->middleware('throttle:api.write')->name('users.admin-roles');
+    Route::get('roles/permissions', [RoleController::class, 'permissions'])->name('roles.permissions');
+    Route::apiResource('roles', RoleController::class)->except(['index', 'show'])->middleware('throttle:api.write');
+    Route::apiResource('roles', RoleController::class)->only(['index', 'show']);
     Route::get('products/{product}/reviews', [ProductReviewController::class, 'indexForAdmin'])->name('products.reviews.index');
     Route::post('products/store-basic', [ProductController::class, 'storeBasic'])->middleware(['throttle:api.write', 'throttle:uploads'])->name('products.store-basic');
     Route::post('products/store-agriculture', [ProductController::class, 'storeAgriculture'])->middleware(['throttle:api.write', 'throttle:uploads'])->name('products.store-agriculture');
@@ -129,6 +135,8 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::patch('product-documents/{documentId}/disable', [\App\Http\Controllers\Api\Admin\ProductDocumentController::class, 'disable'])->middleware('throttle:api.write')->name('product-documents.disable');
 
     Route::get('audit-logs', [\App\Http\Controllers\Api\Admin\AuditLogController::class, 'index'])->name('audit-logs.index');
+    Route::get('audit-logs/export', [\App\Http\Controllers\Api\Admin\AuditLogController::class, 'export'])->middleware('throttle:dashboard.stats')->name('audit-logs.export');
+    Route::get('audit-logs/{auditLog}', [\App\Http\Controllers\Api\Admin\AuditLogController::class, 'show'])->whereNumber('auditLog')->name('audit-logs.show');
 
     Route::get('vendor-documents', [\App\Http\Controllers\Api\Admin\VendorDocumentController::class, 'index'])->name('vendor-documents.index');
     Route::get('vendor-documents/{documentId}', [\App\Http\Controllers\Api\Admin\VendorDocumentController::class, 'show'])->name('vendor-documents.show');

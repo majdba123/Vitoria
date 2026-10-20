@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Resources\Auth\UserResource;
+use App\Services\AuditLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
@@ -29,9 +30,14 @@ class ProfileController extends Controller
         try {
             DB::transaction(function () use ($user, $validated): void {
                 $user->fill($validated);
+                $passwordChanged = $user->isDirty('password');
 
                 if ($user->isDirty()) {
                     $user->save();
+                }
+
+                if ($passwordChanged) {
+                    app(AuditLogService::class)->record($user, 'user.password_changed', 'User', $user->id, null, ['via' => 'profile']);
                 }
             });
         } catch (\Throwable $exception) {

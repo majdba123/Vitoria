@@ -3,6 +3,7 @@
 namespace App\Services\Auth;
 
 use App\Models\User;
+use App\Services\AuditLogService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -11,6 +12,8 @@ use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
+    public function __construct(private AuditLogService $auditLog) {}
+
     /**
      * Register a new public (customer) account. Public self-registration
      * always creates a customer — the role is never taken from request
@@ -62,6 +65,10 @@ class AuthService
 
         if (! $user) {
             Log::warning('Failed login attempt: unknown phone number.');
+            $this->auditLog->record(null, 'auth.login_failed', 'User', null, null, [
+                'reason' => 'unknown_account',
+                'phone_number' => $credentials['phone_number'],
+            ]);
 
             throw ValidationException::withMessages([
                 'phone_number' => [__('The provided credentials are incorrect.')],
@@ -72,6 +79,7 @@ class AuthService
             Log::warning('Failed login attempt: invalid password.', [
                 'user_id' => $user->id,
             ]);
+            $this->auditLog->record(null, 'auth.login_failed', 'User', $user->id, null, ['reason' => 'invalid_password']);
 
             throw ValidationException::withMessages([
                 'password' => [__('The provided password is incorrect.')],
@@ -79,6 +87,7 @@ class AuthService
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
+        $this->auditLog->record($user, 'auth.login', 'User', $user->id);
 
         return [
             'user' => $user,
@@ -95,5 +104,7 @@ class AuthService
         if ($token instanceof \Laravel\Sanctum\PersonalAccessToken) {
             $token->delete();
         }
+
+        $this->auditLog->record($user, 'auth.logout', 'User', $user->id);
     }
 }

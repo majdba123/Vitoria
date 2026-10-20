@@ -16,7 +16,7 @@ class RefundPolicy
 {
     public function view(User $user, Refund $refund): bool
     {
-        if ($user->isAdmin() || $user->isEmployee()) {
+        if ($user->hasAdminPermission('refunds.view') || $user->isEmployee()) {
             return true;
         }
 
@@ -33,6 +33,6 @@ class RefundPolicy
 
     public function manage(User $user, Refund $refund): bool
     {
-        return $user->isAdmin();
+        return $user->hasAdminPermission('refunds.process');
     }
 }

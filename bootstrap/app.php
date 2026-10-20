@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\AuditPrivilegedMutations;
+use App\Http\Middleware\EnsureAdminPermission;
 use App\Http\Middleware\EnsureProductTypeSelected;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsEmployee;
@@ -31,22 +33,22 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->as('api.')
                 ->group(base_path('routes/api.php'));
 
-            Route::middleware(['api', 'auth:sanctum', 'admin'])
+            Route::middleware(['api', 'auth:sanctum', 'admin', 'admin.permission', 'audit.mutations'])
                 ->prefix('api/admin')
                 ->as('api.admin.')
                 ->group(base_path('routes/api_admin.php'));
 
-            Route::middleware(['api', 'auth:sanctum', 'vendor'])
+            Route::middleware(['api', 'auth:sanctum', 'vendor', 'audit.mutations'])
                 ->prefix('api/vendor')
                 ->as('api.vendor.')
                 ->group(base_path('routes/api_vendor.php'));
 
-            Route::middleware(['api', 'auth:sanctum', 'syndicate'])
+            Route::middleware(['api', 'auth:sanctum', 'syndicate', 'audit.mutations'])
                 ->prefix('api/syndicate')
                 ->as('api.syndicate.')
                 ->group(base_path('routes/api_syndicate.php'));
 
-            Route::middleware(['api', 'auth:sanctum', 'employee'])
+            Route::middleware(['api', 'auth:sanctum', 'employee', 'audit.mutations'])
                 ->prefix('api/employee')
                 ->as('api.employee.')
                 ->group(base_path('routes/api_employee.php'));
@@ -64,6 +66,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
+            'admin.permission' => EnsureAdminPermission::class,
+            'audit.mutations' => AuditPrivilegedMutations::class,
             'product.type.selected' => EnsureProductTypeSelected::class,
             'vendor' => \App\Http\Middleware\EnsureUserIsVendor::class,
             'syndicate' => EnsureUserIsSyndicate::class,
