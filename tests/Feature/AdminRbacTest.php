@@ -342,6 +342,22 @@ it('revokes the target tokens when an admin resets their password', function () 
         ->and($log->new_values['password_changed'])->toBeTrue();
 });
 
+it('limits user list pages to 100 while search can reach recipients beyond the first page', function () {
+    $users = User::factory()->count(101)->sequence(fn ($sequence) => [
+        'name' => 'Search Recipient '.$sequence->index,
+        'type' => User::TYPE_USER,
+    ])->create();
+    Sanctum::actingAs(rbacSuperAdmin());
+
+    $this->getJson('/api/admin/users?per_page=500')
+        ->assertOk()
+        ->assertJsonPath('meta.per_page', 100)
+        ->assertJsonCount(100, 'data');
+
+    $search = $this->getJson('/api/admin/users?per_page=500&search=Search%20Recipient%20100')->assertOk();
+    expect(collect($search->json('data'))->pluck('id'))->toContain($users->last()->id)
+        ->and($search->json('meta.per_page'))->toBe(100);
+});
 it('blocks self deletion and self type change', function () {
     $super = rbacSuperAdmin();
     rbacSuperAdmin();
