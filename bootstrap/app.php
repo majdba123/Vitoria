@@ -86,6 +86,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\SetLocale::class,
             \App\Http\Middleware\ApplyUserTimezone::class,
             \App\Http\Middleware\HandleInertiaRequests::class,
+            \Illuminate\Session\Middleware\AuthenticateSession::class,
         ]);
         $middleware->appendToGroup('api', [
             \App\Http\Middleware\AssignRequestId::class,
