@@ -8,15 +8,11 @@ import { formatCurrency } from '@/lib/date-time';
 
 const ADDRESS_LABELS = ['home', 'work', 'farm', 'clinic', 'pharmacy', 'other'];
 
-// One shared currency formatter (lib/date-time.js): Arabic renders "435,000 ل.س"
-// with the symbol after the amount, English renders "SYP 435,000" with the code before.
-function money(amount) {
-    return formatCurrency(amount, locale, 'SYP');
-}
-
 export default function CheckoutIndex() {
     const { checkout, nav, addresses: addressesI18n } = useI18n();
     const locale = useLocale();
+    // Arabic places the currency symbol after the amount; English places the code before.
+    const money = (amount) => formatCurrency(amount, locale, 'SYP');
 
     const [status, setStatus] = useState('loading');
     const [summary, setSummary] = useState(null);
