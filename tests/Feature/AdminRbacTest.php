@@ -342,6 +342,18 @@ it('revokes the target tokens when an admin resets their password', function () 
         ->and($log->new_values['password_changed'])->toBeTrue();
 });
 
+it('ends an existing browser session on its next request after an admin resets the password', function () {
+    $customer = User::factory()->create(['type' => User::TYPE_USER]);
+    $this->actingAs($customer, 'web')->get('/profile')->assertOk();
+    $storedPasswordHash = session('password_hash_web');
+    expect($storedPasswordHash)->not->toBeNull();
+
+    Sanctum::actingAs(rbacSuperAdmin());
+    $this->putJson("/api/admin/users/{$customer->id}", ['password' => \Illuminate\Support\Str::random(40)])->assertOk();
+
+    $this->actingAs($customer->fresh(), 'web')->get('/profile')->assertRedirect('/login');
+});
+
 it('blocks self deletion and self type change', function () {
     $super = rbacSuperAdmin();
     rbacSuperAdmin();
