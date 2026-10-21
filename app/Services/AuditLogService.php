@@ -74,13 +74,14 @@ class AuditLogService
         ?int $entityId,
         ?array $oldValues = null,
         ?array $newValues = null,
+        bool $isSystemAction = false,
     ): AuditLog {
         $request = request();
         $request?->attributes->set(self::REQUEST_RECORDED_FLAG, true);
 
         return AuditLog::create([
             'actor_user_id' => $actor?->id,
-            'actor_type' => $actor ? $this->actorTypeFor($actor) : null,
+            'actor_type' => $actor ? $this->actorTypeFor($actor) : ($isSystemAction ? 'system' : null),
             'action' => $action,
             'entity_type' => $entityType,
             'entity_id' => $entityId,
