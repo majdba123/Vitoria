@@ -21,6 +21,14 @@ it('renders the checkout page for a signed-in customer', function () {
         ->assertInertia(fn (Assert $page) => $page->component('Checkout/Index'));
 });
 
+it('formats checkout currency with the active page locale', function () {
+    $source = file_get_contents(resource_path('js/Pages/Checkout/Index.jsx'));
+
+    expect($source)
+        ->toContain("const locale = useLocale();\n    // Arabic places the currency symbol after the amount; English places the code before.\n    const money = (amount) => formatCurrency(amount, locale, 'SYP');")
+        ->not->toContain('function money(amount)');
+});
+
 it('no longer ships a localStorage cart anywhere in the storefront', function () {
     // The server cart is authoritative. A second client-side cart would silently
     // diverge from it, so none may remain in any Blade view or JS module.
