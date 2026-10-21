@@ -18,12 +18,10 @@ import {
     Wallet,
     Container,
     MapPin,
+    ShieldCheck,
+    ScrollText,
 } from 'lucide-react';
 
-/**
- * Mirrors resources/views/components/admin/sidebar.blade.php's group/route/
- * icon list. Keep the two in sync until the Blade admin layout is retired.
- */
 /**
  * "Users" (application customers) and "Employees" both resolve to the same
  * `admin.users.index` route (Employees via a server-side redirect), so
@@ -35,42 +33,56 @@ import {
  */
 function isUsersTypeActive(expectedType) {
     if (!route().current('admin.users.index')) return false;
-    const type = new URLSearchParams(window.location.search).get('type');
+    const search = typeof window === 'undefined' ? '' : window.location.search;
+    const type = new URLSearchParams(search).get('type');
     return expectedType === null ? (!type || type === '0') : type === expectedType;
 }
 
-export function getAdminNavGroups(t, shipments = {}) {
+/**
+ * Admin sidebar groups. Each item names the back-office permission its page
+ * requires (the same key App\Support\AdminRoutePermissions enforces on the
+ * server); items the administrator cannot open are hidden, and so are groups
+ * left empty. Hiding is a convenience only — the server still refuses the page.
+ */
+export function getAdminNavGroups(t, shipments = {}, can = () => true) {
     const raw = [
         {
             label: t.overview,
-            items: [{ label: t.dashboard, route: 'admin.dashboard', active: 'admin.dashboard', icon: LayoutGrid }],
+            items: [{ label: t.dashboard, route: 'admin.dashboard', active: 'admin.dashboard', icon: LayoutGrid, permission: 'dashboard.view' }],
         },
         {
             label: t.group_financials,
-            items: [{ label: t.financials, route: 'admin.financials.index', active: 'admin.financials.*', icon: Wallet }],
+            items: [{ label: t.financials, route: 'admin.financials.index', active: 'admin.financials.*', icon: Wallet, permission: 'financials.view' }],
         },
         {
             label: t.management,
             items: [
-                { label: t.vendors, route: 'admin.vendors.index', active: 'admin.vendors.*', icon: Store },
-                { label: t.syndicates, route: 'admin.syndicates.index', active: 'admin.syndicates.*', icon: Handshake },
-                { label: t.products, route: 'admin.products.index', active: 'admin.products.*', icon: Package },
-                { label: t.employees, route: 'admin.employees.index', usersType: '4', icon: UserCog },
-                { label: t.coupons, route: 'admin.coupons.index', active: 'admin.coupons.*', icon: Ticket },
-                { label: t.orders, route: 'admin.orders.index', active: 'admin.orders.*', icon: ShoppingBag },
-                { label: t.users, route: 'admin.users.index', usersType: null, icon: Users },
-                { label: t.notifications_log, route: 'admin.notifications.index', active: 'admin.notifications.*', icon: Bell },
-                { label: t.contact_messages, route: 'admin.contact-messages.index', active: 'admin.contact-messages.*', icon: Mail },
-                { label: t.about_us, route: 'admin.about-us.edit', active: 'admin.about-us.*', icon: Info },
-                { label: t.pages, route: 'admin.pages.index', active: 'admin.pages.*', icon: FileText },
-                { label: t.banners, route: 'admin.banners.index', active: 'admin.banners.*', icon: ImageIcon },
+                { label: t.vendors, route: 'admin.vendors.index', active: 'admin.vendors.*', icon: Store, permission: 'vendors.view' },
+                { label: t.syndicates, route: 'admin.syndicates.index', active: 'admin.syndicates.*', icon: Handshake, permission: 'syndicates.view' },
+                { label: t.products, route: 'admin.products.index', active: 'admin.products.*', icon: Package, permission: 'products.view' },
+                { label: t.employees, route: 'admin.employees.index', usersType: '4', icon: UserCog, permission: 'users.view' },
+                { label: t.coupons, route: 'admin.coupons.index', active: 'admin.coupons.*', icon: Ticket, permission: 'coupons.view' },
+                { label: t.orders, route: 'admin.orders.index', active: 'admin.orders.*', icon: ShoppingBag, permission: 'orders.view' },
+                { label: t.users, route: 'admin.users.index', usersType: null, icon: Users, permission: 'users.view' },
+                { label: t.notifications_log, route: 'admin.notifications.index', active: 'admin.notifications.*', icon: Bell, permission: 'notifications.view' },
+                { label: t.contact_messages, route: 'admin.contact-messages.index', active: 'admin.contact-messages.*', icon: Mail, permission: 'contact_messages.view' },
+                { label: t.about_us, route: 'admin.about-us.edit', active: 'admin.about-us.*', icon: Info, permission: 'content.view' },
+                { label: t.pages, route: 'admin.pages.index', active: 'admin.pages.*', icon: FileText, permission: 'content.view' },
+                { label: t.banners, route: 'admin.banners.index', active: 'admin.banners.*', icon: ImageIcon, permission: 'content.view' },
             ],
         },
         {
             label: shipments.title,
             items: [
-                { label: shipments.title, route: 'admin.shipments.index', active: 'admin.shipments.*', icon: Container },
-                { label: shipments.ports_title, route: 'admin.ports.index', active: 'admin.ports.*', icon: MapPin },
+                { label: shipments.title, route: 'admin.shipments.index', active: 'admin.shipments.*', icon: Container, permission: 'import_shipments.view' },
+                { label: shipments.ports_title, route: 'admin.ports.index', active: 'admin.ports.*', icon: MapPin, permission: 'import_shipments.view' },
+            ],
+        },
+        {
+            label: t.group_access,
+            items: [
+                { label: t.rbac_roles, route: 'admin.roles.index', active: 'admin.roles.*', icon: ShieldCheck, permission: 'roles.view' },
+                { label: t.rbac_audit_logs, route: 'admin.audit-logs.index', active: 'admin.audit-logs.*', icon: ScrollText, permission: 'audit_logs.view' },
             ],
         },
         {
@@ -83,14 +95,19 @@ export function getAdminNavGroups(t, shipments = {}) {
         },
     ];
 
-    return raw.map((group) => ({
-        label: group.label,
-        items: group.items.map((item) => ({
-            key: item.route,
-            label: item.label,
-            href: route(item.route),
-            active: 'usersType' in item ? isUsersTypeActive(item.usersType) : route().current(item.active),
-            icon: item.icon,
-        })),
-    }));
+    return raw
+        .map((group) => ({
+            key: group.items[0].route,
+            label: group.label,
+            items: group.items
+                .filter((item) => can(item.permission))
+                .map((item) => ({
+                    key: item.route,
+                    label: item.label,
+                    href: route(item.route),
+                    active: 'usersType' in item ? isUsersTypeActive(item.usersType) : route().current(item.active),
+                    icon: item.icon,
+                })),
+        }))
+        .filter((group) => group.items.length > 0);
 }

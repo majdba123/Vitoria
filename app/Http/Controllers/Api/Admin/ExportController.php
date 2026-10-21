@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Vendor;
+use App\Services\AuditLogService;
 use App\Services\Import\CsvFile;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -54,6 +55,8 @@ class ExportController extends Controller
             $order->created_at?->toDateTimeString(),
         ])->all();
 
+        $this->recordExport($request, 'orders', count($rows));
+
         return CsvFile::download('orders_export_'.now()->format('Y-m-d').'.csv', $headers, $rows);
     }
 
@@ -86,6 +89,8 @@ class ExportController extends Controller
             $product->created_at?->toDateTimeString(),
         ])->all();
 
+        $this->recordExport($request, 'products', count($rows));
+
         return CsvFile::download('products_export_'.now()->format('Y-m-d').'.csv', $headers, $rows);
     }
 
@@ -113,6 +118,20 @@ class ExportController extends Controller
             $vendor->created_at?->toDateTimeString(),
         ])->all();
 
+        $this->recordExport($request, 'vendors', count($rows));
+
         return CsvFile::download('vendors_export_'.now()->format('Y-m-d').'.csv', $headers, $rows);
+    }
+
+    /**
+     * Bulk downloads of customer, order and vendor data are recorded with the
+     * filters used and the number of rows released.
+     */
+    private function recordExport(Request $request, string $dataset, int $rowCount): void
+    {
+        app(AuditLogService::class)->record($request->user(), "export.{$dataset}", 'Export', null, null, [
+            'filters' => $request->only(['status', 'vendor_id', 'category_id', 'from', 'to', 'search']),
+            'row_count' => $rowCount,
+        ]);
     }
 }

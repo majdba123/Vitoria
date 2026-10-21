@@ -9,7 +9,7 @@ class InvoicePolicy
 {
     public function view(User $user, Invoice $invoice): bool
     {
-        if ($user->isAdmin() || $user->isEmployee()) {
+        if ($user->hasAdminPermission('invoices.view') || $user->isEmployee()) {
             return true;
         }
 

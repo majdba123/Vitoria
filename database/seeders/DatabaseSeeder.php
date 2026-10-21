@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,7 +16,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::query()->updateOrCreate(
+        $admin = User::query()->updateOrCreate(
             ['phone_number' => '0935027218'],
             [
                 'name' => 'مدير النظام',
@@ -28,6 +29,12 @@ class DatabaseSeeder extends Seeder
                 'password' => 'password',
             ],
         );
+
+        $superAdminRoleId = Role::query()->where('key', Role::KEY_SUPER_ADMIN)->value('id');
+
+        if ($superAdminRoleId !== null) {
+            $admin->adminRoles()->syncWithoutDetaching([$superAdminRoleId]);
+        }
 
         $this->call([
             ArabicDemoDatabaseSeeder::class,

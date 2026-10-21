@@ -79,10 +79,11 @@ class ProductTypePreferenceController extends Controller
     private function dashboardPathFor(User $user): string
     {
         return match ($user->type) {
-            User::TYPE_ADMIN => route('admin.dashboard'),
+            User::TYPE_ADMIN => route('admin.home'),
             User::TYPE_VENDOR => route('vendor.dashboard'),
             User::TYPE_SYNDICATE => route('syndicate.dashboard'),
             User::TYPE_EMPLOYEE => route('employee.dashboard'),
+            User::TYPE_MINISTRY => route('ministry.dashboard'),
             default => route('home'),
         };
     }

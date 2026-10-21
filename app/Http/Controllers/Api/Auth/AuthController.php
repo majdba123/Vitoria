@@ -111,10 +111,11 @@ class AuthController extends Controller
     protected function redirectUrlFor(User $user): string
     {
         return match ($user->type) {
-            User::TYPE_ADMIN => route('admin.dashboard'),
+            User::TYPE_ADMIN => route('admin.home'),
             User::TYPE_VENDOR => route('vendor.dashboard'),
             User::TYPE_SYNDICATE => route('syndicate.dashboard'),
             User::TYPE_EMPLOYEE => route('employee.dashboard'),
+            User::TYPE_MINISTRY => route('ministry.dashboard'),
             default => $user->preferred_product_type
                 ? route('home')
                 : route('product-type.select'),

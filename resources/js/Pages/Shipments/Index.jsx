@@ -16,7 +16,7 @@ import { Label } from '@/Components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
 import { useAdminList } from '@/hooks/use-admin-list';
-import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { useI18n, useIsRtl, useLocale } from '@/hooks/use-i18n';
 import { formatCurrency, formatDate, formatNumber } from '@/lib/date-time';
 import { shipmentsWorkspace } from '@/lib/shipments-workspace';
 
@@ -31,6 +31,7 @@ function toParams(filters) {
 }
 
 function MonthlyChart({ rows, label, locale }) {
+    const isRtl = useIsRtl();
     const data = rows.map((row) => ({ month: row.month, count: row.shipments_count }));
     const monthLabel = (value) => formatDate(`${value}-01`, locale, { dateStyle: undefined, month: 'short', year: '2-digit' }) || value;
 
@@ -39,7 +40,7 @@ function MonthlyChart({ rows, label, locale }) {
             <ChartContainer config={{ count: { label, color: 'var(--chart-1)' } }} className="aspect-auto h-56 w-full">
                 <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
                     <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                    <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={monthLabel} interval="preserveStartEnd" />
+                    <XAxis dataKey="month" reversed={isRtl} tickLine={false} axisLine={false} tickMargin={8} tickFormatter={monthLabel} interval="preserveStartEnd" />
                     <ChartTooltip content={<ChartTooltipContent labelKey="month" labelFormatter={monthLabel} />} cursor={{ fill: 'var(--color-accent)' }} />
                     <Bar dataKey="count" fill="var(--color-count)" radius={[4, 4, 0, 0]} maxBarSize={28} />
                 </BarChart>
@@ -60,10 +61,10 @@ function ChartCard({ title, isEmpty, emptyLabel, children }) {
     );
 }
 
-export default function ShipmentsIndex({ workspace }) {
+export default function ShipmentsIndex({ workspace, sector = 'combined' }) {
     const { importShipments: t, common, admin } = useI18n();
     const locale = useLocale();
-    const { Layout, apiBase, routeName } = shipmentsWorkspace(workspace);
+    const { Layout, apiBase, routeName, href, readOnly, sectorParams } = shipmentsWorkspace(workspace, sector);
 
     const [page, setPage] = useState(1);
     const [filters, setFilters] = useState(EMPTY_FILTERS);
@@ -73,7 +74,7 @@ export default function ShipmentsIndex({ workspace }) {
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const params = toParams(filters);
+    const params = { ...toParams(filters), ...sectorParams };
     const paramsKey = JSON.stringify(params);
     const { status, rows, meta, errorMessage, reload } = useAdminList(apiBase, { ...params, page });
 
@@ -145,20 +146,24 @@ export default function ShipmentsIndex({ workspace }) {
             render: (row) => (
                 <div className="inline-flex items-center gap-1.5">
                     <Button asChild variant="ghost" size="sm">
-                        <Link href={route(routeName('show'), row.id)}>{common.view_details}</Link>
+                        <Link href={href('show', row.id)}>{common.view_details}</Link>
                     </Button>
-                    <Button asChild variant="outline" size="sm">
-                        <Link href={route(routeName('edit'), row.id)}>{common.edit}</Link>
-                    </Button>
-                    <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => setDeleteTarget(row)}>
-                        {common.delete}
-                    </Button>
+                    {!readOnly && (
+                        <>
+                            <Button asChild variant="outline" size="sm">
+                                <Link href={route(routeName('edit'), row.id)}>{common.edit}</Link>
+                            </Button>
+                            <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => setDeleteTarget(row)}>
+                                {common.delete}
+                            </Button>
+                        </>
+                    )}
                 </div>
             ),
         },
     ];
 
-    const hasFilters = Object.keys(params).length > 0;
+    const hasFilters = Object.keys(toParams(filters)).length > 0;
 
     return (
         <Layout title={t.title}>
@@ -166,12 +171,14 @@ export default function ShipmentsIndex({ workspace }) {
                 title={t.title}
                 copy={t.subtitle}
                 actions={
-                    <Button asChild size="sm">
-                        <Link href={route(routeName('create'))}>
-                            <Plus className="size-4" />
-                            {t.add}
-                        </Link>
-                    </Button>
+                    readOnly ? null : (
+                        <Button asChild size="sm">
+                            <Link href={route(routeName('create'))}>
+                                <Plus className="size-4" />
+                                {t.add}
+                            </Link>
+                        </Button>
+                    )
                 }
             />
 
@@ -271,7 +278,7 @@ export default function ShipmentsIndex({ workspace }) {
                     status={status}
                     errorMessage={errorMessage}
                     onRetry={reload}
-                    rowHref={(row) => route(routeName('show'), row.id)}
+                    rowHref={(row) => href('show', row.id)}
                     emptyTitle={t.empty_title}
                     emptyHint={hasFilters ? null : t.empty_hint}
                 />

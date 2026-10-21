@@ -38,6 +38,18 @@ class ProductController extends Controller
 
     protected const STORE_PROFILE_VETERINARY = 'veterinary';
 
+    /**
+     * Product attributes whose changes are written to the audit trail on update
+     * (pricing, stock, visibility, moderation). Long free-text fields are left
+     * out; only the fact that they changed matters for accountability.
+     *
+     * @var list<string>
+     */
+    protected const AUDITED_PRODUCT_FIELDS = [
+        'name', 'category_id', 'subcategory_id', 'price', 'discount_percentage', 'discount_starts_at',
+        'discount_ends_at', 'quantity', 'minimum_order_quantity', 'is_active', 'status', 'rejection_reason',
+    ];
+
     public function __construct(
         public NotificationService $notificationService,
         public ProductService $productService,
@@ -338,7 +350,23 @@ class ProductController extends Controller
         $oldDiscountPct = $product->discount_percentage;
         $oldStarts = $product->discount_starts_at?->toDateTimeString();
         $oldEnds = $product->discount_ends_at?->toDateTimeString();
-        $product = DB::transaction(fn () => $this->productService->update($product, $validated));
+        $previousStatus = $product->status;
+        $before = $product->only(self::AUDITED_PRODUCT_FIELDS);
+        $product = DB::transaction(function () use ($product, $validated, $user, $previousStatus, $before) {
+            $product = $this->productService->update($product, $validated);
+            $after = $product->only(self::AUDITED_PRODUCT_FIELDS);
+            $changed = array_keys(array_filter($after, fn ($value, $key) => (string) ($before[$key] ?? '') !== (string) $value, ARRAY_FILTER_USE_BOTH));
+
+            if ($changed !== []) {
+                $this->auditLogService->record($user, 'product.updated', 'Product', $product->id, array_intersect_key($before, array_flip($changed)), array_intersect_key($after, array_flip($changed)));
+            }
+
+            if ($product->status !== $previousStatus) {
+                $this->auditLogService->record($user, "product.{$product->status}", 'Product', $product->id, ['status' => $previousStatus], ['status' => $product->status, 'rejection_reason' => $product->rejection_reason, 'via' => 'update']);
+            }
+
+            return $product;
+        });
 
         $product->load($user && $user->type === User::TYPE_VENDOR
             ? ['photos', 'category', 'subcategory', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail']

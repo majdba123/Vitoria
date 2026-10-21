@@ -15,7 +15,7 @@ class OrderPolicy
 {
     public function view(User $user, Order $order): bool
     {
-        if ($user->isAdmin() || $user->isEmployee()) {
+        if ($user->hasAdminPermission('orders.view') || $user->isEmployee()) {
             return true;
         }
 
@@ -34,7 +34,7 @@ class OrderPolicy
      */
     public function updateStatus(User $user, Order $order): bool
     {
-        if ($user->isAdmin() || $user->isEmployee()) {
+        if ($user->hasAdminPermission('orders.complete') || $user->isEmployee()) {
             return true;
         }
 
@@ -43,7 +43,7 @@ class OrderPolicy
 
     public function cancel(User $user, Order $order): bool
     {
-        if ($user->isAdmin()) {
+        if ($user->hasAdminPermission('orders.complete')) {
             return true;
         }
 

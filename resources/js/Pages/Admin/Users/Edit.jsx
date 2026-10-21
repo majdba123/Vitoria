@@ -7,6 +7,8 @@ import { TextField, SelectField } from '@/Components/admin/form/FormField';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Skeleton } from '@/Components/ui/skeleton';
 import { Button } from '@/Components/ui/button';
+import { StatusMessage } from '@/Components/admin/StatusMessage';
+import { AdminAccessCard } from '@/Components/admin/AdminAccessCard';
 import { useAdminForm } from '@/hooks/use-admin-form';
 import { useI18n } from '@/hooks/use-i18n';
 
@@ -32,15 +34,20 @@ export default function UsersEdit({ userId }) {
     const [employeeRoleKeys, setEmployeeRoleKeys] = useState([]);
     const [rolesSaving, setRolesSaving] = useState(false);
     const [rolesMessage, setRolesMessage] = useState(null);
+    const [savedType, setSavedType] = useState(null);
 
-    useEffect(() => {
+    const load = () => {
+        setStatus('loading');
         window.axios.get(`/api/admin/users/${userId}`, { silent: true }).then((res) => {
             const u = res.data.data;
+            setSavedType(String(u.type ?? 0));
             setForm({ name: u.name ?? '', phone_number: u.phone_number ?? '', national_id: u.national_id ?? '', email: u.email ?? '', password: '', type: String(u.type ?? 0) });
             setEmployeeRoleKeys((u.employee_roles ?? []).map((r) => r.key));
             setStatus('ready');
         }).catch(() => setStatus('error'));
-    }, [userId]);
+    };
+
+    useEffect(load, [userId]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const toggleRole = (key) => {
         setEmployeeRoleKeys((keys) => (keys.includes(key) ? keys.filter((k) => k !== key) : [...keys, key]));
@@ -69,6 +76,8 @@ export default function UsersEdit({ userId }) {
         if (!payload.password) delete payload.password;
         try {
             await submit('put', `/api/admin/users/${userId}`, payload);
+            setSavedType(form.type);
+            setForm((f) => ({ ...f, password: '' }));
             setSuccessMessage(admin.user_updated_success);
         } catch {
             // handled by hook
@@ -83,14 +92,28 @@ export default function UsersEdit({ userId }) {
         );
     }
 
+    if (status === 'error') {
+        return (
+            <AdminLayout title={admin.edit_user_title}>
+                <PageHeader breadcrumb={[{ label: admin.users, href: route('admin.users.index') }, { label: common.edit }]} title={admin.edit_user_title} />
+                <Card className="max-w-2xl border-border/80 shadow-none">
+                    <CardContent className="flex flex-col items-start gap-4 p-5 sm:p-6">
+                        <StatusMessage tone="error">{admin.rbac_load_error}</StatusMessage>
+                        <Button variant="outline" onClick={load}>{common.retry}</Button>
+                    </CardContent>
+                </Card>
+            </AdminLayout>
+        );
+    }
+
     return (
         <AdminLayout title={admin.edit_user_title}>
             <PageHeader breadcrumb={[{ label: admin.users, href: route('admin.users.index') }, { label: common.edit }]} title={admin.edit_user_title} />
 
             <Card className="max-w-2xl border-border/80 shadow-none">
                 <CardContent className="p-5 sm:p-6">
-                    {generalError && <p className="mb-4 rounded-md border border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-danger-strong)]">{generalError}</p>}
-                    {successMessage && <p className="mb-4 rounded-md border border-[var(--color-success-200)] bg-[var(--color-success-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-success-strong)]">{successMessage}</p>}
+                    {generalError && <StatusMessage tone="error" className="mb-4">{generalError}</StatusMessage>}
+                    {successMessage && <StatusMessage tone="success" className="mb-4">{successMessage}</StatusMessage>}
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -99,7 +122,7 @@ export default function UsersEdit({ userId }) {
                             <TextField id="national_id" label={admin.th_national_id} required value={form.national_id} onChange={(e) => set('national_id')(e.target.value)} error={errors.national_id} />
                             <TextField id="email" label={admin.email_label} type="email" placeholder={admin.email_optional_placeholder} value={form.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
                             <TextField id="password" label={admin.new_password_label} type="password" placeholder={admin.password_optional_hint} value={form.password} onChange={(e) => set('password')(e.target.value)} error={errors.password} />
-                            <SelectField id="type" label={admin.user_type_label} value={form.type} onValueChange={set('type')} options={TYPE_OPTIONS} error={errors.type} />
+                            <SelectField id="type" label={admin.user_type_label} value={form.type} onValueChange={set('type')} options={String(form.type) === '5' ? [{ value: '5', label: admin.user_type_labels?.[5] }] : TYPE_OPTIONS} error={errors.type} />
                         </div>
 
                         <div className="flex gap-2 border-t border-border pt-5">
@@ -107,7 +130,7 @@ export default function UsersEdit({ userId }) {
                                 {common.cancel}
                             </Button>
                             <Button type="submit" className="flex-1" disabled={isSubmitting}>
-                                {isSubmitting && <Loader2 className="size-4 animate-spin" />}
+                                {isSubmitting && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
                                 {common.save_changes}
                             </Button>
                         </div>
@@ -121,11 +144,7 @@ export default function UsersEdit({ userId }) {
                         <h2 className="text-sm font-bold text-foreground">{admin.employee_roles_heading}</h2>
                         <p className="mt-1 text-xs text-muted-foreground">{admin.employee_roles_hint}</p>
 
-                        {rolesMessage && (
-                            <p className={`mt-3 rounded-md border px-4 py-2.5 text-sm font-medium ${rolesMessage.tone === 'success' ? 'border-[var(--color-success-200)] bg-[var(--color-success-soft)] text-[var(--color-success-strong)]' : 'border-[var(--color-danger-200)] bg-[var(--color-danger-soft)] text-[var(--color-danger-strong)]'}`}>
-                                {rolesMessage.text}
-                            </p>
-                        )}
+                        {rolesMessage && <StatusMessage tone={rolesMessage.tone} className="mt-3">{rolesMessage.text}</StatusMessage>}
 
                         <div className="mt-4 space-y-3">
                             {EMPLOYEE_ROLE_OPTIONS.map((role) => (
@@ -145,12 +164,14 @@ export default function UsersEdit({ userId }) {
                         </div>
 
                         <Button type="button" className="mt-4" onClick={saveEmployeeRoles} disabled={rolesSaving}>
-                            {rolesSaving && <Loader2 className="size-4 animate-spin" />}
+                            {rolesSaving && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
                             {admin.save_roles_btn}
                         </Button>
                     </CardContent>
                 </Card>
             )}
+
+            {savedType === '1' && <AdminAccessCard userId={userId} />}
         </AdminLayout>
     );
 }

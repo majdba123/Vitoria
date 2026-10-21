@@ -1,0 +1,49 @@
+import { Link, usePage } from '@inertiajs/react';
+import { Home } from 'lucide-react';
+import { Button } from '@/Components/ui/button';
+import { Separator } from '@/Components/ui/separator';
+import { SidebarTrigger } from '@/Components/ui/sidebar';
+import { ThemeToggle } from '@/Components/workspace/ThemeToggle';
+import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
+import { NotificationBell } from '@/Components/workspace/NotificationBell';
+import { LogoutButton } from '@/Components/workspace/LogoutButton';
+import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
+import { SectorSwitcher } from '@/Components/ministry/SectorSwitcher';
+import { useI18n } from '@/hooks/use-i18n';
+
+export function MinistryHeader({ title }) {
+    const { ministry, nav } = useI18n();
+    const { props } = usePage();
+
+    return (
+        <header className="dashboard-topbar sticky top-0 z-30 flex min-h-16 shrink-0 flex-col justify-center gap-2 border-b bg-background/95 py-2 backdrop-blur-sm">
+            <div className="dashboard-topbar-inner flex w-full items-center gap-2 px-3 sm:gap-3 sm:px-4 lg:px-6">
+                <SidebarTrigger className="-ms-1 size-11" />
+                <Separator orientation="vertical" className="h-5" />
+
+                <div className="min-w-0 flex-1">
+                    <p className="dashboard-eyebrow text-[11px] font-extrabold uppercase tracking-[0.16em] text-primary">{ministry.workspace_label}</p>
+                    <h1 className="truncate text-base font-bold leading-tight text-foreground sm:text-lg">{title}</h1>
+                </div>
+
+                <SectorSwitcher className="hidden xl:flex" />
+
+                <div className="flex items-center gap-1.5">
+                    <span className="hidden xl:inline-flex"><StatusBadge tone="brand">{ministry.read_only}</StatusBadge></span>
+                    <Button asChild variant="ghost" size="icon" className="hidden size-11 sm:inline-flex" aria-label={nav.home} title={nav.home}>
+                        <Link href={route('home')}>
+                            <Home className="size-4" />
+                        </Link>
+                    </Button>
+                    <LanguageSwitcher />
+                    <NotificationBell viewAllRoute="ministry.notifications.index" locale={props.locale} group="ministry" />
+                    <ThemeToggle label={nav.toggle_theme_aria} />
+                    <LogoutButton />
+                </div>
+            </div>
+            <div className="flex w-full px-3 sm:px-4 lg:px-6 xl:hidden">
+                <SectorSwitcher className="w-full [&>*]:flex-1" />
+            </div>
+        </header>
+    );
+}

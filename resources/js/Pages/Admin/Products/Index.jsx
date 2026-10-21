@@ -18,8 +18,11 @@ import {
 } from '@/Components/ui/select';
 import { Card, CardContent } from '@/Components/ui/card';
 import { useAdminList } from '@/hooks/use-admin-list';
+import { useAdminPermissions } from '@/hooks/use-admin-permissions';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { formatCurrency, formatPercent } from '@/lib/date-time';
+
+const APPROVAL_TONE = { approved: 'success', pending: 'warning', rejected: 'danger' };
 
 export default function ProductsIndex({ discountOnly = false }) {
     const { admin, common } = useI18n();
@@ -31,6 +34,9 @@ export default function ProductsIndex({ discountOnly = false }) {
     const [categoryId, setCategoryId] = useState('all');
     const [activeFilter, setActiveFilter] = useState('all');
     const [discountFilter, setDiscountFilter] = useState(discountOnly ? '1' : 'all');
+    const { can } = useAdminPermissions();
+    const canModerate = can('products.moderate');
+    const canManage = can('products.manage');
     const [vendors, setVendors] = useState([]);
     const [categories, setCategories] = useState([]);
     const [deleteTarget, setDeleteTarget] = useState(null);
@@ -48,7 +54,9 @@ export default function ProductsIndex({ discountOnly = false }) {
     });
 
     useEffect(() => {
-        window.axios.get('/api/admin/vendors', { params: { per_page: 100 }, silent: true }).then((res) => setVendors(res.data?.data ?? []));
+        if (can('vendors.view')) {
+            window.axios.get('/api/admin/vendors', { params: { per_page: 100 }, silent: true }).then((res) => setVendors(res.data?.data ?? []));
+        }
     }, []);
 
     useEffect(() => {
@@ -121,16 +129,17 @@ export default function ProductsIndex({ discountOnly = false }) {
         {
             key: 'active',
             label: common.active,
-            render: (row) => (
-                <button type="button" onClick={() => toggleActive(row)}>
-                    <StatusBadge tone={row.is_active ? 'success' : 'danger'}>{row.is_active ? common.active : common.inactive}</StatusBadge>
-                </button>
-            ),
+            render: (row) => {
+                const badge = <StatusBadge tone={row.is_active ? 'success' : 'danger'}>{row.is_active ? common.active : common.inactive}</StatusBadge>;
+                return canModerate ? <button type="button" onClick={() => toggleActive(row)}>{badge}</button> : badge;
+            },
         },
         {
             key: 'status',
             label: admin.approval_status_label,
-            render: (row) => (
+            render: (row) => !canModerate ? (
+                <StatusBadge tone={APPROVAL_TONE[row.status] ?? 'warning'}>{admin[`status_${row.status || 'pending'}`]}</StatusBadge>
+            ) : (
                 <Select value={row.status || 'pending'} onValueChange={(value) => changeStatus(row, value)}>
                     <SelectTrigger size="sm" className="w-32" aria-label={`${admin.approval_status_label}: ${row.name}`}>
                         <SelectValue />
@@ -155,12 +164,16 @@ export default function ProductsIndex({ discountOnly = false }) {
                     <Button asChild variant="ghost" size="sm">
                         <Link href={route('admin.products.reviews', row.id)}><MessageSquareText className="size-4" aria-hidden="true" />{admin.reviews}</Link>
                     </Button>
-                    <Button asChild variant="outline" size="sm">
-                        <Link href={route('admin.products.edit', row.id)}><Pencil className="size-4" aria-hidden="true" />{common.edit}</Link>
-                    </Button>
-                    <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => setDeleteTarget(row)}>
-                        <Trash2 className="size-4" aria-hidden="true" />{admin.remove}
-                    </Button>
+                    {canManage && (
+                        <>
+                            <Button asChild variant="outline" size="sm">
+                                <Link href={route('admin.products.edit', row.id)}><Pencil className="size-4" aria-hidden="true" />{common.edit}</Link>
+                            </Button>
+                            <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => setDeleteTarget(row)}>
+                                <Trash2 className="size-4" aria-hidden="true" />{admin.remove}
+                            </Button>
+                        </>
+                    )}
                 </div>
             ),
         },
@@ -170,7 +183,7 @@ export default function ProductsIndex({ discountOnly = false }) {
         <AdminLayout title={admin.manage_products_title}>
             <PageHeader
                 title={admin.manage_products_title}
-                actions={
+                actions={canManage && (
                     <>
                         <CsvImportButton label={admin.products} templateUrl="/api/admin/products/import/template" importUrl="/api/admin/products/import" onImported={reload} />
                         <Button asChild size="sm">
@@ -180,14 +193,14 @@ export default function ProductsIndex({ discountOnly = false }) {
                             </Link>
                         </Button>
                     </>
-                }
+                )}
             />
 
             {flash && <p className="rounded-md border border-[var(--color-success-200)] bg-[var(--color-success-soft)] px-4 py-2.5 text-sm font-medium text-[var(--color-success-strong)]">{flash}</p>}
 
             <Card className="border-border/80 shadow-none">
                 <CardContent className="grid gap-4 p-4 sm:grid-cols-3 xl:grid-cols-6">
-                    <FilterSelect label={admin.filter_by_vendor} value={vendorId} onValueChange={(v) => { setVendorId(v); setPage(1); }} allLabel={admin.all_vendors} options={vendors.map((v) => ({ value: String(v.id), label: v.store_name }))} />
+                    {can('vendors.view') && <FilterSelect label={admin.filter_by_vendor} value={vendorId} onValueChange={(v) => { setVendorId(v); setPage(1); }} allLabel={admin.all_vendors} options={vendors.map((v) => ({ value: String(v.id), label: v.store_name }))} />}
                     <FilterSelect label={admin.filter_by_product_status} value={productStatus} onValueChange={(v) => { setProductStatus(v); setPage(1); }} allLabel={admin.all_status} options={[{ value: 'pending', label: admin.status_pending }, { value: 'approved', label: admin.status_approved }, { value: 'rejected', label: admin.status_rejected }]} />
                     <FilterSelect label={admin.filter_by_type} value={categoryType} onValueChange={(v) => { setCategoryType(v); setCategoryId('all'); setPage(1); }} allLabel={admin.all_types} options={[{ value: 'agriculture', label: admin.type_agriculture }, { value: 'veterinary', label: admin.type_veterinary }]} />
                     <FilterSelect label={admin.filter_by_category} value={categoryId} onValueChange={(v) => { setCategoryId(v); setPage(1); }} allLabel={admin.all_categories} options={categories.map((c) => ({ value: String(c.id), label: c.name }))} />

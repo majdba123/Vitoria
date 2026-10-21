@@ -15,6 +15,7 @@ import {
 } from '@/Components/ui/select';
 import { Card, CardContent } from '@/Components/ui/card';
 import { useAdminList } from '@/hooks/use-admin-list';
+import { useAdminPermissions } from '@/hooks/use-admin-permissions';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { formatCurrency, formatDate, formatNumber } from '@/lib/date-time';
 import { ORDER_STATUS_OPTIONS as STATUS_OPTIONS, ORDER_STATUS_TONE as STATUS_TONE } from '@/lib/order-status';
@@ -30,6 +31,7 @@ export default function OrdersIndex() {
     const [userId, setUserId] = useState(initialParams.get('user_id') ? String(initialParams.get('user_id')) : 'all');
     const [vendorId, setVendorId] = useState(initialParams.get('vendor_id') ? String(initialParams.get('vendor_id')) : 'all');
     const [categoryId, setCategoryId] = useState('all');
+    const { can } = useAdminPermissions();
     const [users, setUsers] = useState([]);
     const [vendors, setVendors] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -44,8 +46,12 @@ export default function OrdersIndex() {
     });
 
     useEffect(() => {
-        window.axios.get('/api/admin/users', { params: { per_page: 200 }, silent: true }).then((res) => setUsers(res.data?.data ?? []));
-        window.axios.get('/api/admin/vendors', { params: { per_page: 200 }, silent: true }).then((res) => setVendors(res.data?.data ?? []));
+        if (can('users.view')) {
+            window.axios.get('/api/admin/users', { params: { per_page: 200 }, silent: true }).then((res) => setUsers(res.data?.data ?? []));
+        }
+        if (can('vendors.view')) {
+            window.axios.get('/api/admin/vendors', { params: { per_page: 200 }, silent: true }).then((res) => setVendors(res.data?.data ?? []));
+        }
         window.axios.get('/api/categories', { params: { per_page: 100 }, silent: true }).then((res) => setCategories(res.data?.data ?? []));
     }, []);
 
@@ -106,20 +112,24 @@ export default function OrdersIndex() {
                             {STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s}>{translatedStatus(s, common)}</SelectItem>)}
                         </SelectContent>
                     </Select>
-                    <Select value={userId} onValueChange={(v) => { setUserId(v); setPage(1); }}>
-                        <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">{orders.all_users}</SelectItem>
-                            {users.map((u) => <SelectItem key={u.id} value={String(u.id)}>{u.name || orders.user_number_fallback.replace(':id', String(u.id))}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-                    <Select value={vendorId} onValueChange={(v) => { setVendorId(v); setPage(1); }}>
-                        <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">{orders.all_vendors}</SelectItem>
-                            {vendors.map((v) => <SelectItem key={v.id} value={String(v.id)}>{v.store_name || orders.vendor_number_fallback.replace(':id', String(v.id))}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
+                    {can('users.view') && (
+                        <Select value={userId} onValueChange={(v) => { setUserId(v); setPage(1); }}>
+                            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">{orders.all_users}</SelectItem>
+                                {users.map((u) => <SelectItem key={u.id} value={String(u.id)}>{u.name || orders.user_number_fallback.replace(':id', String(u.id))}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    )}
+                    {can('vendors.view') && (
+                        <Select value={vendorId} onValueChange={(v) => { setVendorId(v); setPage(1); }}>
+                            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">{orders.all_vendors}</SelectItem>
+                                {vendors.map((v) => <SelectItem key={v.id} value={String(v.id)}>{v.store_name || orders.vendor_number_fallback.replace(':id', String(v.id))}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    )}
                     <Select value={categoryId} onValueChange={(v) => { setCategoryId(v); setPage(1); }}>
                         <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                         <SelectContent>

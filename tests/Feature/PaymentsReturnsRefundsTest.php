@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\AuditLog;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Order;
@@ -342,4 +343,25 @@ it('only an admin can complete or cancel a refund', function () {
     $refund = app(RefundService::class)->initiate($return->refresh(), $context['vendorUser']);
 
     $this->patchJson("/api/admin/refunds/{$refund->id}/complete")->assertForbidden();
+});
+
+it('records the acting admin when a refund is completed', function () {
+    $context = prrDeliveredOrder(purchaseQty: 1, price: 100);
+    Sanctum::actingAs($context['customer']);
+    $return = app(ReturnService::class)->request($context['order'], $context['customer'], [
+        ['order_item_id' => $context['item']->id, 'quantity' => 1],
+    ], 'other');
+
+    Sanctum::actingAs($context['vendorUser']);
+    $this->patchJson("/api/vendor/returns/{$return->id}/status", ['status' => OrderReturn::STATUS_APPROVED])->assertOk();
+    $this->patchJson("/api/vendor/returns/{$return->id}/status", ['status' => OrderReturn::STATUS_RECEIVED])->assertOk();
+    $refund = app(RefundService::class)->initiate($return->refresh(), $context['vendorUser']);
+
+    $admin = User::factory()->create(['type' => User::TYPE_ADMIN]);
+    Sanctum::actingAs($admin);
+    $this->patchJson("/api/admin/refunds/{$refund->id}/complete")->assertOk();
+
+    $completed = AuditLog::query()->where('action', 'refund.completed')->where('entity_id', $refund->id)->firstOrFail();
+    expect($completed->actor_user_id)->toBe($admin->id)
+        ->and($completed->actor_type)->toBe('admin');
 });

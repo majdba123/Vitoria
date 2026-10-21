@@ -1,6 +1,6 @@
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/Components/ui/chart';
-import { useLocale } from '@/hooks/use-i18n';
+import { useIsRtl, useLocale } from '@/hooks/use-i18n';
 import { formatNumber } from '@/lib/date-time';
 
 const MAX_LABEL_CHARS = { ar: 15, en: 16 };
@@ -18,24 +18,25 @@ function labelLines(label, max) {
     return [label.slice(0, split), truncateLabel(label.slice(split).trim(), max)];
 }
 
-function CategoryTick({ x, y, payload, maxChars }) {
+function CategoryTick({ x, y, payload, maxChars, isRtl }) {
     const label = String(payload.value ?? '');
     const lines = labelLines(label, maxChars);
     return (
         <g transform={`translate(${x},${y})`}>
             <title>{label}</title>
-            <text textAnchor="end" direction="ltr" fontSize={12} className="fill-foreground">
+            <text textAnchor={isRtl ? 'start' : 'end'} direction="ltr" fontSize={12} className="fill-foreground">
                 {lines.map((line, index) => <tspan key={index} x="0" dy={index === 0 ? (lines.length === 1 ? 4 : -2) : 13}>{line}</tspan>)}
             </text>
         </g>
     );
 }
 
-function ValueLabel({ viewBox, value, formatValue }) {
+function ValueLabel({ viewBox, value, formatValue, isRtl }) {
     const { x, y, width, height } = viewBox;
+    const tip = isRtl ? Math.min(x, x + width) : Math.max(x, x + width);
     return (
-        <g transform={`translate(${x + width},${y + height / 2})`}>
-            <text dy={4} dx={6} textAnchor="start" direction="ltr" fontSize={12} className="fill-foreground text-xs font-semibold" data-bar-value>
+        <g transform={`translate(${tip},${y + height / 2})`}>
+            <text dy={4} dx={isRtl ? -6 : 6} textAnchor={isRtl ? 'end' : 'start'} direction="ltr" fontSize={12} className="fill-foreground text-xs font-semibold" data-bar-value>
                 {formatValue(value)}
             </text>
         </g>
@@ -49,6 +50,7 @@ function ValueLabel({ viewBox, value, formatValue }) {
  */
 export function HorizontalRankingChart({ rows, valueKey, labelKey = 'name', valueLabel, formatValue, maxItems = 5 }) {
     const locale = useLocale();
+    const isRtl = useIsRtl();
     const resolvedFormatValue = formatValue ?? ((value) => formatNumber(Number(value || 0), locale));
     const data = rows
         .map((row) => ({ label: row[labelKey] ?? '—', value: Number(row[valueKey] ?? 0) }))
@@ -66,29 +68,29 @@ export function HorizontalRankingChart({ rows, valueKey, labelKey = 'name', valu
                 className="aspect-auto w-full"
                 style={{ height }}
             >
-                <BarChart data={data} layout="vertical" margin={{ top: 4, right: valueMargin, bottom: 4, left: 0 }} barCategoryGap="30%">
+                <BarChart data={data} layout="vertical" margin={{ top: 4, right: isRtl ? 0 : valueMargin, bottom: 4, left: isRtl ? valueMargin : 0 }} barCategoryGap="30%">
                     <CartesianGrid horizontal={false} strokeDasharray="3 3" />
                     {/* Headroom past the longest bar keeps the outside value label
                         inside the plot; bar lengths stay proportional to their
                         values - a low value must never look close to a high one. */}
-                    <XAxis type="number" hide domain={[0, (dataMax) => Math.max(1, Math.ceil(Number(dataMax) * 1.18))]} />
+                    <XAxis type="number" hide reversed={isRtl} domain={[0, (dataMax) => Math.max(1, Math.ceil(Number(dataMax) * 1.18))]} />
                     <YAxis
                         dataKey="label"
                         type="category"
-                        orientation="left"
+                        orientation={isRtl ? 'right' : 'left'}
                         width={axisWidth}
                         tickLine={false}
                         axisLine={false}
                         tickMargin={8}
-                        tick={<CategoryTick maxChars={maxChars} />}
+                        tick={<CategoryTick maxChars={maxChars} isRtl={isRtl} />}
                     />
                     <ChartTooltip
                         cursor={{ fill: 'var(--color-accent)' }}
                         offset={16}
                         content={<ChartTooltipContent formatter={(value) => <span className="font-mono font-medium tabular-nums text-foreground">{resolvedFormatValue(value)}</span>} />}
                     />
-                    <Bar dataKey="value" fill="var(--color-value)" radius={[0, 4, 4, 0]} maxBarSize={18} isAnimationActive={false}>
-                        <LabelList dataKey="value" content={(props) => <ValueLabel {...props} formatValue={resolvedFormatValue} />} />
+                    <Bar dataKey="value" fill="var(--color-value)" radius={isRtl ? [4, 0, 0, 4] : [0, 4, 4, 0]} maxBarSize={18} isAnimationActive={false}>
+                        <LabelList dataKey="value" content={(props) => <ValueLabel {...props} formatValue={resolvedFormatValue} isRtl={isRtl} />} />
                     </Bar>
                 </BarChart>
             </ChartContainer>

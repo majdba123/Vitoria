@@ -31,3 +31,13 @@ export function useLocale() {
 
     return props.locale === 'ar' ? 'ar' : 'en';
 }
+
+/**
+ * True when the page renders right-to-left. SVG charts (recharts) draw on
+ * physical coordinates and ignore `dir`, so they read this to mirror axes.
+ */
+export function useIsRtl() {
+    const { props } = usePage();
+
+    return props.direction === 'rtl';
+}

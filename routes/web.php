@@ -226,6 +226,32 @@ Route::prefix('syndicate')->as('syndicate.')->middleware(['auth', 'syndicate'])-
     })->name('notifications.index');
 });
 
+/*
+| Ministry workspace: the syndicate pages, read-only, over agriculture,
+| veterinary or both. An unknown `?sector=` falls back to the combined view.
+*/
+Route::prefix('ministry')->as('ministry.')->middleware(['auth', 'ministry'])->group(function () {
+    $workspace = fn (\Illuminate\Http\Request $request): array => [
+        'workspace' => 'ministry',
+        'sector' => in_array($request->query('sector'), \App\Support\DomainScope::sectors(), true)
+            ? $request->query('sector')
+            : \App\Support\DomainScope::COMBINED,
+    ];
+
+    Route::get('/', fn () => redirect()->route('ministry.dashboard'));
+
+    foreach (['dashboard', 'categories', 'vendors', 'products', 'orders', 'reports'] as $section) {
+        Route::get('/'.$section, fn (\Illuminate\Http\Request $request) => Inertia::render('Syndicate/Dashboard', ['section' => $section, ...$workspace($request)]))->name($section);
+    }
+
+    Route::get('/vendors/{id}', fn (\Illuminate\Http\Request $request, string $id) => Inertia::render('Syndicate/Vendors/Show', ['vendorId' => (int) $id, ...$workspace($request)]))->whereNumber('id')->name('vendors.show');
+    Route::get('/products/{id}', fn (\Illuminate\Http\Request $request, string $id) => Inertia::render('Syndicate/Products/Show', ['productId' => (int) $id, ...$workspace($request)]))->whereNumber('id')->name('products.show');
+    Route::get('/orders/{id}', fn (\Illuminate\Http\Request $request, string $id) => Inertia::render('Syndicate/Orders/Show', ['orderId' => (int) $id, ...$workspace($request)]))->whereNumber('id')->name('orders.show');
+    Route::get('/notifications', fn (\Illuminate\Http\Request $request) => Inertia::render('Syndicate/Notifications/Index', $workspace($request)))->name('notifications.index');
+    Route::get('/shipments', fn (\Illuminate\Http\Request $request) => Inertia::render('Shipments/Index', $workspace($request)))->name('shipments.index');
+    Route::get('/shipments/{id}', fn (\Illuminate\Http\Request $request, string $id) => Inertia::render('Shipments/Show', ['shipmentId' => (int) $id, ...$workspace($request)]))->whereNumber('id')->name('shipments.show');
+});
+
 Route::prefix('employee')->as('employee.')->middleware(['auth', 'employee'])->group(function () {
     Route::get('/', function () {
         return redirect()->route('employee.dashboard');
@@ -261,11 +287,11 @@ Route::prefix('employee')->as('employee.')->middleware(['auth', 'employee'])->gr
 | middleware so that only authenticated admins can access these pages.
 |
 */
-Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(function () {
-    // Redirect /admin to /admin/dashboard
-    Route::get('/', function () {
-        return redirect()->route('admin.dashboard');
-    });
+Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin', 'admin.permission'])->group(function () {
+    // Redirect /admin to the first page this admin may open
+    Route::get('/', function (\Illuminate\Http\Request $request) {
+        return redirect()->route(\App\Support\AdminRoutePermissions::landingRouteFor($request->user()));
+    })->name('home');
 
     // Dashboard
     Route::get('/dashboard', function () {
@@ -382,6 +408,14 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(funct
         return Inertia::render('Admin/Users/Edit', ['userId' => (int) $id]);
     })->name('users.edit');
 
+    // Roles & permissions (native RBAC)
+    Route::get('/roles', fn () => Inertia::render('Admin/Roles/Index'))->name('roles.index');
+    Route::get('/roles/create', fn () => Inertia::render('Admin/Roles/Form', ['roleId' => null]))->name('roles.create');
+    Route::get('/roles/{id}/edit', fn (string $id) => Inertia::render('Admin/Roles/Form', ['roleId' => (int) $id]))->whereNumber('id')->name('roles.edit');
+
+    // Audit trail (read-only)
+    Route::get('/audit-logs', fn () => Inertia::render('Admin/AuditLogs/Index'))->name('audit-logs.index');
+
     Route::get('/notifications', function () {
         return Inertia::render('Admin/Notifications/Index');
     })->name('notifications.index');
@@ -424,7 +458,7 @@ $registerShipmentPages = function (string $workspace): void {
 
 Route::prefix('syndicate')->as('syndicate.')->middleware(['auth', 'syndicate'])->group(fn () => $registerShipmentPages('syndicate'));
 Route::prefix('employee')->as('employee.')->middleware(['auth', 'employee'])->group(fn () => $registerShipmentPages('employee'));
-Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(function () use ($registerShipmentPages): void {
+Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin', 'admin.permission'])->group(function () use ($registerShipmentPages): void {
     $registerShipmentPages('admin');
     Route::get('/ports', fn () => Inertia::render('Admin/Ports/Index'))->name('ports.index');
 });

@@ -14,6 +14,7 @@ import { DonutChart } from '@/Components/shared/dashboard/DonutChart';
 import { DashboardVendorMap } from '@/Components/maps/DashboardVendorMap';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
 import { useAdminDashboard } from '@/hooks/use-admin-dashboard';
+import { useAdminPermissions } from '@/hooks/use-admin-permissions';
 import { useI18n } from '@/hooks/use-i18n';
 
 function combinedStatus(...statuses) {
@@ -32,7 +33,8 @@ function typeLabel(admin, type, fallback) {
 
 export default function Dashboard() {
     const { admin } = useI18n();
-    const { overview, categoryStats, users, vendors, products } = useAdminDashboard();
+    const { can } = useAdminPermissions();
+    const { overview, categoryStats, users, vendors, products } = useAdminDashboard(can);
     const [rangeMonths, setRangeMonths] = useState(12);
     const [distributionTab, setDistributionTab] = useState('vendors');
 
@@ -77,29 +79,37 @@ export default function Dashboard() {
         { key: 'syndicates', title: admin.syndicates_by_type_title, rows: overviewData?.syndicates_by_type, hrefFor: metricUrl.syndicate, columns: 2 },
         { key: 'products', title: admin.products_by_type_title, rows: overviewData?.products_by_category_type, hrefFor: metricUrl.product, columns: 2 },
     ];
-    const activeDistribution = distributionOptions.find((option) => option.key === distributionTab) ?? distributionOptions[0];
+    const quickActions = [
+        { permission: 'vendors.view', href: route('admin.vendors.index'), icon: Store, title: admin.manage_vendors_title },
+        { permission: 'users.view', href: route('admin.users.index'), icon: Users, title: admin.manage_users_title },
+        { permission: 'products.view', href: route('admin.products.index'), icon: Package, title: admin.manage_products_title },
+    ].filter((action) => can(action.permission));
+    const activeDistribution =distributionOptions.find((option) => option.key === distributionTab) ?? distributionOptions[0];
 
     return (
         <AdminLayout title={admin.dashboard}>
             {/* Page header */}
             <section className="flex flex-col gap-4 rounded-lg border border-border/80 bg-card px-5 py-5 sm:px-6 sm:py-6 lg:flex-row lg:items-start lg:justify-between">
                 <div className="min-w-0">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-primary">{admin.badge}</p>
-                    <h2 className="mt-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{admin.dashboard_title}</h2>
+                    <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{admin.dashboard_title}</h2>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                    <Button asChild size="sm">
-                        <Link href={route('admin.vendors.create')}>
-                            <Plus className="size-4" />
-                            {admin.add_vendor}
-                        </Link>
-                    </Button>
-                    <Button asChild size="sm" variant="outline">
-                        <Link href={route('admin.users.create')}>
-                            <Plus className="size-4" />
-                            {admin.add_user}
-                        </Link>
-                    </Button>
+                    {can('vendors.create') && (
+                        <Button asChild size="sm">
+                            <Link href={route('admin.vendors.create')}>
+                                <Plus className="size-4" />
+                                {admin.add_vendor}
+                            </Link>
+                        </Button>
+                    )}
+                    {can('users.create') && (
+                        <Button asChild size="sm" variant="outline">
+                            <Link href={route('admin.users.create')}>
+                                <Plus className="size-4" />
+                                {admin.add_user}
+                            </Link>
+                        </Button>
+                    )}
                 </div>
             </section>
 
@@ -109,21 +119,21 @@ export default function Dashboard() {
                     <h3 className="text-sm font-bold text-foreground">{admin.stats_section_title}</h3>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 @4xl/main:grid-cols-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 @4xl/main:grid-cols-4">
                     <StatCard label={admin.total_vendors} value={vendorsTotal} icon={Store} status={vendorsStatCardStatus} onRetry={vendors.refetch} />
                     <StatCard label={admin.total_products} value={productsTotal} icon={Package} status={productsStatCardStatus} onRetry={products.refetch} />
-                    <StatCard label={admin.total_users} value={usersTotal} icon={Users} status={users.status} onRetry={users.refetch} />
+                    {can('users.view') && <StatCard label={admin.total_users} value={usersTotal} icon={Users} status={users.status} onRetry={users.refetch} />}
                     <StatCard label={admin.total_syndicates} value={syndicatesTotal} icon={Building2} status={overview.status} onRetry={overview.refetch} />
                 </div>
 
-                <div className="flex flex-wrap gap-y-3 border-t border-border/70 pt-4">
+                <div className="grid grid-cols-2 gap-y-3 border-t border-border/70 pt-4 sm:flex sm:flex-wrap">
                     {[
                         { label: admin.active_vendors, value: activeVendors, tone: 'success' },
                         { label: admin.pending_vendors, value: pendingVendors, tone: 'warning' },
                         { label: admin.inactive_vendors, value: inactiveVendors, tone: 'danger' },
                         { label: admin.active_products, value: activeProducts, tone: 'success' },
                     ].map((item, index) => (
-                        <div key={item.label} className={`flex flex-col gap-1 px-4 py-1 ${index === 0 ? 'ps-0' : 'border-s border-border/70'}`}>
+                        <div key={item.label} className={`flex flex-col gap-1 py-1 sm:px-4 ${index === 0 ? 'sm:ps-0' : 'sm:border-s sm:border-border/70'}`}>
                             <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{item.label}</span>
                             <span
                                 className={`text-base font-bold tabular-nums ${item.tone === 'success' ? 'text-[var(--color-success-strong)]' : item.tone === 'danger' ? 'text-[var(--color-danger-strong)]' : 'text-foreground'}`}
@@ -204,7 +214,7 @@ export default function Dashboard() {
                                     aria-pressed={rangeMonths === months}
                                     className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${rangeMonths === months ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent'}`}
                                 >
-                                    {months}mo
+                                    {admin[`chart_period_${months}`]}
                                 </button>
                             ))}
                         </div>
@@ -212,7 +222,7 @@ export default function Dashboard() {
                     </InsightPanel>
                     <InsightPanel
                         title={admin.top_vendors_title}
-                        action={<ViewAllLink href={route('admin.vendors.index')}>{admin.view_vendors}</ViewAllLink>}
+                        action={can('vendors.view') && <ViewAllLink href={route('admin.vendors.index')}>{admin.view_vendors}</ViewAllLink>}
                         status={overview.status}
                         isEmpty={!(overviewData?.top_vendors_by_product_count ?? []).length}
                         emptyMessage={admin.no_top_vendors_yet}
@@ -274,15 +284,17 @@ export default function Dashboard() {
                 </div>
             </section>
 
-            <section>
-                <DashboardVendorMap endpoint="/api/admin/vendors/map" adminDrilldown />
-            </section>
+            {can('vendors.view') && (
+                <section>
+                    <DashboardVendorMap endpoint="/api/admin/vendors/map" adminDrilldown />
+                </section>
+            )}
 
             {/* Coverage + recent products */}
             <section className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[1.3fr_1fr]">
                 <InsightPanel
                     title={admin.vendors_by_category_title}
-                    action={<ViewAllLink href={route('admin.vendors.index')}>{admin.view_vendors}</ViewAllLink>}
+                    action={can('vendors.view') && <ViewAllLink href={route('admin.vendors.index')}>{admin.view_vendors}</ViewAllLink>}
                     status={categoryStats.status}
                     isEmpty={!(categoryStats.data?.data ?? []).length}
                     emptyMessage={admin.no_vendor_categories_yet}
@@ -293,7 +305,7 @@ export default function Dashboard() {
 
                 <InsightPanel
                     title={admin.recent_products_title}
-                    action={<ViewAllLink href={route('admin.products.index')}>{admin.show_all}</ViewAllLink>}
+                    action={can('products.view') && <ViewAllLink href={route('admin.products.index')}>{admin.show_all}</ViewAllLink>}
                     status={combinedStatus(overview.status, products.status)}
                     isEmpty={!recentProducts.length}
                     emptyMessage={admin.no_products_yet}
@@ -345,35 +357,33 @@ export default function Dashboard() {
             </section>
 
             {/* Quick actions */}
-            <section className="space-y-4">
-                <div>
-                    <h3 className="text-sm font-bold text-foreground">{admin.actions_section_title}</h3>
-                </div>
+            {quickActions.length > 0 && (
+                <section className="space-y-4">
+                    <div>
+                        <h3 className="text-sm font-bold text-foreground">{admin.actions_section_title}</h3>
+                    </div>
 
-                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                    {[
-                        { href: route('admin.vendors.index'), icon: Store, title: admin.manage_vendors_title },
-                        { href: route('admin.users.index'), icon: Users, title: admin.manage_users_title },
-                        { href: route('admin.products.index'), icon: Package, title: admin.manage_products_title },
-                    ].map((action) => (
-                        <Link
-                            key={action.title}
-                            href={action.href}
-                            className="group flex items-center justify-between gap-4 rounded-lg border border-border/80 bg-card p-4 transition-colors hover:border-primary/50 hover:bg-accent/40"
-                        >
-                            <div className="flex items-center gap-4">
-                                <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground">
-                                    <action.icon className="size-5" strokeWidth={1.5} />
-                                </span>
-                                <div className="min-w-0">
-                                    <p className="text-sm font-bold text-foreground">{action.title}</p>
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                        {quickActions.map((action) => (
+                            <Link
+                                key={action.title}
+                                href={action.href}
+                                className="group flex items-center justify-between gap-4 rounded-lg border border-border/80 bg-card p-4 transition-colors hover:border-primary/50 hover:bg-accent/40"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground">
+                                        <action.icon className="size-5" strokeWidth={1.5} />
+                                    </span>
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-bold text-foreground">{action.title}</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <ArrowRight className="size-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
-                        </Link>
-                    ))}
-                </div>
-            </section>
+                                <ArrowRight className="size-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+            )}
         </AdminLayout>
     );
 }

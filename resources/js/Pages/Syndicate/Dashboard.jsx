@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
-import SyndicateLayout from '@/Layouts/SyndicateLayout';
+import { syndicateWorkspace } from '@/lib/syndicate-workspace';
 import { PageHeader } from '@/Components/shared/PageHeader';
 import { DataTable } from '@/Components/shared/DataTable';
 import { Pagination } from '@/Components/shared/Pagination';
@@ -42,9 +42,11 @@ function ReportCard({ title, rows }) {
     );
 }
 
-export default function SyndicateDashboard({ section = 'dashboard' }) {
-    const { syndicate, common, admin, lang } = useI18n();
+export default function SyndicateDashboard({ section = 'dashboard', workspace = 'syndicate', sector = 'combined' }) {
+    const { syndicate, ministry = {}, common, admin, lang } = useI18n();
     const locale = useLocale();
+    const ws = syndicateWorkspace(workspace, sector);
+    const { Layout } = ws;
     const isTableSection = TABLE_SECTIONS.includes(section);
     const isPodcasts = section === 'podcasts';
     const isReports = section === 'reports';
@@ -55,16 +57,16 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
 
     const loadOverview = () => {
         setOverviewStatus('loading');
-        window.axios.get('/api/syndicate/overview', { silent: true }).then((res) => {
+        window.axios.get(`${ws.apiBase}/overview`, { params: ws.params, silent: true }).then((res) => {
             setOverview(res.data?.data ?? {});
             setOverviewStatus('ready');
         }).catch(() => setOverviewStatus('error'));
     };
 
-    useEffect(loadOverview, []);
+    useEffect(loadOverview, [ws.apiBase, ws.sector]);
 
     const [page, setPage] = useState(1);
-    const { status: tableStatus, rows: tableRows, meta: tableMeta, errorMessage: tableError, reload: reloadTable } = useSyndicateTable(section, isTableSection, page);
+    const { status: tableStatus, rows: tableRows, meta: tableMeta, errorMessage: tableError, reload: reloadTable } = useSyndicateTable(ws, section, isTableSection, page);
 
     const [reportsStatus, setReportsStatus] = useState('loading');
     const [reports, setReports] = useState(null);
@@ -92,11 +94,11 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
     useEffect(() => {
         if (!isReports) return;
         setReportsStatus('loading');
-        window.axios.get('/api/syndicate/reports', { silent: true }).then((res) => {
+        window.axios.get(`${ws.apiBase}/reports`, { params: ws.params, silent: true }).then((res) => {
             setReports(res.data?.data ?? {});
             setReportsStatus('ready');
         }).catch(() => setReportsStatus('error'));
-    }, [isReports]);
+    }, [isReports, ws.apiBase, ws.sector]);
 
     const syndicateInfo = overview.syndicate ?? {};
     const typeKey = TYPE_LABEL_KEY[syndicateInfo.type] ?? 'type_default';
@@ -107,17 +109,20 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
     const monthlyOrderGrowth = overview.monthly_order_growth || [];
 
     return (
-        <SyndicateLayout title={syndicate[section] ?? syndicate.dashboard}>
+        <Layout title={syndicate[section] ?? syndicate.dashboard}>
             <PageHeader
-                title={overviewStatus === 'ready' ? (syndicateInfo.name || 'Vetora') : syndicate.loading_data}
+                title={ws.isMinistry ? ministry.name : overviewStatus === 'ready' ? (syndicateInfo.name || 'Vetora') : syndicate.loading_data}
+                copy={ws.isMinistry && ws.sector === 'combined' ? ministry.combined_note : undefined}
                 actions={
                     <>
-                        <StatusBadge tone={syndicateInfo.status === 'inactive' ? 'danger' : 'success'}>{syndicateInfo.status === 'inactive' ? syndicate.inactive : syndicate.active}</StatusBadge>
-                        <Button asChild variant="outline" size="sm">
-                            <Link href={route('syndicate.sales')}><BarChart3 className="size-4" aria-hidden="true" />{syndicate.sales_cta}</Link>
-                        </Button>
+                        {!ws.isMinistry && <StatusBadge tone={syndicateInfo.status === 'inactive' ? 'danger' : 'success'}>{syndicateInfo.status === 'inactive' ? syndicate.inactive : syndicate.active}</StatusBadge>}
+                        {!ws.isMinistry && (
+                            <Button asChild variant="outline" size="sm">
+                                <Link href={ws.href('sales')}><BarChart3 className="size-4" aria-hidden="true" />{syndicate.sales_cta}</Link>
+                            </Button>
+                        )}
                         <Button asChild size="sm">
-                            <Link href={route('syndicate.reports')}><FileChartColumn className="size-4" aria-hidden="true" />{syndicate.reports_cta}</Link>
+                            <Link href={ws.href('reports')}><FileChartColumn className="size-4" aria-hidden="true" />{syndicate.reports_cta}</Link>
                         </Button>
                     </>
                 }
@@ -127,7 +132,7 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                 and ReportCard's h3 titles below don't jump straight from the page's h1,
                 which axe-core flags as an invalid heading order. */}
             <h2 className="sr-only">{syndicate.dashboard}</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 @2xl/main:grid-cols-3 @2xl/main:gap-4 [&>:last-child:nth-child(odd)]:col-span-2 @2xl/main:[&>:last-child:nth-child(odd)]:col-span-1">
                 <StatCard label={syndicate.vendors} value={overview.total_merchants ?? 0} icon={Store} status={overviewStatus} onRetry={loadOverview} />
                 <StatCard label={syndicate.products} value={overview.total_products ?? 0} icon={Package} status={overviewStatus} onRetry={loadOverview} />
                 <StatCard label={syndicate.total_orders} value={orderStats.total_orders ?? 0} icon={ShoppingBag} status={overviewStatus} onRetry={loadOverview} />
@@ -160,7 +165,7 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                         </div>
                     </CardHeader>
                     <CardContent className="p-4">
-                        <SyndicateTable section={section} rows={tableRows} status={tableStatus} errorMessage={tableError} onRetry={reloadTable} i18n={syndicate} common={common} onReport={setReportTarget} locale={locale} />
+                        <SyndicateTable section={section} rows={tableRows} status={tableStatus} errorMessage={tableError} onRetry={reloadTable} i18n={syndicate} common={common} onReport={ws.isMinistry ? null : setReportTarget} locale={locale} ws={ws} />
                         {tableStatus === 'ready' && tableRows.length > 0 && (
                             <div className="mt-4 rounded-md border border-border">
                                 <Pagination meta={tableMeta} onPrev={() => setPage((p) => p - 1)} onNext={() => setPage((p) => p + 1)} />
@@ -181,7 +186,7 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
 
             {isReports && (
                 <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-                    <div className="col-span-full flex justify-end"><Button type="button" onClick={() => setGeneralReportOpen(true)}><FileChartColumn className="size-4" />{syndicate.generate_general_report}</Button></div>
+                    {!ws.isMinistry && <div className="col-span-full flex justify-end"><Button type="button" onClick={() => setGeneralReportOpen(true)}><FileChartColumn className="size-4" />{syndicate.generate_general_report}</Button></div>}
                     {reportsStatus === 'loading' && <p className="col-span-full py-8 text-center text-sm text-muted-foreground">{syndicate.loading_data}</p>}
                     {reportsStatus === 'error' && <p className="col-span-full py-8 text-center text-sm text-[var(--color-danger-strong)]">{syndicate.load_failed_section}</p>}
                     {reportsStatus === 'ready' && reports && (
@@ -220,7 +225,7 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
             {isOverview && (
                 <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
                     <div className="xl:col-span-2">
-                        <DashboardVendorMap endpoint="/api/syndicate/vendors/map" />
+                        <DashboardVendorMap endpoint={ws.isMinistry ? `${ws.apiBase}/vendors/map?sector=${ws.sector}` : `${ws.apiBase}/vendors/map`} />
                     </div>
                     {/* Side column carries two panels so it fills the map's height. */}
                     <div className="flex flex-col gap-5">
@@ -243,6 +248,10 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
                 </div>
             )}
 
+            {isOverview && ws.isMinistry && ws.sector === 'combined' && (
+                <SectorComparison combined={overview} combinedStatus={overviewStatus} ws={ws} syndicate={syndicate} ministry={ministry} locale={locale} />
+            )}
+
             {isOverview && (
                 <InsightPanel
                     title={syndicate.monthly_order_growth_title}
@@ -256,11 +265,69 @@ export default function SyndicateDashboard({ section = 'dashboard' }) {
             )}
             <Dialog open={!!reportTarget} onOpenChange={(open) => { if (!open) setReportTarget(null); }}><DialogContent><DialogHeader><DialogTitle>{syndicate.vendor_report}</DialogTitle><DialogDescription>{reportTarget?.store_name}</DialogDescription></DialogHeader><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1.5 text-sm font-medium">{syndicate.from}<Input type="date" value={reportForm.date_from} onChange={(e) => setReportForm({ ...reportForm, date_from: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium">{syndicate.to}<Input type="date" value={reportForm.date_to} onChange={(e) => setReportForm({ ...reportForm, date_to: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{syndicate.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={reportForm.locale} onChange={(e) => setReportForm({ ...reportForm, locale: e.target.value })}><option value="ar">{lang.arabic}</option><option value="en">{lang.english}</option></select></label></div><DialogFooter><Button type="button" disabled={!reportForm.date_from || !reportForm.date_to || reportForm.date_from > reportForm.date_to} onClick={generateVendorReport}><FileText className="size-4" />{syndicate.generate_report}</Button></DialogFooter></DialogContent></Dialog>
             <Dialog open={generalReportOpen} onOpenChange={setGeneralReportOpen}><DialogContent><DialogHeader><DialogTitle>{syndicate.general_report}</DialogTitle><DialogDescription>{syndicate.general_report_copy}</DialogDescription></DialogHeader><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1.5 text-sm font-medium">{syndicate.from}<Input type="date" value={reportForm.date_from} onChange={(e) => setReportForm({ ...reportForm, date_from: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium">{syndicate.to}<Input type="date" value={reportForm.date_to} onChange={(e) => setReportForm({ ...reportForm, date_to: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{syndicate.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={reportForm.locale} onChange={(e) => setReportForm({ ...reportForm, locale: e.target.value })}><option value="ar">{lang.arabic}</option><option value="en">{lang.english}</option></select></label></div><DialogFooter><Button type="button" disabled={!reportForm.date_from || !reportForm.date_to || reportForm.date_from > reportForm.date_to} onClick={generateGeneralReport}><FileChartColumn className="size-4" />{syndicate.generate_report}</Button></DialogFooter></DialogContent></Dialog>
-        </SyndicateLayout>
+        </Layout>
     );
 }
 
-function useSyndicateTable(section, enabled, page) {
+/**
+ * Ministry combined view only: the agriculture and veterinary overviews next
+ * to the de-duplicated combined totals, from the same overview endpoint.
+ */
+function SectorComparison({ combined, combinedStatus, ws, syndicate, ministry, locale }) {
+    const [status, setStatus] = useState('loading');
+    const [sectors, setSectors] = useState({});
+
+    const load = () => {
+        setStatus('loading');
+        Promise.all(['agriculture', 'veterinary'].map((key) => window.axios.get(`${ws.apiBase}/overview`, { params: { sector: key }, silent: true })))
+            .then(([agriculture, veterinary]) => {
+                setSectors({ agriculture: agriculture.data?.data ?? {}, veterinary: veterinary.data?.data ?? {} });
+                setStatus('ready');
+            })
+            .catch(() => setStatus('error'));
+    };
+
+    useEffect(load, [ws.apiBase]);
+
+    const number = (value) => Number(value || 0).toLocaleString(locale === 'ar' ? 'ar' : 'en');
+    const metrics = [
+        { key: 'vendors', label: syndicate.vendors, pick: (o) => o.total_merchants },
+        { key: 'products', label: syndicate.products, pick: (o) => o.total_products },
+        { key: 'categories', label: syndicate.categories, pick: (o) => o.total_categories },
+        { key: 'orders', label: syndicate.total_orders, pick: (o) => o.order_stats?.total_orders },
+        { key: 'completed', label: syndicate.completed_orders, pick: (o) => o.order_stats?.completed_orders },
+    ];
+    const panelStatus = status === 'ready' && combinedStatus === 'ready' ? 'ready' : status === 'error' || combinedStatus === 'error' ? 'error' : 'loading';
+
+    return (
+        <InsightPanel title={ministry.sector_comparison_title} copy={ministry.sector_comparison_copy} status={panelStatus} isEmpty={false} emptyMessage={syndicate.no_data} onRetry={load}>
+            <div className="overflow-x-auto">
+                <table className="w-full min-w-[28rem] text-sm">
+                    <thead>
+                        <tr className="border-b border-border text-xs font-semibold text-muted-foreground">
+                            <th scope="col" className="py-2 text-start font-semibold">{ministry.sector}</th>
+                            <th scope="col" className="py-2 text-end font-semibold">{ministry.sector_agriculture}</th>
+                            <th scope="col" className="py-2 text-end font-semibold">{ministry.sector_veterinary}</th>
+                            <th scope="col" className="py-2 text-end font-semibold text-foreground">{ministry.sector_combined}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {metrics.map((metric) => (
+                            <tr key={metric.key} className="border-b border-border/60 last:border-0">
+                                <th scope="row" className="py-2.5 text-start font-medium text-foreground">{metric.label}</th>
+                                <td className="py-2.5 text-end tabular-nums">{number(metric.pick(sectors.agriculture ?? {}))}</td>
+                                <td className="py-2.5 text-end tabular-nums">{number(metric.pick(sectors.veterinary ?? {}))}</td>
+                                <td className="py-2.5 text-end font-bold tabular-nums text-foreground">{number(metric.pick(combined))}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </InsightPanel>
+    );
+}
+
+function useSyndicateTable(ws, section, enabled, page) {
     const [status, setStatus] = useState('loading');
     const [rows, setRows] = useState([]);
     const [meta, setMeta] = useState({});
@@ -269,7 +336,7 @@ function useSyndicateTable(section, enabled, page) {
     const load = () => {
         if (!enabled) return;
         setStatus('loading');
-        window.axios.get(`/api/syndicate/${section}`, { params: { page, per_page: 15 }, silent: true }).then((res) => {
+        window.axios.get(`${ws.apiBase}/${section}`, { params: { ...ws.params, page, per_page: 15 }, silent: true }).then((res) => {
             setRows(res.data?.data ?? []);
             setMeta(res.data?.meta ?? {});
             setStatus('ready');
@@ -279,12 +346,12 @@ function useSyndicateTable(section, enabled, page) {
         });
     };
 
-    useEffect(load, [section, enabled, page]);
+    useEffect(load, [section, enabled, page, ws.apiBase, ws.sector]);
 
     return { status, rows, meta, errorMessage, reload: load };
 }
 
-function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, common, onReport, locale }) {
+function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, common, onReport, locale, ws }) {
     const columnsBySection = {
         categories: [
             { key: 'name', label: i18n.th_category, truncate: true, render: (r) => <span className="font-semibold text-foreground">{r.name}</span> },
@@ -301,14 +368,14 @@ function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, co
             { key: 'domain_sales', label: i18n.completed_sales, align: 'end', render: (r) => money(r.domain_sales, locale) },
             { key: 'last_activity_at', label: i18n.last_activity, render: (r) => r.last_activity_at ? formatDate(r.last_activity_at, locale) : '—' },
             { key: 'status', label: i18n.th_status, align: 'center', render: (r) => <StatusBadge tone={r.is_active ? 'success' : 'danger'}>{r.is_active ? common.active : common.inactive}</StatusBadge> },
-            { key: 'actions', label: i18n.th_actions, align: 'center', render: (r) => <div className="flex items-center justify-center gap-1"><Button asChild size="sm" variant="ghost"><Link href={route('syndicate.vendors.show', r.id)}><Eye className="size-4" />{common.view_details}</Link></Button><Button type="button" size="sm" variant="outline" onClick={() => onReport(r)}><FileText className="size-4" />{i18n.report}</Button></div> },
+            { key: 'actions', label: i18n.th_actions, align: 'center', render: (r) => <div className="flex items-center justify-center gap-1"><Button asChild size="sm" variant="ghost"><Link href={ws.href('vendors.show', r.id)}><Eye className="size-4" />{common.view_details}</Link></Button>{onReport && <Button type="button" size="sm" variant="outline" onClick={() => onReport(r)}><FileText className="size-4" />{i18n.report}</Button>}</div> },
         ],
         products: [
             { key: 'name', label: i18n.th_products, width: '34%', truncate: true, render: (r) => <span className="font-semibold text-foreground">{r.name}</span> },
             { key: 'store', label: i18n.th_store, width: '20%', truncate: true, render: (r) => r.vendor?.store_name || '-' },
             { key: 'category', label: i18n.th_category, width: '22%', truncate: true, render: (r) => r.category?.name || '-' },
             { key: 'status', label: i18n.th_status, width: '12%', align: 'center', render: (r) => <StatusBadge tone={r.is_active ? 'success' : 'danger'}>{r.is_active ? common.active : common.inactive}</StatusBadge> },
-            { key: 'actions', label: i18n.th_actions, align: 'center', render: (r) => <Button asChild size="sm" variant="ghost"><Link href={route('syndicate.products.show', r.id)} aria-label={`${i18n.view_product}: ${r.name}`}><Eye className="size-4" />{common.view_details}</Link></Button> },
+            { key: 'actions', label: i18n.th_actions, align: 'center', render: (r) => <Button asChild size="sm" variant="ghost"><Link href={ws.href('products.show', r.id)} aria-label={`${i18n.view_product}: ${r.name}`}><Eye className="size-4" />{common.view_details}</Link></Button> },
         ],
         orders: [
             { key: 'order', label: i18n.th_order, truncate: true, render: (r) => <span className="font-semibold text-foreground">{r.order_number || `#${r.id}`}</span> },
@@ -316,7 +383,7 @@ function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, co
             { key: 'store', label: i18n.th_store, truncate: true, render: (r) => r.vendor?.store_name || '—' },
             { key: 'total', label: i18n.th_total, align: 'end', render: (r) => money(r.total_amount, locale) },
             { key: 'status', label: i18n.th_status, align: 'center', render: (r) => <StatusBadge tone={STATUS_TONE[r.status] ?? 'warning'}>{i18n[`status_${r.status}`] ?? translatedStatus(r.status, common)}</StatusBadge> },
-            { key: 'actions', label: i18n.th_actions, align: 'center', render: (r) => <Button asChild size="sm" variant="ghost"><Link href={route('syndicate.orders.show', r.id)} aria-label={`${i18n.view_order}: ${r.order_number || r.id}`}><Eye className="size-4" />{common.view_details}</Link></Button> },
+            { key: 'actions', label: i18n.th_actions, align: 'center', render: (r) => <Button asChild size="sm" variant="ghost"><Link href={ws.href('orders.show', r.id)} aria-label={`${i18n.view_order}: ${r.order_number || r.id}`}><Eye className="size-4" />{common.view_details}</Link></Button> },
         ],
     };
 
@@ -327,17 +394,11 @@ function SyndicateTable({ section, rows, status, errorMessage, onRetry, i18n, co
             status={status}
             errorMessage={errorMessage}
             onRetry={onRetry}
-            rowHref={ROW_HREF[section]}
+            rowHref={['vendors', 'products', 'orders'].includes(section) ? (row) => ws.href(`${section}.show`, row.id) : undefined}
             emptyTitle={common.no_data}
         />
     );
 }
-
-const ROW_HREF = {
-    vendors: (row) => route('syndicate.vendors.show', row.id),
-    products: (row) => route('syndicate.products.show', row.id),
-    orders: (row) => route('syndicate.orders.show', row.id),
-};
 
 function typeLabel(type, i18n) {
     if (type === 'agriculture') return i18n.type_agriculture;

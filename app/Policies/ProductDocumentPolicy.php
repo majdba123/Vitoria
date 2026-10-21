@@ -9,7 +9,7 @@ class ProductDocumentPolicy
 {
     public function view(User $user, ProductDocument $document): bool
     {
-        if ($user->isAdmin() || $user->isEmployee()) {
+        if ($user->hasAdminPermission('product_documents.view') || $user->isEmployee()) {
             return true;
         }
 
@@ -22,7 +22,7 @@ class ProductDocumentPolicy
      */
     public function manage(User $user, ProductDocument $document): bool
     {
-        if ($user->isAdmin()) {
+        if ($user->hasAdminPermission('product_documents.review')) {
             return true;
         }
 

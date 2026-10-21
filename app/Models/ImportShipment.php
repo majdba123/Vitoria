@@ -62,13 +62,18 @@ class ImportShipment extends Model
     }
 
     /**
-     * A syndicate user only ever sees its own syndicate's shipments; admins
-     * and employees see all of them.
+     * A syndicate user only ever sees its own syndicate's shipments, the
+     * Ministry sees every agriculture/veterinary syndicate's shipments, and
+     * admins and employees see all of them.
      */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
         if ($user->isSyndicate()) {
             return $query->where('syndicate_id', $user->syndicate?->id ?? 0);
+        }
+
+        if ($user->isMinistry()) {
+            return $query->whereHas('syndicate', fn (Builder $syndicate) => $syndicate->whereIn('type', [Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY]));
         }
 
         return $query;

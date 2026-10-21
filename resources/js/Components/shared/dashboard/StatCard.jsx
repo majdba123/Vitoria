@@ -16,8 +16,8 @@ export function StatCard({ label, value, icon: Icon, status = 'ready', onRetry, 
     const toneClass = tone === 'danger' ? 'text-[var(--color-danger-strong)]' : tone === 'success' ? 'text-[var(--color-success-strong)]' : 'text-foreground';
 
     return (
-        <Card className="border-border/80 shadow-none">
-            <CardContent className="flex items-start justify-between gap-5 px-5 py-5 lg:px-6">
+        <Card className="@container gap-0 border-border/80 py-0 shadow-none">
+            <CardContent className="flex items-start justify-between gap-3 px-4 py-4 sm:gap-5 sm:px-5 sm:py-5 lg:px-6">
                 <div className="min-w-0 flex-1">
                     <p className="break-words text-sm font-semibold leading-snug text-muted-foreground">{label}</p>
                     {status === 'loading' && <Skeleton className="mt-3 h-7 w-16" />}
@@ -27,9 +27,9 @@ export function StatCard({ label, value, icon: Icon, status = 'ready', onRetry, 
                             {common.retry}
                         </button>
                     )}
-                    {status === 'ready' && <p className={`mt-2 text-2xl font-bold tabular-nums lg:text-3xl ${toneClass}`}><bdi>{displayValue}</bdi></p>}
+                    {status === 'ready' && <p className={`mt-1.5 text-xl font-bold tabular-nums sm:mt-2 sm:text-2xl lg:text-3xl ${toneClass}`}><bdi>{displayValue}</bdi></p>}
                 </div>
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground">
+                <span className="hidden size-12 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground @[15rem]:flex">
                     <Icon className="size-5.5" strokeWidth={1.5} aria-hidden="true" />
                 </span>
             </CardContent>
