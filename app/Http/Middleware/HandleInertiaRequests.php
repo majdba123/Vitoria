@@ -78,6 +78,7 @@ class HandleInertiaRequests extends Middleware
                 'admin' => trans('admin'),
                 'vendor' => trans('vendor'),
                 'syndicate' => trans('syndicate'),
+                'ministry' => trans('ministry'),
                 'employee' => trans('employee'),
                 'nav' => trans('nav'),
                 'common' => trans('common'),

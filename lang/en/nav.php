@@ -57,6 +57,7 @@ return [
     'business_account' => 'Business account',
     'employee' => 'Employee',
     'syndicate' => 'Syndicate',
+    'ministry' => 'Ministry',
     'tap_category_prompt' => 'Tap a category',
     'close_menu' => 'Close menu',
     'toggle_theme_aria' => 'Toggle light or dark theme',

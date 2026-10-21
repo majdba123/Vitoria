@@ -68,14 +68,18 @@ class OrderItem extends Model
     /**
      * Scope historical lines by their checkout-time domain. The relationship
      * fallback exists only for legacy rows that could not be backfilled.
+     *
+     * @param  string|list<string>  $domain
      */
-    public function scopeForDomain(Builder $query, string $domain): Builder
+    public function scopeForDomain(Builder $query, string|array $domain): Builder
     {
-        return $query->where(function (Builder $builder) use ($domain): void {
-            $builder->where('category_type', $domain)
-                ->orWhere(function (Builder $legacy) use ($domain): void {
+        $domains = (array) $domain;
+
+        return $query->where(function (Builder $builder) use ($domains): void {
+            $builder->whereIn('category_type', $domains)
+                ->orWhere(function (Builder $legacy) use ($domains): void {
                     $legacy->whereNull('category_type')
-                        ->whereHas('product.category', fn (Builder $category) => $category->where('type', $domain));
+                        ->whereHas('product.category', fn (Builder $category) => $category->whereIn('type', $domains));
                 });
         });
     }

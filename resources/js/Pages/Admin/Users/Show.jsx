@@ -14,7 +14,7 @@ import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { formatCurrency, formatDate } from '@/lib/date-time';
 import { translatedStatus } from '@/lib/translated-enum';
 
-const TYPE_TONES = { 0: 'brand', 1: 'warning', 2: 'brand', 3: 'warning', 4: 'success' };
+const TYPE_TONES = { 0: 'brand', 1: 'warning', 2: 'brand', 3: 'warning', 4: 'success', 5: 'warning' };
 
 export default function UsersShow({ userId }) {
     const { admin, common, orders: ordersLang } = useI18n();

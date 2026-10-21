@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { Activity, BadgeDollarSign, Banknote, Boxes, CalendarRange, Check, CheckCircle2, Download, FileDown, Package, Pencil, RotateCcw, Search, ShoppingBag, Store } from 'lucide-react';
 import { PageHeader } from '@/Components/shared/PageHeader';
@@ -21,7 +21,7 @@ const MONEY_KEYS = new Set(['gross_sales', 'refunds', 'commission', 'net_earning
 const KPI_KEYS = ['total_products', 'active_products', 'pending_products', 'total_orders', 'completed_orders', 'cancelled_orders', 'units_sold', 'gross_sales', 'refunds', 'average_completed_order_value'];
 const KPI_ICONS = { total_products: Package, active_products: Activity, pending_products: Boxes, total_orders: ShoppingBag, completed_orders: ShoppingBag, cancelled_orders: RotateCcw, units_sold: Boxes, gross_sales: BadgeDollarSign, refunds: RotateCcw, average_completed_order_value: BadgeDollarSign };
 
-export function Vendor360({ vendorId, mode = 'admin' }) {
+export function Vendor360({ vendorId, mode = 'admin', sector = 'combined' }) {
     const { vendorAnalytics: t = {}, common = {}, lang = {} } = useI18n();
     const locale = useLocale();
     const [range, setRange] = useState('30_days');
@@ -30,8 +30,13 @@ export function Vendor360({ vendorId, mode = 'admin' }) {
     const [status, setStatus] = useState('loading');
     const [tab, setTab] = useState(mode === 'admin' ? 'products' : 'overview');
     const [reportOpen, setReportOpen] = useState(false);
-    const base = `/api/${mode === 'admin' ? 'admin' : 'syndicate'}/vendors/${vendorId}`;
-    const params = useMemo(() => ({ range, ...(range === 'custom' ? custom : {}) }), [range, custom]);
+    const base = `/api/${mode}/vendors/${vendorId}`;
+    const params = useMemo(() => ({ range, ...(range === 'custom' ? custom : {}), ...(mode === 'ministry' ? { sector } : {}) }), [range, custom, mode, sector]);
+    const workspaceHref = (name, id) => {
+        const sectorParam = mode === 'ministry' && sector !== 'combined' ? { sector } : {};
+
+        return id === undefined ? route(`${mode}.${name}`, sectorParam) : route(`${mode}.${name}`, { id, ...sectorParam });
+    };
 
     const load = useCallback(() => {
         if (range === 'custom' && (!custom.date_from || !custom.date_to)) return;
@@ -67,9 +72,9 @@ export function Vendor360({ vendorId, mode = 'admin' }) {
     return (
         <>
             <PageHeader
-                breadcrumb={mode === 'admin' ? [{ label: t.title, href: route('admin.vendors.index') }] : [{ label: t.title, href: route('syndicate.vendors') }]}
+                breadcrumb={mode === 'admin' ? [{ label: t.title, href: route('admin.vendors.index') }] : [{ label: t.title, href: workspaceHref('vendors') }]}
                 title={<Identity vendor={vendor} loading={status === 'loading'} common={common} labels={t} />}
-                actions={vendor ? <>{mode === 'admin' && vendor.status === 'pending' && <Button size="sm" onClick={approve}><CheckCircle2 className="size-4" aria-hidden="true" />{common.approve}</Button>}<Button type="button" variant="outline" size="sm" onClick={() => setReportOpen(true)}><FileDown className="size-4" />{t.export_pdf}</Button>{mode === 'admin' && <Button asChild variant="outline" size="sm"><Link href={route('admin.vendors.edit', vendor.id)}><Pencil className="size-4" aria-hidden="true" />{common.edit}</Link></Button>}</> : null}
+                actions={vendor ? <>{mode === 'admin' && vendor.status === 'pending' && <Button size="sm" onClick={approve}><CheckCircle2 className="size-4" aria-hidden="true" />{common.approve}</Button>}{mode !== 'ministry' && <Button type="button" variant="outline" size="sm" onClick={() => setReportOpen(true)}><FileDown className="size-4" />{t.export_pdf}</Button>}{mode === 'admin' && <Button asChild variant="outline" size="sm"><Link href={route('admin.vendors.edit', vendor.id)}><Pencil className="size-4" aria-hidden="true" />{common.edit}</Link></Button>}</> : null}
             />
             <ReportDialog open={reportOpen} onOpenChange={setReportOpen} labels={t} languages={lang} onGenerate={exportReport} />
             <PeriodFilter range={range} onRange={setRange} custom={custom} onCustom={setCustom} labels={t} />
@@ -81,7 +86,7 @@ export function Vendor360({ vendorId, mode = 'admin' }) {
                 <TabsContent value="overview" className="space-y-5 pt-5">
                     <KpiGrid values={overview?.kpis} labels={t} locale={locale} loading={status === 'loading'} />
                     {mode === 'admin' && <FinanceStrip values={finance} labels={t} locale={locale} title={t.all_time_finance} />}
-                    {mode === 'syndicate' && overview?.finance?.attribution_complete === false && <p role="note" className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-foreground">{t.attribution_unavailable}</p>}
+                    {mode !== 'admin' && overview?.finance?.attribution_complete === false && <p role="note" className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-foreground">{t.attribution_unavailable}</p>}
                     <div className="grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
                         <TrendCard rows={overview?.trend ?? []} title={t.sales_trend} empty={t.no_data} locale={locale} ordersLabel={t.orders} />
                         <RankedList rows={overview?.top_products ?? []} title={t.top_products} empty={t.no_data} locale={locale} />
@@ -190,7 +195,8 @@ function ResponsiveRecords({ rows, status, type, locale, mode, empty, labels, co
     return <div className="space-y-2">{rows.map((row, index) => <div key={row?.id ?? index} className="grid gap-2 rounded-lg border border-border p-3 text-sm md:grid-cols-[minmax(12rem,2fr)_repeat(4,minmax(7rem,1fr))] md:items-center"><Record row={row} type={type} locale={locale} mode={mode} labels={labels} common={common} /></div>)}</div>;
 }
 function Record({ row, type, locale, mode, labels, common }) {
-    if (type === 'products') return <><Link href={mode === 'admin' ? route('admin.products.show', row.id) : route('syndicate.products.show', row.id)} className="flex items-center gap-3 font-semibold"><Avatar className="size-10 rounded-md"><AvatarImage src={row.image_url} alt={row.name} /><AvatarFallback><Package className="size-4" /></AvatarFallback></Avatar>{row.name}</Link><span>{row.category?.name}</span><span>{formatNumber(row.units_sold, locale)} {labels.units}</span><span>{formatValue(row.completed_sales_amount, true, locale)}</span><span>{translatedStatus(row.status, common)} · {row.is_active ? common.active : common.inactive}</span></>;
+    const pageSector = usePage().props.sector;
+    if (type === 'products') return <><Link href={mode === 'admin' ? route('admin.products.show', row.id) : route(`${mode}.products.show`, { id: row.id, ...(mode === 'ministry' && pageSector && pageSector !== 'combined' ? { sector: pageSector } : {}) })} className="flex items-center gap-3 font-semibold"><Avatar className="size-10 rounded-md"><AvatarImage src={row.image_url} alt={row.name} /><AvatarFallback><Package className="size-4" /></AvatarFallback></Avatar>{row.name}</Link><span>{row.category?.name}</span><span>{formatNumber(row.units_sold, locale)} {labels.units}</span><span>{formatValue(row.completed_sales_amount, true, locale)}</span><span>{translatedStatus(row.status, common)} · {row.is_active ? common.active : common.inactive}</span></>;
     if (type === 'returns') return <><span className="font-semibold">{row.return_number}</span><span>{row.order?.order_number}</span><span>{row.reason}</span><span>{formatValue(row.refund_amount ?? row.scoped_return_amount, true, locale)}</span><span>{translatedStatus(row.status, common)}</span></>;
     if (['finance', 'sales'].includes(type)) return <><span className="font-semibold">{labels[`ledger_${row.type}`] ?? common.not_available}</span><span>{row.order?.order_number ?? '—'}</span><span>{row.direction === 'credit' ? labels.credit : labels.debit}</span><span>{formatValue(row.amount, true, locale)}</span><span>{formatDate(row.created_at, locale)}</span></>;
     if (type === 'documents') return <><span className="font-semibold">{row.title}</span><span>{row.type_name}</span><span>{row.status_name}</span><span>{row.reviewed_by ?? '—'}</span><span>{formatDate(row.created_at, locale)}</span></>;

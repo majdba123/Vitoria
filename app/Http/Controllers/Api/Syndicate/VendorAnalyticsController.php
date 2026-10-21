@@ -9,7 +9,9 @@ use App\Models\Vendor;
 use App\Services\Syndicate\SyndicateDashboardService;
 use App\Services\Vendor\SyndicateVendorPdfService;
 use App\Services\Vendor\VendorAnalyticsService;
+use App\Support\DomainScope;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class VendorAnalyticsController extends Controller
@@ -46,16 +48,30 @@ class VendorAnalyticsController extends Controller
             'Content-Disposition' => 'inline; filename="'.$report['filename'].'"',
             'Content-Length' => (string) strlen($report['bytes']),
             'X-Content-Type-Options' => 'nosniff',
-            'X-Vetora-Report-Domain' => $domain,
+            'X-Vetora-Report-Domain' => implode(',', (array) $domain),
         ]);
     }
 
-    private function domain(VendorAnalyticsRequest $request, Vendor $vendor): string
+    /**
+     * The domain(s) the vendor's analytics are restricted to. Never null: a
+     * null domain means the unscoped admin view, including the full ledger.
+     *
+     * @return string|list<string>
+     */
+    private function domain(VendorAnalyticsRequest $request, Vendor $vendor): string|array
+    {
+        $scope = $this->scope($request);
+        abort_unless($this->dashboard->vendorQuery($scope->types)->whereKey($vendor->id)->exists(), 404);
+
+        return $scope->isCombined() ? $scope->types : $scope->types[0];
+    }
+
+    protected function scope(Request $request): DomainScope
     {
         $syndicate = $request->user()->syndicate;
-        abort_unless($syndicate && $this->dashboard->vendorQuery($syndicate->type)->whereKey($vendor->id)->exists(), 404);
+        abort_unless($syndicate !== null, 404);
 
-        return $syndicate->type;
+        return DomainScope::forSyndicate($syndicate);
     }
 
     private function paginated($paginator): JsonResponse

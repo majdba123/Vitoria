@@ -10,6 +10,7 @@ use App\Models\Syndicate;
 use App\Services\Syndicate\SyndicateDashboardService;
 use App\Services\Syndicate\SyndicateReportService;
 use App\Services\Vendor\VendorMapService;
+use App\Support\DomainScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,13 +23,13 @@ class DashboardController extends Controller
     {
         return response()->json([
             'message' => __('Syndicate overview retrieved successfully.'),
-            'data' => $this->dashboardService->overview($this->syndicate($request)),
+            'data' => $this->dashboardService->overview($this->scope($request)),
         ]);
     }
 
     public function categories(Request $request): JsonResponse
     {
-        $categories = $this->dashboardService->categories($this->syndicate($request), $this->perPage($request));
+        $categories = $this->dashboardService->categories($this->scope($request), $this->perPage($request));
 
         return response()->json([
             'message' => __('Syndicate categories retrieved successfully.'),
@@ -40,7 +41,7 @@ class DashboardController extends Controller
     public function vendors(VendorMapRequest $request): JsonResponse
     {
         $vendors = $this->dashboardService->vendors(
-            $this->syndicate($request),
+            $this->scope($request),
             $this->perPage($request),
             $request->filters()['city_id'],
         );
@@ -58,20 +59,20 @@ class DashboardController extends Controller
      */
     public function vendorsMap(Request $request, VendorMapService $mapService): JsonResponse
     {
-        $type = $this->syndicate($request)->type;
+        $scope = $this->scope($request);
 
         return response()->json([
             'message' => __('Vendor map retrieved successfully.'),
             'data' => $mapService->dashboardPayload(
-                fn () => $this->dashboardService->vendorQuery($type),
-                $type,
+                fn () => $this->dashboardService->vendorQuery($scope->types),
+                $scope->singleType(),
             ),
         ]);
     }
 
     public function products(Request $request): JsonResponse
     {
-        $products = $this->dashboardService->products($this->syndicate($request), $this->perPage($request));
+        $products = $this->dashboardService->products($this->scope($request), $this->perPage($request));
 
         return response()->json([
             'message' => __('Syndicate products retrieved successfully.'),
@@ -82,7 +83,7 @@ class DashboardController extends Controller
 
     public function product(Request $request, int $product): JsonResponse
     {
-        $found = $this->dashboardService->findProduct($this->syndicate($request), $product);
+        $found = $this->dashboardService->findProduct($this->scope($request), $product);
         abort_if($found === null, 404);
 
         return response()->json([
@@ -93,7 +94,7 @@ class DashboardController extends Controller
 
     public function order(Request $request, int $order): JsonResponse
     {
-        $detail = $this->dashboardService->orderDetail($this->syndicate($request), $order);
+        $detail = $this->dashboardService->orderDetail($this->scope($request), $order);
         abort_if($detail === null, 404);
 
         return response()->json([
@@ -104,7 +105,7 @@ class DashboardController extends Controller
 
     public function orders(Request $request): JsonResponse
     {
-        $orders = $this->dashboardService->orders($this->syndicate($request), $this->perPage($request));
+        $orders = $this->dashboardService->orders($this->scope($request), $this->perPage($request));
 
         return response()->json([
             'message' => __('Syndicate orders retrieved successfully.'),
@@ -117,7 +118,7 @@ class DashboardController extends Controller
     {
         return response()->json([
             'message' => __('Syndicate podcasts retrieved successfully.'),
-            'data' => $this->dashboardService->podcasts($this->syndicate($request)),
+            'data' => $this->dashboardService->podcasts($this->scope($request)),
         ]);
     }
 
@@ -125,7 +126,7 @@ class DashboardController extends Controller
     {
         return response()->json([
             'message' => __('Syndicate reports retrieved successfully.'),
-            'data' => $this->dashboardService->reports($this->syndicate($request)),
+            'data' => $this->dashboardService->reports($this->scope($request)),
         ]);
     }
 
@@ -149,6 +150,14 @@ class DashboardController extends Controller
     protected function syndicate(Request $request): Syndicate
     {
         return $request->user()->syndicate;
+    }
+
+    /**
+     * The domains this workspace reads; a syndicate always reads its own.
+     */
+    protected function scope(Request $request): DomainScope
+    {
+        return DomainScope::forSyndicate($this->syndicate($request));
     }
 
     protected function perPage(Request $request): int

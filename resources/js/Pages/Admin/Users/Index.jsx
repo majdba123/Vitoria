@@ -16,7 +16,7 @@ import { useAdminList } from '@/hooks/use-admin-list';
 import { useI18n, useLocale } from '@/hooks/use-i18n';
 import { formatCurrency, formatDate } from '@/lib/date-time';
 
-const TYPE_TONES = { 0: 'brand', 1: 'warning', 2: 'brand', 3: 'warning', 4: 'success' };
+const TYPE_TONES = { 0: 'brand', 1: 'warning', 2: 'brand', 3: 'warning', 4: 'success', 5: 'warning' };
 
 export default function UsersIndex() {
     const { admin, common } = useI18n();

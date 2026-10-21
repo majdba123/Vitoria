@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Syndicate;
 use App\Models\Vendor;
 use App\Services\ApplicationCacheService;
+use App\Support\DomainScope;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -20,15 +21,17 @@ class SyndicateDashboardService
     /**
      * @return array<string, mixed>
      */
-    public function overview(Syndicate $syndicate): array
+    public function overview(Syndicate|DomainScope $scope): array
     {
-        return $this->cacheService->remember("syndicate_dashboard:{$syndicate->id}:{$syndicate->type}", 300, function () use ($syndicate): array {
-            $type = $syndicate->type;
+        $scope = DomainScope::from($scope);
+
+        return $this->cacheService->remember($scope->cacheKey(), 300, function () use ($scope): array {
+            $type = $scope->types;
             $ordersByStatus = $this->ordersByStatus($type);
             $sales = $this->salesStats($type);
 
             return [
-                'syndicate' => $this->syndicateSummary($syndicate),
+                'syndicate' => $scope->summary(),
                 'total_categories' => $this->categoryQuery($type)->count(),
                 'total_merchants' => $this->vendorQuery($type)->count(),
                 'total_products' => $this->productQuery($type)->count(),
@@ -51,9 +54,9 @@ class SyndicateDashboardService
         }, ['syndicates', 'dashboard']);
     }
 
-    public function categories(Syndicate $syndicate, int $perPage = 15): LengthAwarePaginator
+    public function categories(Syndicate|DomainScope $scope, int $perPage = 15): LengthAwarePaginator
     {
-        return $this->categoryQuery($syndicate->type)
+        return $this->categoryQuery(DomainScope::from($scope)->types)
             ->withCount([
                 'vendors',
                 'products',
@@ -62,14 +65,15 @@ class SyndicateDashboardService
             ->paginate($perPage);
     }
 
-    public function vendors(Syndicate $syndicate, int $perPage = 15, ?int $cityId = null): LengthAwarePaginator
+    public function vendors(Syndicate|DomainScope $scope, int $perPage = 15, ?int $cityId = null): LengthAwarePaginator
     {
-        $type = $syndicate->type;
+        $type = DomainScope::from($scope)->types;
+        [$domainSql, $domainBindings] = $this->domainCondition($type);
 
         return $this->vendorQuery($type)
             ->when($cityId !== null, fn (Builder $query) => $query->where('vendors.city_id', $cityId))
-            ->with(['user:id,name,email,phone_number', 'city:id,name', 'categories' => fn ($query) => $query->where('categories.type', $type)->select('categories.id', 'categories.name', 'categories.type')])
-            ->withCount(['products' => fn ($query) => $query->whereHas('category', fn ($category) => $category->where('type', $type))])
+            ->with(['user:id,name,email,phone_number', 'city:id,name', 'categories' => fn ($query) => $query->whereIn('categories.type', $type)->select('categories.id', 'categories.name', 'categories.type')])
+            ->withCount(['products' => fn ($query) => $query->whereHas('category', fn ($category) => $category->whereIn('type', $type))])
             ->addSelect([
                 'completed_orders_count' => Order::query()->selectRaw('COUNT(DISTINCT orders.id)')->whereColumn('orders.vendor_id', 'vendors.id')
                     ->where('orders.status', Order::STATUS_COMPLETED)->whereHas('items', fn ($items) => $items->forDomain($type)),
@@ -77,7 +81,7 @@ class SyndicateDashboardService
                     ->leftJoin('products', 'products.id', '=', 'order_items.product_id')->leftJoin('categories', 'categories.id', '=', 'products.category_id')
                     ->leftJoin('categories as snapshot_categories', 'snapshot_categories.id', '=', 'order_items.category_id_snapshot')
                     ->selectRaw('COALESCE(SUM(order_items.line_total), 0)')->whereColumn('orders.vendor_id', 'vendors.id')
-                    ->where('orders.status', Order::STATUS_COMPLETED)->whereRaw('COALESCE(order_items.category_type, snapshot_categories.type, categories.type) = ?', [$type]),
+                    ->where('orders.status', Order::STATUS_COMPLETED)->whereRaw($domainSql, $domainBindings),
                 'last_activity_at' => Order::query()->select('created_at')->whereColumn('orders.vendor_id', 'vendors.id')
                     ->whereHas('items', fn ($items) => $items->forDomain($type))->latest('created_at')->limit(1),
             ])
@@ -85,25 +89,27 @@ class SyndicateDashboardService
             ->paginate($perPage);
     }
 
-    public function products(Syndicate $syndicate, int $perPage = 15): LengthAwarePaginator
+    public function products(Syndicate|DomainScope $scope, int $perPage = 15): LengthAwarePaginator
     {
-        return $this->productQuery($syndicate->type)
+        return $this->productQuery(DomainScope::from($scope)->types)
             ->with(['vendor:id,store_name,business_type', 'category:id,name,type'])
             ->latest()
             ->paginate($perPage);
     }
 
-    public function orders(Syndicate $syndicate, int $perPage = 15): LengthAwarePaginator
+    public function orders(Syndicate|DomainScope $scope, int $perPage = 15): LengthAwarePaginator
     {
+        $type = DomainScope::from($scope)->types;
+
         // Explicit column list: the raw order row carries the customer's
         // phone, alternate phone, street address and notes, none of which a
         // syndicate has a business basis to receive.
-        return $this->orderQuery($syndicate->type)
+        return $this->orderQuery($type)
             ->select(['orders.id', 'orders.order_number', 'orders.user_id', 'orders.vendor_id', 'orders.status', 'orders.total_amount', 'orders.created_at', 'orders.updated_at'])
             ->with([
                 'user:id,name',
                 'vendor:id,store_name',
-                'items' => fn ($items) => $items->forDomain($syndicate->type)
+                'items' => fn ($items) => $items->forDomain($type)
                     ->select('id', 'order_id', 'product_id', 'category_type', 'product_name', 'quantity', 'line_total', 'unit_price'),
                 'items.product:id,category_id,vendor_id',
                 'items.product.category:id,name,type,commission',
@@ -117,9 +123,9 @@ class SyndicateDashboardService
      * the product is outside that domain so the caller answers 404 - the same
      * scope as the products list, enforced here rather than in the UI.
      */
-    public function findProduct(Syndicate $syndicate, int $productId): ?Product
+    public function findProduct(Syndicate|DomainScope $scope, int $productId): ?Product
     {
-        return $this->productQuery($syndicate->type)
+        return $this->productQuery(DomainScope::from($scope)->types)
             ->with(['vendor.city:id,name', 'category:id,name,type', 'subcategory', 'photos', 'sharedDetail.agriculturalDetail', 'sharedDetail.veterinaryDetail'])
             ->find($productId);
     }
@@ -132,9 +138,9 @@ class SyndicateDashboardService
      *
      * @return array<string, mixed>|null
      */
-    public function orderDetail(Syndicate $syndicate, int $orderId): ?array
+    public function orderDetail(Syndicate|DomainScope $scope, int $orderId): ?array
     {
-        $type = $syndicate->type;
+        $type = DomainScope::from($scope)->types;
         $order = $this->orderQuery($type)
             ->with(['user:id,name', 'vendor:id,store_name'])
             ->find($orderId);
@@ -186,10 +192,10 @@ class SyndicateDashboardService
     /**
      * @return array<string, mixed>
      */
-    public function podcasts(Syndicate $syndicate): array
+    public function podcasts(Syndicate|DomainScope $scope): array
     {
         return [
-            'syndicate' => $this->syndicateSummary($syndicate),
+            'syndicate' => DomainScope::from($scope)->summary(),
             'data' => [],
             'meta' => ['total' => 0],
         ];
@@ -198,64 +204,66 @@ class SyndicateDashboardService
     /**
      * @return array<string, mixed>
      */
-    public function reports(Syndicate $syndicate): array
+    public function reports(Syndicate|DomainScope $scope): array
     {
+        $scope = DomainScope::from($scope);
+        $type = $scope->types;
+
         return [
-            'syndicate' => $this->syndicateSummary($syndicate),
-            'sales' => $this->salesStats($syndicate->type),
-            'orders' => $this->ordersByStatus($syndicate->type),
-            'products' => $this->productStats($syndicate->type),
-            'categories' => $this->categoryStats($syndicate->type),
-            'merchants' => $this->merchantStats($syndicate->type),
+            'syndicate' => $scope->summary(),
+            'sales' => $this->salesStats($type),
+            'orders' => $this->ordersByStatus($type),
+            'products' => $this->productStats($type),
+            'categories' => $this->categoryStats($type),
+            'merchants' => $this->merchantStats($type),
             'podcasts' => $this->podcastStats(),
         ];
     }
 
-    public function categoryQuery(string $type): Builder
+    /**
+     * @param  string|list<string>  $type
+     */
+    public function categoryQuery(string|array $type): Builder
     {
-        return Category::query()->where('type', $type);
+        return Category::query()->whereIn('type', (array) $type);
     }
 
-    public function vendorQuery(string $type): Builder
+    /**
+     * @param  string|list<string>  $type
+     */
+    public function vendorQuery(string|array $type): Builder
     {
+        $types = (array) $type;
+
         return Vendor::query()
-            ->where(function (Builder $query) use ($type) {
-                $query->where('business_type', $type)
-                    ->orWhere('business_type', Vendor::BUSINESS_TYPE_BOTH)
-                    ->orWhereHas('categories', fn (Builder $categoryQuery) => $categoryQuery->where('categories.type', $type));
+            ->where(function (Builder $query) use ($types) {
+                $query->whereIn('business_type', [...$types, Vendor::BUSINESS_TYPE_BOTH])
+                    ->orWhereHas('categories', fn (Builder $categoryQuery) => $categoryQuery->whereIn('categories.type', $types));
             });
     }
 
-    public function productQuery(string $type): Builder
+    /**
+     * @param  string|list<string>  $type
+     */
+    public function productQuery(string|array $type): Builder
     {
         return Product::query()
-            ->whereHas('category', fn (Builder $query) => $query->where('type', $type));
+            ->whereHas('category', fn (Builder $query) => $query->whereIn('type', (array) $type));
     }
 
-    public function orderQuery(string $type): Builder
+    /**
+     * @param  string|list<string>  $type
+     */
+    public function orderQuery(string|array $type): Builder
     {
         return Order::query()
             ->whereHas('items', fn (Builder $items) => $items->forDomain($type));
     }
 
     /**
-     * @return array<string, mixed>
-     */
-    protected function syndicateSummary(Syndicate $syndicate): array
-    {
-        return [
-            'id' => $syndicate->id,
-            'name' => $syndicate->name,
-            'type' => $syndicate->type,
-            'type_label' => Category::typeLabels()[$syndicate->type] ?? $syndicate->type,
-            'status' => $syndicate->status,
-        ];
-    }
-
-    /**
      * @return array<string, int>
      */
-    protected function ordersByStatus(string $type): array
+    protected function ordersByStatus(string|array $type): array
     {
         $counts = $this->orderQuery($type)
             ->selectRaw('status, count(*) as total')
@@ -278,7 +286,7 @@ class SyndicateDashboardService
     /**
      * @return array<string, float|int>
      */
-    protected function salesStats(string $type): array
+    protected function salesStats(string|array $type): array
     {
         $totalSales = $this->lineTotalQuery($type)->sum('order_items.line_total');
         $completedSales = $this->lineTotalQuery($type)->where('orders.status', Order::STATUS_COMPLETED)->sum('order_items.line_total');
@@ -303,7 +311,7 @@ class SyndicateDashboardService
     /**
      * @return array<string, mixed>
      */
-    protected function productStats(string $type): array
+    protected function productStats(string|array $type): array
     {
         return [
             'total_products' => (int) $this->productQuery($type)->count(),
@@ -321,7 +329,7 @@ class SyndicateDashboardService
     /**
      * @return array<string, mixed>
      */
-    protected function categoryStats(string $type): array
+    protected function categoryStats(string|array $type): array
     {
         return [
             'total_categories' => (int) $this->categoryQuery($type)->count(),
@@ -338,7 +346,7 @@ class SyndicateDashboardService
     /**
      * @return array<string, mixed>
      */
-    protected function merchantStats(string $type): array
+    protected function merchantStats(string|array $type): array
     {
         return [
             'total_merchants' => (int) $this->vendorQuery($type)->count(),
@@ -369,20 +377,37 @@ class SyndicateDashboardService
         ];
     }
 
-    public function lineTotalQuery(string $type): \Illuminate\Database\Query\Builder
+    /**
+     * @param  string|list<string>  $type
+     */
+    public function lineTotalQuery(string|array $type): \Illuminate\Database\Query\Builder
     {
         return DB::table('order_items')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
             ->leftJoin('products', 'products.id', '=', 'order_items.product_id')
             ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
             ->leftJoin('categories as snapshot_categories', 'snapshot_categories.id', '=', 'order_items.category_id_snapshot')
-            ->whereRaw('COALESCE(order_items.category_type, snapshot_categories.type, categories.type) = ?', [$type]);
+            ->whereRaw(...$this->domainCondition($type));
+    }
+
+    /**
+     * The line's checkout-time domain (stored type, then snapshot category,
+     * then live category) restricted to the given domains.
+     *
+     * @param  string|list<string>  $type
+     * @return array{0: string, 1: list<string>}
+     */
+    public function domainCondition(string|array $type): array
+    {
+        $types = array_values((array) $type);
+
+        return ['COALESCE(order_items.category_type, snapshot_categories.type, categories.type) IN ('.implode(', ', array_fill(0, count($types), '?')).')', $types];
     }
 
     /**
      * @return Collection<int, array<string, mixed>>
      */
-    protected function recentCompletedOrders(string $type): Collection
+    protected function recentCompletedOrders(string|array $type): Collection
     {
         return $this->orderQuery($type)
             ->where('status', Order::STATUS_COMPLETED)
@@ -402,7 +427,7 @@ class SyndicateDashboardService
             ]);
     }
 
-    protected function recentProducts(string $type): Collection
+    protected function recentProducts(string|array $type): Collection
     {
         return $this->productQuery($type)
             ->with(['vendor:id,store_name', 'category:id,name,type'])
@@ -419,7 +444,7 @@ class SyndicateDashboardService
             ]);
     }
 
-    protected function recentMerchants(string $type): Collection
+    protected function recentMerchants(string|array $type): Collection
     {
         return $this->vendorQuery($type)
             ->with('categories:id,name,type')
@@ -436,7 +461,7 @@ class SyndicateDashboardService
             ]);
     }
 
-    protected function monthlySales(string $type): Collection
+    protected function monthlySales(string|array $type): Collection
     {
         return $this->monthAggregateQuery($this->lineTotalQuery($type), 'orders.created_at')
             ->selectRaw('sum(order_items.line_total) as total')
@@ -444,7 +469,7 @@ class SyndicateDashboardService
             ->map(fn ($row) => ['month' => $row->month, 'total' => round((float) $row->total, 2)]);
     }
 
-    protected function monthlyOrders(string $type): Collection
+    protected function monthlyOrders(string|array $type): Collection
     {
         return $this->monthAggregateQuery(
             DB::table('orders')
@@ -452,7 +477,7 @@ class SyndicateDashboardService
                 ->leftJoin('products', 'products.id', '=', 'order_items.product_id')
                 ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
                 ->leftJoin('categories as snapshot_categories', 'snapshot_categories.id', '=', 'order_items.category_id_snapshot')
-                ->whereRaw('COALESCE(order_items.category_type, snapshot_categories.type, categories.type) = ?', [$type]),
+                ->whereRaw(...$this->domainCondition($type)),
             'orders.created_at',
         )
             ->selectRaw('count(distinct orders.id) as total')
@@ -460,11 +485,11 @@ class SyndicateDashboardService
             ->map(fn ($row) => ['month' => $row->month, 'total' => (int) $row->total]);
     }
 
-    protected function productsByCategory(string $type): Collection
+    protected function productsByCategory(string|array $type): Collection
     {
         return DB::table('categories')
             ->leftJoin('products', 'products.category_id', '=', 'categories.id')
-            ->where('categories.type', $type)
+            ->whereIn('categories.type', (array) $type)
             ->selectRaw('categories.id, categories.name, categories.type, count(products.id) as products_count')
             ->groupBy('categories.id', 'categories.name', 'categories.type')
             ->orderByDesc('products_count')
@@ -472,7 +497,7 @@ class SyndicateDashboardService
             ->get();
     }
 
-    protected function productsByMerchant(string $type): Collection
+    protected function productsByMerchant(string|array $type): Collection
     {
         return $this->productQuery($type)
             ->join('vendors', 'vendors.id', '=', 'products.vendor_id')
@@ -483,16 +508,16 @@ class SyndicateDashboardService
             ->get();
     }
 
-    protected function topCategoriesByProducts(string $type): Collection
+    protected function topCategoriesByProducts(string|array $type): Collection
     {
         return $this->productsByCategory($type);
     }
 
-    protected function merchantsByCategory(string $type): Collection
+    protected function merchantsByCategory(string|array $type): Collection
     {
         return DB::table('categories')
             ->leftJoin('category_vendor', 'category_vendor.category_id', '=', 'categories.id')
-            ->where('categories.type', $type)
+            ->whereIn('categories.type', (array) $type)
             ->selectRaw('categories.id, categories.name, categories.type, count(distinct category_vendor.vendor_id) as merchants_count')
             ->groupBy('categories.id', 'categories.name', 'categories.type')
             ->orderByDesc('merchants_count')
@@ -500,7 +525,7 @@ class SyndicateDashboardService
             ->get();
     }
 
-    protected function merchantsByOrderCount(string $type): Collection
+    protected function merchantsByOrderCount(string|array $type): Collection
     {
         return $this->lineTotalQuery($type)
             ->join('vendors', 'vendors.id', '=', 'orders.vendor_id')
@@ -526,7 +551,7 @@ class SyndicateDashboardService
             ->orderBy('month');
     }
 
-    protected function topSellingCategories(string $type): Collection
+    protected function topSellingCategories(string|array $type): Collection
     {
         return $this->lineTotalQuery($type)
             ->selectRaw('COALESCE(snapshot_categories.id, categories.id) id, COALESCE(snapshot_categories.name, categories.name) name, count(distinct orders.id) as orders_count, sum(order_items.line_total) as sales_total')
@@ -537,7 +562,7 @@ class SyndicateDashboardService
             ->get();
     }
 
-    protected function topSellingProducts(string $type): Collection
+    protected function topSellingProducts(string|array $type): Collection
     {
         return $this->lineTotalQuery($type)
             ->selectRaw('products.id, products.name, sum(order_items.quantity) as sold_quantity, sum(order_items.line_total) as sales_total')
@@ -548,7 +573,7 @@ class SyndicateDashboardService
             ->get();
     }
 
-    protected function topMerchantsBySales(string $type): Collection
+    protected function topMerchantsBySales(string|array $type): Collection
     {
         return $this->lineTotalQuery($type)
             ->join('vendors', 'vendors.id', '=', 'orders.vendor_id')

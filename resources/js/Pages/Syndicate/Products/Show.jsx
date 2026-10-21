@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { ArrowLeft, Package } from 'lucide-react';
-import SyndicateLayout from '@/Layouts/SyndicateLayout';
+import { syndicateWorkspace } from '@/lib/syndicate-workspace';
 import { PageHeader } from '@/Components/shared/PageHeader';
 import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Button } from '@/Components/ui/button';
@@ -20,27 +20,29 @@ function Field({ label, children }) {
     );
 }
 
-export default function SyndicateProductShow({ productId }) {
+export default function SyndicateProductShow({ productId, workspace = 'syndicate', sector = 'combined' }) {
     const { syndicate: t, common } = useI18n();
+    const ws = syndicateWorkspace(workspace, sector);
+    const { Layout } = ws;
     const locale = useLocale();
     const [state, setState] = useState({ status: 'loading', product: null, notFound: false });
 
     const load = () => {
         setState({ status: 'loading', product: null, notFound: false });
-        window.axios.get(`/api/syndicate/products/${productId}`, { silent: true })
+        window.axios.get(`${ws.apiBase}/products/${productId}`, { params: ws.params, silent: true })
             .then((res) => setState({ status: 'ready', product: res.data?.data ?? null, notFound: false }))
             .catch((error) => setState({ status: 'error', product: null, notFound: error.response?.status === 404 }));
     };
 
-    useEffect(load, [productId]);
+    useEffect(load, [productId, ws.apiBase, ws.sector]);
 
     const { product, status } = state;
     const shared = product?.shared_detail ?? {};
     const photos = product?.photos ?? [];
-    const backHref = route('syndicate.products');
+    const backHref = ws.href('products');
 
     return (
-        <SyndicateLayout title={t.product_details}>
+        <Layout title={t.product_details}>
             <PageHeader
                 breadcrumb={[{ label: t.products, href: backHref }, { label: product?.name ?? t.product_details }]}
                 title={status === 'ready' ? product.name : t.product_details}
@@ -86,7 +88,7 @@ export default function SyndicateProductShow({ productId }) {
                                     <Field label={t.product_status}><StatusBadge tone={product.status === 'approved' ? 'success' : product.status === 'rejected' ? 'danger' : 'warning'}>{translatedStatus(product.status, common)}</StatusBadge></Field>
                                     <Field label={t.product_activity}><StatusBadge tone={product.is_active ? 'success' : 'danger'}>{product.is_active ? common.active : common.inactive}</StatusBadge></Field>
                                 </dl>
-                                {product.vendor?.id && <Button asChild variant="outline" size="sm" className="mt-4"><Link href={route('syndicate.vendors.show', product.vendor.id)}>{common.view_details}: {product.vendor.store_name}</Link></Button>}
+                                {product.vendor?.id && <Button asChild variant="outline" size="sm" className="mt-4"><Link href={ws.href('vendors.show', product.vendor.id)}>{common.view_details}: {product.vendor.store_name}</Link></Button>}
                             </CardContent>
                         </Card>
 
@@ -114,6 +116,6 @@ export default function SyndicateProductShow({ productId }) {
                     </div>
                 </div>
             )}
-        </SyndicateLayout>
+        </Layout>
     );
 }

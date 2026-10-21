@@ -31,6 +31,12 @@ class User extends Authenticatable
     public const TYPE_EMPLOYEE = 4;
 
     /**
+     * Read-only workspace over the combined agriculture and veterinary
+     * syndicate domains. Provisioned only via `php artisan ministry:provision`.
+     */
+    public const TYPE_MINISTRY = 5;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -111,6 +117,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Determine if the user is the Ministry account.
+     */
+    public function isMinistry(): bool
+    {
+        return $this->type === self::TYPE_MINISTRY;
+    }
+
+    /**
      * Determine if the user may act as a buyer (add to cart, checkout,
      * create orders). Normal customers and vendors (buying from another
      * vendor's store, never their own - see CartService/CheckoutService)
@@ -138,6 +152,7 @@ class User extends Authenticatable
             self::TYPE_VENDOR => redirect()->route('vendor.dashboard'),
             self::TYPE_SYNDICATE => redirect()->route('syndicate.dashboard'),
             self::TYPE_EMPLOYEE => redirect()->route('employee.dashboard'),
+            self::TYPE_MINISTRY => redirect()->route('ministry.dashboard'),
             default => $this->preferred_product_type
                 ? redirect()->route('home')
                 : redirect()->route('product-type.select'),

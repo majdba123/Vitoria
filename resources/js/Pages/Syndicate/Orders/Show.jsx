@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
-import SyndicateLayout from '@/Layouts/SyndicateLayout';
+import { syndicateWorkspace } from '@/lib/syndicate-workspace';
 import { PageHeader } from '@/Components/shared/PageHeader';
 import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Button } from '@/Components/ui/button';
@@ -21,27 +21,29 @@ function Field({ label, children }) {
     );
 }
 
-export default function SyndicateOrderShow({ orderId }) {
+export default function SyndicateOrderShow({ orderId, workspace = 'syndicate', sector = 'combined' }) {
     const { syndicate: t, common } = useI18n();
+    const ws = syndicateWorkspace(workspace, sector);
+    const { Layout } = ws;
     const locale = useLocale();
     const [state, setState] = useState({ status: 'loading', order: null, notFound: false });
 
     const load = () => {
         setState({ status: 'loading', order: null, notFound: false });
-        window.axios.get(`/api/syndicate/orders/${orderId}`, { silent: true })
+        window.axios.get(`${ws.apiBase}/orders/${orderId}`, { params: ws.params, silent: true })
             .then((res) => setState({ status: 'ready', order: res.data?.data ?? null, notFound: false }))
             .catch((error) => setState({ status: 'error', order: null, notFound: error.response?.status === 404 }));
     };
 
-    useEffect(load, [orderId]);
+    useEffect(load, [orderId, ws.apiBase, ws.sector]);
 
     const { order, status } = state;
-    const backHref = route('syndicate.orders');
+    const backHref = ws.href('orders');
     const totals = order?.totals;
     const paymentLabel = order?.payment_way === 'cash' ? t.payment_cash : (order?.payment_way ?? null);
 
     return (
-        <SyndicateLayout title={t.order_details}>
+        <Layout title={t.order_details}>
             <PageHeader
                 breadcrumb={[{ label: t.orders, href: backHref }, { label: order?.order_number ?? t.order_details }]}
                 title={status === 'ready' ? `${t.order_details}: ${order.order_number}` : t.order_details}
@@ -87,7 +89,7 @@ export default function SyndicateOrderShow({ orderId }) {
                                 {order.items.map((item) => (
                                     <li key={item.id} className="grid gap-2 px-4 py-3 text-sm sm:grid-cols-[minmax(0,2fr)_repeat(3,minmax(0,1fr))] sm:items-center">
                                         <div className="min-w-0 font-semibold text-foreground">
-                                            {item.product_id ? <Link href={route('syndicate.products.show', item.product_id)} className="hover:text-primary hover:underline">{item.name}</Link> : item.name}
+                                            {item.product_id ? <Link href={ws.href('products.show', item.product_id)} className="hover:text-primary hover:underline">{item.name}</Link> : item.name}
                                         </div>
                                         <div className="flex justify-between gap-2 sm:block"><span className="text-xs text-muted-foreground sm:hidden">{t.th_quantity}</span><span className="tabular-nums">{item.quantity}</span></div>
                                         <div className="flex justify-between gap-2 sm:block"><span className="text-xs text-muted-foreground sm:hidden">{t.th_unit_price}</span><span className="tabular-nums">{item.original_unit_price != null && <s className="me-1.5 text-muted-foreground">{money(item.original_unit_price, locale)}</s>}{money(item.unit_price, locale)}</span></div>
@@ -111,6 +113,6 @@ export default function SyndicateOrderShow({ orderId }) {
                     </Card>
                 </div>
             )}
-        </SyndicateLayout>
+        </Layout>
     );
 }

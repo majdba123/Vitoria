@@ -48,12 +48,18 @@ class UpdateUserRequest extends FormRequest
             // the dedicated endpoints, never via this generic one).
             'type' => [
                 'sometimes', 'nullable', 'integer',
-                Rule::in([User::TYPE_USER, User::TYPE_ADMIN, User::TYPE_VENDOR, User::TYPE_SYNDICATE, User::TYPE_EMPLOYEE]),
+                Rule::in([User::TYPE_USER, User::TYPE_ADMIN, User::TYPE_VENDOR, User::TYPE_SYNDICATE, User::TYPE_EMPLOYEE, User::TYPE_MINISTRY]),
                 function (string $attribute, mixed $value, \Closure $fail): void {
                     $target = (int) $value;
 
                     if (in_array($target, [User::TYPE_VENDOR, User::TYPE_SYNDICATE], true) && $target !== (int) $this->route('user')->type) {
                         $fail(__('Vendor and syndicate accounts can only be created through their dedicated endpoints.'));
+                    }
+
+                    $current = (int) $this->route('user')->type;
+
+                    if (($target === User::TYPE_MINISTRY || $current === User::TYPE_MINISTRY) && $target !== $current) {
+                        $fail(__('The Ministry account type can only be changed through the provisioning command.'));
                     }
                 },
             ],
