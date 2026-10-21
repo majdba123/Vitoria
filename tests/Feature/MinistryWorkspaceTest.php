@@ -9,6 +9,8 @@ use App\Models\Product;
 use App\Models\Syndicate;
 use App\Models\User;
 use App\Models\Vendor;
+use App\Services\Syndicate\SyndicateReportService;
+use App\Support\DomainScope;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 
@@ -88,6 +90,7 @@ it('renders the Ministry pages for the Ministry and refuses every other role', f
     $syndicate = Syndicate::factory()->agriculture()->create();
     foreach ([User::factory()->create(), User::factory()->create(['type' => User::TYPE_ADMIN]), $syndicate->user, User::factory()->create(['type' => User::TYPE_EMPLOYEE])] as $other) {
         $this->actingAs($other)->getJson('/api/ministry/overview')->assertForbidden();
+        $this->actingAs($other)->getJson('/api/ministry/reports.pdf?range=30_days&locale=en')->assertForbidden();
         $this->actingAs($other)->get('/ministry/dashboard')->assertRedirect();
     }
 });
@@ -103,13 +106,21 @@ it('keeps the Ministry out of the admin and syndicate APIs', function () {
     $this->getJson('/api/syndicate/overview')->assertForbidden();
 });
 
-it('registers no write endpoints and no syndicate PDFs for the Ministry', function () {
+it('registers no write endpoints and serves only the scoped Ministry PDF report', function () {
     $world = ministryWorld();
     Sanctum::actingAs(ministryUser());
 
     $this->postJson('/api/ministry/import-shipments', [])->assertStatus(405);
     $this->deleteJson('/api/ministry/orders/'.$world['agriOrder']->id)->assertStatus(405);
-    $this->getJson('/api/ministry/reports.pdf')->assertNotFound();
+    $response = $this->get('/api/ministry/reports.pdf?range=30_days&locale=en&sector=combined');
+    $response->assertOk()->assertHeader('Content-Type', 'application/pdf')->assertHeader('X-Vetora-Report-Domain', 'combined');
+    expect($response->getContent())->toStartWith('%PDF-');
+    $audit = AuditLog::query()->where('action', 'export.ministry_report')->firstOrFail();
+    expect($audit->actor_user_id)->toBe(User::query()->where('type', User::TYPE_MINISTRY)->firstOrFail()->id)
+        ->and($audit->new_values)->toMatchArray(['range' => '30_days', 'locale' => 'en', 'sector' => 'combined', 'format' => 'pdf']);
+    $this->get('/api/ministry/reports.pdf?range=30_days&locale=ar&sector=agriculture')->assertOk()->assertHeader('X-Vetora-Report-Domain', 'agriculture');
+    $this->get('/api/ministry/reports.pdf?range=30_days&locale=en&sector=veterinary')->assertOk()->assertHeader('X-Vetora-Report-Domain', 'veterinary');
+    $this->getJson('/api/ministry/reports.pdf?range=30_days&locale=en&sector=all')->assertUnprocessable()->assertJsonValidationErrors('sector');
     $this->getJson("/api/ministry/vendors/{$world['agriVendor']->id}/report.pdf")->assertNotFound();
     $this->get('/ministry/shipments/create')->assertNotFound();
 });
@@ -152,6 +163,23 @@ it('matches the syndicate figures exactly when a single sector is selected', fun
     foreach (['total_merchants', 'total_products', 'total_categories', 'order_stats', 'merchant_stats'] as $key) {
         expect($ministry[$key])->toEqual($syndicate[$key]);
     }
+});
+
+it('aggregates Ministry report totals once across combined sectors and by selected sector', function () {
+    ministryWorld();
+    $period = ['key' => 'all', 'from' => null, 'to' => null];
+    $reports = app(SyndicateReportService::class);
+    $combined = $reports->data(DomainScope::forSector('combined'), $period);
+    $agriculture = $reports->data(DomainScope::forSector('agriculture'), $period);
+    $veterinary = $reports->data(DomainScope::forSector('veterinary'), $period);
+
+    expect($combined['kpis']['completed_orders'])->toBe(3)
+        ->and($combined['kpis']['units_sold'])->toBe(4)
+        ->and($combined['kpis']['gross_sales'])->toBe(400.0)
+        ->and($agriculture['kpis']['completed_orders'])->toBe(2)
+        ->and($agriculture['kpis']['gross_sales'])->toBe(200.0)
+        ->and($veterinary['kpis']['completed_orders'])->toBe(2)
+        ->and($veterinary['kpis']['gross_sales'])->toBe(200.0);
 });
 
 it('follows the order line snapshot, not the current category, when filtering by sector', function () {

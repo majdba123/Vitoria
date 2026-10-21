@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ImportShipmentController;
 use App\Http\Controllers\Api\Ministry\DashboardController;
+use App\Http\Controllers\Api\Ministry\ReportController;
 use App\Http\Controllers\Api\Ministry\VendorAnalyticsController;
 use App\Http\Controllers\Api\PortController;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,7 @@ Route::middleware('throttle:api.authenticated')->group(function () {
     Route::get('orders', [DashboardController::class, 'orders'])->name('orders');
     Route::get('orders/{order}', [DashboardController::class, 'order'])->whereNumber('order')->name('orders.show');
     Route::get('reports', [DashboardController::class, 'reports'])->name('reports');
+    Route::get('reports.pdf', ReportController::class)->middleware('throttle:dashboard.stats')->name('reports.pdf');
 
     Route::get('ports', [PortController::class, 'index'])->name('ports.index');
     Route::get('import-shipments/options', [ImportShipmentController::class, 'options'])->name('import-shipments.options');
