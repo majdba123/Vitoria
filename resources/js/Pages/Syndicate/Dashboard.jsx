@@ -84,7 +84,7 @@ export default function SyndicateDashboard({ section = 'dashboard', workspace = 
     };
 
     const generateGeneralReport = async () => {
-        const response = await window.axios.get('/api/syndicate/reports.pdf', { params: { range: 'custom', ...reportForm }, responseType: 'blob' });
+        const response = await window.axios.get(`${ws.apiBase}/reports.pdf`, { params: { ...ws.params, range: 'custom', ...reportForm }, responseType: 'blob' });
         const url = URL.createObjectURL(response.data);
         window.open(url, '_blank', 'noopener,noreferrer');
         window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
@@ -186,7 +186,7 @@ export default function SyndicateDashboard({ section = 'dashboard', workspace = 
 
             {isReports && (
                 <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-                    {!ws.isMinistry && <div className="col-span-full flex justify-end"><Button type="button" onClick={() => setGeneralReportOpen(true)}><FileChartColumn className="size-4" />{syndicate.generate_general_report}</Button></div>}
+                    <div className="col-span-full flex justify-end"><Button type="button" onClick={() => setGeneralReportOpen(true)}><FileChartColumn className="size-4" />{syndicate.generate_general_report}</Button></div>
                     {reportsStatus === 'loading' && <p className="col-span-full py-8 text-center text-sm text-muted-foreground">{syndicate.loading_data}</p>}
                     {reportsStatus === 'error' && <p className="col-span-full py-8 text-center text-sm text-[var(--color-danger-strong)]">{syndicate.load_failed_section}</p>}
                     {reportsStatus === 'ready' && reports && (
