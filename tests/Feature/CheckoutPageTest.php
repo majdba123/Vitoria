@@ -24,9 +24,8 @@ it('renders the checkout page for a signed-in customer', function () {
 it('formats checkout currency with the active page locale', function () {
     $source = file_get_contents(resource_path('js/Pages/Checkout/Index.jsx'));
 
-    expect($source)
-        ->and(preg_match('/export default function CheckoutIndex\(\)\s*\{[\s\S]*?const locale = useLocale\(\);[\s\S]*?const money = \(amount\) => formatCurrency\(amount, locale, \'SYP\'\);/', $source))->toBe(1)
-        ->not->toContain('function money(amount)');
+    expect(preg_match('/export default function CheckoutIndex\(\)\s*\{[\s\S]*?const locale = useLocale\(\);[\s\S]*?const money = \(amount\) => formatCurrency\(amount, locale, \'SYP\'\);/', $source))->toBe(1);
+    expect($source)->not->toContain('function money(amount)');
 });
 
 it('no longer ships a localStorage cart anywhere in the storefront', function () {
