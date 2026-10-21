@@ -115,6 +115,9 @@ it('registers no write endpoints and serves only the scoped Ministry PDF report'
     $response = $this->get('/api/ministry/reports.pdf?range=30_days&locale=en&sector=combined');
     $response->assertOk()->assertHeader('Content-Type', 'application/pdf')->assertHeader('X-Vetora-Report-Domain', 'combined');
     expect($response->getContent())->toStartWith('%PDF-');
+    $audit = AuditLog::query()->where('action', 'export.ministry_report')->firstOrFail();
+    expect($audit->actor_user_id)->toBe(User::query()->where('type', User::TYPE_MINISTRY)->firstOrFail()->id)
+        ->and($audit->new_values)->toMatchArray(['range' => '30_days', 'locale' => 'en', 'sector' => 'combined', 'format' => 'pdf']);
     $this->get('/api/ministry/reports.pdf?range=30_days&locale=ar&sector=agriculture')->assertOk()->assertHeader('X-Vetora-Report-Domain', 'agriculture');
     $this->get('/api/ministry/reports.pdf?range=30_days&locale=en&sector=veterinary')->assertOk()->assertHeader('X-Vetora-Report-Domain', 'veterinary');
     $this->getJson('/api/ministry/reports.pdf?range=30_days&locale=en&sector=all')->assertUnprocessable()->assertJsonValidationErrors('sector');
