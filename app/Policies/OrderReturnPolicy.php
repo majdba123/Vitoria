@@ -15,7 +15,7 @@ class OrderReturnPolicy
 {
     public function view(User $user, OrderReturn $return): bool
     {
-        if ($user->isAdmin() || $user->isEmployee()) {
+        if ($user->hasAdminPermission('returns.view') || $user->isEmployee()) {
             return true;
         }
 
@@ -32,7 +32,7 @@ class OrderReturnPolicy
      */
     public function review(User $user, OrderReturn $return): bool
     {
-        if ($user->isAdmin()) {
+        if ($user->hasAdminPermission('returns.review')) {
             return true;
         }
 
@@ -41,7 +41,7 @@ class OrderReturnPolicy
 
     public function cancel(User $user, OrderReturn $return): bool
     {
-        if ($user->isAdmin()) {
+        if ($user->hasAdminPermission('returns.review')) {
             return true;
         }
 
@@ -58,7 +58,7 @@ class OrderReturnPolicy
      */
     public function initiateRefund(User $user, OrderReturn $return): bool
     {
-        if ($user->isAdmin()) {
+        if ($user->hasAdminPermission('refunds.process')) {
             return true;
         }
 

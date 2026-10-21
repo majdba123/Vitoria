@@ -34,7 +34,7 @@ function CollapsibleNavItem({ item }) {
                     {item.items.map((child) => (
                         <SidebarMenuSubItem key={child.key}>
                             <SidebarMenuSubButton asChild isActive={child.active}>
-                                <Link href={child.href}>
+                                <Link href={child.href} aria-current={child.active ? 'page' : undefined}>
                                     <child.icon />
                                     <span className="truncate">{child.label}</span>
                                 </Link>
@@ -85,7 +85,7 @@ export function RoleSidebar({ brandIcon: BrandIcon, homeHref, workspaceLabel, na
 
             <SidebarContent>
                 {groups.map((group) => (
-                    <SidebarGroup key={group.label}>
+                    <SidebarGroup key={group.key ?? group.label}>
                         <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu>
@@ -95,7 +95,7 @@ export function RoleSidebar({ brandIcon: BrandIcon, homeHref, workspaceLabel, na
                                     ) : (
                                         <SidebarMenuItem key={item.key}>
                                             <SidebarMenuButton asChild isActive={item.active} tooltip={item.label} className="h-auto min-h-8 items-start py-2">
-                                                <Link href={item.href}>
+                                                <Link href={item.href} aria-current={item.active ? 'page' : undefined}>
                                                     <item.icon />
                                                     <span className="!overflow-visible !whitespace-normal !text-clip break-words leading-snug">{item.label}</span>
                                                 </Link>

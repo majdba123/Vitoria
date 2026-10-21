@@ -261,11 +261,11 @@ Route::prefix('employee')->as('employee.')->middleware(['auth', 'employee'])->gr
 | middleware so that only authenticated admins can access these pages.
 |
 */
-Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(function () {
-    // Redirect /admin to /admin/dashboard
-    Route::get('/', function () {
-        return redirect()->route('admin.dashboard');
-    });
+Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin', 'admin.permission'])->group(function () {
+    // Redirect /admin to the first page this admin may open
+    Route::get('/', function (\Illuminate\Http\Request $request) {
+        return redirect()->route(\App\Support\AdminRoutePermissions::landingRouteFor($request->user()));
+    })->name('home');
 
     // Dashboard
     Route::get('/dashboard', function () {
@@ -382,6 +382,14 @@ Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(funct
         return Inertia::render('Admin/Users/Edit', ['userId' => (int) $id]);
     })->name('users.edit');
 
+    // Roles & permissions (native RBAC)
+    Route::get('/roles', fn () => Inertia::render('Admin/Roles/Index'))->name('roles.index');
+    Route::get('/roles/create', fn () => Inertia::render('Admin/Roles/Form', ['roleId' => null]))->name('roles.create');
+    Route::get('/roles/{id}/edit', fn (string $id) => Inertia::render('Admin/Roles/Form', ['roleId' => (int) $id]))->whereNumber('id')->name('roles.edit');
+
+    // Audit trail (read-only)
+    Route::get('/audit-logs', fn () => Inertia::render('Admin/AuditLogs/Index'))->name('audit-logs.index');
+
     Route::get('/notifications', function () {
         return Inertia::render('Admin/Notifications/Index');
     })->name('notifications.index');
@@ -424,7 +432,7 @@ $registerShipmentPages = function (string $workspace): void {
 
 Route::prefix('syndicate')->as('syndicate.')->middleware(['auth', 'syndicate'])->group(fn () => $registerShipmentPages('syndicate'));
 Route::prefix('employee')->as('employee.')->middleware(['auth', 'employee'])->group(fn () => $registerShipmentPages('employee'));
-Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin'])->group(function () use ($registerShipmentPages): void {
+Route::prefix('admin')->as('admin.')->middleware(['auth', 'admin', 'admin.permission'])->group(function () use ($registerShipmentPages): void {
     $registerShipmentPages('admin');
     Route::get('/ports', fn () => Inertia::render('Admin/Ports/Index'))->name('ports.index');
 });

@@ -14,7 +14,7 @@ class VendorDocumentPolicy
 {
     public function view(User $user, VendorDocument $document): bool
     {
-        if ($user->isAdmin() || $user->isEmployee()) {
+        if ($user->hasAdminPermission('vendor_documents.view') || $user->isEmployee()) {
             return true;
         }
 
@@ -23,7 +23,7 @@ class VendorDocumentPolicy
 
     public function manage(User $user, VendorDocument $document): bool
     {
-        if ($user->isAdmin()) {
+        if ($user->hasAdminPermission('vendor_documents.review')) {
             return true;
         }
 

@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductReview;
+use App\Services\AuditLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -35,13 +38,16 @@ class ProductReviewViewController extends Controller
         ]);
     }
 
-    public function destroy(string $id, string $review): RedirectResponse
+    public function destroy(Request $request, AuditLogService $auditLog, string $id, string $review): RedirectResponse
     {
         $product = Product::findOrFail($id);
         $reviewModel = ProductReview::where('id', $review)->where('product_id', $product->id)->firstOrFail();
         $this->authorize('delete', $reviewModel);
-        $reviewModel->delete();
-        \Illuminate\Support\Facades\Cache::tags(['products'])->flush();
+        DB::transaction(function () use ($request, $auditLog, $reviewModel): void {
+            $auditLog->record($request->user(), 'product_review.deleted', 'ProductReview', $reviewModel->id, $reviewModel->only(['product_id', 'user_id', 'rating', 'body']), null);
+            $reviewModel->delete();
+        });
+        Cache::tags(['products'])->flush();
 
         return redirect()->route('admin.products.reviews', $product->id)
             ->with('message', __('Review deleted successfully.'));

@@ -112,6 +112,8 @@ class VendorProfileController extends Controller
             }
 
             if ($passwordChanged) {
+                app(\App\Services\AuditLogService::class)->record($user, 'user.password_changed', 'User', $user->id, null, ['via' => 'vendor_profile']);
+
                 $currentToken = $request->user()->currentAccessToken();
 
                 if ($currentToken instanceof \Laravel\Sanctum\PersonalAccessToken) {

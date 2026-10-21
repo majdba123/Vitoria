@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Refund;
+use App\Services\AuditLogService;
 use App\Services\Commerce\CartException;
 use App\Services\Commerce\RefundService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 /**
@@ -22,6 +24,7 @@ class RefundController extends Controller
 {
     public function __construct(
         protected RefundService $refundService,
+        protected AuditLogService $auditLog,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -77,13 +80,25 @@ class RefundController extends Controller
         $order = Order::query()->findOrFail($validated['order_id']);
 
         try {
-            $refund = $this->refundService->initiateAdHoc(
-                $order,
-                $request->user(),
-                (float) $validated['amount'],
-                $validated['reason'],
-                $validated['notes'] ?? null,
-            );
+            $refund = DB::transaction(function () use ($order, $request, $validated) {
+                $refund = $this->refundService->initiateAdHoc(
+                    $order,
+                    $request->user(),
+                    (float) $validated['amount'],
+                    $validated['reason'],
+                    $validated['notes'] ?? null,
+                );
+
+                $this->auditLog->record($request->user(), 'refund.initiated', 'Refund', $refund->id, null, [
+                    'order_id' => $order->id,
+                    'refund_number' => $refund->refund_number,
+                    'amount' => $refund->amount,
+                    'reason' => $validated['reason'],
+                    'status' => $refund->status,
+                ]);
+
+                return $refund;
+            });
         } catch (CartException $exception) {
             return response()->json(['message' => $exception->getMessage()], 422);
         }
@@ -103,7 +118,19 @@ class RefundController extends Controller
         $refund = Refund::query()->findOrFail($refundId);
 
         try {
-            $refund = $this->refundService->complete($refund, $validated['provider_reference'] ?? null);
+            $refund = DB::transaction(function () use ($refund, $request, $validated) {
+                $previousStatus = $refund->status;
+                $refund = $this->refundService->complete($refund, $validated['provider_reference'] ?? null);
+
+                $this->auditLog->record($request->user(), 'refund.completed', 'Refund', $refund->id, ['status' => $previousStatus], [
+                    'status' => $refund->status,
+                    'amount' => $refund->amount,
+                    'order_id' => $refund->order_id,
+                    'provider_reference_supplied' => ! empty($validated['provider_reference']),
+                ]);
+
+                return $refund;
+            });
         } catch (CartException $exception) {
             return response()->json(['message' => $exception->getMessage()], 422);
         }
@@ -114,12 +141,23 @@ class RefundController extends Controller
         ]);
     }
 
-    public function cancel(int $refundId): JsonResponse
+    public function cancel(Request $request, int $refundId): JsonResponse
     {
         $refund = Refund::query()->findOrFail($refundId);
 
         try {
-            $refund = $this->refundService->cancel($refund);
+            $refund = DB::transaction(function () use ($refund, $request) {
+                $previousStatus = $refund->status;
+                $refund = $this->refundService->cancel($refund);
+
+                $this->auditLog->record($request->user(), 'refund.cancelled', 'Refund', $refund->id, ['status' => $previousStatus], [
+                    'status' => $refund->status,
+                    'amount' => $refund->amount,
+                    'order_id' => $refund->order_id,
+                ]);
+
+                return $refund;
+            });
         } catch (CartException $exception) {
             return response()->json(['message' => $exception->getMessage()], 422);
         }

@@ -6,19 +6,27 @@ use App\Models\AuditLog;
 use App\Models\User;
 
 /**
- * Immutable audit logging for sensitive actions (spec §35).
+ * Append-only audit logging for sensitive actions (spec §35).
  *
- * Deliberately called from the smallest number of choke points that still
- * cover every action spec §35 names: the commerce services that already
- * take an actor and centralize a single write path (OrderStatusService,
- * OrderCancellationService, ReturnService, RefundService,
- * VendorLedgerService) call this directly; a handful of simpler admin
- * controllers with no equivalent service layer (vendor approval, coupons,
- * settings, user updates, product moderation) call it after their write
- * succeeds.
+ * Called from the write path of each audited action — services where one
+ * exists, otherwise the admin controller — and, wherever the write runs in a
+ * transaction, inside that same transaction so the audit row commits or
+ * rolls back with the change it describes. Order, return and shipment state
+ * keep their dedicated history tables (decision D20); money-moving refund
+ * transitions and RBAC changes are recorded here as well.
+ *
+ * Values are redacted (credentials, tokens, card data) and personal
+ * identifiers masked before they are ever written.
  */
 class AuditLogService
 {
+    /**
+     * Set on the current request once any domain audit row has been written,
+     * so AuditPrivilegedMutations only adds a generic row for writes that
+     * produced no domain-specific record.
+     */
+    public const REQUEST_RECORDED_FLAG = 'audit.recorded';
+
     /**
      * Keys redacted from `old_values`/`new_values` before they are ever
      * written — never logged, no exceptions (spec §35).
@@ -30,8 +38,30 @@ class AuditLogService
         'token', 'api_token', 'access_token', 'refresh_token', 'remember_token',
         'secret', 'client_secret',
         'card_number', 'cvv', 'cvc', 'card_cvc',
-        'otp', 'provider_reference',
+        'otp', 'otp_code', 'pin', 'provider_reference',
     ];
+
+    /**
+     * Any key containing one of these fragments is redacted too, so variants
+     * such as `new_password`, `password_hash`, `stripe_secret_key`,
+     * `accessToken` or `Authorization` can never slip through an exact-match
+     * list.
+     *
+     * @var list<string>
+     */
+    private const REDACTED_KEY_FRAGMENTS = [
+        'password', 'passwd', 'secret', 'token', 'api_key', 'apikey',
+        'authorization', 'bearer', 'cookie', 'session', 'private_key',
+        'card_number', 'cardnumber', 'cvv', 'cvc',
+    ];
+
+    /**
+     * Personal identifiers kept only as a masked tail: enough to tell which
+     * value changed, never the full identifier.
+     *
+     * @var list<string>
+     */
+    private const MASKED_KEYS = ['national_id', 'phone_number', 'phone'];
 
     /**
      * @param  array<string, mixed>|null  $oldValues
@@ -46,6 +76,7 @@ class AuditLogService
         ?array $newValues = null,
     ): AuditLog {
         $request = request();
+        $request?->attributes->set(self::REQUEST_RECORDED_FLAG, true);
 
         return AuditLog::create([
             'actor_user_id' => $actor?->id,
@@ -65,13 +96,21 @@ class AuditLogService
      * @param  array<string, mixed>  $values
      * @return array<string, mixed>
      */
-    private function redact(array $values): array
+    public function redact(array $values): array
     {
         $redacted = [];
 
         foreach ($values as $key => $value) {
-            if (in_array(strtolower((string) $key), self::REDACTED_KEYS, true)) {
+            $normalizedKey = strtolower((string) $key);
+
+            if ($this->isSecretKey($normalizedKey) && ! is_bool($value)) {
                 $redacted[$key] = '[redacted]';
+
+                continue;
+            }
+
+            if (in_array($normalizedKey, self::MASKED_KEYS, true) && is_scalar($value) && $value !== '') {
+                $redacted[$key] = $this->mask((string) $value);
 
                 continue;
             }
@@ -80,6 +119,28 @@ class AuditLogService
         }
 
         return $redacted;
+    }
+
+    private function isSecretKey(string $key): bool
+    {
+        if (in_array($key, self::REDACTED_KEYS, true)) {
+            return true;
+        }
+
+        foreach (self::REDACTED_KEY_FRAGMENTS as $fragment) {
+            if (str_contains($key, $fragment)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function mask(string $value): string
+    {
+        $visible = mb_substr($value, -3);
+
+        return str_repeat('•', max(mb_strlen($value) - 3, 3)).$visible;
     }
 
     private function actorTypeFor(User $user): string

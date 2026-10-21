@@ -21,7 +21,7 @@ class ProductPolicy
      */
     public function update(User $user, Product $product): bool
     {
-        if ($user->isAdmin() || $user->isEmployee()) {
+        if ($user->hasAdminPermission('products.manage') || $user->isEmployee()) {
             return true;
         }
 
@@ -30,7 +30,7 @@ class ProductPolicy
 
     public function delete(User $user, Product $product): bool
     {
-        if ($user->isAdmin()) {
+        if ($user->hasAdminPermission('products.manage')) {
             return true;
         }
 
@@ -47,7 +47,7 @@ class ProductPolicy
      */
     public function manageStatus(User $user, Product $product): bool
     {
-        if ($user->isAdmin()) {
+        if ($user->hasAdminPermission('products.moderate')) {
             return true;
         }
 

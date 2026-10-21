@@ -6,7 +6,7 @@ import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
 import { ThemeToggle } from '@/Components/workspace/ThemeToggle';
 
-const DASHBOARD_ROUTE = { 1: 'admin.dashboard', 2: 'vendor.dashboard', 3: 'syndicate.dashboard', 4: 'employee.dashboard' };
+const DASHBOARD_ROUTE = { 1: 'admin.home', 2: 'vendor.dashboard', 3: 'syndicate.dashboard', 4: 'employee.dashboard' };
 
 function subLabel(sub, locale) {
     return locale === 'ar' ? (sub.name_ar || sub.name_en || '') : (sub.name_en || sub.name_ar || '');

@@ -9,7 +9,7 @@ class ShipmentPolicy
 {
     public function view(User $user, Shipment $shipment): bool
     {
-        if ($user->isAdmin() || $user->isEmployee()) {
+        if ($user->hasAdminPermission('shipments.view') || $user->isEmployee()) {
             return true;
         }
 
@@ -26,7 +26,7 @@ class ShipmentPolicy
 
     public function manage(User $user, Shipment $shipment): bool
     {
-        if ($user->isAdmin()) {
+        if ($user->hasAdminPermission('shipments.manage')) {
             return true;
         }
 

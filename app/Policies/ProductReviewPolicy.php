@@ -12,7 +12,7 @@ class ProductReviewPolicy
      */
     public function delete(User $user, ProductReview $productReview): bool
     {
-        if ($user->type === User::TYPE_ADMIN) {
+        if ($user->hasAdminPermission('products.moderate')) {
             return true;
         }
 

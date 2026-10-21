@@ -6,8 +6,8 @@ import { useCallback, useEffect, useState } from 'react';
  * successful one already provided" resilience, but each slice tracks its
  * own idle/loading/ready/error status instead of manual DOM string-building.
  */
-function useEndpoint(url, params) {
-    const [status, setStatus] = useState('loading');
+function useEndpoint(url, params, enabled = true) {
+    const [status, setStatus] = useState(enabled ? 'loading' : 'idle');
     const [data, setData] = useState(null);
 
     // Accepts an optional override so callers (e.g. a chart period selector)
@@ -24,19 +24,25 @@ function useEndpoint(url, params) {
     }, [url, JSON.stringify(params)]);
 
     useEffect(() => {
-        fetchData();
+        if (enabled) {
+            fetchData();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return { status, data, refetch: fetchData };
 }
 
-export function useAdminDashboard() {
+/**
+ * Slices the signed-in admin cannot read stay idle instead of firing a
+ * request the server would refuse.
+ */
+export function useAdminDashboard(can = () => true) {
     const overview = useEndpoint('/api/admin/dashboard/overview');
     const categoryStats = useEndpoint('/api/admin/dashboard/vendor-category-stats');
-    const users = useEndpoint('/api/admin/users', { page: 1 });
-    const vendors = useEndpoint('/api/admin/vendors', { page: 1 });
-    const products = useEndpoint('/api/admin/products', { page: 1, per_page: 8 });
+    const users = useEndpoint('/api/admin/users', { page: 1 }, can('users.view'));
+    const vendors = useEndpoint('/api/admin/vendors', { page: 1 }, can('vendors.view'));
+    const products = useEndpoint('/api/admin/products', { page: 1, per_page: 8 }, can('products.view'));
 
     return { overview, categoryStats, users, vendors, products };
 }

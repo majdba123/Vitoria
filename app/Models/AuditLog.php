@@ -39,6 +39,23 @@ class AuditLog extends Model
         ];
     }
 
+    /**
+     * Application-level append-only guard: Eloquent updates and deletes of an
+     * audit entry are refused outright. This is not tamper-proofing — anyone
+     * with direct database access can still alter rows — but it removes every
+     * ordinary code path that could rewrite history.
+     */
+    protected static function booted(): void
+    {
+        static::updating(function (): never {
+            throw new \LogicException('Audit log entries are append-only and cannot be updated.');
+        });
+
+        static::deleting(function (): never {
+            throw new \LogicException('Audit log entries are append-only and cannot be deleted.');
+        });
+    }
+
     public function actor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'actor_user_id');

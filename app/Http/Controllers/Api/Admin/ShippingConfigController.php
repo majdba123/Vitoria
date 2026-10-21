@@ -46,11 +46,17 @@ class ShippingConfigController extends Controller
         ]);
 
         $rate = ShippingRate::query()->findOrFail($rateId);
-        $rate->update([
-            'rate' => round((float) $validated['rate'], 2),
-            'free_over_subtotal' => isset($validated['free_over_subtotal']) ? round((float) $validated['free_over_subtotal'], 2) : null,
-            'is_active' => $validated['is_active'] ?? $rate->is_active,
-        ]);
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($rate, $validated, $request): void {
+            $old = $rate->only(['rate', 'free_over_subtotal', 'is_active']);
+            $rate->update([
+                'rate' => round((float) $validated['rate'], 2),
+                'free_over_subtotal' => isset($validated['free_over_subtotal']) ? round((float) $validated['free_over_subtotal'], 2) : null,
+                'is_active' => $validated['is_active'] ?? $rate->is_active,
+            ]);
+
+            app(\App\Services\AuditLogService::class)->record($request->user(), 'shipping_rate.updated', 'ShippingRate', $rate->id, $old, $rate->only(['rate', 'free_over_subtotal', 'is_active']));
+        });
 
         return response()->json(['message' => __('api.shipping_rate_updated'), 'data' => $rate->refresh()]);
     }

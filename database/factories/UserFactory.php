@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -39,6 +40,27 @@ class UserFactory extends Factory
     }
 
     /**
+     * Admin-type fixtures model the platform's existing, fully trusted
+     * administrators, so each one receives the `super_admin` role — exactly
+     * what the RBAC migration backfills for every pre-existing admin. Use
+     * `delegatedAdmin()` for an administrator limited to explicit roles.
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            if ($user->type !== User::TYPE_ADMIN) {
+                return;
+            }
+
+            $superAdminRoleId = Role::query()->where('key', Role::KEY_SUPER_ADMIN)->value('id');
+
+            if ($superAdminRoleId !== null) {
+                $user->adminRoles()->syncWithoutDetaching([$superAdminRoleId]);
+            }
+        });
+    }
+
+    /**
      * Indicate that the user is an admin.
      */
     public function admin(): static
@@ -46,6 +68,15 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'type' => User::TYPE_ADMIN,
         ]);
+    }
+
+    /**
+     * An admin-type account with no back-office permissions until roles are
+     * explicitly assigned (the default for admins created after RBAC).
+     */
+    public function delegatedAdmin(): static
+    {
+        return $this->admin()->afterCreating(fn (User $user) => $user->adminRoles()->detach());
     }
 
     /**

@@ -4,22 +4,27 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreUserRequest;
+use App\Http\Requests\Admin\SyncAdminRolesRequest;
 use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Http\Resources\Auth\UserResource;
 use App\Models\Order;
 use App\Models\ProductPhoto;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\Admin\AdminAccessException;
+use App\Services\Admin\AdminRbacService;
 use App\Services\Admin\UserService;
 use App\Services\AuditLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
     public function __construct(
         public UserService $userService,
         public AuditLogService $auditLogService,
+        public AdminRbacService $rbac,
     ) {}
 
     /**
@@ -102,17 +107,27 @@ class UserController extends Controller
             'role_keys.*' => ['string', \Illuminate\Validation\Rule::in([Role::KEY_CATALOG_MODERATOR, Role::KEY_ORDER_REVIEWER])],
         ]);
 
-        $roleIds = Role::query()->whereIn('key', $validated['role_keys'])->pluck('id');
-        $user->employeeRoles()->sync($roleIds);
+        $roleIds = Role::query()
+            ->where('scope', Role::SCOPE_EMPLOYEE)
+            ->whereIn('key', $validated['role_keys'])
+            ->pluck('id');
 
-        $this->auditLogService->record(
-            $request->user(),
-            'user.employee_roles_changed',
-            'User',
-            $user->id,
-            [],
-            ['role_keys' => $validated['role_keys']],
-        );
+        DB::transaction(function () use ($request, $user, $roleIds) {
+            $previousKeys = $user->employeeRoles()->pluck('key')->sort()->values()->all();
+            $user->employeeRoles()->sync($roleIds);
+            $newKeys = $user->employeeRoles()->pluck('key')->sort()->values()->all();
+
+            if ($previousKeys !== $newKeys) {
+                $this->auditLogService->record(
+                    $request->user(),
+                    'user.employee_roles_changed',
+                    'User',
+                    $user->id,
+                    ['role_keys' => $previousKeys],
+                    ['role_keys' => $newKeys],
+                );
+            }
+        });
 
         return response()->json([
             'message' => __('Employee roles updated successfully.'),
@@ -161,11 +176,30 @@ class UserController extends Controller
     }
 
     /**
-     * Create a new user.
+     * Create a new user. Minting an admin-type account requires
+     * `roles.assign`; the new admin starts with no back-office permissions
+     * until roles are explicitly assigned.
      */
     public function store(StoreUserRequest $request): JsonResponse
     {
-        $user = $this->userService->create($request->validated());
+        $validated = $request->validated();
+        $actor = $request->user();
+
+        try {
+            if ((int) ($validated['type'] ?? User::TYPE_USER) === User::TYPE_ADMIN) {
+                $this->rbac->assertMayCreateAdmins($actor);
+            }
+        } catch (AdminAccessException $exception) {
+            return response()->json(['message' => $exception->getMessage()], $exception->status);
+        }
+
+        $user = DB::transaction(function () use ($validated, $actor) {
+            $user = $this->userService->create($validated);
+
+            $this->auditLogService->record($actor, 'user.created', 'User', $user->id, null, $this->auditableProfile($user));
+
+            return $user;
+        });
 
         return response()->json([
             'message' => __('User created successfully.'),
@@ -174,25 +208,58 @@ class UserController extends Controller
     }
 
     /**
-     * Update an existing user.
+     * Update an existing user. Changing another administrator's account
+     * (including its password) is limited to actors who hold every
+     * permission the target holds; a super administrator's account only to
+     * another super administrator.
      */
     public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
         $validated = $request->validated();
-        $previousType = $user->type;
-        $user = $this->userService->update($user, $validated);
+        $actor = $request->user();
 
-        // A user's `type` is the closest thing this app has to a role — a
-        // change here is exactly the "user role change" spec §35 names.
-        if (array_key_exists('type', $validated) && $user->type !== $previousType) {
-            $this->auditLogService->record(
-                $request->user(),
-                'user.role_changed',
-                'User',
-                $user->id,
-                ['type' => $previousType],
-                ['type' => $user->type],
-            );
+        try {
+            $user = DB::transaction(function () use ($validated, $actor, $user) {
+                $this->rbac->assertCanChangeAccount($actor, $user, $validated);
+
+                $before = $this->auditableProfile($user);
+                $previousType = $user->type;
+                $passwordChanged = isset($validated['password']) && $validated['password'] !== '';
+
+                $user = $this->userService->update($user, $validated);
+
+                if ($user->type !== $previousType && $previousType === User::TYPE_ADMIN) {
+                    $this->rbac->revokeAllAdminRoles($actor, $user);
+                }
+
+                if ($passwordChanged && ! $actor->is($user)) {
+                    $user->tokens()->delete();
+                }
+
+                // A user's `type` is the closest thing this app has to a role — a
+                // change here is exactly the "user role change" spec §35 names.
+                if ($user->type !== $previousType) {
+                    $this->auditLogService->record($actor, 'user.role_changed', 'User', $user->id, ['type' => $previousType], ['type' => $user->type]);
+                }
+
+                $after = $this->auditableProfile($user);
+                $changedKeys = array_keys(array_filter($after, fn ($value, $key) => ($before[$key] ?? null) !== $value && $key !== 'type', ARRAY_FILTER_USE_BOTH));
+
+                if ($changedKeys !== [] || $passwordChanged) {
+                    $this->auditLogService->record(
+                        $actor,
+                        'user.updated',
+                        'User',
+                        $user->id,
+                        array_intersect_key($before, array_flip($changedKeys)),
+                        array_intersect_key($after, array_flip($changedKeys)) + ($passwordChanged ? ['password_changed' => true] : []),
+                    );
+                }
+
+                return $user;
+            });
+        } catch (AdminAccessException $exception) {
+            return response()->json(['message' => $exception->getMessage()], $exception->status);
         }
 
         return response()->json([
@@ -204,7 +271,7 @@ class UserController extends Controller
     /**
      * Delete a user.
      */
-    public function destroy(User $user): JsonResponse
+    public function destroy(Request $request, User $user): JsonResponse
     {
         if ($user->orders()->exists() || $user->reviews()->exists()) {
             return response()->json([
@@ -212,10 +279,80 @@ class UserController extends Controller
             ], 422);
         }
 
-        $this->userService->delete($user);
+        $actor = $request->user();
+
+        try {
+            DB::transaction(function () use ($actor, $user) {
+                $this->rbac->assertCanDeleteAccount($actor, $user);
+
+                $snapshot = $this->auditableProfile($user) + [
+                    'admin_role_keys' => $user->adminRoles()->pluck('key')->values()->all(),
+                ];
+
+                $this->auditLogService->record($actor, 'user.deleted', 'User', $user->id, $snapshot, null);
+                $this->userService->delete($user);
+            });
+        } catch (AdminAccessException $exception) {
+            return response()->json(['message' => $exception->getMessage()], $exception->status);
+        }
 
         return response()->json([
             'message' => __('User deleted successfully.'),
         ]);
+    }
+
+    /**
+     * Replace an administrator's platform-admin roles.
+     */
+    public function updateAdminRoles(SyncAdminRolesRequest $request, User $user): JsonResponse
+    {
+        try {
+            $this->rbac->syncAdminRoles($request->user(), $user, array_map('intval', $request->validated('role_ids')));
+        } catch (AdminAccessException $exception) {
+            return response()->json(['message' => $exception->getMessage()], $exception->status);
+        }
+
+        return response()->json([
+            'message' => __('admin.rbac_roles_assigned'),
+            'data' => $this->rbac->effectivePermissions($user),
+        ]);
+    }
+
+    /**
+     * An administrator's roles and effective permissions, with the role(s)
+     * each permission comes from.
+     */
+    public function permissions(Request $request, User $user): JsonResponse
+    {
+        $data = $this->rbac->effectivePermissions($user);
+        $actor = $request->user();
+
+        try {
+            $this->rbac->assertCanManageAccount($actor, $user);
+            $data['can_manage'] = ! $actor->is($user) && $user->isAdmin();
+        } catch (AdminAccessException) {
+            $data['can_manage'] = false;
+        }
+
+        return response()->json(['data' => $data]);
+    }
+
+    /**
+     * Identity fields safe to keep in the audit trail. Never the password,
+     * remember token, or other credentials.
+     *
+     * @return array<string, mixed>
+     */
+    private function auditableProfile(User $user): array
+    {
+        return [
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone_number' => $user->phone_number,
+            'national_id' => $user->national_id,
+            'membership_number' => $user->membership_number,
+            'age' => $user->age,
+            'type' => $user->type,
+        ];
     }
 }

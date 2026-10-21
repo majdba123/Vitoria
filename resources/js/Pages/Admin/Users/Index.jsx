@@ -6,6 +6,7 @@ import { PageHeader } from '@/Components/shared/PageHeader';
 import { DataTable } from '@/Components/shared/DataTable';
 import { Pagination } from '@/Components/shared/Pagination';
 import { DeleteConfirmDialog } from '@/Components/admin/DeleteConfirmDialog';
+import { StatusMessage } from '@/Components/admin/StatusMessage';
 import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
@@ -31,6 +32,7 @@ export default function UsersIndex() {
     const [cities, setCities] = useState([]);
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteMessage, setDeleteMessage] = useState(null);
 
     const { status, rows, meta, errorMessage, reload } = useAdminList('/api/admin/users', {
         page,
@@ -43,18 +45,23 @@ export default function UsersIndex() {
 
     useEffect(() => {
         if (!isCustomerView) return;
-        window.axios.get('/api/cities', { silent: true }).then((res) => setCities(res.data?.data ?? []));
+        window.axios.get('/api/cities', { silent: true }).then((res) => setCities(res.data?.data ?? [])).catch(() => setCities([]));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isCustomerView]);
 
     const confirmDelete = () => {
         if (!deleteTarget) return;
         setIsDeleting(true);
-        window.axios.delete(`/api/admin/users/${deleteTarget.id}`, { silent: true }).then(() => {
+        setDeleteMessage(null);
+        window.axios.delete(`/api/admin/users/${deleteTarget.id}`, { silent: true }).then((res) => {
+            setDeleteMessage({ tone: 'success', text: res.data?.message });
+            reload();
+        }).catch((error) => {
+            setDeleteMessage({ tone: 'error', text: error.response?.data?.message || admin.rbac_load_error });
+        }).finally(() => {
             setIsDeleting(false);
             setDeleteTarget(null);
-            reload();
-        }).catch(() => setIsDeleting(false));
+        });
     };
 
     const createHref = isEmployeeView
@@ -177,12 +184,15 @@ export default function UsersIndex() {
                 }
             />
 
+            {deleteMessage && <StatusMessage tone={deleteMessage.tone}>{deleteMessage.text}</StatusMessage>}
+
             {isCustomerView && (
                 <Card className="border-border/80 shadow-none">
                     <CardContent className="grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-4">
                         <div>
-                            <label className="mb-1.5 block text-sm font-medium">{admin.search_label}</label>
+                            <label htmlFor="users-search" className="mb-1.5 block text-sm font-medium">{admin.search_label}</label>
                             <Input
+                                id="users-search"
                                 type="search"
                                 placeholder={admin.customer_search_placeholder}
                                 value={search}

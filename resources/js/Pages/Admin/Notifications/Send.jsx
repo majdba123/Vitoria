@@ -49,7 +49,7 @@ export default function NotificationsSend() {
     return (
         <AdminLayout title={admin.send_notification}>
             <PageHeader
-                breadcrumb={[{ label: admin.dashboard, href: route('admin.dashboard') }, { label: admin.notifications_log, href: route('admin.notifications.index') }, { label: admin.send_notification }]}
+                breadcrumb={[{ label: admin.dashboard, href: route('admin.home') }, { label: admin.notifications_log, href: route('admin.notifications.index') }, { label: admin.send_notification }]}
                 title={admin.send_notification}
             />
 
