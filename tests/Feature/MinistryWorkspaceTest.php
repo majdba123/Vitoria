@@ -10,6 +10,7 @@ use App\Models\Syndicate;
 use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 
 function ministryUser(): User
@@ -64,9 +65,10 @@ function ministryOrder(Vendor $vendor, array $products, string $status = Order::
 }
 
 it('redirects a Ministry account to the Ministry dashboard after login', function () {
-    $user = User::factory()->create(['type' => User::TYPE_MINISTRY, 'phone_number' => '0935111222', 'password' => 'Ministry-Pass-2026']);
+    $password = Str::random(40);
+    $user = User::factory()->create(['type' => User::TYPE_MINISTRY, 'phone_number' => '0935111222', 'password' => $password]);
 
-    $this->postJson('/api/auth/login', ['phone_number' => '0935111222', 'password' => 'Ministry-Pass-2026'])
+    $this->postJson('/api/auth/login', ['phone_number' => '0935111222', 'password' => $password])
         ->assertOk()
         ->assertJsonPath('data.redirect_url', route('ministry.dashboard'));
 
