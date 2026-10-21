@@ -23,7 +23,7 @@ class VendorAnalyticsService
     public function __construct(private readonly VendorLedgerService $vendorLedgerService) {}
 
     /** @param array{key: string, from: CarbonImmutable|null, to: CarbonImmutable|null} $period */
-    public function overview(Vendor $vendor, array $period, ?string $domain = null): array
+    public function overview(Vendor $vendor, array $period, string|array|null $domain = null): array
     {
         $products = $this->productQuery($vendor, $domain);
         $periodOrders = $this->period($this->orderQuery($vendor, $domain), $period, 'orders.created_at');
@@ -58,7 +58,7 @@ class VendorAnalyticsService
     }
 
     /** @param array{key: string, from: CarbonImmutable|null, to: CarbonImmutable|null} $period */
-    public function products(Vendor $vendor, array $period, array $filters, int $perPage, ?string $domain = null): LengthAwarePaginator
+    public function products(Vendor $vendor, array $period, array $filters, int $perPage, string|array|null $domain = null): LengthAwarePaginator
     {
         $metrics = $this->lines($vendor, $period, $domain)->where('orders.status', Order::STATUS_COMPLETED)
             ->selectRaw('order_items.product_id, SUM(order_items.quantity) units_sold, SUM(order_items.line_total) sales, COUNT(DISTINCT orders.id) order_count, MAX(orders.created_at) last_sold_at')->groupBy('order_items.product_id');
@@ -81,7 +81,7 @@ class VendorAnalyticsService
     }
 
     /** @param array{key: string, from: CarbonImmutable|null, to: CarbonImmutable|null} $period */
-    public function orders(Vendor $vendor, array $period, array $filters, int $perPage, ?string $domain = null): LengthAwarePaginator
+    public function orders(Vendor $vendor, array $period, array $filters, int $perPage, string|array|null $domain = null): LengthAwarePaginator
     {
         $query = $this->period($this->orderQuery($vendor, $domain), $period, 'orders.created_at')
             ->with(['user:id,name,email,phone_number', 'payment', 'cancelledBy:id,name', 'statusHistories.changedBy:id,name'])
@@ -95,7 +95,7 @@ class VendorAnalyticsService
     }
 
     /** @param array{key: string, from: CarbonImmutable|null, to: CarbonImmutable|null} $period */
-    public function returns(Vendor $vendor, array $period, int $perPage, ?string $domain = null): LengthAwarePaginator
+    public function returns(Vendor $vendor, array $period, int $perPage, string|array|null $domain = null): LengthAwarePaginator
     {
         $query = OrderReturn::query()->where('vendor_id', $vendor->id)
             ->when($domain, fn (Builder $builder) => $builder->whereHas('items.orderItem', fn (Builder $item) => $item->forDomain($domain)))
@@ -134,7 +134,7 @@ class VendorAnalyticsService
      * @param  array{key: string, from: CarbonImmutable|null, to: CarbonImmutable|null}  $period
      * @return array<string, mixed>
      */
-    public function report(Vendor $vendor, array $period, ?string $domain = null): array
+    public function report(Vendor $vendor, array $period, string|array|null $domain = null): array
     {
         $overview = $this->overview($vendor, $period, $domain);
         $products = collect($this->products($vendor, $period, [], 100, $domain)->items());
@@ -166,27 +166,27 @@ class VendorAnalyticsService
         ]);
     }
 
-    public function productQuery(Vendor $vendor, ?string $domain = null): Builder
+    public function productQuery(Vendor $vendor, string|array|null $domain = null): Builder
     {
         return Product::query()->where('vendor_id', $vendor->id)
-            ->when($domain, fn (Builder $query) => $query->whereHas('category', fn (Builder $category) => $category->where('type', $domain)));
+            ->when($domain, fn (Builder $query) => $query->whereHas('category', fn (Builder $category) => $category->whereIn('type', (array) $domain)));
     }
 
-    public function orderQuery(Vendor $vendor, ?string $domain = null): Builder
+    public function orderQuery(Vendor $vendor, string|array|null $domain = null): Builder
     {
         return Order::query()->where('vendor_id', $vendor->id)
             ->when($domain, fn (Builder $query) => $query->whereHas('items', fn (Builder $items) => $items->forDomain($domain)));
     }
 
     /** @param array{key: string, from: CarbonImmutable|null, to: CarbonImmutable|null} $period */
-    private function lines(Vendor $vendor, array $period, ?string $domain): QueryBuilder
+    private function lines(Vendor $vendor, array $period, string|array|null $domain): QueryBuilder
     {
         $query = DB::table('order_items')->join('orders', 'orders.id', '=', 'order_items.order_id')
             ->leftJoin('products', 'products.id', '=', 'order_items.product_id')
             ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
             ->leftJoin('categories as snapshot_categories', 'snapshot_categories.id', '=', 'order_items.category_id_snapshot')
             ->where('orders.vendor_id', $vendor->id)
-            ->when($domain, fn (QueryBuilder $builder) => $builder->whereRaw('COALESCE(order_items.category_type, snapshot_categories.type, categories.type) = ?', [$domain]));
+            ->when($domain, fn (QueryBuilder $builder) => $builder->whereRaw(...$this->domainCondition($domain)));
 
         return $this->period($query, $period, 'orders.created_at');
     }
@@ -204,7 +204,7 @@ class VendorAnalyticsService
         return $query;
     }
 
-    private function identity(Vendor $vendor, ?string $domain): array
+    private function identity(Vendor $vendor, string|array|null $domain): array
     {
         $vendor->loadMissing(['city:id,name', 'categories:id,name,type']);
 
@@ -213,7 +213,7 @@ class VendorAnalyticsService
             'business_type' => $vendor->business_type,
             'city' => $vendor->city?->only(['id', 'name']), 'registration_source' => $vendor->registration_source, 'status' => $vendor->status,
             'is_active' => (bool) $vendor->is_active, 'joined_at' => $vendor->created_at,
-            'categories' => $vendor->categories->when($domain, fn (Collection $categories) => $categories->where('type', $domain))->values()->map->only(['id', 'name', 'type']),
+            'categories' => $vendor->categories->when($domain, fn (Collection $categories) => $categories->whereIn('type', (array) $domain))->values()->map->only(['id', 'name', 'type']),
         ];
     }
 
@@ -240,7 +240,7 @@ class VendorAnalyticsService
      * the domain-gated financial totals stay scoped, to preserve the
      * cross-syndicate revenue-leak protection already in place above.
      */
-    private function presentOrder(Order $order, ?string $domain): array
+    private function presentOrder(Order $order, string|array|null $domain): array
     {
         $scopedSubtotal = round((float) $order->items->sum('line_total'), 2);
         $scopedDiscount = round((float) $order->items->sum('discount_amount'), 2);
@@ -284,7 +284,7 @@ class VendorAnalyticsService
         ];
     }
 
-    private function trend(Vendor $vendor, array $period, ?string $domain): Collection
+    private function trend(Vendor $vendor, array $period, string|array|null $domain): Collection
     {
         return $this->lines($vendor, $period, $domain)->where('orders.status', Order::STATUS_COMPLETED)
             ->selectRaw('DATE(orders.created_at) date, SUM(order_items.line_total) sales, COUNT(DISTINCT orders.id) orders')
@@ -292,7 +292,7 @@ class VendorAnalyticsService
             ->map(fn ($row) => ['date' => $row->date, 'sales' => round((float) $row->sales, 2), 'orders' => (int) $row->orders]);
     }
 
-    private function topProducts(Vendor $vendor, array $period, ?string $domain): Collection
+    private function topProducts(Vendor $vendor, array $period, string|array|null $domain): Collection
     {
         return $this->lines($vendor, $period, $domain)->where('orders.status', Order::STATUS_COMPLETED)
             ->selectRaw('products.id, products.name_ar, products.name_en, SUM(order_items.quantity) units_sold, SUM(order_items.line_total) sales')
@@ -300,7 +300,7 @@ class VendorAnalyticsService
             ->map(fn ($row) => ['id' => $row->id, 'name' => app()->getLocale() === 'ar' ? ($row->name_ar ?: $row->name_en) : ($row->name_en ?: $row->name_ar), 'units_sold' => (int) $row->units_sold, 'sales' => round((float) $row->sales, 2)]);
     }
 
-    private function categoryPerformance(Vendor $vendor, array $period, ?string $domain): Collection
+    private function categoryPerformance(Vendor $vendor, array $period, string|array|null $domain): Collection
     {
         return $this->lines($vendor, $period, $domain)->where('orders.status', Order::STATUS_COMPLETED)
             ->selectRaw('COALESCE(snapshot_categories.id, categories.id) category_id, COALESCE(snapshot_categories.name, categories.name) category_name, COALESCE(order_items.category_type, snapshot_categories.type, categories.type) category_type, SUM(order_items.quantity) units_sold, SUM(order_items.line_total) sales')
@@ -310,7 +310,7 @@ class VendorAnalyticsService
     }
 
     /** @param array{key: string, from: CarbonImmutable|null, to: CarbonImmutable|null} $period */
-    private function refundsByProduct(Vendor $vendor, array $period, ?string $domain): Collection
+    private function refundsByProduct(Vendor $vendor, array $period, string|array|null $domain): Collection
     {
         $query = DB::table('return_items')
             ->join('order_returns', 'order_returns.id', '=', 'return_items.order_return_id')
@@ -319,7 +319,7 @@ class VendorAnalyticsService
             ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
             ->leftJoin('categories as snapshot_categories', 'snapshot_categories.id', '=', 'order_items.category_id_snapshot')
             ->where('order_returns.vendor_id', $vendor->id)
-            ->when($domain, fn (QueryBuilder $builder) => $builder->whereRaw('COALESCE(order_items.category_type, snapshot_categories.type, categories.type) = ?', [$domain]));
+            ->when($domain, fn (QueryBuilder $builder) => $builder->whereRaw(...$this->domainCondition($domain)));
 
         $this->period($query, $period, 'order_returns.created_at');
 
@@ -327,7 +327,7 @@ class VendorAnalyticsService
             ->groupBy('return_items.product_id')->pluck('total', 'return_items.product_id');
     }
 
-    private function reportCategoryPerformance(Vendor $vendor, Collection $sales, ?string $domain): Collection
+    private function reportCategoryPerformance(Vendor $vendor, Collection $sales, string|array|null $domain): Collection
     {
         $productCounts = $this->productQuery($vendor, $domain)
             ->join('categories', 'categories.id', '=', 'products.category_id')
@@ -356,7 +356,7 @@ class VendorAnalyticsService
         return ['amount' => round((float) $query->sum('amount'), 2), 'complete' => true];
     }
 
-    private function domainRefunds(Vendor $vendor, array $period, string $domain): array
+    private function domainRefunds(Vendor $vendor, array $period, string|array $domain): array
     {
         if ($this->mixedDomainOrders($vendor, $period, $domain) > 0) {
             return ['amount' => null, 'complete' => false];
@@ -373,7 +373,7 @@ class VendorAnalyticsService
      * (net earnings) and the platform commission that feeds it are merchant
      * and platform financials, not syndicate-facing data.
      */
-    private function domainFinance(Vendor $vendor, array $period, string $domain): array
+    private function domainFinance(Vendor $vendor, array $period, string|array $domain): array
     {
         $mixed = $this->mixedDomainOrders($vendor, $period, $domain);
         if ($mixed) {
@@ -412,13 +412,24 @@ class VendorAnalyticsService
         ];
     }
 
-    private function mixedDomainOrders(Vendor $vendor, array $period, string $domain): int
+    private function mixedDomainOrders(Vendor $vendor, array $period, string|array $domain): int
     {
         return $this->period($this->orderQuery($vendor, $domain)->where('status', Order::STATUS_COMPLETED), $period, 'orders.created_at')
             ->whereHas('items', fn (Builder $items) => $items->where(function (Builder $query) use ($domain): void {
-                $query->whereNotNull('category_type')->where('category_type', '!=', $domain)
-                    ->orWhere(fn (Builder $legacy) => $legacy->whereNull('category_type')->whereHas('product.category', fn (Builder $category) => $category->where('type', '!=', $domain)));
+                $query->whereNotNull('category_type')->whereNotIn('category_type', (array) $domain)
+                    ->orWhere(fn (Builder $legacy) => $legacy->whereNull('category_type')->whereHas('product.category', fn (Builder $category) => $category->whereNotIn('type', (array) $domain)));
             }))->count();
+    }
+
+    /**
+     * @param  string|list<string>  $domain
+     * @return array{0: string, 1: list<string>}
+     */
+    private function domainCondition(string|array $domain): array
+    {
+        $domains = array_values((array) $domain);
+
+        return ['COALESCE(order_items.category_type, snapshot_categories.type, categories.type) IN ('.implode(', ', array_fill(0, count($domains), '?')).')', $domains];
     }
 
     private function presentPeriod(array $period): array

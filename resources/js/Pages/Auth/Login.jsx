@@ -8,7 +8,7 @@ import { ThemeToggle } from '@/Components/workspace/ThemeToggle';
 import { useI18n } from '@/hooks/use-i18n';
 import { PoweredBy } from '@/Components/shared/PoweredBy';
 
-const DASHBOARD_ROUTE = { 1: 'admin.home', 2: 'vendor.dashboard', 3: 'syndicate.dashboard', 4: 'employee.dashboard' };
+const DASHBOARD_ROUTE = { 1: 'admin.home', 2: 'vendor.dashboard', 3: 'syndicate.dashboard', 4: 'employee.dashboard', 5: 'ministry.dashboard' };
 
 function redirectByUser(user, fallbackUrl) {
     const route2 = DASHBOARD_ROUTE[Number(user?.type)];

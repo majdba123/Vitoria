@@ -20,10 +20,10 @@ function Field({ label, children }) {
     );
 }
 
-export default function ShipmentShow({ workspace, shipmentId }) {
+export default function ShipmentShow({ workspace, shipmentId, sector = 'combined' }) {
     const { importShipments: t, common } = useI18n();
     const locale = useLocale();
-    const { Layout, apiBase, routeName } = shipmentsWorkspace(workspace);
+    const { Layout, apiBase, routeName, href, readOnly } = shipmentsWorkspace(workspace, sector);
     const [status, setStatus] = useState('loading');
     const [shipment, setShipment] = useState(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -62,18 +62,20 @@ export default function ShipmentShow({ workspace, shipmentId }) {
     return (
         <Layout title={t.details_title}>
             <PageHeader
-                breadcrumb={[{ label: t.title, href: route(routeName('index')) }, { label: `${t.shipment_number} ${shipment.id}` }]}
+                breadcrumb={[{ label: t.title, href: href('index') }, { label: `${t.shipment_number} ${shipment.id}` }]}
                 title={shipment.merchant_name}
                 copy={`${t.shipment_number} ${shipment.id} · ${formatDateTime(shipment.created_at, locale)}`}
                 actions={
-                    <>
-                        <Button asChild variant="outline" size="sm">
-                            <Link href={route(routeName('edit'), shipment.id)}>{common.edit}</Link>
-                        </Button>
-                        <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => setConfirmOpen(true)}>
-                            {common.delete}
-                        </Button>
-                    </>
+                    readOnly ? null : (
+                        <>
+                            <Button asChild variant="outline" size="sm">
+                                <Link href={route(routeName('edit'), shipment.id)}>{common.edit}</Link>
+                            </Button>
+                            <Button variant="outline" size="sm" className="text-[var(--color-danger-strong)]" onClick={() => setConfirmOpen(true)}>
+                                {common.delete}
+                            </Button>
+                        </>
+                    )
                 }
             />
 

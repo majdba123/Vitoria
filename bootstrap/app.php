@@ -52,6 +52,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->prefix('api/employee')
                 ->as('api.employee.')
                 ->group(base_path('routes/api_employee.php'));
+
+            Route::middleware(['api', 'auth:sanctum', 'ministry', 'audit.mutations'])
+                ->prefix('api/ministry')
+                ->as('api.ministry.')
+                ->group(base_path('routes/api_ministry.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
@@ -72,6 +77,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'vendor' => \App\Http\Middleware\EnsureUserIsVendor::class,
             'syndicate' => EnsureUserIsSyndicate::class,
             'employee' => EnsureUserIsEmployee::class,
+            'ministry' => \App\Http\Middleware\EnsureUserIsMinistry::class,
             'can.purchase' => \App\Http\Middleware\EnsureCanPurchase::class,
             'cache.response' => \App\Http\Middleware\CacheResponse::class,
             'timezone' => \App\Http\Middleware\ApplyUserTimezone::class,

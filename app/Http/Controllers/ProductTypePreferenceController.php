@@ -83,6 +83,7 @@ class ProductTypePreferenceController extends Controller
             User::TYPE_VENDOR => route('vendor.dashboard'),
             User::TYPE_SYNDICATE => route('syndicate.dashboard'),
             User::TYPE_EMPLOYEE => route('employee.dashboard'),
+            User::TYPE_MINISTRY => route('ministry.dashboard'),
             default => route('home'),
         };
     }

@@ -52,7 +52,7 @@ test('map ownership is limited to the two dashboards and admin drilldown initial
     $adminVendors = file_get_contents(resource_path('js/Pages/Admin/Vendors/Index.jsx'));
 
     expect($adminDashboard)->toContain('<DashboardVendorMap')
-        ->and($syndicateDashboard)->toContain('{isOverview && (', '<DashboardVendorMap endpoint="/api/syndicate/vendors/map"')
+        ->and($syndicateDashboard)->toContain('{isOverview && (', '<DashboardVendorMap endpoint={ws.isMinistry ? `${ws.apiBase}/vendors/map?sector=${ws.sector}` : `${ws.apiBase}/vendors/map`}')
         ->and($adminVendors)->not->toContain('DashboardVendorMap')
         ->not->toContain('ViewSwitch')
         ->toContain("initialQuery.get('governorate')")

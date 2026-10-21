@@ -522,6 +522,7 @@ return [
         2 => 'Vendor',
         3 => 'Syndicate',
         4 => 'Employee',
+        5 => 'Ministry',
     ],
     'th_contact' => 'Email / Phone',
     'th_city' => 'City',

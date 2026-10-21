@@ -150,6 +150,7 @@ class AuditLogService
             $user->isVendor() => 'vendor',
             $user->isEmployee() => 'employee',
             $user->isSyndicate() => 'syndicate',
+            $user->isMinistry() => 'ministry',
             default => 'customer',
         };
     }

@@ -122,7 +122,7 @@ export default function UsersEdit({ userId }) {
                             <TextField id="national_id" label={admin.th_national_id} required value={form.national_id} onChange={(e) => set('national_id')(e.target.value)} error={errors.national_id} />
                             <TextField id="email" label={admin.email_label} type="email" placeholder={admin.email_optional_placeholder} value={form.email} onChange={(e) => set('email')(e.target.value)} error={errors.email} />
                             <TextField id="password" label={admin.new_password_label} type="password" placeholder={admin.password_optional_hint} value={form.password} onChange={(e) => set('password')(e.target.value)} error={errors.password} />
-                            <SelectField id="type" label={admin.user_type_label} value={form.type} onValueChange={set('type')} options={TYPE_OPTIONS} error={errors.type} />
+                            <SelectField id="type" label={admin.user_type_label} value={form.type} onValueChange={set('type')} options={String(form.type) === '5' ? [{ value: '5', label: admin.user_type_labels?.[5] }] : TYPE_OPTIONS} error={errors.type} />
                         </div>
 
                         <div className="flex gap-2 border-t border-border pt-5">

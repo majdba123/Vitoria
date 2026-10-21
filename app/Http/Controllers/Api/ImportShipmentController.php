@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ImportShipments\StoreImportShipmentRequest;
 use App\Http\Requests\ImportShipments\UpdateImportShipmentRequest;
+use App\Models\Category;
 use App\Models\ImportShipment;
 use App\Models\ImportShipmentItem;
 use App\Models\Port;
@@ -256,6 +257,7 @@ class ImportShipmentController extends Controller
             })
             ->when($request->filled('port_id'), fn (Builder $query) => $query->where('import_shipments.port_id', (int) $request->input('port_id')))
             ->when($request->filled('syndicate_id') && ! $request->user()->isSyndicate(), fn (Builder $query) => $query->where('import_shipments.syndicate_id', (int) $request->input('syndicate_id')))
+            ->when($request->user()->isMinistry() && in_array($request->input('sector'), [Category::TYPE_AGRICULTURE, Category::TYPE_VETERINARY], true), fn (Builder $query) => $query->whereHas('syndicate', fn (Builder $syndicate) => $syndicate->where('type', $request->input('sector'))))
             ->when($request->filled('sticker_price'), fn (Builder $query) => $query->where('sticker_price', (int) $request->input('sticker_price')))
             ->when($country !== '', fn (Builder $query) => $query->whereHas('items', fn (Builder $items) => $items->where('country', 'like', '%'.$country.'%')))
             ->when($request->input('released') === '1', fn (Builder $query) => $query->whereNotNull('release_decision')->where('release_decision', '<>', ''))
