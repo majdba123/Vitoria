@@ -6,7 +6,7 @@ import { EmployeeHeader } from '@/Components/employee/EmployeeHeader';
 
 export default function EmployeeLayout({ title, children }) {
     return (
-        <SidebarProvider className="dashboard-body" style={{ '--sidebar-width': '17rem' }}>
+        <SidebarProvider className="dashboard-body" data-workspace="employee" style={{ '--sidebar-width': '17rem' }}>
             <Head title={title} />
             <EmployeeSidebar />
             <SidebarInset>

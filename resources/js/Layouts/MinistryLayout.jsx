@@ -1,12 +1,15 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import { SidebarInset, SidebarProvider } from '@/Components/ui/sidebar';
 import { DashboardFooter } from '@/Components/shared/DashboardFooter';
 import { MinistrySidebar } from '@/Components/ministry/MinistrySidebar';
 import { MinistryHeader } from '@/Components/ministry/MinistryHeader';
 
 export default function MinistryLayout({ title, children }) {
+    const { props } = usePage();
+    const sector = ['agriculture', 'veterinary'].includes(props.sector) ? props.sector : 'combined';
+
     return (
-        <SidebarProvider className="dashboard-body" style={{ '--sidebar-width': '17rem' }}>
+        <SidebarProvider className="dashboard-body" data-workspace="ministry" data-sector={sector} style={{ '--sidebar-width': '17rem' }}>
             <Head title={title} />
             <MinistrySidebar />
             <SidebarInset>

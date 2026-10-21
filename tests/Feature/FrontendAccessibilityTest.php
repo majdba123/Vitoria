@@ -284,3 +284,30 @@ test('dashboard status links and ministry header avoid accent side borders and n
         ->toContain('<SectorSwitcher className="hidden xl:flex" />')
         ->toContain('xl:hidden');
 });
+
+test('operational workspace shells expose role and sector identities to semantic theme tokens', function () {
+    $layouts = [
+        'AdminLayout.jsx' => 'admin',
+        'VendorLayout.jsx' => 'vendor',
+        'EmployeeLayout.jsx' => 'employee',
+        'SyndicateLayout.jsx' => 'syndicate',
+    ];
+
+    foreach ($layouts as $layout => $workspace) {
+        expect(file_get_contents(resource_path("js/Layouts/{$layout}")))
+            ->toContain("data-workspace=\"{$workspace}\"");
+    }
+
+    expect(file_get_contents(resource_path('js/Layouts/MinistryLayout.jsx')))
+        ->toContain('data-workspace="ministry"')
+        ->toContain('data-sector={sector}')
+        ->toContain("['agriculture', 'veterinary'].includes(props.sector)");
+
+    $styles = file_get_contents(resource_path('css/app.css'));
+    expect($styles)
+        ->toContain("data-sector='combined'")
+        ->toContain("data-sector='agriculture'")
+        ->toContain("data-sector='veterinary'")
+        ->toContain('--chart-1: var(--workspace-accent)')
+        ->toContain('.dark .dashboard-body[data-workspace=');
+});
