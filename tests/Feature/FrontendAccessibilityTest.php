@@ -28,6 +28,15 @@ test('homepage renders successfully for the mobile navigation to mount on', func
         ->assertInertia(fn (Assert $page) => $page->component('Home'));
 });
 
+test('mobile catalog filter toggle names and controls its filter drawer', function () {
+    $source = file_get_contents(resource_path('js/Pages/Products/Index.jsx'));
+
+    expect($source)
+        ->toContain('<span>{nav.filters}</span>')
+        ->toContain('aria-expanded={mobileOpen} aria-controls="catalog-filter-panel"')
+        ->toContain('<div id="catalog-filter-panel" className="catalog-filter-drawer"');
+});
+
 test('multipart admin forms preserve array field semantics', function () {
     $source = file_get_contents(resource_path('js/hooks/use-admin-form.js'));
 
