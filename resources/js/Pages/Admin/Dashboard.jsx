@@ -91,8 +91,7 @@ export default function Dashboard() {
             {/* Page header */}
             <section className="flex flex-col gap-4 rounded-lg border border-border/80 bg-card px-5 py-5 sm:px-6 sm:py-6 lg:flex-row lg:items-start lg:justify-between">
                 <div className="min-w-0">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-primary">{admin.badge}</p>
-                    <h2 className="mt-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{admin.dashboard_title}</h2>
+                    <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{admin.dashboard_title}</h2>
                 </div>
                 <div className="flex flex-wrap gap-2">
                     {can('vendors.create') && (
@@ -120,21 +119,21 @@ export default function Dashboard() {
                     <h3 className="text-sm font-bold text-foreground">{admin.stats_section_title}</h3>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 @4xl/main:grid-cols-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 @4xl/main:grid-cols-4">
                     <StatCard label={admin.total_vendors} value={vendorsTotal} icon={Store} status={vendorsStatCardStatus} onRetry={vendors.refetch} />
                     <StatCard label={admin.total_products} value={productsTotal} icon={Package} status={productsStatCardStatus} onRetry={products.refetch} />
                     {can('users.view') && <StatCard label={admin.total_users} value={usersTotal} icon={Users} status={users.status} onRetry={users.refetch} />}
                     <StatCard label={admin.total_syndicates} value={syndicatesTotal} icon={Building2} status={overview.status} onRetry={overview.refetch} />
                 </div>
 
-                <div className="flex flex-wrap gap-y-3 border-t border-border/70 pt-4">
+                <div className="grid grid-cols-2 gap-y-3 border-t border-border/70 pt-4 sm:flex sm:flex-wrap">
                     {[
                         { label: admin.active_vendors, value: activeVendors, tone: 'success' },
                         { label: admin.pending_vendors, value: pendingVendors, tone: 'warning' },
                         { label: admin.inactive_vendors, value: inactiveVendors, tone: 'danger' },
                         { label: admin.active_products, value: activeProducts, tone: 'success' },
                     ].map((item, index) => (
-                        <div key={item.label} className={`flex flex-col gap-1 px-4 py-1 ${index === 0 ? 'ps-0' : 'border-s border-border/70'}`}>
+                        <div key={item.label} className={`flex flex-col gap-1 py-1 sm:px-4 ${index === 0 ? 'sm:ps-0' : 'sm:border-s sm:border-border/70'}`}>
                             <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{item.label}</span>
                             <span
                                 className={`text-base font-bold tabular-nums ${item.tone === 'success' ? 'text-[var(--color-success-strong)]' : item.tone === 'danger' ? 'text-[var(--color-danger-strong)]' : 'text-foreground'}`}
@@ -215,7 +214,7 @@ export default function Dashboard() {
                                     aria-pressed={rangeMonths === months}
                                     className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${rangeMonths === months ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent'}`}
                                 >
-                                    {months}mo
+                                    {admin[`chart_period_${months}`]}
                                 </button>
                             ))}
                         </div>

@@ -9,10 +9,11 @@ import { InsightPanel } from '@/Components/shared/dashboard/InsightPanel';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/Components/ui/chart';
-import { useI18n } from '@/hooks/use-i18n';
+import { useI18n, useIsRtl } from '@/hooks/use-i18n';
 
 export default function VendorDashboard() {
     const { vendor, common } = useI18n();
+    const isRtl = useIsRtl();
     const [status, setStatus] = useState('loading');
     const [products, setProducts] = useState([]);
     const [stats, setStats] = useState({ totalProducts: 0, activeProducts: 0, orders: 0, storeActive: false });
@@ -50,8 +51,7 @@ export default function VendorDashboard() {
         <VendorLayout title={vendor.dashboard}>
             <section className="flex flex-col gap-4 rounded-lg border border-border/80 bg-card px-5 py-5 sm:px-6 sm:py-6 lg:flex-row lg:items-start lg:justify-between">
                 <div className="min-w-0">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary">{vendor.workspace}</p>
-                    <h2 className="mt-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{storeName}</h2>
+                    <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{storeName}</h2>
                 </div>
                 <div className="flex flex-wrap gap-2">
                     <Button asChild size="sm">
@@ -63,7 +63,7 @@ export default function VendorDashboard() {
                 </div>
             </section>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
                 <StatCard label={vendor.store_status} value={stats.storeActive ? common.active : common.inactive} icon={CheckCircle2} status={status} tone={stats.storeActive ? 'success' : undefined} />
                 <StatCard label={vendor.total_products} value={stats.totalProducts} icon={Package} status={status} />
                 <StatCard label={vendor.active_products} value={stats.activeProducts} icon={PackageCheck} status={status} tone="success" />
@@ -119,7 +119,7 @@ export default function VendorDashboard() {
                 <ChartContainer config={ordersChartConfig} className="aspect-auto h-48 w-full">
                     <AreaChart data={orderTrend} margin={{ left: 0, right: 8, top: 8 }}>
                         <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                        <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value?.slice?.(5) ?? value} />
+                        <XAxis dataKey="date" reversed={isRtl} tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value?.slice?.(5) ?? value} />
                         <ChartTooltip content={<ChartTooltipContent labelKey="date" />} cursor={{ fill: 'var(--color-accent)' }} />
                         <Area dataKey="count" type="monotone" fill="var(--color-count)" fillOpacity={0.2} stroke="var(--color-count)" strokeWidth={2} />
                     </AreaChart>

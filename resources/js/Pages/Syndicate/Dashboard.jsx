@@ -115,9 +115,7 @@ export default function SyndicateDashboard({ section = 'dashboard', workspace = 
                 copy={ws.isMinistry && ws.sector === 'combined' ? ministry.combined_note : undefined}
                 actions={
                     <>
-                        {ws.isMinistry
-                            ? <StatusBadge tone="brand">{ministry[`sector_${ws.sector}`]}</StatusBadge>
-                            : <StatusBadge tone={syndicateInfo.status === 'inactive' ? 'danger' : 'success'}>{syndicateInfo.status === 'inactive' ? syndicate.inactive : syndicate.active}</StatusBadge>}
+                        {!ws.isMinistry && <StatusBadge tone={syndicateInfo.status === 'inactive' ? 'danger' : 'success'}>{syndicateInfo.status === 'inactive' ? syndicate.inactive : syndicate.active}</StatusBadge>}
                         {!ws.isMinistry && (
                             <Button asChild variant="outline" size="sm">
                                 <Link href={ws.href('sales')}><BarChart3 className="size-4" aria-hidden="true" />{syndicate.sales_cta}</Link>
@@ -134,7 +132,7 @@ export default function SyndicateDashboard({ section = 'dashboard', workspace = 
                 and ReportCard's h3 titles below don't jump straight from the page's h1,
                 which axe-core flags as an invalid heading order. */}
             <h2 className="sr-only">{syndicate.dashboard}</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 @2xl/main:grid-cols-3 @2xl/main:gap-4 [&>:last-child:nth-child(odd)]:col-span-2 @2xl/main:[&>:last-child:nth-child(odd)]:col-span-1">
                 <StatCard label={syndicate.vendors} value={overview.total_merchants ?? 0} icon={Store} status={overviewStatus} onRetry={loadOverview} />
                 <StatCard label={syndicate.products} value={overview.total_products ?? 0} icon={Package} status={overviewStatus} onRetry={loadOverview} />
                 <StatCard label={syndicate.total_orders} value={orderStats.total_orders ?? 0} icon={ShoppingBag} status={overviewStatus} onRetry={loadOverview} />

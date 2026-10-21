@@ -36,7 +36,6 @@ return [
     'active_products_label' => 'المنتجات النشطة',
     'inactive_products_label' => 'المنتجات غير النشطة',
     'status_summary' => 'ملخص الحالات',
-    'open_tab' => 'فتح التبويب',
     'back_dashboard' => 'العودة إلى لوحة التحكم',
     'back_products' => 'العودة إلى المنتجات',
     'all_products' => 'كل المنتجات',

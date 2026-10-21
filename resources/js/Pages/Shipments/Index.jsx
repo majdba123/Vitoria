@@ -16,7 +16,7 @@ import { Label } from '@/Components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
 import { useAdminList } from '@/hooks/use-admin-list';
-import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { useI18n, useIsRtl, useLocale } from '@/hooks/use-i18n';
 import { formatCurrency, formatDate, formatNumber } from '@/lib/date-time';
 import { shipmentsWorkspace } from '@/lib/shipments-workspace';
 
@@ -31,6 +31,7 @@ function toParams(filters) {
 }
 
 function MonthlyChart({ rows, label, locale }) {
+    const isRtl = useIsRtl();
     const data = rows.map((row) => ({ month: row.month, count: row.shipments_count }));
     const monthLabel = (value) => formatDate(`${value}-01`, locale, { dateStyle: undefined, month: 'short', year: '2-digit' }) || value;
 
@@ -39,7 +40,7 @@ function MonthlyChart({ rows, label, locale }) {
             <ChartContainer config={{ count: { label, color: 'var(--chart-1)' } }} className="aspect-auto h-56 w-full">
                 <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
                     <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                    <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={monthLabel} interval="preserveStartEnd" />
+                    <XAxis dataKey="month" reversed={isRtl} tickLine={false} axisLine={false} tickMargin={8} tickFormatter={monthLabel} interval="preserveStartEnd" />
                     <ChartTooltip content={<ChartTooltipContent labelKey="month" labelFormatter={monthLabel} />} cursor={{ fill: 'var(--color-accent)' }} />
                     <Bar dataKey="count" fill="var(--color-count)" radius={[4, 4, 0, 0]} maxBarSize={28} />
                 </BarChart>

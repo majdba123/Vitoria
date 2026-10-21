@@ -26,7 +26,7 @@ export function MinistryHeader({ title }) {
                     <h1 className="truncate text-base font-bold leading-tight text-foreground sm:text-lg">{title}</h1>
                 </div>
 
-                <SectorSwitcher className="hidden md:flex" />
+                <SectorSwitcher className="hidden xl:flex" />
 
                 <div className="flex items-center gap-1.5">
                     <span className="hidden xl:inline-flex"><StatusBadge tone="brand">{ministry.read_only}</StatusBadge></span>
@@ -41,7 +41,7 @@ export function MinistryHeader({ title }) {
                     <LogoutButton />
                 </div>
             </div>
-            <div className="flex w-full px-3 sm:px-4 md:hidden">
+            <div className="flex w-full px-3 sm:px-4 lg:px-6 xl:hidden">
                 <SectorSwitcher className="w-full [&>*]:flex-1" />
             </div>
         </header>

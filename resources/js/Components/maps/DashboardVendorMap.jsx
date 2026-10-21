@@ -144,7 +144,7 @@ export function DashboardVendorMap({ endpoint, adminDrilldown = false }) {
                 {status === 'ready' && (
                     <div className="@container mx-auto w-full max-w-2xl" data-vendor-map>
                         <div className="relative" data-map-canvas>
-                            <div className="mb-2 min-h-24 sm:min-h-16">
+                            <div className="mb-2 hidden min-h-16 [@media(hover:hover)]:block">
                                 <div role="tooltip" aria-hidden="true" dir={isArabic ? 'rtl' : 'ltr'} className="min-w-0 text-xs text-card-foreground" data-map-tooltip>
                                     {hovered && (
                                         <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-sm">

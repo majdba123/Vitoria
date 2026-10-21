@@ -1,7 +1,9 @@
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/Components/ui/chart';
+import { useIsRtl } from '@/hooks/use-i18n';
 
 export function GrowthChart({ rows, totalLabel }) {
+    const isRtl = useIsRtl();
     const data = rows.map((row) => ({ month: row.month, total: Number(row.total || 0) }));
     const chartConfig = {
         total: {
@@ -12,10 +14,11 @@ export function GrowthChart({ rows, totalLabel }) {
 
     return (
         <ChartContainer config={chartConfig} className="aspect-auto h-56 w-full">
-            <BarChart data={data} margin={{ left: 0, right: 8, top: 8 }}>
+            <BarChart data={data} margin={{ left: isRtl ? 8 : 0, right: isRtl ? 0 : 8, top: 8 }}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
                 <XAxis
                     dataKey="month"
+                    reversed={isRtl}
                     tickLine={false}
                     axisLine={false}
                     tickMargin={8}
