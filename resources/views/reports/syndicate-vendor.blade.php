@@ -78,7 +78,7 @@
 </table>
 
 <h2>{{ $labels['period'] }}</h2>
-<table class="meta"><tr><td class="lbl">{{ $labels['from'] }}</td><td class="val">{{ $period['from'] ?? $labels['not_available'] }}</td><td class="lbl">{{ $labels['to'] }}</td><td class="val">{{ $period['to'] ?? $labels['not_available'] }}</td></tr><tr><td class="lbl">{{ $labels['generated'] }}</td><td class="val" colspan="3"><bdi dir="ltr">{{ $data['generated_at']->timezone(config('app.timezone'))->format('Y-m-d H:i') }}</bdi></td></tr></table>
+<table class="meta"><tr><td class="lbl">{{ $labels['from'] }}</td><td class="val">{{ $period['from'] ?? $labels['not_available'] }}</td><td class="lbl">{{ $labels['to'] }}</td><td class="val">{{ $period['to'] ?? $labels['not_available'] }}</td></tr><tr><td class="lbl">{{ $labels['generated'] }}</td><td class="val" colspan="3"><bdi dir="ltr">{{ $data['generated_at']->timezone(config('app.display_timezone'))->format('Y-m-d H:i') }}</bdi></td></tr></table>
 
 <h2>{{ $labels['kpis'] }}</h2>
 <table class="kpis">

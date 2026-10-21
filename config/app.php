@@ -69,6 +69,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Display Timezone
+    |--------------------------------------------------------------------------
+    |
+    | Timezone used only when formatting dates for the current viewer. The
+    | ApplyUserTimezone middleware overrides it per request; storage always
+    | stays in the application timezone above.
+    |
+    */
+
+    'display_timezone' => 'UTC',
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     |

@@ -167,7 +167,7 @@
         </div>
         <div class="invoice-meta">
             <div class="invoice-number"><bdi class="code">{{ $invoice->invoice_number }}</bdi></div>
-            <div>{{ __('invoices.issued_at') }}: <bdi dir="ltr">{{ $invoice->issued_at->format('Y-m-d H:i') }}</bdi></div>
+            <div>{{ __('invoices.issued_at') }}: <bdi dir="ltr">{{ $invoice->issued_at->timezone(config('app.display_timezone'))->format('Y-m-d H:i') }}</bdi></div>
         </div>
     </div>
 

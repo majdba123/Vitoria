@@ -9,7 +9,11 @@ use Symfony\Component\HttpFoundation\Response;
 class ApplyUserTimezone
 {
     /**
-     * Handle an incoming request.
+     * Resolve the viewer's timezone for display only.
+     *
+     * Storage stays in `app.timezone` (UTC): overriding it per request made
+     * Eloquent write `created_at`/`updated_at` in each user's local time.
+     * Formatting code reads `app.display_timezone` instead.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
@@ -20,8 +24,8 @@ class ApplyUserTimezone
             ?? $request->cookie('sz_timezone');
 
         if (is_string($timezone) && in_array($timezone, timezone_identifiers_list(), true)) {
-            config(['app.timezone' => $timezone]);
-            date_default_timezone_set($timezone);
+            config(['app.display_timezone' => $timezone]);
+            $request->attributes->set('timezone', $timezone);
         }
 
         return $next($request);
