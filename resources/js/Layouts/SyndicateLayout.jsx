@@ -6,7 +6,7 @@ import { SyndicateHeader } from '@/Components/syndicate/SyndicateHeader';
 
 export default function SyndicateLayout({ title, children }) {
     return (
-        <SidebarProvider className="dashboard-body" style={{ '--sidebar-width': '17rem' }}>
+        <SidebarProvider className="dashboard-body" data-workspace="syndicate" style={{ '--sidebar-width': '17rem' }}>
             <Head title={title} />
             <SyndicateSidebar />
             <SidebarInset>

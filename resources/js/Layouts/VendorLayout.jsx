@@ -6,7 +6,7 @@ import { VendorHeader } from '@/Components/vendor/VendorHeader';
 
 export default function VendorLayout({ title, children }) {
     return (
-        <SidebarProvider className="dashboard-body" style={{ '--sidebar-width': '17rem' }}>
+        <SidebarProvider className="dashboard-body" data-workspace="vendor" style={{ '--sidebar-width': '17rem' }}>
             <Head title={title} />
             <VendorSidebar />
             <SidebarInset>

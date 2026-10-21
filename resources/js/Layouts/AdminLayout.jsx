@@ -6,7 +6,7 @@ import { AdminHeader } from '@/Components/admin/AdminHeader';
 
 export default function AdminLayout({ title, children }) {
     return (
-        <SidebarProvider className="dashboard-body" style={{ '--sidebar-width': '17rem' }}>
+        <SidebarProvider className="dashboard-body" data-workspace="admin" style={{ '--sidebar-width': '17rem' }}>
             <Head title={title} />
             <AdminSidebar />
             <SidebarInset>

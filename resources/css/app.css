@@ -231,6 +231,108 @@
     --border: #2d4049;
 }
 
+/* Operational workspaces share the same controls, while their primary action
+   and chart colors carry a restrained role identity. Status tokens stay global. */
+.dashboard-body[data-workspace] {
+    --workspace-accent: var(--color-brand-600);
+    --workspace-accent-strong: var(--color-brand-700);
+    --workspace-accent-soft: var(--color-brand-50);
+    --primary: var(--workspace-accent);
+    --primary-foreground: #ffffff;
+    --accent: var(--workspace-accent-soft);
+    --accent-foreground: var(--workspace-accent-strong);
+    --ring: var(--workspace-accent);
+    --chart-1: var(--workspace-accent);
+    --sidebar-primary: var(--workspace-accent);
+}
+
+.dashboard-body[data-workspace='employee'] {
+    --workspace-accent: #296aa3;
+    --workspace-accent-strong: #1a4266;
+    --workspace-accent-soft: #eaf3fa;
+}
+
+.dashboard-body[data-workspace='vendor'] {
+    --workspace-accent: #236b83;
+    --workspace-accent-strong: #194d62;
+    --workspace-accent-soft: #eaf4f7;
+}
+
+.dashboard-body[data-workspace='syndicate'] {
+    --workspace-accent: #177a55;
+    --workspace-accent-strong: #0f4f36;
+    --workspace-accent-soft: #eefaf3;
+}
+
+.dashboard-body[data-workspace='ministry'][data-sector='combined'] {
+    --workspace-accent: #52619b;
+    --workspace-accent-strong: #394779;
+    --workspace-accent-soft: #eef0fa;
+}
+
+.dashboard-body[data-workspace='ministry'][data-sector='agriculture'] {
+    --workspace-accent: #356a43;
+    --workspace-accent-strong: #234c2f;
+    --workspace-accent-soft: #edf6ee;
+}
+
+.dashboard-body[data-workspace='ministry'][data-sector='veterinary'] {
+    --workspace-accent: #246b78;
+    --workspace-accent-strong: #174d58;
+    --workspace-accent-soft: #eaf5f6;
+}
+
+.dashboard-body[data-workspace] .dashboard-topbar {
+    border-block-start: 2px solid var(--workspace-accent);
+}
+
+.dashboard-body[data-workspace] .dashboard-eyebrow {
+    color: var(--workspace-accent-strong);
+}
+
+.dark .dashboard-body[data-workspace] {
+    --primary-foreground: #0e171c;
+    --workspace-accent: var(--color-brand-300);
+    --workspace-accent-strong: var(--color-brand-200);
+    --workspace-accent-soft: rgba(41, 169, 209, 0.16);
+}
+
+.dark .dashboard-body[data-workspace='employee'] {
+    --workspace-accent: #7fa9cf;
+    --workspace-accent-strong: #a1c7e3;
+    --workspace-accent-soft: rgba(41, 106, 163, 0.2);
+}
+
+.dark .dashboard-body[data-workspace='vendor'] {
+    --workspace-accent: #76b7cb;
+    --workspace-accent-strong: #a6d4e0;
+    --workspace-accent-soft: rgba(35, 107, 131, 0.22);
+}
+
+.dark .dashboard-body[data-workspace='syndicate'] {
+    --workspace-accent: #7fc9a4;
+    --workspace-accent-strong: #b3e0c9;
+    --workspace-accent-soft: rgba(23, 122, 85, 0.2);
+}
+
+.dark .dashboard-body[data-workspace='ministry'][data-sector='combined'] {
+    --workspace-accent: #aeb8f5;
+    --workspace-accent-strong: #cad0ff;
+    --workspace-accent-soft: rgba(82, 97, 155, 0.24);
+}
+
+.dark .dashboard-body[data-workspace='ministry'][data-sector='agriculture'] {
+    --workspace-accent: #7fc9a4;
+    --workspace-accent-strong: #b3e0c9;
+    --workspace-accent-soft: rgba(23, 122, 85, 0.2);
+}
+
+.dark .dashboard-body[data-workspace='ministry'][data-sector='veterinary'] {
+    --workspace-accent: #71c9d2;
+    --workspace-accent-strong: #a3e2e7;
+    --workspace-accent-soft: rgba(36, 107, 120, 0.22);
+}
+
 /* ==========================================================================
    3. COMPONENT TOKENS
    Bound to a single component's role. Change these, not the component
