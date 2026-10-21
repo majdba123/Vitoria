@@ -25,7 +25,7 @@ it('formats checkout currency with the active page locale', function () {
     $source = file_get_contents(resource_path('js/Pages/Checkout/Index.jsx'));
 
     expect($source)
-        ->toContain("const locale = useLocale();\n    // Arabic places the currency symbol after the amount; English places the code before.\n    const money = (amount) => formatCurrency(amount, locale, 'SYP');")
+        ->and(preg_match('/export default function CheckoutIndex\(\)\s*\{[\s\S]*?const locale = useLocale\(\);[\s\S]*?const money = \(amount\) => formatCurrency\(amount, locale, \'SYP\'\);/', $source))->toBe(1)
         ->not->toContain('function money(amount)');
 });
 
