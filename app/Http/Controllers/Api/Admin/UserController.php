@@ -32,7 +32,7 @@ class UserController extends Controller
      */
     public function index(): JsonResponse
     {
-        $perPage = min((int) request('per_page', 15), 500);
+        $perPage = min(max((int) request('per_page', 15), 1), 100);
         $isCustomerView = request()->filled('type') && (int) request('type') === User::TYPE_USER;
 
         $users = User::query()
