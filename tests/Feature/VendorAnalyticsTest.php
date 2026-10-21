@@ -84,6 +84,22 @@ test('admin vendor 360 uses the immutable ledger and excludes another vendor', f
     expect($response->json('data.vendor'))->not->toHaveKey('owner');
 });
 
+test('admin vendor analytics CSV export records scoped export metadata', function () {
+    $data = analyticsFixture();
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
+
+    $response = $this->get("/api/admin/vendors/{$data['both']->id}/analytics/export-summary?range=all")->assertOk();
+    expect($response->streamedContent())->toContain('Metric,Value');
+
+    $audit = \App\Models\AuditLog::query()->where('action', 'export.vendor_analytics_summary')->firstOrFail();
+    expect($audit->actor_user_id)->toBe($admin->id)
+        ->and($audit->entity_type)->toBe('Vendor')
+        ->and($audit->entity_id)->toBe($data['both']->id)
+        ->and($audit->new_values)->toMatchArray(['range' => 'all', 'format' => 'csv'])
+        ->and($audit->new_values['row_count'])->toBeGreaterThan(0);
+});
+
 test('admin vendor list exposes owner phone only on the authorized admin endpoint', function () {
     $vendor = Vendor::factory()->create();
     $vendor->user->update(['phone_number' => '+963944123456']);
@@ -220,11 +236,17 @@ test('syndicate exports a non-empty scoped pdf with safe headers', function () {
         ->toContain("vetora-vendor-report-{$data['both']->id}-")
         ->and(strlen($response->getContent()))->toBeGreaterThan(1000)
         ->and(substr($response->getContent(), 0, 4))->toBe('%PDF');
+
+    $audit = \App\Models\AuditLog::query()->where('action', 'export.vendor_analytics_report')->firstOrFail();
+    expect($audit->actor_user_id)->toBe($syndicate->user->id)
+        ->and($audit->entity_id)->toBe($data['both']->id)
+        ->and($audit->new_values)->toMatchArray(['range' => '30_days', 'locale' => 'en', 'domain' => Category::TYPE_AGRICULTURE, 'format' => 'pdf']);
 });
 
 test('admin exports Arabic and English Vendor PDFs across all Vendor domains', function () {
     $data = analyticsFixture();
-    Sanctum::actingAs(User::factory()->admin()->create());
+    $admin = User::factory()->admin()->create();
+    Sanctum::actingAs($admin);
 
     foreach (['ar', 'en'] as $locale) {
         $response = $this->get("/api/admin/vendors/{$data['both']->id}/report.pdf?range=30_days&locale={$locale}");
@@ -232,6 +254,12 @@ test('admin exports Arabic and English Vendor PDFs across all Vendor domains', f
         expect(strlen($response->getContent()))->toBeGreaterThan(1000)
             ->and(substr($response->getContent(), 0, 4))->toBe('%PDF');
     }
+
+    $audit = \App\Models\AuditLog::query()->where('action', 'export.vendor_analytics_report')->latest('id')->firstOrFail();
+    expect($audit->actor_user_id)->toBe($admin->id)
+        ->and($audit->entity_type)->toBe('Vendor')
+        ->and($audit->entity_id)->toBe($data['both']->id)
+        ->and($audit->new_values)->toMatchArray(['range' => '30_days', 'locale' => 'en', 'format' => 'pdf']);
 
     $period = ['key' => '30_days', 'from' => CarbonImmutable::today()->subDays(29)->startOfDay(), 'to' => CarbonImmutable::today()->endOfDay()];
     $report = app(SyndicateVendorPdfService::class)->render($data['both'], null, $period, 'en');
@@ -254,6 +282,11 @@ test('general syndicate PDF aggregates only the authenticated domain and selecte
     $englishResponse->assertOk()->assertHeader('content-type', 'application/pdf')
         ->assertHeader('x-vetora-report-domain', Category::TYPE_AGRICULTURE);
     expect(strlen($englishResponse->getContent()))->toBeGreaterThan(1000);
+
+    $audit = \App\Models\AuditLog::query()->where('action', 'export.syndicate_report')->latest('id')->firstOrFail();
+    expect($audit->actor_user_id)->toBe($syndicate->user->id)
+        ->and($audit->entity_id)->toBe($syndicate->id)
+        ->and($audit->new_values)->toMatchArray(['range' => '30_days', 'locale' => 'en', 'domain' => Category::TYPE_AGRICULTURE, 'format' => 'pdf']);
 
     $period = ['key' => '30_days', 'from' => CarbonImmutable::today()->subDays(29)->startOfDay(), 'to' => CarbonImmutable::today()->endOfDay()];
     $report = app(SyndicateReportService::class)->data($syndicate, $period);

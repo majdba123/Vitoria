@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SyndicateVendorReportRequest;
 use App\Http\Requests\VendorAnalyticsRequest;
 use App\Models\Vendor;
+use App\Services\AuditLogService;
 use App\Services\Import\CsvFile;
 use App\Services\Vendor\SyndicateVendorPdfService;
 use App\Services\Vendor\VendorAnalyticsService;
@@ -46,6 +47,11 @@ class VendorAnalyticsController extends Controller
     {
         $overview = $this->analytics->overview($vendor, $request->period());
         $rows = collect($overview['kpis'])->map(fn ($value, string $metric): array => [$metric, $value])->values()->all();
+        app(AuditLogService::class)->record($request->user(), 'export.vendor_analytics_summary', 'Vendor', $vendor->id, null, [
+            'range' => $request->period()['key'],
+            'row_count' => count($rows),
+            'format' => 'csv',
+        ]);
 
         return CsvFile::download('vendor_'.$vendor->id.'_sales_summary_'.now()->format('Y-m-d').'.csv', ['Metric', 'Value'], $rows);
     }
@@ -53,6 +59,11 @@ class VendorAnalyticsController extends Controller
     public function report(SyndicateVendorReportRequest $request, Vendor $vendor): Response
     {
         $report = $this->pdf->render($vendor, null, $request->period(), $request->validated('locale'));
+        app(AuditLogService::class)->record($request->user(), 'export.vendor_analytics_report', 'Vendor', $vendor->id, null, [
+            'range' => $request->period()['key'],
+            'locale' => $request->validated('locale'),
+            'format' => 'pdf',
+        ]);
 
         return response($report['bytes'], 200, [
             'Content-Type' => 'application/pdf',

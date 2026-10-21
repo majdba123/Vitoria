@@ -7,6 +7,7 @@ use App\Http\Requests\SyndicateVendorReportRequest;
 use App\Http\Requests\VendorMapRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Syndicate;
+use App\Services\AuditLogService;
 use App\Services\Syndicate\SyndicateDashboardService;
 use App\Services\Syndicate\SyndicateReportService;
 use App\Services\Vendor\VendorMapService;
@@ -137,6 +138,12 @@ class DashboardController extends Controller
             $request->period(),
             $request->validated('locale'),
         );
+        app(AuditLogService::class)->record($request->user(), 'export.syndicate_report', 'Syndicate', $this->syndicate($request)->id, null, [
+            'range' => $request->period()['key'],
+            'locale' => $request->validated('locale'),
+            'domain' => $this->syndicate($request)->type,
+            'format' => 'pdf',
+        ]);
 
         return response($report['bytes'], 200, [
             'Content-Type' => 'application/pdf',

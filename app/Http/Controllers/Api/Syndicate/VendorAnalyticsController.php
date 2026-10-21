@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SyndicateVendorReportRequest;
 use App\Http\Requests\VendorAnalyticsRequest;
 use App\Models\Vendor;
+use App\Services\AuditLogService;
 use App\Services\Syndicate\SyndicateDashboardService;
 use App\Services\Vendor\SyndicateVendorPdfService;
 use App\Services\Vendor\VendorAnalyticsService;
@@ -42,6 +43,12 @@ class VendorAnalyticsController extends Controller
     {
         $domain = $this->domain($request, $vendor);
         $report = $this->pdf->render($vendor, $request->user()->syndicate, $request->period(), $request->validated('locale'));
+        app(AuditLogService::class)->record($request->user(), 'export.vendor_analytics_report', 'Vendor', $vendor->id, null, [
+            'range' => $request->period()['key'],
+            'locale' => $request->validated('locale'),
+            'domain' => $domain,
+            'format' => 'pdf',
+        ]);
 
         return response($report['bytes'], 200, [
             'Content-Type' => 'application/pdf',
