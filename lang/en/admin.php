@@ -377,6 +377,9 @@ return [
     'edit_city_title' => 'Edit city',
     'edit_syndicate_title' => 'Edit syndicate',
     'edit_subcategory_title' => 'Edit subcategory',
+    'chart_period_3' => '3 mo',
+    'chart_period_6' => '6 mo',
+    'chart_period_12' => '12 mo',
     'chart_period_aria_label' => 'Chart period',
     'city_updated_success' => 'City updated successfully.',
 

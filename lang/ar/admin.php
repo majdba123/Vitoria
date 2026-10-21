@@ -377,6 +377,9 @@ return [
     'edit_city_title' => 'تعديل المدينة',
     'edit_syndicate_title' => 'تعديل النقابة',
     'edit_subcategory_title' => 'تعديل الفئة الفرعية',
+    'chart_period_3' => '3 أشهر',
+    'chart_period_6' => '6 أشهر',
+    'chart_period_12' => '12 شهرًا',
     'chart_period_aria_label' => 'فترة الرسم البياني',
     'city_updated_success' => 'تم تحديث المدينة بنجاح.',
 

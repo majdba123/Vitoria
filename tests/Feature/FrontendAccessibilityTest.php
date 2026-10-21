@@ -233,3 +233,54 @@ test('public storefront keeps localized footer copy and semantic category fallba
         expect(public_path("images/category-fallbacks/{$asset}.svg"))->toBeFile();
     }
 });
+
+test('dashboard charts mirror their axes for right-to-left pages', function () {
+    $hook = file_get_contents(resource_path('js/hooks/use-i18n.js'));
+    expect($hook)->toContain('export function useIsRtl()')->toContain("props.direction === 'rtl'");
+
+    foreach (['HorizontalRankingChart', 'CategoryCoverage'] as $chart) {
+        expect(file_get_contents(resource_path("js/Components/shared/dashboard/{$chart}.jsx")))
+            ->toContain('const isRtl = useIsRtl();')
+            ->toContain('reversed={isRtl}')
+            ->toContain("orientation={isRtl ? 'right' : 'left'}")
+            ->toContain("textAnchor={isRtl ? 'start' : 'end'}")
+            ->not->toContain('orientation="left"');
+    }
+
+    foreach ([
+        'js/Components/shared/dashboard/GrowthChart.jsx',
+        'js/Components/shared/dashboard/OrderTrendChart.jsx',
+        'js/Components/vendor360/Vendor360.jsx',
+        'js/Pages/Shipments/Index.jsx',
+        'js/Pages/Vendor/Dashboard.jsx',
+    ] as $path) {
+        expect(file_get_contents(resource_path($path)))->toContain('const isRtl = useIsRtl();')->toContain('reversed={isRtl}');
+    }
+});
+
+test('admin growth range labels are translated in both locales', function () {
+    expect(file_get_contents(resource_path('js/Pages/Admin/Dashboard.jsx')))
+        ->toContain('{admin[`chart_period_${months}`]}')
+        ->not->toContain('{months}mo');
+
+    foreach (['en', 'ar'] as $locale) {
+        app()->setLocale($locale);
+        foreach ([3, 6, 12] as $months) {
+            expect(__("admin.chart_period_{$months}"))->not->toBe("admin.chart_period_{$months}")->toContain((string) $months);
+        }
+    }
+});
+
+test('dashboard status links and ministry header avoid accent side borders and narrow-width overflow', function () {
+    $employee = file_get_contents(resource_path('js/Pages/Employee/Dashboard.jsx'));
+    $ministryHeader = file_get_contents(resource_path('js/Components/ministry/MinistryHeader.jsx'));
+
+    expect($employee)
+        ->not->toContain('border-s-2')
+        ->not->toContain('employee.open_tab')
+        ->toContain('<nav aria-label={employee.status_summary}')
+        ->toContain('rtl:rotate-180')
+        ->and($ministryHeader)
+        ->toContain('<SectorSwitcher className="hidden xl:flex" />')
+        ->toContain('xl:hidden');
+});

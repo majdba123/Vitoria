@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
-import { RefreshCw, Package, PackageCheck, Hourglass, CircleCheck, CircleX, PackageX } from 'lucide-react';
+import { RefreshCw, Package, PackageCheck, Hourglass, CircleCheck, CircleX, PackageX, ChevronRight } from 'lucide-react';
 import EmployeeLayout from '@/Layouts/EmployeeLayout';
 import { PageHeader } from '@/Components/shared/PageHeader';
 import { StatCard } from '@/Components/shared/dashboard/StatCard';
@@ -117,7 +117,7 @@ export default function EmployeeDashboard() {
                 }
             />
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 @3xl/main:grid-cols-3 @[95rem]/main:grid-cols-6">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 @3xl/main:grid-cols-3 @[95rem]/main:grid-cols-6">
                 <StatCard label={employee.total_products} value={stats.total} icon={Package} status={status} onRetry={load} />
                 <StatCard label={employee.active_products_label} value={stats.active} icon={PackageCheck} status={status} onRetry={load} />
                 <StatCard label={employee.approved_products} value={stats.approved} icon={CircleCheck} status={status} onRetry={load} tone="success" />
@@ -126,26 +126,21 @@ export default function EmployeeDashboard() {
                 <StatCard label={employee.inactive_products_label} value={stats.inactive} icon={PackageX} status={status} onRetry={load} />
             </div>
 
-            <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
+            <nav aria-label={employee.status_summary} className="grid grid-cols-1 gap-2 min-[480px]:grid-cols-2 xl:grid-cols-4">
                 {[
-                    { href: route('employee.products.index'), label: employee.all_products, tone: 'border-s-primary' },
-                    { href: route('employee.products.index', { status: 'approved' }), label: employee.active_products_tab, tone: 'border-s-[var(--color-success-500)]' },
-                    { href: route('employee.products.index', { status: 'pending' }), label: employee.pending_products, tone: 'border-s-[var(--color-warning-500)]' },
-                    { href: route('employee.products.index', { status: 'rejected' }), label: employee.rejected_products, tone: 'border-s-[var(--color-danger-500)]' },
+                    { href: route('employee.products.index'), label: employee.all_products, count: stats.total, dot: 'bg-primary' },
+                    { href: route('employee.products.index', { status: 'approved' }), label: employee.active_products_tab, count: stats.approved, dot: 'bg-[var(--color-success-500)]' },
+                    { href: route('employee.products.index', { status: 'pending' }), label: employee.pending_products, count: stats.pending, dot: 'bg-[var(--color-warning-500)]' },
+                    { href: route('employee.products.index', { status: 'rejected' }), label: employee.rejected_products, count: stats.rejected, dot: 'bg-[var(--color-danger-500)]' },
                 ].map((item) => (
-                    <Link key={item.label} href={item.href} className={`flex items-center justify-between gap-4 rounded-md border border-border border-s-2 ${item.tone} bg-card px-4 py-4 transition-colors hover:bg-accent/40`}>
-                        <div>
-                            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-muted-foreground">{employee.status_summary}</p>
-                            {/* Not a document heading — this is a visual tile label inside a
-                                grid of link-cards, same as CardTitle elsewhere on this page
-                                (which renders a <div>, not an <h*>). Was a stray <h3> with no
-                                preceding <h2>, which axe-core flagged as an invalid heading jump. */}
-                            <p className="mt-2 text-base font-bold text-foreground">{item.label}</p>
-                        </div>
-                        <span className="rounded-full bg-accent px-2.5 py-1 text-[11px] font-bold text-accent-foreground">{employee.open_tab}</span>
+                    <Link key={item.label} href={item.href} className="group flex min-h-11 items-center gap-2.5 rounded-md border border-border bg-card px-3.5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:border-primary/50 hover:bg-accent/40">
+                        <span className={`size-2 shrink-0 rounded-full ${item.dot}`} aria-hidden="true" />
+                        <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                        {status === 'ready' && <span className="tabular-nums text-muted-foreground">{item.count}</span>}
+                        <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" aria-hidden="true" />
                     </Link>
                 ))}
-            </div>
+            </nav>
 
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.4fr_1fr]">
                 <Card className="border-border/80 shadow-none">

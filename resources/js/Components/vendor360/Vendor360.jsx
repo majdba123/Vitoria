@@ -13,7 +13,7 @@ import { HorizontalRankingChart } from '@/Components/shared/dashboard/Horizontal
 import { Input } from '@/Components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
-import { useI18n, useLocale } from '@/hooks/use-i18n';
+import { useI18n, useIsRtl, useLocale } from '@/hooks/use-i18n';
 import { formatCurrency, formatDate as formatDateShared, formatNumber } from '@/lib/date-time';
 import { translatedStatus } from '@/lib/translated-enum';
 
@@ -127,7 +127,8 @@ function KpiGrid({ values = {}, labels, locale, loading }) {
 function FinanceStrip({ values = {}, labels, locale, title }) { const keys = ['gross_sales', 'commission', 'refunds', 'adjustments', 'net_earnings', 'settled', 'outstanding'].filter((key) => values?.[key] !== undefined); return keys.length ? <section aria-labelledby="finance-summary-title"><h2 id="finance-summary-title" className="mb-2 text-sm font-bold text-foreground">{title}</h2><div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7">{keys.map((key) => <div key={key} className="bg-muted/30 px-4 py-3"><p className="text-xs text-muted-foreground">{labels[key]}</p><p className="mt-1 font-bold tabular-nums">{formatValue(values[key], true, locale)}</p></div>)}</div></section> : null; }
 
 function TrendCard({ rows, title, empty, locale, ordersLabel }) {
-    return <Card className="border-border/80 shadow-none"><CardHeader><CardTitle className="text-base">{title}</CardTitle></CardHeader><CardContent>{rows.length ? <><ChartContainer config={{ sales: { label: title, color: 'var(--chart-1)' } }} className="h-64 w-full aspect-auto"><AreaChart data={rows} margin={{ left: 4, right: 8 }}><CartesianGrid vertical={false} /><XAxis dataKey="date" tickLine={false} axisLine={false} minTickGap={24} /><YAxis hide /><ChartTooltip content={<ChartTooltipContent formatter={(value) => formatValue(value, true, locale)} />} /><Area type="monotone" dataKey="sales" stroke="var(--color-sales)" fill="var(--color-sales)" fillOpacity={0.16} isAnimationActive={false} /></AreaChart></ChartContainer><DataSummary rows={rows} locale={locale} ordersLabel={ordersLabel} /></> : <Empty text={empty} />}</CardContent></Card>;
+    const isRtl = useIsRtl();
+    return <Card className="border-border/80 shadow-none"><CardHeader><CardTitle className="text-base">{title}</CardTitle></CardHeader><CardContent>{rows.length ? <><ChartContainer config={{ sales: { label: title, color: 'var(--chart-1)' } }} className="h-64 w-full aspect-auto"><AreaChart data={rows} margin={{ left: 4, right: 8 }}><CartesianGrid vertical={false} /><XAxis dataKey="date" reversed={isRtl} tickLine={false} axisLine={false} minTickGap={24} /><YAxis hide /><ChartTooltip content={<ChartTooltipContent formatter={(value) => formatValue(value, true, locale)} />} /><Area type="monotone" dataKey="sales" stroke="var(--color-sales)" fill="var(--color-sales)" fillOpacity={0.16} isAnimationActive={false} /></AreaChart></ChartContainer><DataSummary rows={rows} locale={locale} ordersLabel={ordersLabel} /></> : <Empty text={empty} />}</CardContent></Card>;
 }
 
 function DataSummary({ rows, locale, ordersLabel }) { const sales = rows.reduce((sum, row) => sum + Number(row.sales || 0), 0); const orders = rows.reduce((sum, row) => sum + Number(row.orders || 0), 0); return <p className="mt-3 text-sm text-muted-foreground">{formatValue(sales, true, locale)} · {formatNumber(orders, locale)} {ordersLabel}</p>; }

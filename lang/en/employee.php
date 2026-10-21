@@ -36,7 +36,6 @@ return [
     'active_products_label' => 'Active Products',
     'inactive_products_label' => 'Inactive Products',
     'status_summary' => 'Status Summary',
-    'open_tab' => 'Open Tab',
     'back_dashboard' => 'Back to Dashboard',
     'back_products' => 'Back to Products',
     'all_products' => 'All Products',
