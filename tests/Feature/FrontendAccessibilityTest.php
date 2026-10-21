@@ -28,6 +28,14 @@ test('homepage renders successfully for the mobile navigation to mount on', func
         ->assertInertia(fn (Assert $page) => $page->component('Home'));
 });
 
+test('product review rating controls expose their selected state', function () {
+    $source = file_get_contents(resource_path('js/Pages/Products/Show.jsx'));
+
+    expect($source)
+        ->toContain('aria-pressed={rating === value}')
+        ->toContain("aria-label={(products.review_star_label ?? '').replace(':count', String(value))}");
+});
+
 test('multipart admin forms preserve array field semantics', function () {
     $source = file_get_contents(resource_path('js/hooks/use-admin-form.js'));
 

@@ -95,6 +95,7 @@ function ReviewForm({ productId, onSubmitted }) {
                                 key={value}
                                 type="button"
                                 onClick={() => setRating(value)}
+                                aria-pressed={rating === value}
                                 aria-label={(products.review_star_label ?? '').replace(':count', String(value))}
                                 className="rounded p-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
                             >
