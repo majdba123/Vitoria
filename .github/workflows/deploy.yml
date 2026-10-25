@@ -144,7 +144,11 @@ jobs:
 
             systemctl reload php8.3-fpm
             systemctl reload nginx
-            supervisorctl restart msz-reverb
+            # Reverb is a non-blocking realtime service: a failed restart must not
+            # abort the deployment (the app is brought back up by the EXIT trap).
+            if ! supervisorctl restart msz-reverb; then
+              echo "WARNING: msz-reverb failed to restart; realtime broadcasting may be down"
+            fi
 
             php artisan up
 
