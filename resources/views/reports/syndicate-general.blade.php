@@ -40,18 +40,22 @@
 </head>
 <body>
 @php
+    $scope = $scope ?? \App\Support\DomainScope::forSyndicate($syndicate);
+    $reportTitle = $reportTitle ?? null;
+    $reportOrganization = $reportOrganization ?? $syndicate->name;
     $locale = $isArabic ? 'ar' : 'en';
     $l = trans('reports.general.labels', [], $locale);
     $values = trans('reports.values', [], $locale);
+    $scopeValueKey = $data['scope']['domain'] === 'combined' ? 'both' : $data['scope']['domain'];
     $currencySymbol = trans('reports.currency', [], $locale);
     $money = fn ($value) => $isArabic ? number_format((float) $value, 2).' '.$currencySymbol : $currencySymbol.' '.number_format((float) $value, 2);
     $period = $data['period'];
-    $logoPath = $syndicate->logo ? \Illuminate\Support\Facades\Storage::disk('public')->path($syndicate->logo) : null;
+    $logoPath = $scope->syndicate?->logo ? \Illuminate\Support\Facades\Storage::disk('public')->path($scope->syndicate->logo) : null;
     if (! $logoPath || ! is_file($logoPath)) {
         $logoPath = public_path('images/vetora-logo-transparent.png');
     }
 @endphp
-<table class="header"><tr><td width="16%"><img src="{{ $logoPath }}" style="max-width:72px;max-height:52px;width:auto;height:auto" alt="{{ $syndicate->name }}"></td><td width="84%"><h1>{{ $l['title'] }}</h1><div class="muted dynamic" dir="auto">{{ $syndicate->name }} — {{ $values[$data['scope']['domain']] ?? $l['not_available'] }}</div></td></tr></table>
+<table class="header"><tr><td width="16%"><img src="{{ $logoPath }}" style="max-width:72px;max-height:52px;width:auto;height:auto" alt="Vetora"></td><td width="84%"><h1>{{ $reportTitle ?? $l['title'] }}</h1><div class="muted dynamic" dir="auto">{{ $reportOrganization }} — {{ $values[$scopeValueKey] ?? $l['not_available'] }}</div></td></tr></table>
 <table class="meta"><tr><td class="lbl">{{ $l['period'] }}</td><td class="val"><bdi dir="ltr">{{ $period['from'] ?? $l['not_available'] }} — {{ $period['to'] ?? $l['not_available'] }}</bdi></td><td class="lbl">{{ $l['generated'] }}</td><td class="val"><bdi dir="ltr">{{ $data['generated_at']->timezone(config('app.timezone'))->format('Y-m-d H:i') }}</bdi></td></tr></table>
 <table class="kpis"><tr><td><p class="lbl">{{ $l['vendors'] }}</p><strong>{{ $data['kpis']['vendors'] }}</strong></td><td><p class="lbl">{{ $l['active'] }}</p><strong>{{ $data['kpis']['active_vendors'] }}</strong></td><td><p class="lbl">{{ $l['orders'] }}</p><strong>{{ $data['kpis']['completed_orders'] }}</strong></td></tr><tr><td><p class="lbl">{{ $l['units'] }}</p><strong>{{ $data['kpis']['units_sold'] }}</strong></td><td><p class="lbl">{{ $l['sales'] }}</p><strong>{{ $money($data['kpis']['gross_sales']) }}</strong></td><td><p class="lbl">{{ $l['refunds'] }}</p><strong class="{{ (float) $data['kpis']['refunds'] > 0 ? 'negative' : '' }}">{{ $money($data['kpis']['refunds']) }}</strong></td></tr></table>
 
