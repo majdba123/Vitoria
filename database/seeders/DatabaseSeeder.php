@@ -36,19 +36,8 @@ class DatabaseSeeder extends Seeder
             $admin->adminRoles()->syncWithoutDetaching([$superAdminRoleId]);
         }
 
-        User::query()->updateOrCreate(
-            ['phone_number' => '0935000555'],
-            [
-                'name' => 'وزارة الزراعة',
-                'national_id' => '5000000001',
-                'type' => User::TYPE_MINISTRY,
-                'email' => 'ministry@vetora.test',
-                'timezone' => 'Asia/Damascus',
-                'password' => 'password',
-            ],
-        );
-
         $this->call([
+            MinistryTestAccountSeeder::class,
             ArabicDemoDatabaseSeeder::class,
         ]);
     }
