@@ -12,6 +12,7 @@ use App\Models\Vendor;
 use App\Services\Syndicate\SyndicateReportService;
 use App\Support\DomainScope;
 use Database\Seeders\DatabaseSeeder;
+use Database\Seeders\MinistryTestAccountSeeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -84,6 +85,17 @@ it('seeds a Ministry test account that can sign in to the Ministry dashboard', f
 
     $this->seed(DatabaseSeeder::class);
     $this->seed(DatabaseSeeder::class);
+
+    expect(User::query()->where('type', User::TYPE_MINISTRY)->where('phone_number', '0935000555')->count())->toBe(1);
+
+    $this->postJson('/api/auth/login', ['phone_number' => '0935000555', 'password' => 'password'])
+        ->assertOk()
+        ->assertJsonPath('data.redirect_url', route('ministry.dashboard'));
+});
+
+it('keeps one Ministry test account when the deploy seeder re-runs', function () {
+    $this->seed(MinistryTestAccountSeeder::class);
+    $this->seed(MinistryTestAccountSeeder::class);
 
     expect(User::query()->where('type', User::TYPE_MINISTRY)->where('phone_number', '0935000555')->count())->toBe(1);
 
