@@ -11,7 +11,9 @@ use App\Models\User;
 use App\Models\Vendor;
 use App\Services\Syndicate\SyndicateReportService;
 use App\Support\DomainScope;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 
@@ -75,6 +77,19 @@ it('redirects a Ministry account to the Ministry dashboard after login', functio
         ->assertJsonPath('data.redirect_url', route('ministry.dashboard'));
 
     expect($user->redirectAfterLogin()->getTargetUrl())->toBe(route('ministry.dashboard'));
+});
+
+it('seeds a Ministry test account that can sign in to the Ministry dashboard', function () {
+    Storage::fake('public');
+
+    $this->seed(DatabaseSeeder::class);
+    $this->seed(DatabaseSeeder::class);
+
+    expect(User::query()->where('type', User::TYPE_MINISTRY)->where('phone_number', '0935000555')->count())->toBe(1);
+
+    $this->postJson('/api/auth/login', ['phone_number' => '0935000555', 'password' => 'password'])
+        ->assertOk()
+        ->assertJsonPath('data.redirect_url', route('ministry.dashboard'));
 });
 
 it('renders the Ministry pages for the Ministry and refuses every other role', function () {
