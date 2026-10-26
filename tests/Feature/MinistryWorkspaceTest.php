@@ -104,6 +104,26 @@ it('keeps one Ministry test account when the deploy seeder re-runs', function ()
         ->assertJsonPath('data.redirect_url', route('ministry.dashboard'));
 });
 
+it('never turns an existing non-Ministry user into the Ministry test account', function () {
+    $customer = User::factory()->create(['type' => User::TYPE_USER, 'phone_number' => '0935000555', 'password' => 'Customer-Pass-2026']);
+
+    $this->seed(MinistryTestAccountSeeder::class);
+
+    $customer->refresh();
+
+    expect($customer->type)->toBe(User::TYPE_USER)
+        ->and(Hash::check('Customer-Pass-2026', $customer->password))->toBeTrue()
+        ->and(User::query()->where('type', User::TYPE_MINISTRY)->exists())->toBeFalse();
+});
+
+it('skips the Ministry test account instead of failing when its identity is taken', function () {
+    User::factory()->create(['national_id' => '5000000001']);
+
+    $this->seed(MinistryTestAccountSeeder::class);
+
+    expect(User::query()->where('phone_number', '0935000555')->exists())->toBeFalse();
+});
+
 it('renders the Ministry pages for the Ministry and refuses every other role', function () {
     $ministry = ministryUser();
 
