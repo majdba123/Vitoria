@@ -163,11 +163,11 @@ export default function ProductsIndex() {
                     </div>
 
                     <div className="catalog-toolbar">
-                        <button type="button" onClick={() => setMobileOpen((v) => !v)} className="catalog-filter-toggle" aria-expanded={mobileOpen}>
-                            <span>{nav.apply_filters}</span>
+                        <button type="button" onClick={() => setMobileOpen((v) => !v)} className="catalog-filter-toggle" aria-expanded={mobileOpen} aria-controls="catalog-filter-panel">
+                            <span>{nav.filters}</span>
                             <SlidersHorizontal className="h-4 w-4" />
                         </button>
-                        <div className="catalog-filter-drawer" data-mobile-collapsed={mobileOpen ? 'false' : 'true'}>
+                        <div id="catalog-filter-panel" className="catalog-filter-drawer" data-mobile-collapsed={mobileOpen ? 'false' : 'true'}>
                             <div className="min-w-0">
                                 <label htmlFor="f-search" className="sr-only">{nav.search_products}</label>
                                 <input
