@@ -7,7 +7,6 @@ import { ThemeToggle } from '@/Components/workspace/ThemeToggle';
 import { LanguageSwitcher } from '@/Components/workspace/LanguageSwitcher';
 import { NotificationBell } from '@/Components/workspace/NotificationBell';
 import { LogoutButton } from '@/Components/workspace/LogoutButton';
-import { StatusBadge } from '@/Components/shared/dashboard/ListRow';
 import { SectorSwitcher } from '@/Components/ministry/SectorSwitcher';
 import { useI18n } from '@/hooks/use-i18n';
 
@@ -29,7 +28,6 @@ export function MinistryHeader({ title }) {
                 <SectorSwitcher className="hidden xl:flex" />
 
                 <div className="flex items-center gap-1.5">
-                    <span className="hidden xl:inline-flex"><StatusBadge tone="brand">{ministry.read_only}</StatusBadge></span>
                     <Button asChild variant="ghost" size="icon" className="hidden size-11 sm:inline-flex" aria-label={nav.home} title={nav.home}>
                         <Link href={route('home')}>
                             <Home className="size-4" />

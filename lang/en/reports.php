@@ -90,5 +90,16 @@ return [
         'admin' => 'Admin scope',
         'all_vendor_activity' => 'All vendor activity',
     ],
+    'verify' => [
+        'page_title' => 'Report verification',
+        'badge' => 'Verified report',
+        'scope' => 'Scope',
+        'syndicate_report' => 'Syndicate report',
+        'period' => 'Report period',
+        'generated' => 'Generated at',
+        'reference' => 'Report reference',
+        'notice' => 'This page confirms the authenticity of this Vetora-issued report. No sensitive business data is shown here.',
+        'not_available' => 'Not available',
+    ],
     'currency' => 'SYP',
 ];

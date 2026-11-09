@@ -21,12 +21,12 @@
         .meta td { padding:5px 9px; vertical-align:top; font-size:10px; }
         .meta td.lbl { width:17%; color:#64748b; font-weight:700; }
         .meta td.val { width:33%; }
-        .table { page-break-inside:auto; margin:3px 0 10px; }
+        .table { page-break-inside:auto; margin:3px 0 10px; table-layout:fixed; }
         .table thead { display:table-header-group; }
         .table tr { page-break-inside:avoid; }
-        .table th { background:#173f35; color:#fff; font-size:10px; font-weight:700; padding:6px 9px; text-align:{{ $isArabic ? 'right' : 'left' }}; }
+        .table th { background:#173f35; color:#fff; font-size:10px; font-weight:700; padding:6px 9px; text-align:{{ $isArabic ? 'right' : 'left' }}; word-wrap:break-word; overflow-wrap:break-word; }
         .table th.num { text-align:right; }
-        .table td { border-bottom:1px solid #e3e9ee; padding:5px 9px; vertical-align:middle; font-size:10px; }
+        .table td { border-bottom:1px solid #e3e9ee; padding:6px 9px; vertical-align:middle; font-size:10px; word-wrap:break-word; overflow-wrap:break-word; }
         .table tbody tr:nth-child(even) td { background:#f6f9f8; }
         /* Bare figures and ISO dates are LTR runs. Money is NOT: forcing it LTR
            reorders "1,234.00 ل.س" against the identically-formatted KPI figures,
@@ -54,8 +54,18 @@
     if (! $logoPath || ! is_file($logoPath)) {
         $logoPath = public_path('images/vetora-logo-transparent.png');
     }
+    $headerLogoPath = $logoPath;
+    $reportReference = $reportReference ?? null;
+    $verifyUrl = $verifyUrl ?? null;
 @endphp
-<table class="header"><tr><td width="16%"><img src="{{ $logoPath }}" style="max-width:72px;max-height:52px;width:auto;height:auto" alt="Vetora"></td><td width="84%"><h1>{{ $reportTitle ?? $l['title'] }}</h1><div class="muted dynamic" dir="auto">{{ $reportOrganization }} — {{ $values[$scopeValueKey] ?? $l['not_available'] }}</div></td></tr></table>
+{{-- Wrapped in dir="ltr" so the logo and QR code stay physically pinned to
+     the left/right edges regardless of document language; the title cell
+     restores the correct reading alignment with an explicit text-align. --}}
+<table class="header" dir="ltr"><tr>
+    <td width="18%"><img src="{{ $headerLogoPath }}" style="max-width:70px;max-height:50px;width:auto;height:auto" alt="Logo"></td>
+    <td width="52%" style="text-align:{{ $isArabic ? 'right' : 'left' }}"><h1 dir="auto">{{ $reportTitle ?? $l['title'] }}</h1><div class="muted dynamic" dir="auto">{{ $reportOrganization }} — {{ $values[$scopeValueKey] ?? $l['not_available'] }}</div></td>
+    <td width="30%" style="text-align:center">@if ($verifyUrl)<barcode code="{{ $verifyUrl }}" type="QR" size="0.8" error="M" /><div class="muted" dir="ltr" style="font-size:7.5px;margin-top:2px">{{ $reportReference }}</div>@endif</td>
+</tr></table>
 <table class="meta"><tr><td class="lbl">{{ $l['period'] }}</td><td class="val"><bdi dir="ltr">{{ $period['from'] ?? $l['not_available'] }} — {{ $period['to'] ?? $l['not_available'] }}</bdi></td><td class="lbl">{{ $l['generated'] }}</td><td class="val"><bdi dir="ltr">{{ $data['generated_at']->timezone(config('app.timezone'))->format('Y-m-d H:i') }}</bdi></td></tr></table>
 <table class="kpis"><tr><td><p class="lbl">{{ $l['vendors'] }}</p><strong>{{ $data['kpis']['vendors'] }}</strong></td><td><p class="lbl">{{ $l['active'] }}</p><strong>{{ $data['kpis']['active_vendors'] }}</strong></td><td><p class="lbl">{{ $l['orders'] }}</p><strong>{{ $data['kpis']['completed_orders'] }}</strong></td></tr><tr><td><p class="lbl">{{ $l['units'] }}</p><strong>{{ $data['kpis']['units_sold'] }}</strong></td><td><p class="lbl">{{ $l['sales'] }}</p><strong>{{ $money($data['kpis']['gross_sales']) }}</strong></td><td><p class="lbl">{{ $l['refunds'] }}</p><strong class="{{ (float) $data['kpis']['refunds'] > 0 ? 'negative' : '' }}">{{ $money($data['kpis']['refunds']) }}</strong></td></tr></table>
 
@@ -73,5 +83,6 @@
 
 <h2>{{ $l['geography'] }}</h2>
 <table class="table"><thead><tr><th style="width:40%">{{ $l['city'] }}</th><th class="num" style="width:25%">{{ $l['vendors'] }}</th><th class="num" style="width:35%">{{ $l['sales'] }}</th></tr></thead><tbody>@forelse($data['geography'] as $row)<tr><td class="dynamic" dir="auto">{{ $row->city ?? '—' }}</td><td class="number">{{ $row->vendors }}</td><td class="money">{{ $money($row->gross_sales) }}</td></tr>@empty<tr><td colspan="3">—</td></tr>@endforelse</tbody></table>
+
 </body>
 </html>

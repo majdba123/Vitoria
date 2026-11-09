@@ -14,7 +14,6 @@ return [
     'combined_note' => 'All sectors counts every vendor, product and order once, even when it spans agriculture and veterinary.',
     'sector_comparison_title' => 'Sector comparison',
     'sector_comparison_copy' => 'Agriculture and veterinary side by side. A record active in both sectors appears in each column, so the columns can add up to more than the combined total.',
-    'read_only' => 'Read-only',
     'notifications' => 'Notifications',
     'report_title' => 'Ministry sector report',
     'report_organization' => 'Ministry of Agriculture and Veterinary Affairs',
