@@ -9,6 +9,7 @@ use App\Support\DomainScope;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use Mpdf\Output\Destination;
@@ -35,14 +36,16 @@ class SyndicateReportService
         $pdf = new Mpdf([
             'mode' => 'utf-8', 'format' => 'A4', 'directionality' => $isArabic ? 'rtl' : 'ltr',
             'default_font' => 'dejavusans', 'autoScriptToLang' => true, 'autoLangToFont' => true,
-            'tempDir' => $temporaryDirectory, 'margin_top' => 18, 'margin_bottom' => 18,
+            'tempDir' => $temporaryDirectory, 'margin_top' => 18, 'margin_bottom' => 18, 'margin_footer' => 10,
         ]);
-        $pdf->SetHTMLFooter('<div dir="ltr" style="direction:ltr;text-align:center;color:#64748b;font-size:9px">{PAGENO} / {nbpg}</div>');
+        $pdf->SetHTMLFooter($this->footerHtml());
         $reportTitle = $scope->syndicate ? null : __('ministry.report_title', [], $locale);
         $reportOrganization = $scope->syndicate?->name ?? __('ministry.report_organization', [], $locale);
-        $pdf->WriteHTML(view('reports.syndicate-general', compact('data', 'scope', 'isArabic', 'reportTitle', 'reportOrganization'))->render(), HTMLParserMode::DEFAULT_MODE);
         $from = $data['period']['from'] ?? 'all';
         $to = $data['period']['to'] ?? now()->toDateString();
+        $reportReference = $this->reportReference($scope, $from, $to, $data['generated_at']);
+        $verifyUrl = $this->verifyUrl($scope, $from, $to, $data['generated_at'], $reportReference, $locale);
+        $pdf->WriteHTML(view('reports.syndicate-general', compact('data', 'scope', 'isArabic', 'reportTitle', 'reportOrganization', 'reportReference', 'verifyUrl'))->render(), HTMLParserMode::DEFAULT_MODE);
 
         return [
             'bytes' => $pdf->Output('', Destination::STRING_RETURN),
@@ -51,6 +54,49 @@ class SyndicateReportService
                 : "vetora-ministry-{$scope->key}-report-{$from}-{$to}.pdf",
             'data' => $data,
         ];
+    }
+
+    /**
+     * A stable, non-reversible report reference: anyone holding the PDF can
+     * quote it, but it discloses nothing about report contents and can't be
+     * used to enumerate other reports (it isn't a sequential or guessable id).
+     */
+    private function reportReference(DomainScope $scope, string $from, string $to, \Carbon\CarbonInterface $generatedAt): string
+    {
+        $seed = implode('|', [$scope->syndicate?->id ?? $scope->key, $from, $to, $generatedAt->timestamp, config('app.key')]);
+
+        return strtoupper(substr(hash('sha256', $seed), 0, 10));
+    }
+
+    /**
+     * Signed verification link for the QR code / footer link. `signed`
+     * middleware on the route rejects the request outright if any of these
+     * query parameters is altered, so there is nothing further to validate
+     * once the request reaches ReportVerificationController.
+     */
+    private function verifyUrl(DomainScope $scope, string $from, string $to, \Carbon\CarbonInterface $generatedAt, string $reference, string $locale): string
+    {
+        return URL::signedRoute('reports.verify', array_filter([
+            'syndicate' => $scope->syndicate?->id,
+            'scope' => $scope->syndicate ? null : $scope->key,
+            'from' => $from,
+            'to' => $to,
+            'generated_at' => $generatedAt->timestamp,
+            'ref' => $reference,
+            'locale' => $locale,
+        ], static fn ($value) => $value !== null));
+    }
+
+    /**
+     * Footer row: the existing Vetora mark and the page counter, RTL-safe
+     * via the dir="ltr" wrapper.
+     */
+    private function footerHtml(): string
+    {
+        return '<table dir="ltr" style="width:100%;border-top:1px solid #e3e9ee;padding-top:4px;border-collapse:collapse"><tr>'
+            .'<td style="width:50%"><img src="'.public_path('images/vetora-logo-transparent.png').'" style="max-height:20px;max-width:64px;width:auto;height:auto"></td>'
+            .'<td style="width:50%"><div dir="ltr" style="direction:ltr;text-align:right;color:#64748b;font-size:9px">{PAGENO} / {nbpg}</div></td>'
+            .'</tr></table>';
     }
 
     /** @param array{key: string, from: CarbonImmutable|null, to: CarbonImmutable|null} $period */

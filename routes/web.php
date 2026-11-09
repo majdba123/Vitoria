@@ -18,6 +18,14 @@ Route::get('/contact', fn () => Inertia::render('Contact'))->name('contact');
 Route::get('/sitemap.xml', [\App\Http\Controllers\Api\SeoController::class, 'sitemap'])->middleware('throttle:public.browse')->name('sitemap');
 Route::get('/robots.txt', [\App\Http\Controllers\Api\SeoController::class, 'robots'])->middleware('throttle:public.browse')->name('robots');
 
+// Public landing page for the QR code / verification link printed on every
+// generated syndicate and Ministry PDF report (see SyndicateReportService).
+// `signed` rejects any request whose query string was altered, so a forged
+// or tampered link fails before it ever reaches the controller.
+Route::get('/reports/verify', [\App\Http\Controllers\ReportVerificationController::class, 'show'])
+    ->middleware(['throttle:public.browse', 'signed'])
+    ->name('reports.verify');
+
 Route::get('/pages/{slug}', function (string $slug) {
     $page = \App\Models\Page::query()->where('slug', $slug)->where('is_published', true)->first();
 

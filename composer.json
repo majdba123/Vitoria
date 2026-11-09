@@ -17,6 +17,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "mpdf/mpdf": "^8.3",
+        "mpdf/qrcode": "^1.1",
         "predis/predis": "^3.3",
         "spatie/laravel-backup": "^9.3",
         "tightenco/ziggy": "^2.6"
