@@ -52,20 +52,21 @@
     $currencySymbol = trans('reports.currency', [], $locale);
     $money = fn ($value) => $isArabic ? number_format((float) $value, 2).' '.$currencySymbol : $currencySymbol.' '.number_format((float) $value, 2);
     $period = $data['period'];
-    $logoPath = $scope->syndicate?->logo ? \Illuminate\Support\Facades\Storage::disk('public')->path($scope->syndicate->logo) : null;
-    if (! $logoPath || ! is_file($logoPath)) {
-        $logoPath = public_path('images/vetora-logo-transparent.png');
+    $headerLogoPath = $scope->syndicate?->logo ? \Illuminate\Support\Facades\Storage::disk('public')->path($scope->syndicate->logo) : null;
+    if ($headerLogoPath && ! is_file($headerLogoPath)) {
+        $headerLogoPath = null;
     }
-    $headerLogoPath = $logoPath;
     $reportReference = $reportReference ?? null;
     $verifyUrl = $verifyUrl ?? null;
 @endphp
 {{-- Wrapped in dir="ltr" so the logo and QR code stay physically pinned to
      the left/right edges regardless of document language; the title cell
-     restores the correct reading alignment with an explicit text-align. --}}
+     restores the correct reading alignment with an explicit text-align.
+     Only a syndicate's own uploaded logo is shown: the Ministry report carries
+     no logos (client decision, option B). --}}
 <table class="header" dir="ltr"><tr>
-    <td width="18%"><img src="{{ $headerLogoPath }}" style="max-width:70px;max-height:50px;width:auto;height:auto" alt="Logo"></td>
-    <td width="52%" style="text-align:{{ $isArabic ? 'right' : 'left' }}"><h1 dir="auto">{{ $reportTitle ?? $l['title'] }}</h1><div class="muted dynamic" dir="auto">{{ $reportOrganization }} — {{ $values[$scopeValueKey] ?? $l['not_available'] }}</div></td>
+    @if ($headerLogoPath)<td width="18%"><img src="{{ $headerLogoPath }}" style="max-width:70px;max-height:50px;width:auto;height:auto" alt="Logo"></td>@endif
+    <td width="{{ $headerLogoPath ? '52%' : '70%' }}" style="text-align:{{ $isArabic ? 'right' : 'left' }}"><h1 dir="auto">{{ $reportTitle ?? $l['title'] }}</h1><div class="muted dynamic" dir="auto">{{ $reportOrganization }} — {{ $values[$scopeValueKey] ?? $l['not_available'] }}</div></td>
     <td width="30%" style="text-align:center">@if ($verifyUrl)<barcode code="{{ $verifyUrl }}" type="QR" size="0.8" error="M" /><div class="muted" dir="ltr" style="font-size:7.5px;margin-top:2px">{{ $reportReference }}</div>@endif</td>
 </tr></table>
 <table class="meta"><tr><td class="lbl">{{ $l['period'] }}</td><td class="val"><bdi dir="ltr">{{ $period['from'] ?? $l['not_available'] }} — {{ $period['to'] ?? $l['not_available'] }}</bdi></td><td class="lbl">{{ $l['generated'] }}</td><td class="val"><bdi dir="ltr">{{ $data['generated_at']->timezone(config('app.timezone'))->format('Y-m-d H:i') }}</bdi></td></tr></table>

@@ -163,3 +163,13 @@ it('formats the English date picker with en-US calendar labels independent of pa
         ->and($picker)->toContain('labels.previous_month')
         ->and($picker)->not->toContain('toISOString');
 });
+
+it('prints no logos on the Ministry report header or footer', function () {
+    $html = renderReportCapturingTemplate(DomainScope::forSector(DomainScope::COMBINED), 'ar')['html'];
+    $footer = (new ReflectionMethod(SyndicateReportService::class, 'footerHtml'))->invoke(app(SyndicateReportService::class));
+
+    expect($html)->not->toContain('<img')
+        ->and($html)->toContain('<barcode code="')
+        ->and($footer)->not->toContain('<img')
+        ->and($footer)->toContain('{PAGENO} / {nbpg}');
+});
