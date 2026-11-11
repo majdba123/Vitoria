@@ -2425,6 +2425,13 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
+        .reveal-up,
+        .reveal-stagger > * {
+            opacity: 1 !important;
+            transform: none !important;
+            transition: none !important;
+        }
+
         .storefront-product-image,
         .storefront-thumb-button,
         .storefront-category-card,

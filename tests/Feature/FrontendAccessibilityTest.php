@@ -28,6 +28,18 @@ test('homepage renders successfully for the mobile navigation to mount on', func
         ->assertInertia(fn (Assert $page) => $page->component('Home'));
 });
 
+test('homepage hero playback and reveal effects respect reduced motion', function () {
+    $home = file_get_contents(resource_path('js/Pages/Home.jsx'));
+    $styles = file_get_contents(resource_path('css/app.css'));
+
+    expect($home)
+        ->toContain("window.matchMedia('(prefers-reduced-motion: reduce)')")
+        ->toContain('motionQuery.matches || reducedMotion || document.hidden')
+        ->toContain("motionQuery.addEventListener('change', tryPlay)")
+        ->not->toContain('autoPlay');
+
+    expect(preg_match('/@media \(prefers-reduced-motion: reduce\) \{\s*\.reveal-up,\s*\.reveal-stagger > \* \{\s*opacity: 1 !important;\s*transform: none !important;\s*transition: none !important;/s', $styles))->toBe(1);
+});
 test('multipart admin forms preserve array field semantics', function () {
     $source = file_get_contents(resource_path('js/hooks/use-admin-form.js'));
 

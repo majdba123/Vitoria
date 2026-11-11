@@ -90,27 +90,31 @@ function HeroMedia({ alt }) {
     const reducedMotion = useReducedMotion();
     const videoRef = useRef(null);
 
-    // Belt-and-suspenders for the `autoPlay` attribute: on a hard reload some
-    // browsers start the element paused for a moment (buffering, tab not yet
-    // painted) and never receive the implicit nudge a SPA navigation gives
-    // them. Kicking play() explicitly once data is available - and again if
-    // the tab becomes visible - keeps the loop running even in those cases.
-    // play() on a muted element is allowed by every browser autoplay policy.
+    // Start playback only after checking the live motion preference. The video
+    // deliberately has no autoplay attribute so browsers cannot start it before
+    // React reads prefers-reduced-motion.
     useEffect(() => {
-        if (reducedMotion) return;
         const video = videoRef.current;
         if (!video) return;
+        const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
         const tryPlay = () => {
+            if (motionQuery.matches || reducedMotion || document.hidden) {
+                video.pause();
+                return;
+            }
+
             if (video.paused) video.play().catch(() => {});
         };
 
         tryPlay();
+        motionQuery.addEventListener('change', tryPlay);
         video.addEventListener('loadeddata', tryPlay);
         video.addEventListener('canplay', tryPlay);
         document.addEventListener('visibilitychange', tryPlay);
 
         return () => {
+            motionQuery.removeEventListener('change', tryPlay);
             video.removeEventListener('loadeddata', tryPlay);
             video.removeEventListener('canplay', tryPlay);
             document.removeEventListener('visibilitychange', tryPlay);
@@ -134,12 +138,11 @@ function HeroMedia({ alt }) {
         <video
             ref={videoRef}
             className="storefront-hero-video"
-            autoPlay
             muted
             loop
             playsInline
             poster="/images/vetora-hero-poster.webp"
-            preload="auto"
+            preload="none"
             aria-label={alt}
         >
             <source src="/videos/vetora-hero-loop.mp4" type="video/mp4" />
