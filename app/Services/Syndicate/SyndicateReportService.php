@@ -38,13 +38,14 @@ class SyndicateReportService
             'default_font' => 'dejavusans', 'autoScriptToLang' => true, 'autoLangToFont' => true,
             'tempDir' => $temporaryDirectory, 'margin_top' => 18, 'margin_bottom' => 18, 'margin_footer' => 10,
         ]);
+        $pdf->use_kwt = true;
         $pdf->SetHTMLFooter($this->footerHtml());
         $reportTitle = $scope->syndicate ? null : __('ministry.report_title', [], $locale);
         $reportOrganization = $scope->syndicate?->name ?? __('ministry.report_organization', [], $locale);
         $from = $data['period']['from'] ?? 'all';
         $to = $data['period']['to'] ?? now()->toDateString();
         $reportReference = $this->reportReference($scope, $from, $to, $data['generated_at']);
-        $verifyUrl = $this->verifyUrl($scope, $from, $to, $data['generated_at'], $reportReference, $locale);
+        $verifyUrl = $this->verifyUrl($scope, $from, $to, $data['generated_at'], $reportReference, $locale, $data['kpis']);
         $pdf->WriteHTML(view('reports.syndicate-general', compact('data', 'scope', 'isArabic', 'reportTitle', 'reportOrganization', 'reportReference', 'verifyUrl'))->render(), HTMLParserMode::DEFAULT_MODE);
 
         return [
@@ -69,12 +70,21 @@ class SyndicateReportService
     }
 
     /**
-     * Signed verification link for the QR code / footer link. `signed`
-     * middleware on the route rejects the request outright if any of these
-     * query parameters is altered, so there is nothing further to validate
-     * once the request reaches ReportVerificationController.
+     * Signed verification link printed as the report's QR code.
+     *
+     * Trust model: every parameter is covered by an HMAC-SHA256 signature
+     * keyed with APP_KEY, so editing any of them (scope, period, reference,
+     * figures) fails verification. The headline figures are part of the
+     * signed payload so the verification page can show them and a reader can
+     * spot a PDF whose printed totals were edited while the genuine QR code
+     * was kept. They are figures already printed on the face of the report,
+     * so the link discloses nothing the report holder cannot already read.
+     * The link deliberately has no expiry (an issued report stays verifiable);
+     * rotating APP_KEY revokes every previously issued link.
+     *
+     * @param  array{vendors: int|string, completed_orders: int|string, gross_sales: float|int|string}  $kpis
      */
-    private function verifyUrl(DomainScope $scope, string $from, string $to, \Carbon\CarbonInterface $generatedAt, string $reference, string $locale): string
+    private function verifyUrl(DomainScope $scope, string $from, string $to, \Carbon\CarbonInterface $generatedAt, string $reference, string $locale, array $kpis): string
     {
         return URL::signedRoute('reports.verify', array_filter([
             'syndicate' => $scope->syndicate?->id,
@@ -84,6 +94,9 @@ class SyndicateReportService
             'generated_at' => $generatedAt->timestamp,
             'ref' => $reference,
             'locale' => $locale,
+            'vendors' => (int) $kpis['vendors'],
+            'orders' => (int) $kpis['completed_orders'],
+            'sales' => number_format((float) $kpis['gross_sales'], 2, '.', ''),
         ], static fn ($value) => $value !== null));
     }
 

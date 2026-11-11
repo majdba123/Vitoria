@@ -131,6 +131,11 @@ return [
     'price' => 'Price',
     'unknown_category' => 'Unknown category',
     'select' => 'Select...',
+    'date_picker' => [
+        'placeholder' => 'Select date',
+        'previous_month' => 'Previous month',
+        'next_month' => 'Next month',
+    ],
     'status' => [
         'pending' => 'Pending',
         'confirmed' => 'Confirmed',

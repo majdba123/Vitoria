@@ -25,14 +25,16 @@
         .table thead { display:table-header-group; }
         .table tr { page-break-inside:avoid; }
         .table th { background:#173f35; color:#fff; font-size:10px; font-weight:700; padding:6px 9px; text-align:{{ $isArabic ? 'right' : 'left' }}; word-wrap:break-word; overflow-wrap:break-word; }
-        .table th.num { text-align:right; }
+        /* Figures are centred under their own header. Edge-aligned, they sat flush
+           against the neighbouring text column and read as part of it ("6 بوبكات"). */
+        .table th.num { text-align:center; }
         .table td { border-bottom:1px solid #e3e9ee; padding:6px 9px; vertical-align:middle; font-size:10px; word-wrap:break-word; overflow-wrap:break-word; }
         .table tbody tr:nth-child(even) td { background:#f6f9f8; }
         /* Bare figures and ISO dates are LTR runs. Money is NOT: forcing it LTR
            reorders "1,234.00 ل.س" against the identically-formatted KPI figures,
            so amounts keep the page direction and only the digits stay tabular. */
-        .number { direction:ltr; unicode-bidi:embed; text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
-        .money { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+        .number { direction:ltr; unicode-bidi:embed; text-align:center; white-space:nowrap; font-variant-numeric:tabular-nums; }
+        .money { text-align:center; white-space:nowrap; font-variant-numeric:tabular-nums; }
         .negative { color:#a93226; }
         .dynamic { unicode-bidi:plaintext; }
         .muted { color:#64748b; font-size:10px; }

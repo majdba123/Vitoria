@@ -11,10 +11,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/Components/ui/chart';
 import { HorizontalRankingChart } from '@/Components/shared/dashboard/HorizontalRankingChart';
 import { Input } from '@/Components/ui/input';
+import { EnglishDatePicker } from '@/Components/shared/EnglishDatePicker';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
 import { useI18n, useIsRtl, useLocale } from '@/hooks/use-i18n';
-import { formatCurrency, formatDate as formatDateShared, formatNumber } from '@/lib/date-time';
+import { formatCurrency, formatDate as formatDateShared, formatNumber, localDateDaysAgo, localDateString } from '@/lib/date-time';
 import { translatedStatus } from '@/lib/translated-enum';
 
 const MONEY_KEYS = new Set(['gross_sales', 'refunds', 'commission', 'net_earnings', 'settled', 'outstanding', 'average_completed_order_value']);
@@ -109,15 +110,13 @@ function Identity({ vendor, loading, common, labels }) {
 }
 
 function ReportDialog({ open, onOpenChange, labels, languages, onGenerate }) {
-    const today = new Date().toISOString().slice(0, 10);
-    const monthAgo = new Date(Date.now() - 29 * 86_400_000).toISOString().slice(0, 10);
-    const [form, setForm] = useState({ date_from: monthAgo, date_to: today, locale: 'ar' });
+    const [form, setForm] = useState({ date_from: localDateDaysAgo(29), date_to: localDateString(), locale: 'ar' });
     const valid = form.date_from && form.date_to && form.date_from <= form.date_to;
-    return <Dialog open={open} onOpenChange={onOpenChange}><DialogContent><DialogHeader><DialogTitle>{labels.export_pdf}</DialogTitle><DialogDescription>{labels.report_dialog_copy}</DialogDescription></DialogHeader><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1.5 text-sm font-medium">{labels.from}<Input type="date" lang="en" value={form.date_from} onChange={(e) => setForm({ ...form, date_from: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium">{labels.to}<Input type="date" lang="en" value={form.date_to} onChange={(e) => setForm({ ...form, date_to: e.target.value })} /></label><label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{labels.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={form.locale} onChange={(e) => setForm({ ...form, locale: e.target.value })}><option value="ar">{languages.arabic}</option><option value="en">{languages.english}</option></select></label></div><DialogFooter><Button type="button" disabled={!valid} onClick={() => { onGenerate({ range: 'custom', ...form }); onOpenChange(false); }}><FileDown className="size-4" />{labels.generate_report}</Button></DialogFooter></DialogContent></Dialog>;
+    return <Dialog open={open} onOpenChange={onOpenChange}><DialogContent><DialogHeader><DialogTitle>{labels.export_pdf}</DialogTitle><DialogDescription>{labels.report_dialog_copy}</DialogDescription></DialogHeader><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1.5 text-sm font-medium">{labels.from}<EnglishDatePicker value={form.date_from} max={form.date_to} onChange={(date_from) => setForm({ ...form, date_from })} /></label><label className="grid gap-1.5 text-sm font-medium">{labels.to}<EnglishDatePicker value={form.date_to} min={form.date_from} onChange={(date_to) => setForm({ ...form, date_to })} /></label><label className="grid gap-1.5 text-sm font-medium sm:col-span-2">{labels.report_language}<select className="h-11 rounded-md border border-input bg-background px-3" value={form.locale} onChange={(e) => setForm({ ...form, locale: e.target.value })}><option value="ar">{languages.arabic}</option><option value="en">{languages.english}</option></select></label></div><DialogFooter><Button type="button" disabled={!valid} onClick={() => { onGenerate({ range: 'custom', ...form }); onOpenChange(false); }}><FileDown className="size-4" />{labels.generate_report}</Button></DialogFooter></DialogContent></Dialog>;
 }
 
 function PeriodFilter({ range, onRange, custom, onCustom, labels }) {
-    return <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-3 sm:flex-row sm:items-end"><label className="grid gap-1 text-sm font-semibold"><span className="flex items-center gap-1.5"><CalendarRange className="size-4" />{labels.period_analytics}</span><select value={range} onChange={(e) => onRange(e.target.value)} className="h-11 rounded-md border border-input bg-background px-3 text-base">{['today', '7_days', '30_days', '90_days', 'this_year', 'custom', 'all'].map((key) => <option key={key} value={key}>{labels[key]}</option>)}</select></label>{range === 'custom' && <><label className="grid gap-1 text-sm"><span>{labels.from}</span><Input type="date" lang="en" value={custom.date_from} onChange={(e) => onCustom({ ...custom, date_from: e.target.value })} /></label><label className="grid gap-1 text-sm"><span>{labels.to}</span><Input type="date" lang="en" value={custom.date_to} onChange={(e) => onCustom({ ...custom, date_to: e.target.value })} /></label></>}</div>;
+    return <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-3 sm:flex-row sm:items-end"><label className="grid gap-1 text-sm font-semibold"><span className="flex items-center gap-1.5"><CalendarRange className="size-4" />{labels.period_analytics}</span><select value={range} onChange={(e) => onRange(e.target.value)} className="h-11 rounded-md border border-input bg-background px-3 text-base">{['today', '7_days', '30_days', '90_days', 'this_year', 'custom', 'all'].map((key) => <option key={key} value={key}>{labels[key]}</option>)}</select></label>{range === 'custom' && <><label className="grid gap-1 text-sm"><span>{labels.from}</span><EnglishDatePicker value={custom.date_from} max={custom.date_to} onChange={(date_from) => onCustom({ ...custom, date_from })} /></label><label className="grid gap-1 text-sm"><span>{labels.to}</span><EnglishDatePicker value={custom.date_to} min={custom.date_from} onChange={(date_to) => onCustom({ ...custom, date_to })} /></label></>}</div>;
 }
 
 function KpiGrid({ values = {}, labels, locale, loading }) {

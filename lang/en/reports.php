@@ -98,8 +98,11 @@ return [
         'period' => 'Report period',
         'generated' => 'Generated at',
         'reference' => 'Report reference',
-        'notice' => 'This page confirms the authenticity of this Vetora-issued report. No sensitive business data is shown here.',
+        'notice' => 'This page confirms the report was issued by Vetora. Compare the figures above with those printed on the report; any difference means the report was altered. No sensitive business data is shown here.',
         'not_available' => 'Not available',
+        'failed_badge' => 'Not verified',
+        'failed_title' => 'Invalid verification link',
+        'failed_notice' => 'This report could not be verified. The link or QR code may have been altered or copied incompletely. Do not rely on the report until the issuing body confirms it.',
     ],
     'currency' => 'SYP',
 ];

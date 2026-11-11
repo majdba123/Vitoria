@@ -131,6 +131,11 @@ return [
     'price' => 'السعر',
     'unknown_category' => 'تصنيف غير معروف',
     'select' => 'اختر...',
+    'date_picker' => [
+        'placeholder' => 'اختر التاريخ',
+        'previous_month' => 'الشهر السابق',
+        'next_month' => 'الشهر التالي',
+    ],
     'status' => [
         'pending' => 'قيد الانتظار',
         'confirmed' => 'مؤكد',
