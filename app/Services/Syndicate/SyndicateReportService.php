@@ -101,15 +101,12 @@ class SyndicateReportService
     }
 
     /**
-     * Footer row: the existing Vetora mark and the page counter, RTL-safe
-     * via the dir="ltr" wrapper.
+     * Footer row: page counter only. The client chose to drop every footer
+     * logo (option B), so no brand marks are printed here.
      */
     private function footerHtml(): string
     {
-        return '<table dir="ltr" style="width:100%;border-top:1px solid #e3e9ee;padding-top:4px;border-collapse:collapse"><tr>'
-            .'<td style="width:50%"><img src="'.public_path('images/vetora-logo-transparent.png').'" style="max-height:20px;max-width:64px;width:auto;height:auto"></td>'
-            .'<td style="width:50%"><div dir="ltr" style="direction:ltr;text-align:right;color:#64748b;font-size:9px">{PAGENO} / {nbpg}</div></td>'
-            .'</tr></table>';
+        return '<div dir="ltr" style="direction:ltr;border-top:1px solid #e3e9ee;padding-top:4px;text-align:right;color:#64748b;font-size:9px">{PAGENO} / {nbpg}</div>';
     }
 
     /** @param array{key: string, from: CarbonImmutable|null, to: CarbonImmutable|null} $period */
