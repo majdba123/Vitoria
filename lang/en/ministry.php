@@ -4,7 +4,7 @@ return [
     'navigation_label' => 'Ministry navigation',
     'workspace' => 'Ministry workspace',
     'workspace_label' => 'Ministry oversight',
-    'workspace_footer' => 'Read-only oversight of agriculture and veterinary activity',
+    'workspace_footer' => 'Oversight of agriculture and veterinary activity',
     'name' => 'Ministry overview',
     'sector' => 'Sector',
     'sector_label' => 'Choose sector',
@@ -15,6 +15,6 @@ return [
     'sector_comparison_title' => 'Sector comparison',
     'sector_comparison_copy' => 'Agriculture and veterinary side by side. A record active in both sectors appears in each column, so the columns can add up to more than the combined total.',
     'notifications' => 'Notifications',
-    'report_title' => 'Ministry sector report',
-    'report_organization' => 'Ministry of Agriculture and Veterinary Affairs',
+    'report_title' => 'Ministry report',
+    'report_organization' => 'Ministry of Agriculture',
 ];

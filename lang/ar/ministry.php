@@ -4,7 +4,7 @@ return [
     'navigation_label' => 'تنقل الوزارة',
     'workspace' => 'مساحة الوزارة',
     'workspace_label' => 'الرقابة الوزارية',
-    'workspace_footer' => 'متابعة للاطلاع فقط على النشاط الزراعي والبيطري',
+    'workspace_footer' => 'متابعة النشاط الزراعي والبيطري',
     'name' => 'نظرة الوزارة العامة',
     'sector' => 'القطاع',
     'sector_label' => 'اختر القطاع',

@@ -15,7 +15,10 @@ function Field({ label, children }) {
     return (
         <div className="min-w-0">
             <dt className="text-xs font-semibold text-muted-foreground">{label}</dt>
-            <dd className="mt-1 break-words text-sm text-foreground" dir="auto">{children || '—'}</dd>
+            {/* The value is bidi-isolated rather than giving the <dd> itself dir="auto":
+                a purely numeric value would flip the whole cell to LTR and push the
+                number to the opposite edge from its (Arabic) title. */}
+            <dd className="mt-1 break-words text-start text-sm text-foreground tabular-nums"><bdi>{children || '—'}</bdi></dd>
         </div>
     );
 }

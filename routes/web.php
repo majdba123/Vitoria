@@ -18,12 +18,12 @@ Route::get('/contact', fn () => Inertia::render('Contact'))->name('contact');
 Route::get('/sitemap.xml', [\App\Http\Controllers\Api\SeoController::class, 'sitemap'])->middleware('throttle:public.browse')->name('sitemap');
 Route::get('/robots.txt', [\App\Http\Controllers\Api\SeoController::class, 'robots'])->middleware('throttle:public.browse')->name('robots');
 
-// Public landing page for the QR code / verification link printed on every
-// generated syndicate and Ministry PDF report (see SyndicateReportService).
-// `signed` rejects any request whose query string was altered, so a forged
-// or tampered link fails before it ever reaches the controller.
+// Public landing page for the QR code printed on every generated syndicate and
+// Ministry PDF report (see SyndicateReportService). The controller checks the
+// URL signature itself so a forged or altered link gets an explicit
+// "could not be verified" page rather than a bare error.
 Route::get('/reports/verify', [\App\Http\Controllers\ReportVerificationController::class, 'show'])
-    ->middleware(['throttle:public.browse', 'signed'])
+    ->middleware(['throttle:public.browse'])
     ->name('reports.verify');
 
 Route::get('/pages/{slug}', function (string $slug) {

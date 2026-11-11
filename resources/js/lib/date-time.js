@@ -73,6 +73,25 @@ export function formatPercent(value, locale = 'en', options = {}) {
     }).format(number / 100);
 }
 
+/**
+ * Calendar date ("YYYY-MM-DD") in the viewer's own timezone. `toISOString()`
+ * would give the UTC date instead, which is the previous day for the first
+ * hours after midnight in Damascus (UTC+3).
+ */
+export function localDateString(date = new Date()) {
+    const pad = (number) => String(number).padStart(2, '0');
+
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/** `localDateString` for the date `days` days before today. */
+export function localDateDaysAgo(days) {
+    const date = new Date();
+    date.setDate(date.getDate() - days);
+
+    return localDateString(date);
+}
+
 function resolveLocale(locale) {
     return locale === 'ar' ? 'ar-SY-u-nu-latn' : 'en-US';
 }
